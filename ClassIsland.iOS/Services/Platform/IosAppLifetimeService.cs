@@ -24,6 +24,6 @@ internal sealed class IosAppLifetimeService : IAppLifetimeService
 
     public void Restart(string[] parameters, bool restartToLauncher)
     {
-        // Apple 不允许应用主动终止后重新启动；调用方会在调用前拦截此操作。
+        // Apple 不允许应用主动终止后重新启动；共享层会改为正常停止应用，等待用户手动重新打开。
     }
 }

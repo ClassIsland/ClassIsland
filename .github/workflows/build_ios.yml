@@ -113,6 +113,7 @@ jobs:
           --no-restore
           -m:1
           -p:BrandType=Production
+          -p:DeveloperPreview=true
           -p:EnableCodeSigning=false
 
       - name: Embed Swift runtime libraries

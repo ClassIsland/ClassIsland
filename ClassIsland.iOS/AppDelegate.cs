@@ -2,17 +2,22 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.iOS;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Controls.UI;
 using ClassIsland.Core.Abstractions.Services.UI;
+using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Extensions;
 using ClassIsland.iOS.Services.LiveActivities;
+using ClassIsland.iOS.Services.Notifications;
 using ClassIsland.iOS.Services.Platform;
 using ClassIsland.iOS.Services.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Views;
+using FluentAvalonia.UI.Controls;
 using Foundation;
+using UserNotifications;
 
 namespace ClassIsland.iOS;
 
@@ -23,9 +28,13 @@ namespace ClassIsland.iOS;
 public sealed class AppDelegate : AvaloniaAppDelegate<App>
 {
     private LessonsLiveActivityCoordinator? _liveActivityCoordinator;
+    private IosLessonsNotificationCoordinator? _lessonsNotificationCoordinator;
+    private readonly IosNotificationAuthorizationService _notificationAuthorizationService = new();
+    private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
 
     protected override AppBuilder CreateAppBuilder()
     {
+        UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
         PlatformServices.AppLifetimeService = new IosAppLifetimeService();
         PlatformServices.FolderService = new IosPlatformFolderService();
         PlatformServices.UriLauncherService = new IosPlatformUriLauncherService();
@@ -74,14 +83,103 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
                 PlatformServices.LiveActivityService);
             _liveActivityCoordinator.Start();
 
+            _lessonsNotificationCoordinator = new IosLessonsNotificationCoordinator(
+                _notificationAuthorizationService);
+            _lessonsNotificationCoordinator.Start();
+
+#if DEVELOPER_PREVIEW
+            Dispatcher.UIThread.Post(async () =>
+            {
+                try
+                {
+                    await ShowDeveloperPreviewWarningAsync(viewHost);
+                }
+                catch (Exception exception)
+                {
+                    Console.Error.WriteLine($"无法显示 Developer Preview 警告：{exception}");
+                }
+                finally
+                {
+                    app.Init();
+                }
+            });
+#else
             Dispatcher.UIThread.Post(app.Init);
+#endif
         });
     }
+
+#if DEVELOPER_PREVIEW
+    private static async Task ShowDeveloperPreviewWarningAsync(Control root)
+    {
+        var topLevel = await GetTopLevelAsync(root);
+        await new FATaskDialog()
+        {
+            Title = "ClassIsland",
+            Header = "欢迎使用 2.2-Misha Developer Preview",
+            Content = "此版本仅供开发人员进行早期预览，稳定性欠佳，不适用于生产环境或日常使用。如果您在使用的过程中遇到问题，欢迎前往 GitHub issues 上提交 issue！",
+            IconSource = new AdvancedImageIconSource()
+            {
+                Uri = "avares://ClassIsland.iOS/Assets/HoYoStickers/米沙_欢迎光临.png"
+            },
+            XamlRoot = topLevel,
+            Buttons =
+            [
+                new FATaskDialogButton("确定", true)
+                {
+                    IsDefault = true
+                }
+            ]
+        }.ShowAsync();
+    }
+
+    private static async Task<TopLevel> GetTopLevelAsync(Control control)
+    {
+        var topLevel = TopLevel.GetTopLevel(control);
+        if (topLevel != null)
+        {
+            return topLevel;
+        }
+
+        var completionSource = new TaskCompletionSource<TopLevel>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        void OnLoaded(object? sender, RoutedEventArgs args)
+        {
+            var loadedTopLevel = TopLevel.GetTopLevel(control);
+            if (loadedTopLevel == null)
+            {
+                return;
+            }
+
+            control.Loaded -= OnLoaded;
+            completionSource.TrySetResult(loadedTopLevel);
+        }
+
+        control.Loaded += OnLoaded;
+        topLevel = TopLevel.GetTopLevel(control);
+        if (topLevel != null)
+        {
+            control.Loaded -= OnLoaded;
+            return topLevel;
+        }
+
+        return await completionSource.Task;
+    }
+#endif
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
+            if (ReferenceEquals(
+                    UNUserNotificationCenter.Current.Delegate,
+                    _notificationCenterDelegate))
+            {
+                UNUserNotificationCenter.Current.Delegate = null;
+            }
+
+            _lessonsNotificationCoordinator?.Dispose();
+            _lessonsNotificationCoordinator = null;
             _liveActivityCoordinator?.Dispose();
             _liveActivityCoordinator = null;
         }

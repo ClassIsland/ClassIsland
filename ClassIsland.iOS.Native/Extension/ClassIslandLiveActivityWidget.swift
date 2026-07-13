@@ -140,8 +140,15 @@ private struct ClassIslandIslandTimer: View {
     let state: ClassIslandActivityAttributes.ContentState
 
     var body: some View {
-        if let endTime = state.endTime, state.startTime != nil {
-            Text(endTime, style: .timer)
+        if let startTime = state.startTime,
+           let endTime = state.endTime,
+           endTime > startTime {
+            Text(
+                timerInterval: startTime...endTime,
+                pauseTime: endTime,
+                countsDown: true,
+                showsHours: true
+            )
                 .font(.caption.monospacedDigit())
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)

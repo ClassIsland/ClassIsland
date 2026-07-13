@@ -14,6 +14,7 @@ using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Helpers;
@@ -45,6 +46,8 @@ public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
     public bool IsRefreshing { get; set; } = false;
     
     private Dictionary<Type, object?> PageCache { get; } = new();
+
+    private bool _isShowingAppleMobileRestartDialog;
 
     
     public WelcomeWindow()
@@ -180,6 +183,36 @@ public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
 
     private async void CommandBindingFinishWizard_OnExecuted(object? sender, ExecutedRoutedEventArgs e)
     {
+        if (IsOnboarding &&
+            PlatformHelper.IsAppleMobile &&
+            !ViewModel.SettingsService.Settings.IsWelcomeWindowShowed)
+        {
+            if (_isShowingAppleMobileRestartDialog)
+            {
+                return;
+            }
+
+            _isShowingAppleMobileRestartDialog = true;
+            try
+            {
+                var result = await new FAContentDialog()
+                {
+                    Title = "需要重新打开 ClassIsland",
+                    Content = "首次设置已完成。为确保设置完全生效，ClassIsland 将关闭，请随后从主屏幕手动重新打开应用。",
+                    PrimaryButtonText = "关闭应用",
+                    DefaultButton = FAContentDialogButton.Primary
+                }.ShowAsyncAuto(TopLevel.GetTopLevel(this));
+                if (result != FAContentDialogResult.Primary)
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                _isShowingAppleMobileRestartDialog = false;
+            }
+        }
+
         ViewModel.CanClose = true;
         ViewModel.IsWizardCompleted = true;
         if (IsOnboarding)
@@ -208,7 +241,7 @@ public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
         {
             ViewModel.SettingsService.Settings.LeftRefreshingToastCounts = 0;
         }
-        
+
         Hide();
     }
 

@@ -490,11 +490,14 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         if (!IsShowingRestartDialog)
         {
             IsShowingRestartDialog = true;
+            var isAppleMobile = PlatformHelper.IsAppleMobile;
             var r = await new FAContentDialog()
             {
-                Title = "需要重启",
-                Content = "部分设置需要重启以应用更改。",
-                PrimaryButtonText = "重启",
+                Title = isAppleMobile ? "需要重新打开" : "需要重启",
+                Content = isAppleMobile
+                    ? "部分更改需要重新打开应用才能生效。ClassIsland 将关闭，请随后手动重新打开。"
+                    : "部分设置需要重启以应用更改。",
+                PrimaryButtonText = isAppleMobile ? "关闭应用" : "重启",
                 CloseButtonText = "取消",
                 DefaultButton = FAContentDialogButton.Primary,
             }.ShowAsyncAuto(TopLevel.GetTopLevel(this));

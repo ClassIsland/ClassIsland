@@ -171,7 +171,8 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                     i.TimeType == 0 &&
                     i.EndTime < now.TimeOfDay)
             : LessonsService.CurrentTimeLayoutItem;
-        var startTime = item?.StartTime ?? now.TimeOfDay;
+        var stableStartTime = item?.StartTime ?? TimeSpan.Zero;
+        var startTime = stableStartTime;
         var duration = nextItem.StartTime - startTime;
         var totalSeconds = (int)Math.Clamp(
             Math.Ceiling(duration.TotalSeconds),
@@ -200,7 +201,7 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                 progressSeconds,
                 progressPercent,
                 remainingText,
-                GetAbsoluteTime(now, absoluteNow, startTime),
+                GetAbsoluteTime(now, absoluteNow, stableStartTime),
                 GetAbsoluteTime(now, absoluteNow, nextItem.StartTime));
         }
 

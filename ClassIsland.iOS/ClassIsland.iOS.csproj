@@ -14,6 +14,7 @@
     <LinkWithSwiftSystemLibraries>true</LinkWithSwiftSystemLibraries>
     <BrandType>Production</BrandType>
     <BrandType Condition="'$(Configuration)' == 'Debug'">Dev</BrandType>
+    <DefineConstants Condition="'$(DeveloperPreview)' == 'true'">$(DefineConstants);DEVELOPER_PREVIEW</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(BrandType)' == 'Production'">
@@ -44,6 +45,8 @@
     <ImageAsset Include="..\ClassIsland.Desktop\Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo_512x512_2x.png">
       <Link>Assets.xcassets\AppIcon.appiconset\AppIcon.png</Link>
     </ImageAsset>
+    <AvaloniaResource Include="Assets\HoYoStickers\米沙_欢迎光临.png"
+                      Condition="'$(DeveloperPreview)' == 'true'" />
   </ItemGroup>
 
   <PropertyGroup>

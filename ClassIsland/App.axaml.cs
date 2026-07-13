@@ -1240,7 +1240,8 @@ public partial class App : AppBase, IAppHost
     {
         if (PlatformHelper.IsAppleMobile)
         {
-            Logger?.LogWarning("当前平台不支持由应用主动重启。请手动重新打开 ClassIsland。");
+            Logger?.LogInformation("当前平台不支持自动重新拉起应用，将关闭 ClassIsland 并等待用户手动重新打开。");
+            Stop();
             return;
         }
 
