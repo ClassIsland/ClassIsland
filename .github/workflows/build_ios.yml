@@ -206,6 +206,14 @@ jobs:
             echo "::error::The extension bundle ID is $extension_bundle_id, expected $APPLICATION_ID.LiveActivityExtension"
             exit 1
           fi
+          if [[ "$(/usr/libexec/PlistBuddy -c 'Print :UIFileSharingEnabled' "$app_bundle/Info.plist")" != "true" ]]; then
+            echo "::error::The app does not expose its Documents directory to the Files app"
+            exit 1
+          fi
+          if [[ "$(/usr/libexec/PlistBuddy -c 'Print :LSSupportsOpeningDocumentsInPlace' "$app_bundle/Info.plist")" != "true" ]]; then
+            echo "::error::The app does not support opening Documents content in place"
+            exit 1
+          fi
 
           assert_unsigned_bundle() {
             local bundle_path="$1"

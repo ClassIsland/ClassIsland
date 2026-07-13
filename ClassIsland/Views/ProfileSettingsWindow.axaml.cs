@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -33,6 +32,7 @@ using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Models.Profile;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -374,14 +374,23 @@ public partial class ProfileSettingsWindow : ViewBase
         RefreshProfiles();
     }
 
-    private void ButtonOpenProfileFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonOpenProfileFolder_OnClick(object sender, RoutedEventArgs e)
     {
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.openFolder", 1);
-        Process.Start(new ProcessStartInfo()
+        try
         {
-            FileName = Path.GetFullPath(Services.ProfileService.ProfilePath),
-            UseShellExecute = true
-        });
+            var opened = await PlatformServices.FolderService.OpenFolderAsync(
+                Path.GetFullPath(Services.ProfileService.ProfilePath));
+            if (!opened)
+            {
+                this.ShowErrorToast("系统文件管理器无法打开档案文件夹。");
+            }
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "无法使用系统文件管理器打开档案文件夹。");
+            this.ShowErrorToast("无法打开档案文件夹", exception);
+        }
     }
 
     private void ButtonRefreshProfiles_OnClick(object sender, RoutedEventArgs e)

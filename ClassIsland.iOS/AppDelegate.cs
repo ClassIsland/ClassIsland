@@ -27,6 +27,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     protected override AppBuilder CreateAppBuilder()
     {
         PlatformServices.AppLifetimeService = new IosAppLifetimeService();
+        PlatformServices.FolderService = new IosPlatformFolderService();
         PlatformServices.LiveActivityService = new IosLiveActivityService();
 
         var buildApp = Program.AppEntry(["--mobile"]);
