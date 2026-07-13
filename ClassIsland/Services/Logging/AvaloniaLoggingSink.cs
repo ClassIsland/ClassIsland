@@ -11,7 +11,7 @@ namespace ClassIsland.Services.Logging;
 public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
 {
     private LogEventLevel Level { get; } = level;
-    
+
     ILogger<AvaloniaLoggingSink>? _logger;
 
     ILogger<AvaloniaLoggingSink>? Logger
@@ -53,7 +53,10 @@ public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
                 Logger.LogInformation("{}", message);
                 break;
             case LogEventLevel.Warning:
-                Logger.LogWarning("{}", message);
+                if (area == LogArea.Binding)
+                    Logger.LogDebug("{}", message);
+                else
+                    Logger.LogWarning("{}", message);
                 break;
             case LogEventLevel.Error:
                 Logger.LogError("{}", message);
@@ -89,7 +92,10 @@ public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
                 Logger.LogInformation("{}", message);
                 break;
             case LogEventLevel.Warning:
-                Logger.LogWarning("{}", message);
+                if (area == LogArea.Binding)
+                    Logger.LogDebug("{}", message);
+                else
+                    Logger.LogWarning("{}", message);
                 break;
             case LogEventLevel.Error:
                 Logger.LogError("{}", message);

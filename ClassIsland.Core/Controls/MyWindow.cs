@@ -9,7 +9,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Labs.Input;
+
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
@@ -17,7 +17,7 @@ using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Assists;
-using ClassIsland.Core.Commands;
+
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Theming;
@@ -167,12 +167,6 @@ public partial class MyWindow : AppWindow
 
         void OnInitialized(object? sender, EventArgs e)
         {
-            var commands = CommandManager.GetCommandBindings(window);
-            commands.Add(new CommandBinding(UriNavigationCommands.UriNavigationCommand,
-                (_, args) => IAppHost.TryGetService<IUriNavigationService>()
-                    ?.NavigateWrapped(new Uri(args.Parameter?.ToString() ?? "classisland:")),
-                (_, args) => args.CanExecute = true));
-            CommandManager.SetCommandBindings(window, commands);
         }
 
         void OnLoaded(object? sender, RoutedEventArgs e)

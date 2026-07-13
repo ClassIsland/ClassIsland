@@ -218,7 +218,7 @@ public class ActionService : IActionService
 
 
         ActionMenuTree.Add(
-            new ActionMenuTreeGroup("运行", "\uec2e",
+            new ActionMenuTreeGroup("打开 / 运行", "\uec2e",
             new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uf4b1",
                 s => s.RunType = RunActionSettings.RunActionRunType.Application),
             new ActionMenuTreeItem<RunActionSettings>("classisland.os.run",

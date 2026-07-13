@@ -128,9 +128,9 @@ public partial class AutomationSettingsPage : SettingsPageBase
             : ViewModel.AutomationService.Workflows.IndexOf(ViewModel.SelectedWorkflow) + 1;
         var workflow = new Workflow
         {
-            ActionSet = new ActionSet
+            ActionSet = new()
             {
-                Name = "新自动化", IsRevertEnabled = true
+                Name = "新自动化", IsRevertEnabled = false
             }
         };
         ViewModel.AutomationService.Workflows.Insert(index, workflow);

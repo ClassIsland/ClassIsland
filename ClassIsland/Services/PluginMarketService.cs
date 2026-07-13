@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Exceptions;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
@@ -335,26 +336,33 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         var stopwatch = new Stopwatch();
         download.DownloadFileCompleted += (sender, args) =>
         {
-            stopwatch.Stop();
-            transaction.SetExtra("download.size", download.TotalFileSize);
-            var speed = stopwatch.Elapsed.TotalSeconds == 0
-                ? 0.0
-                : download.TotalFileSize / stopwatch.Elapsed.TotalSeconds;
-            transaction.SetExtra("download.bytesPerSecond", speed);
-            if (args.Error != null)
+            try
             {
-                spanDownload.Finish(args.Error, SpanStatus.InternalError);
-                throw new Exception($"无法下载插件 {id}：{args.Error.Message}", args.Error);
+                stopwatch.Stop();
+                transaction.SetExtra("download.size", download.TotalFileSize);
+                var speed = stopwatch.Elapsed.TotalSeconds == 0
+                    ? 0.0
+                    : download.TotalFileSize / stopwatch.Elapsed.TotalSeconds;
+                transaction.SetExtra("download.bytesPerSecond", speed);
+                if (args.Error != null)
+                {
+                    spanDownload.Finish(args.Error, SpanStatus.InternalError);
+                    throw new Exception($"无法下载插件 {id}：{args.Error.Message}", args.Error);
+                }
+                spanDownload.Finish(SpanStatus.Ok);
+
+                var spanMoveToCache = transaction.StartChild("moveToCache");
+                File.Move(archive, Path.Combine(Services.PluginService.PluginsPkgRootPath, id + ".cipx"), true);
+                spanMoveToCache.Finish(SpanStatus.Ok);
+
+                var spanValidateChecksum = transaction.StartChild("validate");
+                ChecksumHelper.VerifyChecksum(archive, md5);
+                spanValidateChecksum.Finish(SpanStatus.Ok);
             }
-            spanDownload.Finish(SpanStatus.Ok);
-
-            var spanValidateChecksum = transaction.StartChild("validate");
-            ChecksumHelper.VerifyChecksum(archive, md5);
-            spanValidateChecksum.Finish(SpanStatus.Ok);
-
-            var spanMoveToCache = transaction.StartChild("moveToCache");
-            File.Move(archive, Path.Combine(Services.PluginService.PluginsPkgRootPath, id + ".cipx"), true);
-            spanMoveToCache.Finish(SpanStatus.Ok);
+            catch (Exception err)
+            {
+                Logger.LogError(err, "L366 你说你往什么玩意里面抛了个 Exception？");
+            }
         };
         download.DownloadProgressChanged += (sender, args) =>
         {

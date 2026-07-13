@@ -1362,6 +1362,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         ViewModel.IsEditMode = true;
+        ViewModel.Settings.IsComponentEditModeMessageVisible = true;
         TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.enter");
         if (ManagementService.Policy.DisableSettingsEditing)
         {

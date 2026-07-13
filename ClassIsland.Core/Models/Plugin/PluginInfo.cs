@@ -187,7 +187,7 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
     }
 
     /// <summary>
-    /// 插件是否支持当前的操作系统。
+    /// 插件是否不支持当前的操作系统。
     /// </summary>
     [JsonIgnore]
     public bool IsNotSupportCurrentOS

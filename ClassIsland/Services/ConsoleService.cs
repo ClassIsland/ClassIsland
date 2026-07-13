@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Windows;
 using Avalonia.Platform;
 using Pastel;
@@ -12,6 +13,7 @@ public class ConsoleService
 
     public static void InitializeConsole()
     {
+        Console.OutputEncoding = Encoding.UTF8;
         PrintAppInfo();
     }
 

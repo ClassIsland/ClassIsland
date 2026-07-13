@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Automation;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Actions;
 using static ClassIsland.Models.Actions.RunActionSettings.RunActionRunType;
@@ -43,28 +44,7 @@ public class RunAction : ActionBase<RunActionSettings>
                 var path = Settings.Value;
                 if (!string.IsNullOrWhiteSpace(path) && !path.Contains(':') && !path.StartsWith('\\'))
                     path = "https://" + path;
-
-                if (OperatingSystem.IsWindows())
-                {
-                    Process.Start(new ProcessStartInfo(path)
-                    {
-                        UseShellExecute = true
-                    });
-                }
-                else if (OperatingSystem.IsLinux())
-                {
-                    Process.Start(new ProcessStartInfo("xdg-open", path)
-                    {
-                        UseShellExecute = false
-                    });
-                }
-                else if (OperatingSystem.IsMacOS())
-                {
-                    Process.Start(new ProcessStartInfo("open", path)
-                    {
-                        UseShellExecute = false
-                    });
-                }
+                App.GetService<IUriNavigationService>().Navigate(new(path));
 
                 break;
             }

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
 using ClassIsland.Core.Models.Plugin;
@@ -47,6 +49,10 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
 
     public SyncDictionaryList<string, PluginInfo> MergedPlugins { get; }
 
+    private Dictionary<string, int> _randomPluginOrder = new();
+    private readonly BehaviorSubject<IComparer<KeyValuePair<string, PluginInfo>>> _sortComparerSubject =
+        new(Comparer<KeyValuePair<string, PluginInfo>>.Default);
+
     /// <inheritdoc/>
     public PluginsSettingsPageViewModel(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService, ILogger<PluginsSettingsPage> logger)
     {
@@ -64,8 +70,20 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         UpdateOfficialPluginSources();
     }
 
+    private void RefreshPluginSortOrder()
+    {
+        var random = new Random();
+        var plugins = MergedPlugins.List.ToList();
+        _randomPluginOrder = new(plugins.Count);
+        foreach (var (key, _) in plugins)
+            _randomPluginOrder[key] = random.Next();
+        _sortComparerSubject.OnNext(new PluginInfoComparer(_randomPluginOrder));
+    }
+
     public void UpdateMergedPlugins()
     {
+        RefreshPluginSortOrder();
+
         if (MergedPluginsFiltered != null)
             return;
 
@@ -76,6 +94,7 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         MergedPlugins.List
             .ToObservableChangeSet()
             .Filter(pluginFilter)
+            .Sort(_sortComparerSubject)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _mergedPluginsFiltered)
             .Subscribe();
@@ -107,5 +126,36 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         return info.Manifest.Id.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
                info.Manifest.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
                info.Manifest.Description.Contains(filter, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private sealed class PluginInfoComparer(Dictionary<string, int> randomOrder)
+        : IComparer<KeyValuePair<string, PluginInfo>>
+    {
+        public int Compare(KeyValuePair<string, PluginInfo> x, KeyValuePair<string, PluginInfo> y)
+        {
+            var catX = GetCategory(x.Value);
+            var catY = GetCategory(y.Value);
+            if (catX != catY)
+                return catX.CompareTo(catY);
+            var randX = randomOrder.GetValueOrDefault(x.Key, 0);
+            var randY = randomOrder.GetValueOrDefault(y.Key, 0);
+            return randX.CompareTo(randY);
+        }
+
+        private static int GetCategory(PluginInfo info)
+        {
+            var b = info.RestartRequired ? -10 : 0;
+            if (info.IsLocal)
+            {
+                if (info.IsUpdateAvailable)
+                    b += info.IsEnabled ? 1 : 2;
+                else
+                    b += info.IsEnabled ? 3 : 4;
+            }
+            else
+                b += 5;
+
+            return b;
+        }
     }
 }

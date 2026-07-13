@@ -31,7 +31,6 @@ public partial class GeneralSettingsPage : SettingsPageBase
     {
         InitializeComponent();
         DataContext = this;
-        ((RulesetControl)this.FindResource("RulesetControl")).Ruleset = this.ViewModel.SettingsService.Settings.HideRules;
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
