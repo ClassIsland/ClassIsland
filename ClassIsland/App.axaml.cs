@@ -77,6 +77,10 @@ public partial class App : AppBase, IAppHost
     private const string BuildTypeInternal =
 #if SelfContained
         "selfContained";
+#elif AoT
+        "aot";
+#elif MonoAoT
+        "monoaot";
 #else
         "full";
 #endif
@@ -536,7 +540,7 @@ public partial class App : AppBase, IAppHost
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
         Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
 
-        // 检测Mutex
+        // 检测 Mutex
         if (!IsMutexCreateNew && !Design.IsDesignMode)
         {
             if (!ApplicationCommand.WaitMutex)
@@ -581,7 +585,7 @@ public partial class App : AppBase, IAppHost
         // 检测临时目录
         if (Environment.CurrentDirectory.Contains(Path.GetTempPath()))
         {
-            await CommonTaskDialogs.ShowDialog("检测到应用正在临时目录下运行", "ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
+            await CommonTaskDialogs.ShowDialog("检测到应用正在临时目录下运行", "ClassIsland 正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
             Environment.Exit(0);
             return;
         }
@@ -589,7 +593,7 @@ public partial class App : AppBase, IAppHost
         // 检测桌面文件夹
         if (Environment.CurrentDirectory == Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) && !Settings.IsWelcomeWindowShowed)
         {
-            var r = await CommonTaskDialogs.ShowDialog("检测到正在桌面上运行", "ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
+            var r = await CommonTaskDialogs.ShowDialog("检测到正在桌面上运行", "ClassIsland 正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
             if (r == (object)true)
             {
                 Environment.Exit(0);
@@ -606,7 +610,7 @@ public partial class App : AppBase, IAppHost
         }
         catch (Exception ex)
         {
-            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}"+Environment.NewLine+Environment.NewLine+"请将本软件解压到一个合适的位置后再运行。");
+            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland 无法写入当前目录：{ex.Message}"+Environment.NewLine+Environment.NewLine+"请将本软件解压到一个合适的位置后再运行。");
             Environment.Exit(0);
             return;
         }
@@ -682,7 +686,7 @@ public partial class App : AppBase, IAppHost
         if (App.ApplicationCommand.Diagnostic)
         {
             var diagService = GetService<DiagnosticService>();
-            Logger.LogInformation("诊断模式已启用!");
+            Logger.LogInformation("诊断模式已启用！");
             Logger.LogDebug("{DiagnosticMessage}", diagService.GetDiagnosticInfo());
         }
         foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Error))
@@ -748,13 +752,13 @@ public partial class App : AppBase, IAppHost
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
         Settings.DiagnosticStartupCount++;
 
-        // 记录MLE
+        // 记录 MLE
         if (ApplicationCommand.PrevSessionMemoryKilled)
         {
             Settings.DiagnosticMemoryKillCount++;
             Settings.DiagnosticLastMemoryKillTime = DateTime.Now;
             #if !DEBUG
-            Logger.LogWarning($"上次会话因MLE结束。MemoryKillCount={Settings.DiagnosticMemoryKillCount}");
+            Logger.LogWarning($"上次会话因 MLE 结束。MemoryKillCount={Settings.DiagnosticMemoryKillCount}");
             #endif
         }
         spanLoadingSettings.Finish();
@@ -868,13 +872,13 @@ public partial class App : AppBase, IAppHost
             }
         }
 
-        // 如果不是开发构建, 则自动重置部分可能影响使用的调试选项
+        // 如果不是开发构建，则自动重置部分可能影响使用的调试选项
         #if !DEBUG
         Settings.IsMainWindowDebugEnabled = false;
         #endif
         
         var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
-        Logger.LogInformation("正在初始化MainWindow。");
+        Logger.LogInformation("正在初始化 MainWindow。");
         GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
         GetService<ISplashService>().CurrentProgress = 55;
 #if DEBUG
@@ -901,7 +905,7 @@ public partial class App : AppBase, IAppHost
         GetService<IWindowRuleService>();
         GetService<SignalTriggerHandlerService>();
 
-        // 注册uri导航
+        // 注册 uri 导航
         var uriNavigationService = GetService<IUriNavigationService>();
         uriNavigationService.HandleAppNavigation("test", args => _ = CommonTaskDialogs.ShowDialog("测试导航", $"{args.Uri}"));
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));

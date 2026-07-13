@@ -42,6 +42,7 @@ partial class Build : NukeBuild
     string PublishArtifactName;
 
     readonly AbsolutePath DesktopAppEntryProject = RootDirectory / "ClassIsland.Desktop" / "ClassIsland.Desktop.csproj";
+    readonly AbsolutePath AndroidAppEntryProject = RootDirectory / "ClassIsland.Android" / "ClassIsland.Android.csproj";
     readonly AbsolutePath LauncherEntryProject = RootDirectory / "ClassIsland.Launcher" / "ClassIsland.Launcher.csproj";
     readonly AbsolutePath PluginDevAppPath = RootDirectory / "out" / "ClassIsland_Dev";
     readonly AbsolutePath PluginDevAppPublishPath = RootDirectory / "out" / "ClassIsland_Dev" / "bin";
@@ -70,6 +71,7 @@ partial class Build : NukeBuild
                 "windows" => "win",
                 "linux" => "linux", 
                 "macos" => "osx",
+                "android" => "android",
                 _ => throw new InvalidOperationException($"不支持的平台：{OsName}")
             };
             RuntimeIdentifier = $"{osRid}-{Arch}";
