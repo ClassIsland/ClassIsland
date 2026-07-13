@@ -1,5 +1,4 @@
 using ClassIsland.Platforms.Abstraction.Services;
-using UIKit;
 
 namespace ClassIsland.iOS.Services.Platform;
 
@@ -10,16 +9,10 @@ internal sealed class IosAppLifetimeService : IAppLifetimeService
 {
     public void Shutdown()
     {
-        UIApplication.SharedApplication.BeginInvokeOnMainThread(() =>
-        {
-            foreach (var scene in UIApplication.SharedApplication.ConnectedScenes.OfType<UIWindowScene>())
-            {
-                UIApplication.SharedApplication.RequestSceneSessionDestruction(
-                    scene.Session,
-                    null,
-                    _ => { });
-            }
-        });
+        // iOS 没有公开的“关闭应用”API，销毁 Scene 也不会终止当前的
+        // Avalonia 单视图进程。共享层已在调用此方法前同步保存关键配置；
+        // 这里按产品要求结束当前侧载进程，随后由用户手动重新打开。
+        Environment.Exit(0);
     }
 
     public void Restart(string[] parameters, bool restartToLauncher)
