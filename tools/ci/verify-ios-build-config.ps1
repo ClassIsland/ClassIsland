@@ -47,6 +47,8 @@ Assert-True ($null -ne $runtimeValidationTarget) "The iOS project must explicitl
 $runtimeValidationConditions = @($runtimeValidationTarget.Error) | ForEach-Object { $_.Condition }
 Assert-True ($runtimeValidationConditions -contains "'`$(RuntimeIdentifier)' != 'ios-arm64'") "Single-RID validation must allow only ios-arm64."
 Assert-True (($runtimeValidationConditions -join "`n").Contains("Copy('`$(RuntimeIdentifiers)').Contains('iossimulator-')")) "Multi-RID validation must reject iossimulator-* entries."
+$abstractionsReference = $iosProject.SelectSingleNode('/Project/ItemGroup/ProjectReference[contains(@Include, "ClassIsland.Platforms.Abstractions")]')
+Assert-True ($abstractionsReference.AdditionalProperties -eq "ClassIslandReferencedByMobile=true") "The direct abstractions reference must share the mobile project-graph properties."
 
 $releaseSymbolGroup = @($iosProject.Project.PropertyGroup) |
     Where-Object {

@@ -8,6 +8,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared;

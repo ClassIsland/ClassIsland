@@ -32,7 +32,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
+    <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj">
+      <AdditionalProperties>ClassIslandReferencedByMobile=true</AdditionalProperties>
+    </ProjectReference>
     <ProjectReference Include="..\ClassIsland\ClassIsland.csproj">
       <AdditionalProperties>ClassIslandReferencedByMobile=true</AdditionalProperties>
     </ProjectReference>
