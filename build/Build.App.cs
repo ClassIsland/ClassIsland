@@ -28,6 +28,7 @@ partial class Build
                     .SetProjectFile(IosAppEntryProject)
                     .SetProperty("PublishBuilding", true)
                     .SetProperty("PublishPlatform", OsName)
+                    .SetProperty("ClassIsland_PlatformTarget", Arch)
                     .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
                 return;
             }
@@ -53,6 +54,7 @@ partial class Build
                     .SetProject(IosAppEntryProject)
                     .SetProperty("PublishBuilding", true)
                     .SetProperty("PublishPlatform", OsName)
+                    .SetProperty("ClassIsland_PlatformTarget", Arch)
                     .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
                 return;
             }
@@ -107,6 +109,7 @@ partial class Build
                         .SetConfiguration(Configuration)
                         .SetProperty("PublishBuilding", true)
                         .SetProperty("PublishPlatform", OsName)
+                        .SetProperty("ClassIsland_PlatformTarget", Arch)
                         .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                         .SetProperty("ArchiveOnBuild", enableCodeSigning)
                         .SetProperty("BuildIpa", true)
