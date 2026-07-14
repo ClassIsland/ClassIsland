@@ -211,13 +211,22 @@ public sealed class LauncherServiceTests
     [InlineData("")]
     [InlineData("   ")]
     [InlineData("docs/index.html")]
+    [InlineData("file:///private/var/mobile/example.txt")]
+    [InlineData("tel:+861234567890")]
+    [InlineData("classisland://app/settings")]
     public async Task SharedDocumentsService_RejectsInvalidUrl(string url)
     {
+        var openCalled = false;
         var service = new SharedDocumentsLauncherService(
             () => Path.GetTempPath(),
-            _ => Task.FromResult(true));
+            _ =>
+            {
+                openCalled = true;
+                return Task.FromResult(true);
+            });
 
         await Assert.ThrowsAsync<ArgumentException>(() => service.LaunchUrl(url));
+        Assert.False(openCalled);
     }
 
     [Fact]

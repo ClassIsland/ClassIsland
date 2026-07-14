@@ -37,6 +37,14 @@ internal sealed class SharedDocumentsLauncherService(
             throw new ArgumentException("只能打开绝对 URL。", nameof(url));
         }
 
+        if (!string.Equals(uri.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException(
+                "iOS/iPadOS 仅支持通过 Safari 打开 HTTP(S) 链接。",
+                nameof(url));
+        }
+
         return OpenRequiredAsync(uri, $"系统无法打开链接：{uri}");
     }
 

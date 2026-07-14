@@ -1387,7 +1387,7 @@ public partial class App : AppBase, IAppHost
                     }
                 ]
             }.ShowAsync();
-            if (!Equals(result, false))
+            if (Equals(result, true))
             {
                 PlatformServices.AppLifetimeService
                     .ResumeAfterManualTerminationCanceled();

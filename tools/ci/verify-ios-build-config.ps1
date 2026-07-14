@@ -71,6 +71,7 @@ $dataTransferPageText = Read-RepositoryFile "ClassIsland/Views/DataTransferPage.
 $storageSettingsPageText = Read-RepositoryFile "ClassIsland/Views/SettingPages/StorageSettingsPage.axaml.cs"
 $fileBrowserButtonText = Read-RepositoryFile "ClassIsland/Controls/FileBrowserButton.cs"
 $safeChildDirectoryPathText = Read-RepositoryFile "ClassIsland.Platforms.Abstractions/Services/SafeChildDirectoryPath.cs"
+$appText = Read-RepositoryFile "ClassIsland/App.axaml.cs"
 $appServicesText = Read-RepositoryFile "ClassIsland/App.Services.xaml.cs"
 $pluginLoadContextText = Read-RepositoryFile "ClassIsland/PluginLoadContext.cs"
 $pluginServiceText = Read-RepositoryFile "ClassIsland/Services/PluginService.cs"
@@ -361,6 +362,7 @@ Assert-True ($welcomeWindowText.Contains('if (!isOnboarding || PlatformHelper.Is
 Assert-True ($finishWelcomePageText.Contains('DesktopTrayTutorial.IsVisible = false') -and
              $finishWelcomePageText.Contains('DesktopProfileTutorial.IsVisible = false') -and
              $finishWelcomePageText.Contains('Carousel.SelectedIndex = 2')) "The iOS onboarding finish page must skip desktop-only tray tutorials."
+Assert-True ($appText.Contains('if (Equals(result, true))')) "Manual-termination resources must resume only after the user explicitly cancels the iOS close request."
 
 Assert-True ($wrapperWorkflowText.Contains("name: Build iOS")) "The observable iOS workflow must keep the Build iOS name."
 Assert-True ($wrapperWorkflowText.Contains("uses: ./.github/workflows/_build_ios_reusable.yml")) "The Build iOS workflow must call the reusable iOS worker."
