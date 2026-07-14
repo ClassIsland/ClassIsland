@@ -69,6 +69,7 @@ Assert-True ($null -ne $soundFlowTarget) "The production build is missing the So
 Assert-True ($soundFlowTarget.AfterTargets -eq "_CreateAppBundle") "The SoundFlow resolver must run after the app bundle is created."
 Assert-True ($soundFlowTarget.BeforeTargets -eq "CoreCodesign") "The SoundFlow resolver must run before app signing."
 Assert-True ($soundFlowTarget.Exec.Command.Contains("../../../../Frameworks/miniaudio.framework/miniaudio")) "The SoundFlow resolver target path is incorrect."
+Assert-True (-not [regex]::IsMatch($iosProjectText, '\$\(AppBundleDir\)(?!/)')) "AppBundleDir paths must include an explicit directory separator."
 
 $swiftRuntimeTarget = $iosProject.SelectSingleNode('/Project/Target[@Name="EmbedIosSwiftRuntimeLibraries"]')
 Assert-True ($null -ne $swiftRuntimeTarget) "Swift runtime embedding must be part of the production app-bundle build."

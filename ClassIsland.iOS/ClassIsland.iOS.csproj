@@ -110,8 +110,8 @@
           BeforeTargets="CoreCodesign"
           Condition="$([MSBuild]::IsOSPlatform('osx')) And '$(RuntimeIdentifier)' == 'ios-arm64'">
     <PropertyGroup>
-      <_SoundFlowMiniaudioBinary>$(AppBundleDir)Frameworks/miniaudio.framework/miniaudio</_SoundFlowMiniaudioBinary>
-      <_SoundFlowResolverDirectory>$(AppBundleDir)runtimes/ios-arm64/native/miniaudio.framework</_SoundFlowResolverDirectory>
+      <_SoundFlowMiniaudioBinary>$(AppBundleDir)/Frameworks/miniaudio.framework/miniaudio</_SoundFlowMiniaudioBinary>
+      <_SoundFlowResolverDirectory>$(AppBundleDir)/runtimes/ios-arm64/native/miniaudio.framework</_SoundFlowResolverDirectory>
       <_SoundFlowResolverAlias>$(_SoundFlowResolverDirectory)/miniaudio</_SoundFlowResolverAlias>
     </PropertyGroup>
     <Error Condition="!Exists('$(_SoundFlowMiniaudioBinary)')"
@@ -132,8 +132,8 @@
            Text="CodesignKey is required to sign embedded Swift runtime libraries." />
     <Error Condition="!Exists('$(_NativeExecutable)')"
            Text="The iOS app executable is unavailable for Swift runtime discovery." />
-    <MakeDir Directories="$(AppBundleDir)Frameworks" />
-    <Exec Command="/usr/bin/xcrun swift-stdlib-tool --copy $(_IosSwiftRuntimeSignArguments) --platform iphoneos --scan-executable &quot;$(_NativeExecutable)&quot; --scan-folder &quot;$(AppBundleDir)Frameworks&quot; --scan-folder &quot;$(AppBundleDir)PlugIns&quot; --destination &quot;$(AppBundleDir)Frameworks&quot;" />
+    <MakeDir Directories="$(AppBundleDir)/Frameworks" />
+    <Exec Command="/usr/bin/xcrun swift-stdlib-tool --copy $(_IosSwiftRuntimeSignArguments) --platform iphoneos --scan-executable &quot;$(_NativeExecutable)&quot; --scan-folder &quot;$(AppBundleDir)/Frameworks&quot; --scan-folder &quot;$(AppBundleDir)/PlugIns&quot; --destination &quot;$(AppBundleDir)/Frameworks&quot;" />
   </Target>
 
   <Target Name="CleanClassIslandLiveActivityDerivedData"
