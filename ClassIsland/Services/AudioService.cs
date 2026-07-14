@@ -17,14 +17,33 @@ using SoundFlow.Structs;
 
 namespace ClassIsland.Services;
 
-public class AudioService(ILogger<AudioService> logger) : IAudioService
+public class AudioService : IAudioService
 {
-    private readonly AudioEngine _audioEngine = Task.Run((() => new MiniAudioEngine())).Result;
-    private ILogger<AudioService> Logger { get; } = logger;
+    private readonly AudioEngine? _audioEngine;
+    private readonly Exception? _initializationException;
+    private ILogger<AudioService> Logger { get; }
 
     private RefCounted<AudioPlaybackDevice>? _sharedAudioPlaybackDevice;
 
-    private object _audioPlaybackDeviceInitializeLock = new();
+    private readonly object _audioPlaybackDeviceInitializeLock = new();
+
+    public AudioService(ILogger<AudioService> logger)
+    {
+        Logger = logger;
+        try
+        {
+            _audioEngine = Task.Run(() => new MiniAudioEngine())
+                .GetAwaiter()
+                .GetResult();
+        }
+        catch (Exception exception) when (OperatingSystem.IsIOS())
+        {
+            _initializationException = exception;
+            Logger.LogError(
+                exception,
+                "iOS 音频后端初始化失败，应用将继续启动并禁用应用内音频播放");
+        }
+    }
 
     public AudioEngine AudioEngine
     {
@@ -35,7 +54,9 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
                 throw new InvalidOperationException(
                     "出于线程安全考虑，禁止在非 MTA 线程上调用 AudioEngine。请在 MTA 线程上调用 AudioEngine。详细请见 https://github.com/ClassIsland/ClassIsland/issues/1333#issuecomment-3505591836");
             }
-            return _audioEngine;
+            return _audioEngine ?? throw new InvalidOperationException(
+                "iOS 音频后端当前不可用。",
+                _initializationException);
         }
     }
 
@@ -137,7 +158,7 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
 
     public void Dispose()
     {
-        AudioEngine.Dispose();
+        _audioEngine?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

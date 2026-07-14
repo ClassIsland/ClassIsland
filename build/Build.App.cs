@@ -117,6 +117,7 @@ partial class Build
                         .SetProperty("PublishPlatform", OsName)
                         .SetProperty("ClassIsland_PlatformTarget", Arch)
                         .SetProperty("GeneratePackageOnBuild", false)
+                        .SetProperty("WarningsAsErrors", "CA1416")
                         .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                         .SetProperty("ArchiveOnBuild", enableCodeSigning)
                         .SetProperty("BuildIpa", true)

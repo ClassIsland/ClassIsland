@@ -46,6 +46,10 @@ ci_live_activity_end(
     ci_live_activity_completion_t completion,
     void *context);
 
+/// 同步取消指定上下文。返回 1 时，completion 已返回或以后不会再调用。
+CI_LIVE_ACTIVITY_EXPORT int32_t
+ci_live_activity_cancel(void *context);
+
 #if defined(__cplusplus)
 }
 #endif

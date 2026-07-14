@@ -19,7 +19,8 @@ internal sealed class IosLessonNotificationScheduleFactory(
     IProfileService profileService,
     INotificationHostService notificationHostService,
     SettingsService settingsService,
-    IExactTimeService exactTimeService)
+    IExactTimeService exactTimeService,
+    LessonPreparationNotificationTimeline lessonPreparationTimeline)
 {
     internal const int MaximumPendingNotifications = 60;
     private const int MinimumPlanningHorizonDays = 7;
@@ -98,6 +99,15 @@ internal sealed class IosLessonNotificationScheduleFactory(
         }
 
         var subject = lessonsService.NextClassSubject;
+        var allClassItems = timeLayout.Layouts
+            .Where(x => x.TimeType == 0)
+            .ToArray();
+        var classIndex = Array.IndexOf(allClassItems, nextItem);
+        if (classIndex < 0)
+        {
+            return null;
+        }
+
         var attachedSettings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<ClassNotificationAttachedSettings>(
                 ProviderGuid,
@@ -127,7 +137,16 @@ internal sealed class IosLessonNotificationScheduleFactory(
             logicalNow.Date + nextItem.StartTime,
             logicalNow,
             systemNow);
-        return startAt.AddSeconds(-prepareDeltaSeconds);
+        var plannedPrepareAt = startAt.AddSeconds(-prepareDeltaSeconds);
+        var identifier = $"{CreateIdentifierPrefix(
+            logicalNow.Date,
+            nextItem,
+            classIndex)}.prepare";
+        return lessonPreparationTimeline.GetLiveActivityPublicationTime(
+            identifier,
+            plannedPrepareAt,
+            startAt,
+            systemNow);
     }
 
     private bool AreLessonNotificationsEnabled()
@@ -221,18 +240,24 @@ internal sealed class IosLessonNotificationScheduleFactory(
                         ? providerSettings.OutdoorClassOnPreparingText
                         : providerSettings.ClassOnPreparingText;
                 var plannedPrepareAt = startAt.AddSeconds(-prepareDeltaSeconds);
-                var catchUpFireAt = systemNow.AddSeconds(2);
-                var isCatchUp = plannedPrepareAt <= systemNow.AddSeconds(1) &&
-                                startAt > catchUpFireAt;
-                requests.Add(new IosLessonNotificationRequest(
-                    $"{identifierPrefix}.prepare",
-                    isCatchUp ? catchUpFireAt : plannedPrepareAt,
-                    EnsureText(prepareTitle, "即将上课"),
-                    JoinBody(
-                        prepareMessage,
-                        $"下节课：{subjectText}，{FormatTime(lesson.Item.StartTime)} 开始。"),
-                    prepareDelivery.PlaySound,
-                    isCatchUp));
+                var identifier = $"{identifierPrefix}.prepare";
+                var effectivePrepareAt = lessonPreparationTimeline.PlanNotification(
+                    identifier,
+                    plannedPrepareAt,
+                    startAt,
+                    systemNow);
+                if (effectivePrepareAt is { } fireAt)
+                {
+                    requests.Add(new IosLessonNotificationRequest(
+                        identifier,
+                        fireAt,
+                        EnsureText(prepareTitle, "即将上课"),
+                        JoinBody(
+                            prepareMessage,
+                            $"下节课：{subjectText}，{FormatTime(lesson.Item.StartTime)} 开始。"),
+                        prepareDelivery.PlaySound,
+                        fireAt != plannedPrepareAt));
+                }
             }
 
             var onClassDelivery = GetDeliveryOptions(

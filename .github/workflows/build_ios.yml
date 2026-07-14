@@ -65,6 +65,9 @@ concurrency:
 jobs:
   build-unsigned-ipa:
     name: Build unsigned iOS IPA
+    # Fork PR code must not run after the worker receives the repository-scoped
+    # GitHub Packages credential. Trusted pushes and same-repository PRs still build.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     permissions:
       contents: read
       packages: read

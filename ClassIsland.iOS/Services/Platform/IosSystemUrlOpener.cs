@@ -24,9 +24,10 @@ internal static class IosSystemUrlOpener
             try
             {
                 using var url = new NSUrl(uri.AbsoluteUri);
+                using var options = new UIApplicationOpenUrlOptions();
                 UIApplication.SharedApplication.OpenUrl(
                     url,
-                    new UIApplicationOpenUrlOptions(),
+                    options,
                     opened => completionSource.TrySetResult(opened));
             }
             catch (Exception exception)

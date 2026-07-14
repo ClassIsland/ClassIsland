@@ -34,6 +34,7 @@ bridge_bundle="$app_bundle/Frameworks/ClassIslandLiveActivityBridge.framework"
 bridge_binary="$bridge_bundle/ClassIslandLiveActivityBridge"
 miniaudio_binary="$app_bundle/Frameworks/miniaudio.framework/miniaudio"
 miniaudio_resolver_alias="$app_bundle/runtimes/$runtime_identifier/native/miniaudio.framework/miniaudio"
+privacy_manifest="$app_bundle/PrivacyInfo.xcprivacy"
 debug_artifacts="$(find "$app_bundle" -type f \( -name '*.pdb' -o -name 'MonoTouchDebugConfiguration.txt' -o -name 'libxamarin-dotnet-debug*' \) -print)"
 if [[ -n "$debug_artifacts" ]]; then
   echo "::error::The Release IPA contains debug artifacts:"
@@ -56,6 +57,10 @@ if [[ ! -f "$miniaudio_binary" ]]; then
   echo "::error::The SoundFlow miniaudio framework is missing from the IPA"
   exit 1
 fi
+if [[ ! -x "$miniaudio_binary" ]]; then
+  echo "::error::The embedded SoundFlow miniaudio binary is not executable"
+  exit 1
+fi
 if [[ ! -L "$miniaudio_resolver_alias" || ! -e "$miniaudio_resolver_alias" ]]; then
   echo "::error::The SoundFlow iOS native resolver path is missing from the IPA"
   exit 1
@@ -64,6 +69,65 @@ if [[ "$(readlink "$miniaudio_resolver_alias")" != "../../../../Frameworks/minia
   echo "::error::The SoundFlow iOS native resolver alias has an unexpected target"
   exit 1
 fi
+if [[ ! -f "$privacy_manifest" ]]; then
+  echo "::error::PrivacyInfo.xcprivacy is missing from the app bundle"
+  exit 1
+fi
+if ! /usr/bin/plutil -lint "$privacy_manifest" > /dev/null; then
+  echo "::error::PrivacyInfo.xcprivacy is not a valid property list"
+  exit 1
+fi
+
+assert_privacy_reason() {
+  local expected_api_type="$1"
+  local expected_reason="$2"
+  local declaration_index=0
+  local actual_api_type
+  while actual_api_type="$(/usr/libexec/PlistBuddy -c "Print :NSPrivacyAccessedAPITypes:$declaration_index:NSPrivacyAccessedAPIType" "$privacy_manifest" 2>/dev/null)"; do
+    if [[ "$actual_api_type" == "$expected_api_type" ]]; then
+      local reason_index=0
+      local actual_reason
+      while actual_reason="$(/usr/libexec/PlistBuddy -c "Print :NSPrivacyAccessedAPITypes:$declaration_index:NSPrivacyAccessedAPITypeReasons:$reason_index" "$privacy_manifest" 2>/dev/null)"; do
+        if [[ "$actual_reason" == "$expected_reason" ]]; then
+          return
+        fi
+        ((reason_index += 1))
+      done
+      echo "::error::PrivacyInfo.xcprivacy does not declare reason $expected_reason for $expected_api_type"
+      exit 1
+    fi
+    ((declaration_index += 1))
+  done
+  echo "::error::PrivacyInfo.xcprivacy does not declare $expected_api_type"
+  exit 1
+}
+
+assert_privacy_reason "NSPrivacyAccessedAPICategoryUserDefaults" "CA92.1"
+assert_privacy_reason "NSPrivacyAccessedAPICategoryFileTimestamp" "C617.1"
+assert_privacy_reason "NSPrivacyAccessedAPICategorySystemBootTime" "35F9.1"
+
+assert_privacy_collected_type() {
+  local expected_type="$1"
+  local declaration_index=0
+  local actual_type
+  while actual_type="$(/usr/libexec/PlistBuddy -c "Print :NSPrivacyCollectedDataTypes:$declaration_index:NSPrivacyCollectedDataType" "$privacy_manifest" 2>/dev/null)"; do
+    if [[ "$actual_type" == "$expected_type" ]]; then
+      return
+    fi
+    ((declaration_index += 1))
+  done
+  echo "::error::PrivacyInfo.xcprivacy does not declare collected data type $expected_type"
+  exit 1
+}
+
+if [[ "$(/usr/libexec/PlistBuddy -c 'Print :NSPrivacyTracking' "$privacy_manifest")" != "false" ]]; then
+  echo "::error::PrivacyInfo.xcprivacy must declare NSPrivacyTracking=false"
+  exit 1
+fi
+assert_privacy_collected_type "NSPrivacyCollectedDataTypeCrashData"
+assert_privacy_collected_type "NSPrivacyCollectedDataTypePerformanceData"
+assert_privacy_collected_type "NSPrivacyCollectedDataTypeOtherDiagnosticData"
+assert_privacy_collected_type "NSPrivacyCollectedDataTypeProductInteraction"
 
 app_bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app_bundle/Info.plist")"
 app_display_name="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$app_bundle/Info.plist")"
@@ -127,7 +191,33 @@ if [[ "$bridge_install_name" != "$expected_bridge_install_name" ]]; then
   exit 1
 fi
 
-for symbol in ci_live_activity_get_availability ci_live_activity_publish_json ci_live_activity_end; do
+expected_miniaudio_install_name="@rpath/miniaudio.framework/miniaudio"
+miniaudio_install_name="$(/usr/bin/otool -D "$miniaudio_binary" | awk 'NR > 1 && !found { value = $0; found = 1 } END { gsub(/^[[:space:]]+|[[:space:]]+$/, "", value); print value }')"
+if [[ "$miniaudio_install_name" != "$expected_miniaudio_install_name" ]]; then
+  echo "::error::The SoundFlow miniaudio install name is $miniaudio_install_name, expected $expected_miniaudio_install_name"
+  exit 1
+fi
+
+if ! /usr/bin/otool -l "$app_binary" | awk -v expected="$expected_miniaudio_install_name" '
+  $1 == "cmd" { load_command = $2 }
+  $1 == "name" && $2 == expected && load_command == "LC_LOAD_DYLIB" { found = 1 }
+  END { exit found ? 0 : 1 }
+'; then
+  echo "::error::The main app does not load the embedded SoundFlow miniaudio framework"
+  exit 1
+fi
+
+for symbol in ma_context_init sf_allocate_context; do
+  if ! /usr/bin/nm -gUj "$miniaudio_binary" | awk -v expected="_$symbol" '
+    $0 == expected { found = 1 }
+    END { exit found ? 0 : 1 }
+  '; then
+    echo "::error::The SoundFlow miniaudio framework does not export $symbol"
+    exit 1
+  fi
+done
+
+for symbol in ci_live_activity_get_availability ci_live_activity_publish_json ci_live_activity_end ci_live_activity_cancel; do
   if ! /usr/bin/nm -gUj "$bridge_binary" | awk -v expected="_$symbol" '
     $0 == expected { found = 1 }
     END { exit found ? 0 : 1 }

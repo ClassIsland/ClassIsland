@@ -7,6 +7,32 @@ namespace ClassIsland.Platforms.Abstractions.Tests;
 
 public sealed class StorageItemMaterializerTests
 {
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_RejectsEmptyStagingRoot(string stagingRoot)
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new StorageItemMaterializer(stagingRoot));
+    }
+
+    [Theory]
+    [InlineData(0, 1, 1)]
+    [InlineData(1, 0, 1)]
+    [InlineData(1, 1, 0)]
+    public void Constructor_RejectsNonPositiveLimits(
+        int maximumFileCount,
+        long maximumFileLength,
+        long maximumTotalLength)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new StorageItemMaterializer(
+                Path.GetTempPath(),
+                maximumFileCount,
+                maximumFileLength,
+                maximumTotalLength));
+    }
+
     [Fact]
     public async Task MaterializeSelections_RejectsNullInput()
     {
@@ -106,6 +132,130 @@ public sealed class StorageItemMaterializerTests
 
         await Assert.ThrowsAnyAsync<IOException>(
             () => materializer.MaterializeFilesAsync([source]));
+
+        Assert.Empty(Directory.EnumerateFileSystemEntries(stagingRoot));
+    }
+
+    [Fact]
+    public async Task MaterializeFolders_EnforcesFileCountLimitAndCleansOperationDirectory()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var sourceRoot = scope.CreateDirectory("source");
+        var firstPath = Path.Combine(sourceRoot, "first.txt");
+        var secondPath = Path.Combine(sourceRoot, "second.txt");
+        await File.WriteAllTextAsync(firstPath, "1");
+        await File.WriteAllTextAsync(secondPath, "2");
+        var materializer = new StorageItemMaterializer(
+            stagingRoot,
+            maximumFileCount: 1,
+            maximumFileLength: 100,
+            maximumTotalLength: 100);
+
+        await Assert.ThrowsAsync<IOException>(() =>
+            materializer.MaterializeFoldersAsync(
+                [CreateStorageFolder(sourceRoot)]));
+
+        Assert.Empty(Directory.EnumerateFileSystemEntries(stagingRoot));
+    }
+
+    [Fact]
+    public async Task MaterializeFiles_RejectsOversizedSelectionBeforeStaging()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var firstPath = Path.Combine(scope.Path, "first.txt");
+        var secondPath = Path.Combine(scope.Path, "second.txt");
+        await File.WriteAllTextAsync(firstPath, "1");
+        await File.WriteAllTextAsync(secondPath, "2");
+        var materializer = new StorageItemMaterializer(
+            stagingRoot,
+            maximumFileCount: 1,
+            maximumFileLength: 100,
+            maximumTotalLength: 100);
+
+        await Assert.ThrowsAsync<IOException>(() =>
+            materializer.MaterializeFilesAsync(
+                [CreateStorageFile(firstPath), CreateStorageFile(secondPath)]));
+
+        Assert.Empty(Directory.EnumerateFileSystemEntries(stagingRoot));
+    }
+
+    [Fact]
+    public async Task MaterializeFolders_RejectsOversizedSelectionBeforeStaging()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var firstRoot = scope.CreateDirectory("first");
+        var secondRoot = scope.CreateDirectory("second");
+        var materializer = new StorageItemMaterializer(
+            stagingRoot,
+            maximumFileCount: 1,
+            maximumFileLength: 100,
+            maximumTotalLength: 100);
+
+        await Assert.ThrowsAsync<IOException>(() =>
+            materializer.MaterializeFoldersAsync(
+                [CreateStorageFolder(firstRoot), CreateStorageFolder(secondRoot)]));
+
+        Assert.Empty(Directory.EnumerateFileSystemEntries(stagingRoot));
+    }
+
+    [Fact]
+    public async Task MaterializeFiles_EnforcesSingleFileLengthAndCleansOperationDirectory()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var sourcePath = Path.Combine(scope.Path, "large.bin");
+        await File.WriteAllBytesAsync(sourcePath, [1, 2, 3, 4]);
+        var materializer = new StorageItemMaterializer(
+            stagingRoot,
+            maximumFileCount: 10,
+            maximumFileLength: 3,
+            maximumTotalLength: 100);
+
+        await Assert.ThrowsAsync<IOException>(() =>
+            materializer.MaterializeFilesAsync([CreateStorageFile(sourcePath)]));
+
+        Assert.Empty(Directory.EnumerateFileSystemEntries(stagingRoot));
+    }
+
+    [Fact]
+    public async Task MaterializeFiles_AcceptsResourceLimitsAtBoundary()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var sourcePath = Path.Combine(scope.Path, "boundary.bin");
+        await File.WriteAllBytesAsync(sourcePath, [1, 2, 3, 4]);
+        var materializer = new StorageItemMaterializer(
+            stagingRoot,
+            maximumFileCount: 1,
+            maximumFileLength: 4,
+            maximumTotalLength: 4);
+
+        var path = Assert.Single(await materializer.MaterializeFilesAsync(
+            [CreateStorageFile(sourcePath)]));
+
+        Assert.Equal(new byte[] { 1, 2, 3, 4 }, await File.ReadAllBytesAsync(path));
+    }
+
+    [Fact]
+    public async Task MaterializeFolders_EnforcesTotalLengthAndCleansOperationDirectory()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var sourceRoot = scope.CreateDirectory("source");
+        await File.WriteAllTextAsync(Path.Combine(sourceRoot, "first.txt"), "123");
+        await File.WriteAllTextAsync(Path.Combine(sourceRoot, "second.txt"), "456");
+        var materializer = new StorageItemMaterializer(
+            stagingRoot,
+            maximumFileCount: 10,
+            maximumFileLength: 100,
+            maximumTotalLength: 5);
+
+        await Assert.ThrowsAsync<IOException>(() =>
+            materializer.MaterializeFoldersAsync(
+                [CreateStorageFolder(sourceRoot)]));
 
         Assert.Empty(Directory.EnumerateFileSystemEntries(stagingRoot));
     }

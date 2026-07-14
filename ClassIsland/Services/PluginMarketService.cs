@@ -6,7 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ClassIsland.Core;
@@ -17,6 +17,7 @@ using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Helpers;
@@ -30,6 +31,9 @@ namespace ClassIsland.Services;
 
 public class PluginMarketService : ObservableRecipient, IPluginMarketService
 {
+    private const string IndexStagingPrefix = ".index-staging-";
+    private const string IndexBackupPrefix = ".index-backup-";
+
     public static string DefaultPluginIndexKey { get; } = "Default";
 
     public SettingsService SettingsService { get; }
@@ -113,14 +117,10 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         PluginSourceDownloadProgress = 0.0;
         Logger.LogInformation("正在刷新插件源……");
         var transaction = SentrySdk.StartTransaction("Update Plugin Index", "pluginIndex.update");
-        var ignoreSsl = SettingsService.Settings.IgnoreSslForPluginMirrors;
-        var prevCallback = (ignoreSsl ? ServicePointManager.ServerCertificateValidationCallback : null);
-        if (ignoreSsl)
-        {
-            ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
-        }
         try
         {
+            Directory.CreateDirectory(Services.PluginService.PluginsIndexPath);
+            RecoverInterruptedPluginIndexInstalls();
             if (SettingsService.Settings.OfficialIndexMirrors.Count <= 0)
             {
                 SettingsService.Settings.OfficialIndexMirrors = ConfigureFileHelper.CopyObject(FallbackMirrors);
@@ -130,18 +130,30 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             var total = Math.Max(1, indexes.Count);
             foreach (var indexInfo in indexes)
             {
+                if (!TryResolveSafeChildPath(
+                        Services.PluginService.PluginsIndexPath,
+                        indexInfo.Id,
+                        string.Empty,
+                        "插件源",
+                        out var indexFolderPath))
+                {
+                    i++;
+                    continue;
+                }
+
                 var url = indexInfo.Url.Replace("{time}",
                     ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString());
-                Logger.LogDebug("正在刷新插件源：{}（{}）", indexInfo.Id, url);
+                Logger.LogDebug(
+                    "正在刷新插件源：{}（主机：{}）",
+                    indexInfo.Id,
+                    GetDownloadHost(url) ?? "未知");
                 var archive = Path.GetTempFileName();
                 var download = DownloadBuilder.New()
                     .WithUrl(url)
                     .WithFileLocation(archive)
-                    .WithConfiguration(new DownloadConfiguration()
-                    {
-                        BlockTimeout = 10_000,
-                        HttpClientTimeout = 10_000
-                    })
+                    .WithConfiguration(CreateDownloadConfiguration(
+                        blockTimeout: 10_000,
+                        httpClientTimeout: 10_000))
                     .Build();
                 var i1 = i;
                 download.DownloadProgressChanged +=
@@ -153,16 +165,28 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                     {
                         throw new Exception($"无法加载插件源：{args.Error.Message}", args.Error);
                     } 
-                    var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, indexInfo.Id);
-                    if (Directory.Exists(indexFolderPath))
-                    {
-                        Directory.Delete(indexFolderPath, true);
-                    }
-
-                    Directory.CreateDirectory(indexFolderPath);
-                    ZipFile.ExtractToDirectory(archive, indexFolderPath);
+                    InstallPluginIndexArchive(
+                        archive,
+                        indexFolderPath,
+                        indexInfo.Id);
                 };
-                await download.StartAsync();
+                try
+                {
+                    await download.StartAsync();
+                }
+                finally
+                {
+                    try
+                    {
+                        File.Delete(archive);
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.LogWarning(
+                            exception,
+                            "无法清理插件源临时包");
+                    }
+                }
 
                 i++;
             }
@@ -191,13 +215,6 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             transaction.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "无法加载插件源。");
             Exception = ex;
-        }
-        finally
-        {
-            if (ignoreSsl)
-            {
-                ServicePointManager.ServerCertificateValidationCallback = prevCallback;
-            }
         }
         Logger.LogInformation("插件源刷新成功。");
         SettingsService.Settings.LastRefreshPluginSourceTime = DateTime.Now;
@@ -290,6 +307,41 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             .FirstOrDefault();
     }
 
+    private bool TryResolvePluginPackagePath(string id, out string packagePath)
+    {
+        return TryResolveSafeChildPath(
+            Services.PluginService.PluginsPkgRootPath,
+            id,
+            IPluginService.PluginPackageExtension,
+            "插件",
+            out packagePath);
+    }
+
+    private bool TryResolveSafeChildPath(
+        string rootPath,
+        string id,
+        string suffix,
+        string itemType,
+        out string targetPath)
+    {
+        try
+        {
+            SafeChildDirectoryPath.ValidateName(id);
+            targetPath = SafeChildDirectoryPath.Resolve(rootPath, $"{id}{suffix}");
+            return true;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidDataException)
+        {
+            Logger.LogWarning(
+                "拒绝包含不安全 ID 的{ItemType}：{Id}；原因：{Reason}",
+                itemType,
+                id,
+                exception.Message);
+            targetPath = string.Empty;
+            return false;
+        }
+    }
+
     public async void RequestDownloadPlugin(string id)
     {
         var item = ResolveMarketPlugin(id);
@@ -311,6 +363,12 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             return;
         }
 
+        if (!TryResolvePluginPackagePath(id, out var destinationPath))
+        {
+            transaction.Finish(SpanStatus.InternalError);
+            return;
+        }
+
         Logger.LogInformation("开始下载插件：{}", id);
         var spanDownload = transaction.StartChild("download");
         var url = item.DownloadUrl;
@@ -324,12 +382,12 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         var download = DownloadBuilder.New()
             .WithUrl(url)
             .WithFileLocation(archive)
-            .WithConfiguration(new DownloadConfiguration())
+            .WithConfiguration(CreateDownloadConfiguration())
             .Build();
-        transaction.SetTag("url", url);
-        if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri))
+        var downloadHost = GetDownloadHost(url);
+        if (downloadHost != null)
         {
-            transaction.SetTag("url.host", uri.Host);
+            transaction.SetTag("url.host", downloadHost);
         }
 
         var stopwatch = new Stopwatch();
@@ -353,19 +411,13 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             spanValidateChecksum.Finish(SpanStatus.Ok);
 
             var spanMoveToCache = transaction.StartChild("moveToCache");
-            File.Move(archive, Path.Combine(Services.PluginService.PluginsPkgRootPath, id + ".cipx"), true);
+            File.Move(archive, destinationPath, true);
             spanMoveToCache.Finish(SpanStatus.Ok);
         };
         download.DownloadProgressChanged += (sender, args) =>
         {
             task.Progress = args.ProgressPercentage;
         };
-        var ignoreSsl = SettingsService.Settings.IgnoreSslForPluginMirrors;
-        var prevCallback = (ignoreSsl ? ServicePointManager.ServerCertificateValidationCallback : null);
-        if (ignoreSsl)
-        {
-            ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
-        }
         try
         {
             BindDownloadTasks();
@@ -385,17 +437,204 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             task.Exception = e;
             transaction.GetLastActiveSpan()?.Finish(e, SpanStatus.InternalError);
             transaction.Finish(e, SpanStatus.InternalError);
-            Logger.LogError(e, "无法从 {} 下载插件 {}", url, id);
-        }
-        finally
-        {
-            if (ignoreSsl)
-            {
-                ServicePointManager.ServerCertificateValidationCallback = prevCallback;
-            }
+            Logger.LogError(
+                e,
+                "无法从主机 {DownloadHost} 下载插件 {PluginId}",
+                downloadHost ?? "未知",
+                id);
         }
         task.IsDownloading = false;
         DownloadTasks.Remove(id);
+    }
+
+    private DownloadConfiguration CreateDownloadConfiguration(
+        int? blockTimeout = null,
+        int? httpClientTimeout = null)
+    {
+        var configuration = new DownloadConfiguration();
+        if (blockTimeout is { } blockTimeoutValue)
+        {
+            configuration.BlockTimeout = blockTimeoutValue;
+        }
+        if (httpClientTimeout is { } httpClientTimeoutValue)
+        {
+            configuration.HttpClientTimeout = httpClientTimeoutValue;
+        }
+        if (SettingsService.Settings.IgnoreSslForPluginMirrors)
+        {
+            // 兼容选项只能影响当前插件请求，不能修改进程级 TLS 回调。
+            configuration.CustomHttpMessageHandlerFactory = static () =>
+                new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+        }
+
+        return configuration;
+    }
+
+    private static string? GetDownloadHost(string value)
+    {
+        return Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+               uri.Scheme is "http" or "https"
+            ? uri.IdnHost
+            : null;
+    }
+
+    private void InstallPluginIndexArchive(
+        string archivePath,
+        string targetPath,
+        string indexId)
+    {
+        string? stagingPath = null;
+        try
+        {
+            using (var archive = ZipFile.OpenRead(archivePath))
+            {
+                ZipArchiveSafety.ValidateForExtraction(archive);
+                stagingPath = SafeChildDirectoryPath.Resolve(
+                    Services.PluginService.PluginsIndexPath,
+                    $"{IndexStagingPrefix}{indexId}-{Guid.NewGuid():N}");
+                Directory.CreateDirectory(stagingPath);
+                archive.ExtractToDirectory(stagingPath);
+            }
+
+            var indexPath = SafeRelativePath.ResolveUnderRoot(
+                stagingPath,
+                "index.v2.json");
+            if (!File.Exists(indexPath))
+            {
+                throw new InvalidDataException("插件源压缩包缺少 index.v2.json。");
+            }
+
+            ReplacePluginIndexDirectory(
+                stagingPath,
+                targetPath,
+                indexId);
+            stagingPath = null;
+        }
+        finally
+        {
+            if (stagingPath != null)
+            {
+                TryDeletePluginIndexDirectory(stagingPath);
+            }
+        }
+    }
+
+    private void ReplacePluginIndexDirectory(
+        string stagingPath,
+        string targetPath,
+        string indexId)
+    {
+        var backupPath = SafeChildDirectoryPath.Resolve(
+            Services.PluginService.PluginsIndexPath,
+            $"{IndexBackupPrefix}{indexId}");
+        if (Directory.Exists(backupPath))
+        {
+            if (Directory.Exists(targetPath))
+            {
+                TryDeletePluginIndexDirectory(backupPath);
+            }
+            else
+            {
+                Directory.Move(backupPath, targetPath);
+            }
+        }
+
+        var targetBackedUp = false;
+        try
+        {
+            if (File.Exists(targetPath))
+            {
+                throw new IOException($"插件源目标路径不是目录：{targetPath}");
+            }
+            if (Directory.Exists(targetPath))
+            {
+                Directory.Move(targetPath, backupPath);
+                targetBackedUp = true;
+            }
+
+            Directory.Move(stagingPath, targetPath);
+        }
+        catch
+        {
+            if (targetBackedUp &&
+                !Directory.Exists(targetPath) &&
+                Directory.Exists(backupPath))
+            {
+                Directory.Move(backupPath, targetPath);
+            }
+            throw;
+        }
+
+        if (targetBackedUp)
+        {
+            TryDeletePluginIndexDirectory(backupPath);
+        }
+    }
+
+    private void RecoverInterruptedPluginIndexInstalls()
+    {
+        var rootPath = Services.PluginService.PluginsIndexPath;
+        if (!Directory.Exists(rootPath))
+        {
+            return;
+        }
+
+        foreach (var backupPath in Directory.EnumerateDirectories(rootPath)
+                     .Where(x => Path.GetFileName(x).StartsWith(
+                         IndexBackupPrefix,
+                         StringComparison.Ordinal)))
+        {
+            var indexId = Path.GetFileName(backupPath)[IndexBackupPrefix.Length..];
+            try
+            {
+                var targetPath = SafeChildDirectoryPath.Resolve(rootPath, indexId);
+                if (Directory.Exists(targetPath))
+                {
+                    TryDeletePluginIndexDirectory(backupPath);
+                }
+                else
+                {
+                    Directory.Move(backupPath, targetPath);
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.LogWarning(
+                    exception,
+                    "无法恢复插件源安装事务 {PluginIndexId}",
+                    indexId);
+            }
+        }
+
+        foreach (var stagingPath in Directory.EnumerateDirectories(rootPath)
+                     .Where(x => Path.GetFileName(x).StartsWith(
+                         IndexStagingPrefix,
+                         StringComparison.Ordinal)))
+        {
+            TryDeletePluginIndexDirectory(stagingPath);
+        }
+    }
+
+    private void TryDeletePluginIndexDirectory(string path)
+    {
+        try
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+        }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(
+                exception,
+                "无法清理插件源事务目录 {DirectoryPath}",
+                path);
+        }
     }
 
     public event EventHandler? RestartRequested;
@@ -403,6 +642,8 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     public void LoadPluginSource()
     {
         Logger.LogInformation("正在加载插件源");
+        Directory.CreateDirectory(Services.PluginService.PluginsIndexPath);
+        RecoverInterruptedPluginIndexInstalls();
         MergedPlugins.Clear();
         Indexes.Clear();
 
@@ -415,7 +656,16 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         var indexInfos = GetIndexInfos().ToList();
         foreach (var i in indexInfos)
         {
-            var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, i.Id);
+            if (!TryResolveSafeChildPath(
+                    Services.PluginService.PluginsIndexPath,
+                    i.Id,
+                    string.Empty,
+                    "插件源",
+                    out var indexFolderPath))
+            {
+                continue;
+            }
+
             var name = Path.GetFileName(indexFolderPath);
             Logger.LogDebug("正在加载插件源：{}", name);
             var indexPath = Path.Combine(indexFolderPath, "index.v2.json");
@@ -435,6 +685,11 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                          version >= Version.Parse("2.0.0.0")))
             {
                 var id = plugin.Manifest.Id;
+                if (!TryResolvePluginPackagePath(id, out _))
+                {
+                    continue;
+                }
+
                 plugin.DownloadUrl = plugin.DownloadUrl.Replace("{root}", root);
                 if (MergedPlugins.ContainsKey(id) && MergedPlugins[id].IsLocal)
                 {
@@ -478,9 +733,13 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             v.DownloadProgress = i.Value;
         }
 
-        foreach (var plugin in MergedPlugins.Where(plugin => File.Exists(Path.Combine(Services.PluginService.PluginsPkgRootPath, plugin.Value.Manifest.Id + ".cipx"))))
+        foreach (var plugin in MergedPlugins)
         {
-            plugin.Value.RestartRequired = true;
+            if (TryResolvePluginPackagePath(plugin.Value.Manifest.Id, out var packagePath) &&
+                File.Exists(packagePath))
+            {
+                plugin.Value.RestartRequired = true;
+            }
         }
     }
 }

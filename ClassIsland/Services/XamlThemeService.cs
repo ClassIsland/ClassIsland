@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia;
@@ -18,6 +19,7 @@ using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.XamlTheme;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Helpers;
@@ -32,6 +34,9 @@ namespace ClassIsland.Services;
 
 public class XamlThemeService : ObservableRecipient, IXamlThemeService
 {
+    private const long MaximumManifestLength = 1024 * 1024;
+    private const string InstallStagingPrefix = ".install-";
+    private const string InstallBackupPrefix = ".backup-";
     private static readonly FieldInfo? s_stylesAppliedField = typeof(StyledElement).GetField("_stylesApplied", BindingFlags.Instance | BindingFlags.NonPublic);
     
     public ILogger<XamlThemeService> Logger { get; }
@@ -47,6 +52,9 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
     public static readonly string ThemesPath = Path.Combine(CommonDirectories.AppConfigPath, "Themes");
     public static readonly string EnabledThemesPath = Path.Combine(CommonDirectories.AppConfigPath, "EnabledThemes.json");
     public static readonly string ThemesPkgRootPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "ThemePackages");
+    private static readonly string ThemesInstallTransactionRootPath = Path.Combine(
+        CommonDirectories.AppConfigPath,
+        "ThemeInstallTransactions");
 
     public ObservableCollection<ThemeInfo> Themes { get; } = [];
 
@@ -171,7 +179,16 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         var indexInfos = PluginMarketService.GetIndexInfos().ToList();
         foreach (var i in indexInfos)
         {
-            var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, i.Id);
+            if (!TryResolveSafeChildPath(
+                    Services.PluginService.PluginsIndexPath,
+                    i.Id,
+                    string.Empty,
+                    "插件源",
+                    out var indexFolderPath))
+            {
+                continue;
+            }
+
             var name = Path.GetFileName(indexFolderPath);
             Logger.LogDebug("正在加载主题源：{}", name);
             var indexPath = Path.Combine(indexFolderPath, "themes.json");
@@ -191,6 +208,11 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             foreach (var theme in index.Themes)
             {
                 var id = theme.Manifest.Id;
+                if (!TryResolveThemePackagePath(id, out _))
+                {
+                    continue;
+                }
+
                 theme.DownloadUrl = theme.DownloadUrl.Replace("{root}", root);
                 if (merged.ContainsKey(id) && merged[id].IsLocal)
                 {
@@ -229,9 +251,48 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             v.DownloadProgress = i.Value;
         }
 
-        foreach (var theme in MergedThemes.Where(theme => File.Exists(Path.Combine(ThemesPkgRootPath, theme.Value.Manifest.Id + ".zip"))))
+        foreach (var theme in MergedThemes)
         {
-            theme.Value.RestartRequired = true;
+            if (TryResolveThemePackagePath(theme.Value.Manifest.Id, out var packagePath) &&
+                File.Exists(packagePath))
+            {
+                theme.Value.RestartRequired = true;
+            }
+        }
+    }
+
+    private bool TryResolveThemePackagePath(string id, out string packagePath)
+    {
+        return TryResolveSafeChildPath(
+            ThemesPkgRootPath,
+            id,
+            ".zip",
+            "主题",
+            out packagePath);
+    }
+
+    private bool TryResolveSafeChildPath(
+        string rootPath,
+        string id,
+        string suffix,
+        string itemType,
+        out string targetPath)
+    {
+        try
+        {
+            SafeChildDirectoryPath.ValidateName(id);
+            targetPath = SafeChildDirectoryPath.Resolve(rootPath, $"{id}{suffix}");
+            return true;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidDataException)
+        {
+            Logger.LogWarning(
+                "拒绝包含不安全 ID 的{ItemType}：{Id}；原因：{Reason}",
+                itemType,
+                id,
+                exception.Message);
+            targetPath = string.Empty;
+            return false;
         }
     }
 
@@ -304,6 +365,12 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             return;
         }
 
+        if (!TryResolveThemePackagePath(id, out var destFileName))
+        {
+            transaction.Finish(SpanStatus.InternalError);
+            return;
+        }
+
         Logger.LogInformation("开始下载主题：{}", id);
         var spanDownload = transaction.StartChild("download");
         var url = item.DownloadUrl;
@@ -317,16 +384,15 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         var download = DownloadBuilder.New()
             .WithUrl(url)
             .WithFileLocation(archive)
-            .WithConfiguration(new DownloadConfiguration())
+            .WithConfiguration(CreateDownloadConfiguration())
             .Build();
-        transaction.SetTag("url", url);
-        if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri))
+        var downloadHost = GetDownloadHost(url);
+        if (downloadHost != null)
         {
-            transaction.SetTag("url.host", uri.Host);
+            transaction.SetTag("url.host", downloadHost);
         }
 
         var stopwatch = new Stopwatch();
-        var destFileName = Path.Combine(ThemesPkgRootPath, id + ".zip");
         download.DownloadFileCompleted += (sender, args) =>
         {
             stopwatch.Stop();
@@ -381,10 +447,39 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             task.Exception = e;
             transaction.GetLastActiveSpan()?.Finish(e, SpanStatus.InternalError);
             transaction.Finish(e, SpanStatus.InternalError);
-            Logger.LogError(e, "无法从 {} 下载主题 {}", url, id);
+            Logger.LogError(
+                e,
+                "无法从主机 {DownloadHost} 下载主题 {ThemeId}",
+                downloadHost ?? "未知",
+                id);
         }
         task.IsDownloading = false;
         DownloadTasks.Remove(id);
+    }
+
+    private static string? GetDownloadHost(string value)
+    {
+        return Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+               uri.Scheme is "http" or "https"
+            ? uri.IdnHost
+            : null;
+    }
+
+    private DownloadConfiguration CreateDownloadConfiguration()
+    {
+        var configuration = new DownloadConfiguration();
+        if (SettingsService.Settings.IgnoreSslForPluginMirrors)
+        {
+            // 兼容选项只能影响当前主题请求，不能修改进程级 TLS 回调。
+            configuration.CustomHttpMessageHandlerFactory = static () =>
+                new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+        }
+
+        return configuration;
     }
 
     private void ProcessThemeInstall()
@@ -397,8 +492,17 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             Directory.CreateDirectory(ThemesPath);
         }
+        if (!Directory.Exists(ThemesInstallTransactionRootPath))
+        {
+            Directory.CreateDirectory(ThemesInstallTransactionRootPath);
+        }
+        RecoverInterruptedThemeInstalls();
 
-        foreach (var pkgPath in Directory.EnumerateFiles(ThemesPkgRootPath).Where(x => Path.GetExtension(x) == ".zip"))
+        foreach (var pkgPath in Directory.EnumerateFiles(ThemesPkgRootPath)
+                     .Where(x => string.Equals(
+                         Path.GetExtension(x),
+                         ".zip",
+                         StringComparison.OrdinalIgnoreCase)))
         {
             try
             {
@@ -423,30 +527,179 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         }
     }
 
-    private static void InstallTheme(string pkgPath)
+    private void RecoverInterruptedThemeInstalls()
+    {
+        foreach (var backupPath in Directory.EnumerateDirectories(ThemesInstallTransactionRootPath)
+                     .Where(x => Path.GetFileName(x).StartsWith(
+                         InstallBackupPrefix,
+                         StringComparison.Ordinal)))
+        {
+            var id = Path.GetFileName(backupPath)[InstallBackupPrefix.Length..];
+            try
+            {
+                var targetPath = SafeChildDirectoryPath.Resolve(ThemesPath, id);
+                if (Directory.Exists(targetPath))
+                {
+                    TryDeleteDirectory(backupPath);
+                }
+                else
+                {
+                    Directory.Move(backupPath, targetPath);
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "无法恢复主题安装事务 {ThemeId}", id);
+            }
+        }
+
+        foreach (var stagingPath in Directory.EnumerateDirectories(ThemesInstallTransactionRootPath)
+                     .Where(x => Path.GetFileName(x).StartsWith(
+                         InstallStagingPrefix,
+                         StringComparison.Ordinal)))
+        {
+            TryDeleteDirectory(stagingPath);
+        }
+    }
+
+    private void InstallTheme(string pkgPath)
     {
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        using (var pkg = ZipFile.OpenRead(pkgPath))
+        string? stagingPath = null;
+        try
         {
+            using var pkg = ZipFile.OpenRead(pkgPath);
+            ZipArchiveSafety.ValidateForExtraction(pkg);
             var mf = pkg.GetEntry("manifest.yml");
             if (mf == null)
-                return;
-            var mfText = new StreamReader(mf.Open()).ReadToEnd();
-            var manifest = deserializer.Deserialize<PluginManifest>(mfText);
-            var targetPath = Path.Combine(ThemesPath, manifest.Id);
-            if (Directory.Exists(targetPath))
             {
-                Directory.Delete(targetPath, true);
+                throw new InvalidDataException("主题包缺少 manifest.yml。");
+            }
+            if (mf.Length > MaximumManifestLength)
+            {
+                throw new InvalidDataException("主题 manifest.yml 超过大小上限。");
             }
 
-            Directory.CreateDirectory(targetPath);
-            ZipFile.ExtractToDirectory(pkgPath, targetPath);
+            ThemeManifest manifest;
+            using (var manifestReader = new StreamReader(mf.Open()))
+            {
+                manifest = deserializer.Deserialize<ThemeManifest>(manifestReader.ReadToEnd())
+                           ?? throw new InvalidDataException("主题 manifest.yml 内容为空。");
+            }
+
+            SafeChildDirectoryPath.ValidateName(manifest.Id);
+            var targetPath = SafeChildDirectoryPath.Resolve(ThemesPath, manifest.Id);
+            stagingPath = SafeChildDirectoryPath.Resolve(
+                ThemesInstallTransactionRootPath,
+                $"{InstallStagingPrefix}{manifest.Id}-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(stagingPath);
+            pkg.ExtractToDirectory(stagingPath);
+
+            var extractedManifestPath = SafeRelativePath.ResolveUnderRoot(
+                stagingPath,
+                "manifest.yml");
+            var extractedStylesPath = SafeRelativePath.ResolveUnderRoot(
+                stagingPath,
+                "Styles.axaml");
+            if (!File.Exists(extractedManifestPath))
+            {
+                throw new InvalidDataException("主题包解压后缺少 manifest.yml。");
+            }
+            if (!File.Exists(extractedStylesPath))
+            {
+                throw new InvalidDataException("主题包解压后缺少 Styles.axaml。");
+            }
+
+            ReplaceThemeDirectory(stagingPath, targetPath, manifest.Id);
+            stagingPath = null;
         }
-        File.Delete(pkgPath);
+        finally
+        {
+            if (stagingPath != null)
+            {
+                TryDeleteDirectory(stagingPath);
+            }
+
+            try
+            {
+                File.Delete(pkgPath);
+            }
+            catch (Exception exception)
+            {
+                Logger.LogWarning(exception, "无法删除主题安装包 {PackagePath}", pkgPath);
+            }
+        }
+    }
+
+    private void ReplaceThemeDirectory(
+        string stagingPath,
+        string targetPath,
+        string themeId)
+    {
+        var backupPath = SafeChildDirectoryPath.Resolve(
+            ThemesInstallTransactionRootPath,
+            $"{InstallBackupPrefix}{themeId}");
+        if (Directory.Exists(backupPath))
+        {
+            if (Directory.Exists(targetPath))
+            {
+                TryDeleteDirectory(backupPath);
+            }
+            else
+            {
+                Directory.Move(backupPath, targetPath);
+            }
+        }
+
+        var targetBackedUp = false;
+        try
+        {
+            if (File.Exists(targetPath))
+            {
+                throw new IOException($"主题目标路径不是目录：{targetPath}");
+            }
+            if (Directory.Exists(targetPath))
+            {
+                Directory.Move(targetPath, backupPath);
+                targetBackedUp = true;
+            }
+
+            Directory.Move(stagingPath, targetPath);
+        }
+        catch
+        {
+            if (targetBackedUp &&
+                !Directory.Exists(targetPath) &&
+                Directory.Exists(backupPath))
+            {
+                Directory.Move(backupPath, targetPath);
+            }
+            throw;
+        }
+
+        if (targetBackedUp)
+        {
+            TryDeleteDirectory(backupPath);
+        }
+    }
+
+    private void TryDeleteDirectory(string path)
+    {
+        try
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+        }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(exception, "无法清理临时主题目录 {DirectoryPath}", path);
+        }
     }
 
     public async Task PackageThemeAsync(string id, string outputPath)

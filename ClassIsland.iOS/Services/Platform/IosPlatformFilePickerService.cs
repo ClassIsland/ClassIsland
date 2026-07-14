@@ -29,6 +29,14 @@ internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFile
         return _materializer.MaterializeFilesAsync(files);
     }
 
+    public override Task<string?> SaveFilePickerAsync(
+        FilePickerSaveOptions options,
+        TopLevel root)
+    {
+        throw new PlatformNotSupportedException(
+            "iOS 无法把 security-scoped 保存目标安全地转换为可长期使用的文件路径；请使用 SaveFileAsync 在授权期间写入目标流。");
+    }
+
     public override async Task<List<string>> OpenFoldersPickerAsync(
         FolderPickerOpenOptions options,
         TopLevel root)
@@ -39,5 +47,4 @@ internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFile
         var folders = await root.StorageProvider.OpenFolderPickerAsync(options);
         return await _materializer.MaterializeFoldersAsync(folders);
     }
-
 }

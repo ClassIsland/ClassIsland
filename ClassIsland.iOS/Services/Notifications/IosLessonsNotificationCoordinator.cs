@@ -6,6 +6,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.iOS.Services.Platform;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
@@ -22,11 +23,13 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private static readonly TimeSpan RefreshDebounceInterval = TimeSpan.FromMilliseconds(300);
     private static readonly TimeSpan AttachedSettingsScanInterval = TimeSpan.FromMinutes(1);
     private static readonly TimeSpan RollingScheduleRefreshInterval = TimeSpan.FromHours(6);
+    private static readonly TimeSpan FailureRetryDelay = TimeSpan.FromSeconds(5);
 
     private readonly IosNotificationAuthorizationService _authorizationService;
+    private readonly LessonPreparationNotificationTimeline _lessonPreparationTimeline;
     private readonly CancellationTokenSource _cancellation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
-    private readonly IosLessonNotificationScheduler _scheduler = new();
+    private readonly IosLessonNotificationScheduler _scheduler;
     private readonly DispatcherTimer _refreshDebounceTimer;
     private readonly DispatcherTimer _attachedSettingsScanTimer;
     private readonly DispatcherTimer _rollingScheduleRefreshTimer;
@@ -43,18 +46,22 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private SettingsService? _settingsService;
     private INotificationHostService? _notificationHostService;
     private IosLessonNotificationScheduleFactory? _scheduleFactory;
-    private readonly IosNotificationQueueConsumer _queueConsumer = new();
+    private IosNotificationQueueConsumer? _queueConsumer;
     private IReadOnlyList<IosLessonNotificationRequest>? _lastRequests;
     private bool? _lastAuthorizationState;
     private int _refreshPending;
     private bool _isStarted;
     private bool _isWorkStarted;
     private int _backgroundRefreshActive;
+    private int _failureRetryScheduled;
 
     public IosLessonsNotificationCoordinator(
-        IosNotificationAuthorizationService authorizationService)
+        IosNotificationAuthorizationService authorizationService,
+        LessonPreparationNotificationTimeline lessonPreparationTimeline)
     {
         _authorizationService = authorizationService;
+        _lessonPreparationTimeline = lessonPreparationTimeline;
+        _scheduler = new IosLessonNotificationScheduler(lessonPreparationTimeline);
         _refreshDebounceTimer = new DispatcherTimer
         {
             Interval = RefreshDebounceInterval
@@ -108,14 +115,20 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         _notificationHostService = IAppHost.GetService<INotificationHostService>();
         _exactTimeService = IAppHost.GetService<IExactTimeService>();
         _settingsService = IAppHost.GetService<SettingsService>();
+        var queueConsumer = new IosNotificationQueueConsumer(
+            _authorizationService,
+            _settingsService,
+            _notificationHostService);
+        _queueConsumer = queueConsumer;
         _scheduleFactory = new IosLessonNotificationScheduleFactory(
             _lessonsService,
             _profileService,
             _notificationHostService,
             _settingsService,
-            _exactTimeService);
+            _exactTimeService,
+            _lessonPreparationTimeline);
         _notificationHostService.RegisterNotificationConsumer(
-            _queueConsumer,
+            queueConsumer,
             int.MinValue);
         _isWorkStarted = true;
         _lessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
@@ -163,6 +176,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         catch (Exception exception)
         {
             Console.Error.WriteLine($"同步 iOS/iPadOS 课程通知时发生异常：{exception}");
+            ScheduleFailureRetry();
         }
         finally
         {
@@ -176,6 +190,24 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
                 }
             }
         }
+    }
+
+    private void ScheduleFailureRetry()
+    {
+        if (_cancellation.IsCancellationRequested ||
+            Interlocked.CompareExchange(ref _failureRetryScheduled, 1, 0) != 0)
+        {
+            return;
+        }
+
+        DispatcherTimer.RunOnce(() =>
+        {
+            Interlocked.Exchange(ref _failureRetryScheduled, 0);
+            if (!_cancellation.IsCancellationRequested)
+            {
+                QueueRefresh();
+            }
+        }, FailureRetryDelay);
     }
 
     private async Task RefreshOnceAsync(CancellationToken cancellationToken)
@@ -197,7 +229,11 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             return;
         }
 
-        await _scheduler.SynchronizeAsync(requests, cancellationToken);
+        if (!await _scheduler.SynchronizeAsync(requests, cancellationToken))
+        {
+            ScheduleFailureRetry();
+            return;
+        }
 
         _lastAuthorizationState = authorized;
         _lastRequests = requests.ToArray();
@@ -243,6 +279,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         catch (Exception exception)
         {
             Console.Error.WriteLine($"iOS/iPadOS 退后台前同步课程通知时发生异常：{exception}");
+            ScheduleFailureRetry();
         }
         finally
         {
@@ -262,7 +299,6 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         try
         {
             Interlocked.Exchange(ref _refreshPending, 0);
-            _lastRequests = null;
             await RefreshOnceAsync(cancellationToken);
         }
         finally
@@ -582,7 +618,12 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             _exactTimeService.PropertyChanged -= ExactTimeServiceOnPropertyChanged;
         }
         PlatformServices.SystemEventsService.TimeChanged -= SystemEventsOnTimeChanged;
-        _notificationHostService?.UnregisterNotificationConsumer(_queueConsumer);
+        if (_queueConsumer != null)
+        {
+            _notificationHostService?.UnregisterNotificationConsumer(_queueConsumer);
+            _queueConsumer.Dispose();
+            _queueConsumer = null;
+        }
         DetachChangeSubscriptions();
         DisposeObserver(ref _foregroundObserver);
         DisposeObserver(ref _backgroundObserver);

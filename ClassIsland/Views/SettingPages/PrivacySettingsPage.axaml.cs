@@ -25,7 +25,6 @@ public partial class PrivacySettingsPage : SettingsPageBase
         InitializeComponent();
         DataContext = this;
         SettingsService = settingsService;
-        SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
     }
 
     private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)

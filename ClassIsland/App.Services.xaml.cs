@@ -213,7 +213,10 @@ public partial class App
             LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(latitude=)(\d*\.?\d*)"), 2));
             LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(longitude=)(\d*\.?\d*)"), 2));
 
-            builder.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Error);
+            if (OperatingSystem.IsWindows())
+            {
+                builder.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Error);
+            }
             builder.AddConsoleFormatter<ClassIslandConsoleFormatter, ConsoleFormatterOptions>();
             builder.AddConsole(console => { console.FormatterName = "classisland"; });
             builder.AddSentry(o =>

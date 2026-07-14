@@ -30,6 +30,10 @@ public interface IPlatformFilePickerService
     /// <param name="options">文件浏览器选项</param>
     /// <param name="root">根窗口</param>
     /// <returns>选择的文件路径</returns>
+    /// <remarks>
+    /// 仅适用于能够提供稳定本地路径的平台。新增导出流程应优先使用
+    /// <see cref="SaveFileAsync"/>，以兼容 iOS security-scoped resource。
+    /// </remarks>
     Task<string?> SaveFilePickerAsync(FilePickerSaveOptions options, TopLevel root);
 
     /// <summary>

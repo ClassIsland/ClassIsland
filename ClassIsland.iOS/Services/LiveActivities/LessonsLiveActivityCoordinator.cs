@@ -19,7 +19,8 @@ namespace ClassIsland.iOS.Services.LiveActivities;
 /// 将共享课程状态发布到 ActivityKit；倒计时由系统按绝对起止时间持续渲染。
 /// </summary>
 internal sealed class LessonsLiveActivityCoordinator(
-    ILiveActivityService liveActivityService) : IDisposable
+    ILiveActivityService liveActivityService,
+    LessonPreparationNotificationTimeline lessonPreparationTimeline) : IDisposable
 {
     private static readonly TimeSpan FailureRetryDelay = TimeSpan.FromSeconds(15);
     private static readonly TimeSpan ManualTerminationTimeout = TimeSpan.FromSeconds(5);
@@ -87,7 +88,8 @@ internal sealed class LessonsLiveActivityCoordinator(
             IAppHost.GetService<IProfileService>(),
             IAppHost.GetService<INotificationHostService>(),
             IAppHost.GetService<SettingsService>(),
-            exactTimeService);
+            exactTimeService,
+            lessonPreparationTimeline);
         _lessonsService.PostMainTimerTicked += OnPostMainTimerTicked;
         _isWorkStarted = true;
         LogInformation($"课程实时活动协调器已启动：Availability={liveActivityService.Availability}。");

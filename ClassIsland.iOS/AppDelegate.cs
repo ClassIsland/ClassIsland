@@ -34,6 +34,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private LessonsLiveActivityCoordinator? _liveActivityCoordinator;
     private IosLessonsNotificationCoordinator? _lessonsNotificationCoordinator;
     private IosSystemEventsService? _systemEventsService;
+    private readonly LessonPreparationNotificationTimeline _lessonPreparationTimeline = new();
     private IActivatableLifetime? _activatableLifetime;
     private readonly IosNotificationAuthorizationService _notificationAuthorizationService = new();
     private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
@@ -43,6 +44,12 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
     protected override AppBuilder CreateAppBuilder()
     {
+        if (!IosSoundFlowNativeBootstrap.TryInitialize(out var soundFlowException))
+        {
+            Console.Error.WriteLine(
+                $"SoundFlow iOS native bootstrap failed; audio will be unavailable: {soundFlowException}");
+        }
+
         UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
         PlatformServices.AppLifetimeService = new IosAppLifetimeService(
             PrepareForManualTerminationAsync);
@@ -101,11 +108,13 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             splash.Show();
 
             _liveActivityCoordinator = new LessonsLiveActivityCoordinator(
-                PlatformServices.LiveActivityService);
+                PlatformServices.LiveActivityService,
+                _lessonPreparationTimeline);
             _liveActivityCoordinator.Start();
 
             _lessonsNotificationCoordinator = new IosLessonsNotificationCoordinator(
-                _notificationAuthorizationService);
+                _notificationAuthorizationService,
+                _lessonPreparationTimeline);
             _lessonsNotificationCoordinator.Start();
 
 #if DEVELOPER_PREVIEW

@@ -648,7 +648,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     private void MenuItemDebugWindowRule_OnClick(object sender, RoutedEventArgs e)
     {
-        if (PlatformHelper.IsMobile)
+        if (PlatformHelper.IsAppleMobile)
         {
             return;
         }

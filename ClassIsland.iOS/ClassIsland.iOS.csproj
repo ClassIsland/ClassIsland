@@ -45,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <BundleResource Include="PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
     <ImageAsset Include="..\ClassIsland.Desktop\Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo_512x512_2x.png">
       <Link>Assets.xcassets\AppIcon.appiconset\AppIcon.png</Link>
     </ImageAsset>

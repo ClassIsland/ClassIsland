@@ -615,18 +615,18 @@ public partial class MobileViewHost : UserControl, IViewHost
             return false;
         }
 
-        if (!view.ViewDeactivating(WindowCloseReason.Undefined, true, true))
-        {
-            return false;
-        }
-
         if (NavigationPage.Pages?.Count() <= 1)
         {
-            Hide();
+            if (!view.ViewDeactivating(WindowCloseReason.Undefined, true, true))
+            {
+                return false;
+            }
+
             if (ActivatedViews.Remove(view))
             {
                 view.ViewDeactivated();
             }
+            Hide();
         }
         else
         {

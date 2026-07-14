@@ -371,35 +371,37 @@ public partial class DataTransferPage : UserControl
             {
                 var appRoot = Path.GetFullPath(CommonDirectories.AppRootFolderPath);
                 Directory.CreateDirectory(appRoot);
+                using var archive = ZipFile.OpenRead(root);
+                ZipArchiveSafety.ValidateForExtraction(archive);
                 if (importEntries.HasFlag(ImportEntries.OtherConfig) && Directory.Exists(PluginService.PluginsRootPath))
                 {
                     Directory.Delete(PluginService.PluginsRootPath, true);
                 }
 
-                using var archive = ZipFile.OpenRead(root);
                 foreach (var entry in archive.Entries)
                 {
-                    if (!ShouldImportEntry(entry.FullName))
+                    var normalizedName = SafeRelativePath.Normalize(entry.FullName);
+                    if (!ShouldImportEntry(normalizedName))
                     {
                         continue;
                     }
 
-                    ExtractEntry(entry, appRoot);
+                    ExtractEntry(entry, appRoot, normalizedName);
                 }
 
                 return;
 
                 bool ShouldImportEntry(string entryName)
                 {
-                    var normalizedName = entryName.Replace('\\', '/');
                     if ((importEntries & ImportEntries.Settings) == ImportEntries.Settings &&
-                        normalizedName == "Settings.json")
+                        entryName == "Settings.json")
                     {
                         return true;
                     }
 
                     if ((importEntries & ImportEntries.Profiles) == ImportEntries.Profiles &&
-                        normalizedName.StartsWith("Profiles/", StringComparison.Ordinal))
+                        (entryName == "Profiles" ||
+                         entryName.StartsWith("Profiles/", StringComparison.Ordinal)))
                     {
                         return true;
                     }
@@ -409,21 +411,20 @@ public partial class DataTransferPage : UserControl
                         return false;
                     }
 
-                    return normalizedName.StartsWith("Config/", StringComparison.Ordinal) ||
-                           normalizedName.StartsWith("Plugins/", StringComparison.Ordinal);
+                    return entryName == "Config" ||
+                           entryName.StartsWith("Config/", StringComparison.Ordinal) ||
+                           entryName == "Plugins" ||
+                           entryName.StartsWith("Plugins/", StringComparison.Ordinal);
                 }
 
-                static void ExtractEntry(ZipArchiveEntry entry, string appDataRoot)
+                static void ExtractEntry(
+                    ZipArchiveEntry entry,
+                    string appDataRoot,
+                    string normalizedName)
                 {
-                    var targetPath = Path.GetFullPath(Path.Combine(appDataRoot,
-                        entry.FullName.Replace('/', Path.DirectorySeparatorChar)));
-                    var rootWithSeparator = appDataRoot.EndsWith(Path.DirectorySeparatorChar)
-                        ? appDataRoot
-                        : appDataRoot + Path.DirectorySeparatorChar;
-                    if (!targetPath.StartsWith(rootWithSeparator, StringComparison.Ordinal) && targetPath != appDataRoot)
-                    {
-                        throw new InvalidDataException($"压缩包包含无效路径：{entry.FullName}");
-                    }
+                    var targetPath = SafeRelativePath.ResolveUnderRoot(
+                        appDataRoot,
+                        normalizedName);
 
                     if (string.IsNullOrEmpty(entry.Name))
                     {
@@ -788,12 +789,18 @@ public partial class DataTransferPage : UserControl
                 settings.NotificationChannelsNotifySettings.GetValueOrDefault(channelId) ?? new NotificationSettings();
             chanelSettings.IsNotificationSoundEnabled = true;
             chanelSettings.IsSettingsEnabled = true;
-            if (!Directory.Exists(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios")))
-            {
-                Directory.CreateDirectory(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios"));
-            }
-            var ciPath = Path.GetFullPath(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios", cwPath));
-            File.Copy(Path.Combine(root, "audio", cwPath), ciPath, true);
+            var externalAudioRoot = Path.Combine(
+                CommonDirectories.AppConfigPath,
+                "ExternalAudios");
+            var sourcePath = SafeRelativePath.ResolveUnderRoot(
+                Path.Combine(root, "audio"),
+                cwPath);
+            var ciPath = SafeRelativePath.ResolveUnderRoot(
+                externalAudioRoot,
+                cwPath);
+            Directory.CreateDirectory(
+                Path.GetDirectoryName(ciPath) ?? externalAudioRoot);
+            File.Copy(sourcePath, ciPath, true);
             chanelSettings.NotificationSoundPath = ciPath;
             settings.NotificationChannelsNotifySettings[new Guid(channelId).ToString()] = chanelSettings;
         }

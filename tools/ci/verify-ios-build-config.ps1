@@ -25,6 +25,9 @@ function Read-RepositoryFile {
 
 $iosProjectText = Read-RepositoryFile "ClassIsland.iOS/ClassIsland.iOS.csproj"
 $iosProject = [xml]$iosProjectText
+$iosAssemblyInfoText = Read-RepositoryFile "ClassIsland.iOS/AssemblyInfo.cs"
+$privacyManifestText = Read-RepositoryFile "ClassIsland.iOS/PrivacyInfo.xcprivacy"
+$privacyManifest = [xml]$privacyManifestText
 $nativeProjectText = Read-RepositoryFile "ClassIsland.iOS.Native/ClassIsland.iOS.Native.xcodeproj/project.pbxproj"
 $infoPlistText = Read-RepositoryFile "ClassIsland.iOS/Info.plist"
 $infoPlist = [xml]$infoPlistText
@@ -39,10 +42,70 @@ $liveActivityServiceText = Read-RepositoryFile "ClassIsland.iOS/Services/LiveAct
 $liveActivityBridgeText = Read-RepositoryFile "ClassIsland.iOS.Native/Bridge/ClassIslandLiveActivityBridge.swift"
 $appDelegateText = Read-RepositoryFile "ClassIsland.iOS/AppDelegate.cs"
 $iosSystemEventsServiceText = Read-RepositoryFile "ClassIsland.iOS/Services/Platform/IosSystemEventsService.cs"
+$iosSoundFlowBootstrapText = Read-RepositoryFile "ClassIsland.iOS/Services/Platform/IosSoundFlowNativeBootstrap.cs"
+$audioServiceText = Read-RepositoryFile "ClassIsland/Services/AudioService.cs"
 $iosNotificationCoordinatorText = Read-RepositoryFile "ClassIsland.iOS/Services/Notifications/IosLessonsNotificationCoordinator.cs"
+$iosNotificationScheduleFactoryText = Read-RepositoryFile "ClassIsland.iOS/Services/Notifications/IosLessonNotificationScheduleFactory.cs"
+$iosNotificationSchedulerText = Read-RepositoryFile "ClassIsland.iOS/Services/Notifications/IosLessonNotificationScheduler.cs"
+$iosNotificationQueueConsumerText = Read-RepositoryFile "ClassIsland.iOS/Services/Notifications/IosNotificationQueueConsumer.cs"
+$liveActivityCoordinatorText = Read-RepositoryFile "ClassIsland.iOS/Services/LiveActivities/LessonsLiveActivityCoordinator.cs"
+$notificationTimelineText = Read-RepositoryFile "ClassIsland.Platforms.Abstractions/Services/LessonPreparationNotificationTimeline.cs"
+$safeChildDirectoryPathText = Read-RepositoryFile "ClassIsland.Platforms.Abstractions/Services/SafeChildDirectoryPath.cs"
+$appServicesText = Read-RepositoryFile "ClassIsland/App.Services.xaml.cs"
+$pluginLoadContextText = Read-RepositoryFile "ClassIsland/PluginLoadContext.cs"
+$pluginServiceText = Read-RepositoryFile "ClassIsland/Services/PluginService.cs"
+$pluginMarketServiceText = Read-RepositoryFile "ClassIsland/Services/PluginMarketService.cs"
+$xamlThemeServiceText = Read-RepositoryFile "ClassIsland/Services/XamlThemeService.cs"
+$managementConnectionText = Read-RepositoryFile "ClassIsland/Services/Management/ManagementServerConnection.cs"
+$recoverBackupPageText = Read-RepositoryFile "ClassIsland/Views/RecoveryPages/RecoverBackupPage.axaml.cs"
+$pluginsSettingsPageText = Read-RepositoryFile "ClassIsland/Views/SettingPages/PluginsSettingsPage.axaml.cs"
+$mobileViewHostText = Read-RepositoryFile "ClassIsland/Controls/UI/MobileViewHost.axaml.cs"
+$settingsWindowText = Read-RepositoryFile "ClassIsland/Views/SettingsWindowNew.axaml.cs"
 
 $supportedVersion = $iosProject.SelectSingleNode("/Project/PropertyGroup/SupportedOSPlatformVersion").InnerText
 Assert-True ($supportedVersion -eq "15.0") "The iOS app minimum supported version must be 15.0."
+Assert-True ($iosAssemblyInfoText.Contains('[assembly: SupportedOSPlatform("ios15.0")]')) "The iOS entry assembly must declare its iOS 15.0 platform floor."
+
+$privacyBundleResource = $iosProject.SelectSingleNode('/Project/ItemGroup/BundleResource[@Include="PrivacyInfo.xcprivacy"]')
+Assert-True ($null -ne $privacyBundleResource) "The iOS project must bundle PrivacyInfo.xcprivacy."
+Assert-True ($privacyBundleResource.LogicalName -eq "PrivacyInfo.xcprivacy") "The privacy manifest must retain its bundle-root logical name."
+$privacyApiTypes = $privacyManifest.SelectSingleNode('/plist/dict/key[.="NSPrivacyAccessedAPITypes"]/following-sibling::array[1]')
+Assert-True ($null -ne $privacyApiTypes) "PrivacyInfo.xcprivacy must declare required-reason API usage."
+$privacyTracking = $privacyManifest.SelectSingleNode('/plist/dict/key[.="NSPrivacyTracking"]/following-sibling::*[1]')
+Assert-True ($privacyTracking.Name -eq "false") "PrivacyInfo.xcprivacy must declare that ClassIsland does not track users."
+$privacyCollectedData = $privacyManifest.SelectSingleNode('/plist/dict/key[.="NSPrivacyCollectedDataTypes"]/following-sibling::array[1]')
+Assert-True ($null -ne $privacyCollectedData) "PrivacyInfo.xcprivacy must declare optional Sentry diagnostics."
+$privacyCollectedTypes = @($privacyCollectedData.dict | ForEach-Object {
+    $_.SelectSingleNode('key[.="NSPrivacyCollectedDataType"]/following-sibling::string[1]').InnerText
+})
+foreach ($collectedType in @(
+    "NSPrivacyCollectedDataTypeCrashData",
+    "NSPrivacyCollectedDataTypePerformanceData",
+    "NSPrivacyCollectedDataTypeOtherDiagnosticData",
+    "NSPrivacyCollectedDataTypeProductInteraction")) {
+    Assert-True ($privacyCollectedTypes -contains $collectedType) "PrivacyInfo.xcprivacy is missing $collectedType."
+}
+$privacyReasons = @{}
+foreach ($declaration in @($privacyApiTypes.dict)) {
+    $apiType = $declaration.SelectSingleNode('key[.="NSPrivacyAccessedAPIType"]/following-sibling::string[1]')
+    $reasonNodes = $declaration.SelectNodes('key[.="NSPrivacyAccessedAPITypeReasons"]/following-sibling::array[1]/string')
+    if ($null -ne $apiType) {
+        $privacyReasons[$apiType.InnerText] = @($reasonNodes | ForEach-Object { $_.InnerText })
+    }
+}
+Assert-True ($privacyReasons.ContainsKey("NSPrivacyAccessedAPICategoryUserDefaults")) "The privacy manifest must declare UserDefaults access."
+Assert-True ($privacyReasons["NSPrivacyAccessedAPICategoryUserDefaults"] -contains "CA92.1") "The privacy manifest must declare UserDefaults reason CA92.1."
+Assert-True ($privacyReasons.ContainsKey("NSPrivacyAccessedAPICategoryFileTimestamp")) "The privacy manifest must declare file timestamp access."
+Assert-True ($privacyReasons["NSPrivacyAccessedAPICategoryFileTimestamp"] -contains "C617.1") "The privacy manifest must declare file timestamp reason C617.1."
+Assert-True ($privacyReasons.ContainsKey("NSPrivacyAccessedAPICategorySystemBootTime")) "The privacy manifest must declare system boot time access used by Stopwatch."
+Assert-True ($privacyReasons["NSPrivacyAccessedAPICategorySystemBootTime"] -contains "35F9.1") "The privacy manifest must declare elapsed-time reason 35F9.1."
+$localNetworkUsageDescription = $infoPlist.SelectSingleNode('/plist/dict/key[.="NSLocalNetworkUsageDescription"]/following-sibling::string[1]')
+Assert-True (-not [string]::IsNullOrWhiteSpace($localNetworkUsageDescription.InnerText)) "The iOS app must explain local-network access used by management servers."
+
+$eventLogGate = [regex]::Match($appServicesText, '(?s)if\s*\(\s*OperatingSystem\.IsWindows\(\)\s*\)\s*\{(?<body>.*?)\}')
+Assert-True ($eventLogGate.Success) "EventLogLoggerProvider must be guarded by OperatingSystem.IsWindows()."
+Assert-True ($eventLogGate.Groups["body"].Value.Contains("builder.AddFilter<EventLogLoggerProvider>")) "The Windows logging gate must contain the EventLog filter."
+Assert-True (-not $pluginLoadContextText.Contains('[SupportedOSPlatform("macos")]')) "The path-only Mac plugin resolver must not carry an inaccurate macOS platform annotation."
 
 $runtimeIdentifier = $iosProject.SelectSingleNode("/Project/PropertyGroup/RuntimeIdentifier").InnerText
 Assert-True ($runtimeIdentifier -eq "ios-arm64") "The iOS project must default to the ios-arm64 device RID."
@@ -104,6 +167,15 @@ $plistKeys = @($infoPlist.plist.dict.key)
 Assert-True (-not ($plistKeys -contains "CFBundleDisplayName")) "Info.plist must not hard-code CFBundleDisplayName; ApplicationTitle must generate it."
 Assert-True ($liveActivityServiceText.Contains('[SupportedOSPlatform("ios15.0")]')) "The managed Live Activity bridge must declare the iOS 15.0 platform floor."
 Assert-True ($liveActivityBridgeText.Contains('private let continuation: AsyncStream<Command>.Continuation')) "The Swift bridge must enqueue ActivityKit operations in a FIFO async stream."
+Assert-True ($liveActivityBridgeText.Contains('bufferingPolicy: .bufferingNewest(Self.maximumBufferedCommands)')) "The Swift ActivityKit command stream must have a bounded newest-value buffer."
+Assert-True ($liveActivityBridgeText.Contains('case let .dropped(droppedCommand):')) "A coalesced Swift command must explicitly complete its callback."
+Assert-True ($liveActivityBridgeText.Contains('operation.cancel()')) "The Swift bridge must synchronously relinquish callback ownership when managed code cancels."
+Assert-True ($liveActivityBridgeText.Contains('guard command.operation.shouldExecute else')) "Cancelled buffered Live Activity commands must not reach ActivityKit."
+Assert-True ($liveActivityBridgeText.Contains('@_cdecl("ci_live_activity_cancel")')) "The Swift bridge must export its callback-ownership cancellation ABI."
+Assert-True ($liveActivityServiceText.Contains('NativeOperationTimeout = TimeSpan.FromSeconds(15)')) "Managed Live Activity calls must have a bounded native timeout."
+Assert-True ($liveActivityServiceText.Contains('EntryPoint = "ci_live_activity_cancel"')) "Managed cancellation must call the native callback-ownership protocol."
+Assert-True ($liveActivityServiceText.Contains('CompleteAfterNativeCancellationAcknowledged()')) "Managed code must release its callback context only after native cancellation acknowledgement."
+Assert-True ($liveActivityServiceText.Contains('registration.Unregister();')) "Managed callback cleanup must not synchronously wait on its own cancellation registration."
 Assert-True ($liveActivityBridgeText.Contains('for await command in stream')) "The Swift bridge must process ActivityKit operations through one sequential consumer."
 Assert-True ($liveActivityBridgeText.Contains('ClassIslandLiveActivityCommandQueue.shared.publish(')) "The Swift publish ABI must use the sequential command queue."
 Assert-True ($liveActivityBridgeText.Contains('ClassIslandLiveActivityCommandQueue.shared.end(')) "The Swift end ABI must use the sequential command queue."
@@ -113,6 +185,23 @@ Assert-True ($appDelegateText.Contains('_activatableLifetime.Activated += OnActi
 Assert-True ($appDelegateText.Contains('_activatableLifetime.Activated -= OnActivated')) "The AppDelegate must unsubscribe from protocol activation events."
 Assert-True ($appDelegateText.Contains('args is not ProtocolActivatedEventArgs')) "The AppDelegate must filter protocol activation events before URI navigation."
 Assert-True ($appDelegateText.Contains('PlatformServices.SystemEventsService = _systemEventsService')) "The AppDelegate must install the iOS system-time event service."
+Assert-True ($appDelegateText.Contains('IosSoundFlowNativeBootstrap.TryInitialize(')) "The AppDelegate must bootstrap SoundFlow before app services initialize."
+$soundFlowBootstrapIndex = $appDelegateText.IndexOf('IosSoundFlowNativeBootstrap.TryInitialize(', [StringComparison]::Ordinal)
+$appEntryIndex = $appDelegateText.IndexOf('Program.AppEntry(', [StringComparison]::Ordinal)
+Assert-True ($soundFlowBootstrapIndex -ge 0 -and $soundFlowBootstrapIndex -lt $appEntryIndex) "SoundFlow must be bootstrapped before Program.AppEntry can resolve application services."
+Assert-True (-not $iosSoundFlowBootstrapText.Contains('NativeLibrary.SetDllImportResolver(')) "The iOS bootstrap must not replace SoundFlow's assembly resolver."
+Assert-True ($iosSoundFlowBootstrapText.Contains('RuntimeHelpers.RunClassConstructor(')) "The iOS bootstrap must explicitly run SoundFlow's Native type initializer for Mono AOT."
+Assert-True ($iosSoundFlowBootstrapText.Contains('SoundFlow.Backends.MiniAudio.Native')) "The iOS bootstrap must preserve and initialize SoundFlow's internal Native type."
+Assert-True ($iosSoundFlowBootstrapText.Contains('[DynamicDependency(')) "The iOS bootstrap must preserve SoundFlow's internal Native type during trimming."
+Assert-True ($iosSoundFlowBootstrapText.Contains('NativeLibrary.Load(binaryPath)')) "The iOS bootstrap must preload miniaudio from its canonical framework path."
+Assert-True ($iosSoundFlowBootstrapText.Contains('"miniaudio.framework"')) "The SoundFlow bootstrap must load the embedded iOS framework binary."
+Assert-True ($iosSoundFlowBootstrapText.Contains('NSBundle.MainBundle.PrivateFrameworksPath')) "The SoundFlow bootstrap must use the installed app's Frameworks directory."
+Assert-True ($audioServiceText.Contains('catch (Exception exception) when (OperatingSystem.IsIOS())')) "A native audio failure on iOS must not prevent the app from starting."
+Assert-True ($audioServiceText.Contains('_audioEngine?.Dispose()')) "The optional iOS audio engine must be disposed safely."
+$programText = Read-RepositoryFile "ClassIsland/Program.cs"
+$settingsText = Read-RepositoryFile "ClassIsland/Models/Settings.cs"
+Assert-True ($programText.Contains('sentryPreference == null && !PlatformHelper.IsAppleMobile')) "Sentry must default to opt-in on iOS/iPadOS."
+Assert-True ($settingsText.Contains('preference == null && !PlatformHelper.IsAppleMobile')) "The privacy setting must reflect the iOS Sentry opt-in default."
 Assert-True ($iosSystemEventsServiceText.Contains('UIApplication.SignificantTimeChangeNotification')) "The iOS system event service must observe significant time changes."
 Assert-True ($iosSystemEventsServiceText.Contains('NSTimeZone.SystemTimeZoneDidChangeNotification')) "The iOS system event service must observe time-zone changes."
 Assert-True ($iosSystemEventsServiceText.Contains('TimeZoneInfo.ClearCachedData()')) "The iOS system event service must invalidate cached time-zone data."
@@ -123,11 +212,80 @@ Assert-True ($iosNotificationCoordinatorText.Contains('_expirationCancellation.C
 Assert-True ($iosNotificationCoordinatorText.Contains('application.EndBackgroundTask(identifier)')) "The notification coordinator must immediately release an expired background task lease."
 Assert-True ($iosNotificationCoordinatorText.Contains('PlatformServices.SystemEventsService.TimeChanged += SystemEventsOnTimeChanged')) "The notification coordinator must reschedule after system time or time-zone changes."
 Assert-True ($iosNotificationCoordinatorText.Contains('PlatformServices.SystemEventsService.TimeChanged -= SystemEventsOnTimeChanged')) "The notification coordinator must release its system-time event subscription."
+Assert-True ($iosNotificationCoordinatorText.Contains('ScheduleFailureRetry();')) "Native notification scheduling failures must trigger a bounded retry."
+Assert-True ($appDelegateText.Contains('private readonly LessonPreparationNotificationTimeline _lessonPreparationTimeline = new();')) "The AppDelegate must own one shared preparation-notification timeline."
+Assert-True (([regex]::Matches($appDelegateText, '_lessonPreparationTimeline')).Count -eq 3) "The AppDelegate must inject the same preparation timeline into notification and Live Activity coordinators."
+Assert-True ($iosNotificationScheduleFactoryText.Contains('lessonPreparationTimeline.PlanNotification(')) "The notification planner must register the effective preparation-notification time."
+Assert-True ($iosNotificationScheduleFactoryText.Contains('lessonPreparationTimeline.GetLiveActivityPublicationTime(')) "The Live Activity gate must read the registered preparation-notification time."
+Assert-True ($liveActivityCoordinatorText.Contains('_notificationScheduleFactory?.GetUpcomingClassPreparationTime()')) "The Live Activity coordinator must align publication with the preparation notification."
+Assert-True ($notificationTimelineText.Contains('private static readonly TimeSpan CatchUpDelay = TimeSpan.FromSeconds(2);')) "Preparation notification catch-up timing must remain centralized."
+Assert-True ($notificationTimelineText.Contains('_preparationTimings[notificationIdentifier] = new PreparationTiming(')) "The notification planner must retain both scheduled and catch-up preparation times."
+Assert-True ($notificationTimelineText.Contains('return _preparationTimings.TryGetValue(notificationIdentifier')) "Live Activity publication must read the notification planner's retained time."
+Assert-True ($notificationTimelineText.Contains('timing.IsScheduled')) "Live Activity publication must wait until the native notification request is accepted."
+Assert-True (-not $notificationTimelineText.Contains('timing.LessonStartAt == lessonStartAt')) "Live Activity lookup must use the stable notification identifier across clock remapping."
+Assert-True ($notificationTimelineText.Contains('CeilingToWholeSecond(systemNow + CatchUpDelay)')) "Catch-up notification and Live Activity times must share the native trigger's whole-second precision."
+Assert-True ($notificationTimelineText.Contains('existing.IsScheduled ||')) "An unconfirmed catch-up time must be replanned after its scheduling window expires."
+Assert-True ($iosNotificationSchedulerText.Contains('lessonPreparationTimeline.ReconcileScheduledNotifications(')) "The native scheduler must reconcile preparation gates with current notification requests."
+Assert-True ($notificationTimelineText.Contains('!_preparationTimings[x].IsScheduled')) "Reconciliation must preserve accepted preparation times after the native request fires."
+Assert-True ($iosNotificationSchedulerText.Contains('lessonPreparationTimeline.ConfirmNotificationScheduled(')) "The native scheduler must confirm accepted preparation requests before Live Activity publication."
+Assert-True ($iosNotificationSchedulerText.Contains('lessonPreparationTimeline.RestoreNotificationScheduled(')) "The native scheduler must restore preparation timing from pending or delivered native notifications."
+Assert-True ($iosNotificationSchedulerText.Contains('deliveredNotification.Date')) "Cross-process preparation recovery must use the native delivery time."
+Assert-True ($iosNotificationSchedulerText.Contains('x.Value.ToUnixTimeSeconds()')) "Preparation history must persist the actual fire time, not only its identifier."
+Assert-True ($iosNotificationSchedulerText.Contains('request.Identifier.EndsWith(".prepare", StringComparison.Ordinal)')) "Cross-process recovery must persist normally scheduled preparation notifications as well as catch-up requests."
+Assert-True ($iosNotificationSchedulerText.Contains('PendingRequestMatches(')) "The iOS scheduler must avoid replacing unchanged native notification requests."
+Assert-True ($iosNotificationSchedulerText.Contains('content.Sound != null) == request.PlaySound')) "Native notification diffing must include sound delivery settings."
+Assert-True ($iosNotificationSchedulerText.Contains('Task<bool> SynchronizeAsync(')) "The native scheduler must report requests that need immediate replanning."
+Assert-True ($iosNotificationSchedulerText.Contains('!IsImminentPendingNotification(x, systemNow)')) "Notification reconciliation must not cancel an imminent native delivery."
+Assert-True ($iosNotificationSchedulerText.Contains('MinimumUnixTimeSeconds')) "Persisted native notification times must be range-checked before conversion."
+Assert-True ($iosNotificationQueueConsumerText.Contains('UNNotificationRequest.FromIdentifier(')) "Non-lesson notification tickets must be converted to native iOS notifications."
+Assert-True ($iosNotificationQueueConsumerText.Contains('AddNotificationRequestAsync(request)')) "Immediate iOS notifications must be submitted to UNUserNotificationCenter."
+Assert-True ($iosNotificationQueueConsumerText.Contains('finally') -and $iosNotificationQueueConsumerText.Contains('await CompleteNotificationAsync(notification);')) "Every iOS notification ticket must be completed even when native delivery fails or the queue drains."
+Assert-True ($iosNotificationQueueConsumerText.Contains('Channel.CreateBounded<QueuedNotification>')) "Immediate iOS notifications must use one bounded FIFO worker instead of unbounded fire-and-forget tasks."
+Assert-True ($iosNotificationQueueConsumerText.Contains('SingleReader = true')) "The iOS notification queue must have a single ordered consumer."
+Assert-True ($iosNotificationQueueConsumerText.Contains('ticket.CancellationToken.IsCancellationRequested')) "Immediate iOS delivery must skip canceled tickets."
+Assert-True ($iosNotificationQueueConsumerText.Contains('_settingsService.Settings.AllowNotificationSound')) "Immediate iOS notifications must respect the global sound gate."
+Assert-True ($iosNotificationQueueConsumerText.Contains('public void Dispose()')) "The iOS notification queue must stop and drain during coordinator disposal."
+Assert-True ($iosNotificationQueueConsumerText.Contains('Dispatcher.UIThread.InvokeAsync(() => CompleteNotificationCore(notification))')) "NotificationHost ticket completion must return to the Avalonia UI thread."
+Assert-True ($iosNotificationQueueConsumerText.Contains('private sealed record QueuedNotification(')) "Avalonia notification content must be materialized before the background native worker reads it."
+Assert-True ($iosNotificationQueueConsumerText.Contains('_notificationHostService.PullNotificationRequests()')) "The iOS notification consumer must pull the next host batch after becoming idle."
+Assert-True ($iosNotificationQueueConsumerText.Contains('Volatile.Read(ref _queuedNotificationCount)')) "The iOS notification consumer must report its actual queued batch size."
+Assert-True ($safeChildDirectoryPathText.Contains("childDirectoryName.IndexOfAny(['/', '\\'])")) "Plugin directory identifiers must reject both path separator styles."
+Assert-True ($safeChildDirectoryPathText.Contains('Path.GetRelativePath(rootPath, targetPath)')) "Plugin directory resolution must verify containment under the plugin root."
+Assert-True ($pluginServiceText.Contains('SafeChildDirectoryPath.Resolve(')) "Plugin installation must resolve untrusted manifest IDs through the safe child-path helper."
+Assert-True (-not $pluginMarketServiceText.Contains('ServicePointManager.ServerCertificateValidationCallback')) "Plugin downloads must not replace the process-wide TLS validation callback."
+Assert-True ($pluginMarketServiceText.Contains('CustomHttpMessageHandlerFactory')) "The optional plugin mirror TLS override must be scoped to its own HTTP handler."
+Assert-True ($pluginMarketServiceText.Contains('InstallPluginIndexArchive(') -and $pluginMarketServiceText.Contains('ZipArchiveSafety.ValidateForExtraction(archive)')) "Plugin indexes must be validated and transactionally staged before installation."
+Assert-True ($xamlThemeServiceText.Contains('ReplaceThemeDirectory(') -and $xamlThemeServiceText.Contains('ZipArchiveSafety.ValidateForExtraction(pkg)')) "Theme packages must be validated and transactionally staged before installation."
+Assert-True ($recoverBackupPageText.Contains('ZipArchiveSafety.ValidateForExtraction(archive)')) "Backup ZIP recovery must reject unsafe archive entries."
+Assert-True ($pluginsSettingsPageText.Contains('ZipArchiveSafety.ValidateForExtraction(pkg)')) "Plugin previews must validate package resource limits before reading content."
+Assert-True ($managementConnectionText.Contains('var hash = SHA256.HashData(ClientGuid.ToByteArray())')) "iOS management identity must have a stable privacy-safe fallback when MAC addresses are unavailable."
+$hideViewMethod = [regex]::Match(
+    $mobileViewHostText,
+    '(?s)public\s+async\s+Task<bool>\s+HideView\(.*?(?=\n\s*private\s+async\s+Task\s+RunNavigationWithProgressAsync)')
+Assert-True ($hideViewMethod.Success) "MobileViewHost.HideView could not be validated."
+Assert-True (([regex]::Matches($hideViewMethod.Value, 'ViewDeactivating\(')).Count -eq 1) "MobileViewHost.HideView must not invoke ViewDeactivating before a normal navigation pop."
+$rootPageBranchIndex = $hideViewMethod.Value.IndexOf('if (NavigationPage.Pages?.Count() <= 1)', [StringComparison]::Ordinal)
+$viewDeactivatingIndex = $hideViewMethod.Value.IndexOf('view.ViewDeactivating(', [StringComparison]::Ordinal)
+$rootPageElse = [regex]::Match($hideViewMethod.Value, '\r?\n\s{8}else\s*\{')
+$popAsyncIndex = $hideViewMethod.Value.IndexOf('NavigationPage.PopAsync()', [StringComparison]::Ordinal)
+Assert-True ($rootPageBranchIndex -ge 0 -and $rootPageElse.Success) "MobileViewHost.HideView must retain distinct root-page and navigation-pop branches."
+Assert-True ($viewDeactivatingIndex -gt $rootPageBranchIndex -and $viewDeactivatingIndex -lt $rootPageElse.Index) "Only the root-page branch may explicitly invoke ViewDeactivating."
+Assert-True ($popAsyncIndex -gt $rootPageElse.Index) "Normal mobile navigation must rely on the navigation pop lifecycle callback."
+$removeViewIndex = $hideViewMethod.Value.IndexOf('ActivatedViews.Remove(view)', [StringComparison]::Ordinal)
+$hideHostIndex = $hideViewMethod.Value.IndexOf('Hide();', [StringComparison]::Ordinal)
+Assert-True ($removeViewIndex -gt $viewDeactivatingIndex -and $removeViewIndex -lt $hideHostIndex) "The root view must be deactivated before a synchronous native hide callback can destroy the host."
+$windowRuleHandler = [regex]::Match(
+    $settingsWindowText,
+    '(?s)private\s+void\s+MenuItemDebugWindowRule_OnClick\(.*?(?=\n\s*private\s+(?:async\s+)?(?:void|Task(?:<[^>]+>)?)\s+)')
+Assert-True ($windowRuleHandler.Success) "The window-rule debug handler could not be validated."
+Assert-True ($windowRuleHandler.Value.Contains('if (PlatformHelper.IsAppleMobile)')) "Apple-only window-rule gating must not hide the Android implementation."
+Assert-True (-not $windowRuleHandler.Value.Contains('PlatformHelper.IsMobile')) "The window-rule handler must not reject Android as an unsupported platform."
 
 Assert-True ($wrapperWorkflowText.Contains("name: Build iOS")) "The observable iOS workflow must keep the Build iOS name."
 Assert-True ($wrapperWorkflowText.Contains("uses: ./.github/workflows/_build_ios_reusable.yml")) "The Build iOS workflow must call the reusable iOS worker."
 Assert-True ($wrapperWorkflowText.Contains('checkout_ref: ${{ github.sha }}')) "The Build iOS wrapper must build the triggering commit."
 Assert-True ($wrapperWorkflowText.Contains("developer_preview: true")) "The standalone Build iOS workflow must enable DeveloperPreview."
+Assert-True ($wrapperWorkflowText.Contains("github.event.pull_request.head.repo.full_name == github.repository")) "Authenticated iOS builds must not execute fork pull-request code."
 Assert-True ($wrapperWorkflowText.Contains("group: ios-`${{ github.workflow }}-`${{ github.ref }}")) "The Build iOS wrapper must retain its concurrency group."
 Assert-True ($wrapperWorkflowText.Contains(".github/workflows/_build_ios_reusable.yml")) "Changes to the reusable iOS worker must trigger Build iOS."
 Assert-True ($wrapperWorkflowText.Contains("tools/ci/verify-ios-ipa.sh")) "Changes to IPA verification must trigger Build iOS."
@@ -166,8 +324,24 @@ Assert-True ($ipaVerificationText.Contains("MonoTouchDebugConfiguration.txt")) "
 Assert-True ($ipaVerificationText.Contains("libxamarin-dotnet-debug")) "IPA verification must reject the remote-debug runtime."
 Assert-True ($ipaVerificationText.Contains('assert_minimum_ios "$app_binary" "The main app" "15.0"')) "IPA verification must assert iOS 15.0 for the main app."
 Assert-True ($ipaVerificationText.Contains('assert_minimum_ios "$bridge_binary" "The Live Activity bridge" "15.0"')) "IPA verification must assert iOS 15.0 for the bridge."
+Assert-True ($ipaVerificationText.Contains('expected_miniaudio_install_name="@rpath/miniaudio.framework/miniaudio"')) "IPA verification must validate the SoundFlow framework install name."
+Assert-True ($ipaVerificationText.Contains('The main app does not load the embedded SoundFlow miniaudio framework')) "IPA verification must validate the main app's miniaudio load command."
+Assert-True ($ipaVerificationText.Contains('The embedded SoundFlow miniaudio binary is not executable')) "IPA verification must validate miniaudio executable permissions."
+Assert-True ($ipaVerificationText.Contains('load_command == "LC_LOAD_DYLIB"')) "IPA verification must require a strong miniaudio load command."
+Assert-True ($ipaVerificationText.Contains('ma_context_init sf_allocate_context')) "IPA verification must validate representative SoundFlow native exports."
 Assert-True ($ipaVerificationText.Contains("CFBundleDisplayName")) "IPA verification must validate the final display name."
 Assert-True ($ipaVerificationText.Contains("assert_unsigned_bundle")) "IPA verification must reject signed app, extension, and bridge bundles."
+Assert-True ($ipaVerificationText.Contains('privacy_manifest="$app_bundle/PrivacyInfo.xcprivacy"')) "IPA verification must require the bundled privacy manifest."
+Assert-True ($ipaVerificationText.Contains("NSPrivacyAccessedAPICategoryUserDefaults")) "IPA verification must validate UserDefaults privacy disclosure."
+Assert-True ($ipaVerificationText.Contains("CA92.1")) "IPA verification must validate UserDefaults reason CA92.1."
+Assert-True ($ipaVerificationText.Contains("NSPrivacyAccessedAPICategoryFileTimestamp")) "IPA verification must validate file timestamp privacy disclosure."
+Assert-True ($ipaVerificationText.Contains("C617.1")) "IPA verification must validate file timestamp reason C617.1."
+Assert-True ($ipaVerificationText.Contains("NSPrivacyAccessedAPICategorySystemBootTime")) "IPA verification must validate system boot time privacy disclosure."
+Assert-True ($ipaVerificationText.Contains("35F9.1")) "IPA verification must validate elapsed-time reason 35F9.1."
+Assert-True ($ipaVerificationText.Contains("NSPrivacyCollectedDataTypeCrashData")) "IPA verification must validate the optional Sentry crash-data disclosure."
+Assert-True ($ipaVerificationText.Contains("NSPrivacyCollectedDataTypePerformanceData")) "IPA verification must validate the optional Sentry performance disclosure."
+Assert-True ($ipaVerificationText.Contains("NSPrivacyCollectedDataTypeOtherDiagnosticData")) "IPA verification must validate the optional Sentry diagnostics disclosure."
+Assert-True ($ipaVerificationText.Contains("NSPrivacyCollectedDataTypeProductInteraction")) "IPA verification must validate the optional Sentry interaction disclosure."
 
 Assert-True ($nukeBuildText.Contains('SetProperty("EnableCodeSigning", enableCodeSigning)')) "NUKE iOS publish must explicitly support signed and unsigned modes."
 Assert-True ($nukeBuildText.Contains('SetProperty("ArchiveOnBuild", enableCodeSigning)')) "Unsigned NUKE publish must skip xcarchive creation while still building the IPA."
@@ -179,6 +353,7 @@ Assert-True ($iosPublishProperties.Value.Contains('SetProperty("PublishBuilding"
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("PublishPlatform", OsName)')) "NUKE iOS publish must not inherit the macOS runner platform."
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("ClassIsland_PlatformTarget", Arch)')) "NUKE iOS publish must define the release architecture."
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("GeneratePackageOnBuild", false)')) "NUKE iOS publish must not concurrently pack project references."
+Assert-True ($iosPublishProperties.Value.Contains('SetProperty("WarningsAsErrors", "CA1416")')) "NUKE iOS publish must fail on unguarded platform compatibility warnings."
 Assert-True ($nukeBuildText.Contains('SetProperty("DebugType", "none")')) "NUKE iOS Release publish must disable PDB generation for every project reference."
 Assert-True ($nukeBuildText.Contains('SetProperty("DebugSymbols", false)')) "NUKE iOS Release publish must disable debug symbols for every project reference."
 $enableCodeSigningSchema = @($nukeSchema.allOf) |

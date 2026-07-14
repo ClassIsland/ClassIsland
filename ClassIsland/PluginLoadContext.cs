@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Services;
 
@@ -104,7 +103,6 @@ public class PluginLoadContext : AssemblyLoadContext
 /// <summary>
 /// macOS 专用的插件程序集与本地库解析器。根据插件目录结构查找真实文件路径。
 /// </summary>
-[SupportedOSPlatform("macos")]
 public class MacPluginAssemblyResolver(string componentAssemblyPath)
 {
     private readonly string _pluginDirectory = Path.GetDirectoryName(componentAssemblyPath) ?? "";

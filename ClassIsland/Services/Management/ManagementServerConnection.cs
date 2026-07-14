@@ -74,15 +74,39 @@ public class ManagementServerConnection : IManagementServerConnection
     
     private ManagementSettings ManagementSettings { get; }
     
-    private string GetNetworkInterfaceMac() => NetworkInterface 
-            .GetAllNetworkInterfaces() 
-            .First(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback &&      // 非回环 
-                        n.OperationalStatus == OperationalStatus.Up &&                  // 活动中 
-                        n.GetIPProperties().UnicastAddresses.Any(ip => 
-                            ip.Address.AddressFamily == AddressFamily.InterNetwork))
-            .GetPhysicalAddress()
-            .ToString()
-            .ToUpper();
+    private string GetNetworkInterfaceMac()
+    {
+        try
+        {
+            foreach (var networkInterface in NetworkInterface.GetAllNetworkInterfaces()
+                         .Where(x => x.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
+                                     x.OperationalStatus == OperationalStatus.Up &&
+                                     x.GetIPProperties().UnicastAddresses.Any(ip =>
+                                         ip.Address.AddressFamily is AddressFamily.InterNetwork or
+                                             AddressFamily.InterNetworkV6)))
+            {
+                var address = networkInterface.GetPhysicalAddress().GetAddressBytes();
+                if (address.Length > 0 && address.Any(x => x != 0))
+                {
+                    return Convert.ToHexString(address);
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(
+                exception,
+                "无法读取网络接口硬件地址，将使用隐私安全的稳定设备标识");
+        }
+
+        // iOS 不公开 Wi-Fi MAC。由已有 ClientGuid 派生 locally-administered
+        // unicast 地址，仅用于兼容服务端旧字段，不跟踪真实硬件。
+        var hash = SHA256.HashData(ClientGuid.ToByteArray());
+        Span<byte> fallbackAddress = stackalloc byte[6];
+        fallbackAddress[0] = 0x02;
+        hash.AsSpan(0, 5).CopyTo(fallbackAddress[1..]);
+        return Convert.ToHexString(fallbackAddress);
+    }
     
 
     private Grpc.Core.Metadata GetMetadata(bool outOfSession = false)

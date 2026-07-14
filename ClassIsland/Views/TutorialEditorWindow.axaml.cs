@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -18,6 +19,7 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels;
@@ -39,6 +41,7 @@ public partial class TutorialEditorWindow : ViewBase
     public TutorialEditorViewModel ViewModel { get; } = IAppHost.GetService<TutorialEditorViewModel>();
 
     private Window? _hostWindow;
+    private string? _lastAppleMobileSavedSnapshot;
     
     public TutorialEditorWindow()
     {
@@ -183,6 +186,11 @@ public partial class TutorialEditorWindow : ViewBase
 
         var path = ViewModel.OpenedFilePath = paths[0];
         ViewModel.CurrentTutorialGroup = ConfigureFileHelper.LoadConfig<TutorialGroup>(path, false);
+        if (PlatformHelper.IsAppleMobile)
+        {
+            _lastAppleMobileSavedSnapshot = CaptureTutorialSnapshot();
+        }
+
         this.ShowToast($"已打开 {path}");
         var id = ViewModel.CurrentTutorialGroup.Id;
         if (ITutorialService.RegisteredTutorialGroups.FirstOrDefault(x => x.Id == id) is not {} existed)
@@ -199,23 +207,70 @@ public partial class TutorialEditorWindow : ViewBase
         await SaveTutorialGroupFull();
     }
 
-    private async Task SaveTutorialGroupFull(bool saveAs=false)
+    private async Task<bool> SaveTutorialGroupFull(bool saveAs=false)
     {
+        try
+        {
+            return await SaveTutorialGroupFullCore(saveAs);
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法保存教程", exception);
+            return false;
+        }
+    }
+
+    private async Task<bool> SaveTutorialGroupFullCore(bool saveAs)
+    {
+        var saveOptions = new FilePickerSaveOptions
+        {
+            FileTypeChoices = [FilePickerFileTypes.Json]
+        };
+        if (PlatformHelper.IsAppleMobile)
+        {
+            string? exportedSnapshot = null;
+            var savedFile = await PlatformServices.FilePickerService.SaveFileAsync(
+                saveOptions,
+                TopLevel!,
+                output => StreamExportHelper.WritePathBasedExportAsync(
+                    output,
+                    ".json",
+                    path =>
+                    {
+                        ConfigureFileHelper.SaveConfig(
+                            path,
+                            ViewModel.CurrentTutorialGroup,
+                            true);
+                        exportedSnapshot = CaptureTutorialSnapshot();
+                        return Task.CompletedTask;
+                    }));
+            if (savedFile == null)
+            {
+                return false;
+            }
+
+            _lastAppleMobileSavedSnapshot = exportedSnapshot
+                ?? throw new InvalidOperationException(
+                    "iOS 教程保存完成，但未能记录已导出的内容状态。");
+            this.ShowToast($"已保存 {savedFile}");
+            return true;
+        }
+
         if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath) || saveAs)
         {
-            var paths = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
-            {
-                FileTypeChoices = [FilePickerFileTypes.Json],
-            }, TopLevel!);
+            var paths = await PlatformServices.FilePickerService.SaveFilePickerAsync(
+                saveOptions,
+                TopLevel!);
             if (paths == null)
             {
-                return;
+                return false;
             }
 
             ViewModel.OpenedFilePath = paths;
         }
 
         SaveTutorialGroupToFile();
+        return true;
     }
 
     private void SaveTutorialGroupToFile()
@@ -240,7 +295,7 @@ public partial class TutorialEditorWindow : ViewBase
 
     private async Task ClosingCore()
     {
-        if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath))
+        if (HasUnsavedChanges())
         {
             var dialog = new FATaskDialog()
             {
@@ -266,8 +321,7 @@ public partial class TutorialEditorWindow : ViewBase
             switch (choice)
             {
                 case 0:
-                    await SaveTutorialGroupFull();
-                    if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath))
+                    if (!await SaveTutorialGroupFull())
                     {
                         return;
                     }
@@ -284,6 +338,30 @@ public partial class TutorialEditorWindow : ViewBase
         ViewModel.IsClosing = true;
         Close();
     }
+
+    private bool HasUnsavedChanges()
+    {
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            return string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath);
+        }
+
+        try
+        {
+            return !string.Equals(
+                _lastAppleMobileSavedSnapshot,
+                CaptureTutorialSnapshot(),
+                StringComparison.Ordinal);
+        }
+        catch
+        {
+            // 无法比较时按“存在未保存更改”处理，避免静默丢失用户编辑。
+            return true;
+        }
+    }
+
+    private string CaptureTutorialSnapshot() =>
+        JsonSerializer.Serialize(ViewModel.CurrentTutorialGroup);
 
     private void WindowBase_OnDeactivated(object? sender, EventArgs e)
     {

@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.RecoveryPages;
 using FluentAvalonia.UI.Controls;
@@ -86,7 +87,9 @@ public partial class RecoverBackupPage : UserControl
         {
             if (Path.GetExtension(backupPath) == ".zip")
             {
-                ZipFile.ExtractToDirectory(backupPath, CommonDirectories.AppRootFolderPath, true);
+                using var archive = ZipFile.OpenRead(backupPath);
+                ZipArchiveSafety.ValidateForExtraction(archive);
+                archive.ExtractToDirectory(CommonDirectories.AppRootFolderPath, true);
             }
             if (Directory.Exists(backupPath))
             {

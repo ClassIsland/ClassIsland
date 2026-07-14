@@ -38,6 +38,8 @@
   <true/>
   <key>ITSAppUsesNonExemptEncryption</key>
   <false/>
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>用于连接由学校或组织配置的 ClassIsland 集控服务器。</string>
   <key>CFBundleURLTypes</key>
   <array>
     <dict>

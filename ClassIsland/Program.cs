@@ -121,7 +121,9 @@ public static class Program
             }
         }
 
-        var sentryEnabled = GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
+        var sentryPreference = GlobalStorageService.GetValue("IsSentryEnabled");
+        var sentryEnabled = sentryPreference == "1" ||
+                            sentryPreference == null && !PlatformHelper.IsAppleMobile;
         if (sentryEnabled )
         {
             SentrySdk.Init(ConfigureSentry);

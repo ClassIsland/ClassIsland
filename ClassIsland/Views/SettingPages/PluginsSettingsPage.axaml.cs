@@ -225,8 +225,11 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 try
                 {
                     using var pkg = ZipFile.OpenRead(fileName);
+                    ZipArchiveSafety.ValidateForExtraction(pkg);
                     var mf = pkg.GetEntry(Services.PluginService.PluginManifestFileName);
                     if (mf == null)
+                        continue;
+                    if (mf.Length > Services.PluginService.MaximumManifestLength)
                         continue;
 
                     using var reader = new StreamReader(mf.Open());
@@ -241,7 +244,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
                     if (!string.IsNullOrWhiteSpace(iconPath))
                     {
                         var iconEntry = pkg.GetEntry(iconPath);
-                        if (iconEntry != null)
+                        if (iconEntry != null && iconEntry.Length <= 4 * 1024 * 1024)
                         {
                             try
                             {

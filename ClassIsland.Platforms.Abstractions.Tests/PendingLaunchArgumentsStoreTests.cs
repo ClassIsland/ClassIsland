@@ -13,6 +13,17 @@ public sealed class PendingLaunchArgumentsStoreTests
         Assert.Throws<ArgumentException>(() => new PendingLaunchArgumentsStore(path));
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Constructor_RejectsNonPositiveTimeToLive(double seconds)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new PendingLaunchArgumentsStore(
+                "pending.json",
+                timeToLive: TimeSpan.FromSeconds(seconds)));
+    }
+
     [Fact]
     public void SaveAndConsume_ReturnsArgumentsOnlyOnce()
     {
@@ -43,12 +54,63 @@ public sealed class PendingLaunchArgumentsStoreTests
     {
         using var scope = new TemporaryDirectory();
         var path = Path.Combine(scope.Path, ".pending-launch.json");
-        File.WriteAllText(path, "[\"--mobile\"]");
         var store = new PendingLaunchArgumentsStore(
             path,
             _ => throw new IOException("read-only file system"));
+        store.Save(["--mobile"]);
 
         Assert.Equal(new[] { "--mobile" }, store.Consume());
+    }
+
+    [Fact]
+    public void Consume_RejectsExpiredArgumentsAndDeletesPayload()
+    {
+        using var scope = new TemporaryDirectory();
+        var path = Path.Combine(scope.Path, ".pending-launch.json");
+        var timeProvider = new ManualTimeProvider(
+            new DateTimeOffset(2026, 7, 14, 8, 0, 0, TimeSpan.Zero));
+        var store = new PendingLaunchArgumentsStore(
+            path,
+            timeToLive: TimeSpan.FromMinutes(30),
+            timeProvider: timeProvider);
+        store.Save(["-m", "-r"]);
+        timeProvider.UtcNow += TimeSpan.FromMinutes(31);
+
+        Assert.Empty(store.Consume());
+        Assert.False(File.Exists(path));
+    }
+
+    [Fact]
+    public void Consume_AcceptsArgumentsAtTimeToLiveBoundary()
+    {
+        using var scope = new TemporaryDirectory();
+        var path = Path.Combine(scope.Path, ".pending-launch.json");
+        var timeProvider = new ManualTimeProvider(
+            new DateTimeOffset(2026, 7, 14, 8, 0, 0, TimeSpan.Zero));
+        var store = new PendingLaunchArgumentsStore(
+            path,
+            timeToLive: TimeSpan.FromMinutes(30),
+            timeProvider: timeProvider);
+        store.Save(["-m"]);
+        timeProvider.UtcNow += TimeSpan.FromMinutes(30);
+
+        Assert.Equal(new[] { "-m" }, store.Consume());
+    }
+
+    [Fact]
+    public void Consume_RejectsPayloadFromTheFuture()
+    {
+        using var scope = new TemporaryDirectory();
+        var path = Path.Combine(scope.Path, ".pending-launch.json");
+        var timeProvider = new ManualTimeProvider(
+            new DateTimeOffset(2026, 7, 14, 8, 0, 0, TimeSpan.Zero));
+        var store = new PendingLaunchArgumentsStore(
+            path,
+            timeProvider: timeProvider);
+        store.Save(["-m"]);
+        timeProvider.UtcNow -= TimeSpan.FromSeconds(1);
+
+        Assert.Empty(store.Consume());
     }
 
     [Fact]
@@ -77,5 +139,12 @@ public sealed class PendingLaunchArgumentsStoreTests
             Directory.CreateTempSubdirectory("classisland-pending-launch-").FullName;
 
         public void Dispose() => Directory.Delete(Path, true);
+    }
+
+    private sealed class ManualTimeProvider(DateTimeOffset utcNow) : TimeProvider
+    {
+        public DateTimeOffset UtcNow { get; set; } = utcNow;
+
+        public override DateTimeOffset GetUtcNow() => UtcNow;
     }
 }
