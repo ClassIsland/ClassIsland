@@ -108,6 +108,9 @@ partial class Build
                     var enableCodeSigning = EnableCodeSigning ? "true" : "false";
                     settings = settings
                         .SetProject(IosAppEntryProject)
+                        // iOS 的多层项目引用会以不同全局属性重复构建 Avalonia 项目；
+                        // 串行执行可避免它们同时写入同一个 obj/Avalonia/resources 文件。
+                        .SetProcessAdditionalArguments("-m:1")
                         .SetConfiguration(Configuration)
                         .SetProperty("PublishBuilding", true)
                         .SetProperty("PublishPlatform", OsName)

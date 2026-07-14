@@ -156,6 +156,7 @@ Assert-True ($nukeBuildText.Contains('SetProperty("ArchiveOnBuild", enableCodeSi
 Assert-True ($nukeBuildText.Contains('SetProperty("BuildIpa", true)')) "NUKE iOS publish must keep IPA packaging enabled."
 $iosPublishProperties = [regex]::Match($nukeBuildText, '(?s)DotNetPublish\(settings =>.*?SetProject\(IosAppEntryProject\).*?if \(!EnableCodeSigning\)')
 Assert-True ($iosPublishProperties.Success) "The NUKE iOS publish block could not be validated."
+Assert-True ($iosPublishProperties.Value.Contains('SetProcessAdditionalArguments("-m:1")')) "NUKE iOS publish must serialize duplicate Avalonia project-reference builds."
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("PublishBuilding", true)')) "NUKE iOS publish must exclude non-publish fallback secrets."
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("PublishPlatform", OsName)')) "NUKE iOS publish must not inherit the macOS runner platform."
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("ClassIsland_PlatformTarget", Arch)')) "NUKE iOS publish must define the release architecture."
