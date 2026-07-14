@@ -29,6 +29,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private readonly LessonPreparationNotificationTimeline _lessonPreparationTimeline;
     private readonly CancellationTokenSource _cancellation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
+    private readonly IosNotificationMutationGate _notificationMutationGate = new();
     private readonly IosLessonNotificationScheduler _scheduler;
     private readonly DispatcherTimer _refreshDebounceTimer;
     private readonly DispatcherTimer _attachedSettingsScanTimer;
@@ -49,10 +50,13 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private IosNotificationQueueConsumer? _queueConsumer;
     private IReadOnlyList<IosLessonNotificationRequest>? _lastRequests;
     private bool? _lastAuthorizationState;
+    private bool _isScheduleSynchronized;
     private int _refreshPending;
+    private int _forceNativeVerificationRequested;
     private bool _isStarted;
     private bool _isWorkStarted;
     private int _backgroundRefreshActive;
+    private int _isInBackground;
     private int _failureRetryScheduled;
 
     public IosLessonsNotificationCoordinator(
@@ -61,7 +65,9 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     {
         _authorizationService = authorizationService;
         _lessonPreparationTimeline = lessonPreparationTimeline;
-        _scheduler = new IosLessonNotificationScheduler(lessonPreparationTimeline);
+        _scheduler = new IosLessonNotificationScheduler(
+            lessonPreparationTimeline,
+            _notificationMutationGate);
         _refreshDebounceTimer = new DispatcherTimer
         {
             Interval = RefreshDebounceInterval
@@ -90,10 +96,18 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         AppBase.Current.AppStarted += OnAppStarted;
         _foregroundObserver = NSNotificationCenter.DefaultCenter.AddObserver(
             UIApplication.WillEnterForegroundNotification,
-            _ => QueueRefresh());
+            _ =>
+            {
+                Interlocked.Exchange(ref _isInBackground, 0);
+                QueueRefresh(forceNativeVerification: true);
+            });
         _backgroundObserver = NSNotificationCenter.DefaultCenter.AddObserver(
             UIApplication.DidEnterBackgroundNotification,
-            _ => QueueBackgroundRefresh());
+            _ =>
+            {
+                Interlocked.Exchange(ref _isInBackground, 1);
+                QueueBackgroundRefresh();
+            });
 
         if (AppBase.CurrentLifetime == ApplicationLifetime.Running)
         {
@@ -118,7 +132,9 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         var queueConsumer = new IosNotificationQueueConsumer(
             _authorizationService,
             _settingsService,
-            _notificationHostService);
+            _notificationHostService,
+            _exactTimeService,
+            _notificationMutationGate);
         _queueConsumer = queueConsumer;
         _scheduleFactory = new IosLessonNotificationScheduleFactory(
             _lessonsService,
@@ -140,12 +156,21 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         QueueRefresh();
     }
 
-    private void QueueRefresh() => _ = QueueRefreshAsync();
+    private void QueueRefresh(bool forceNativeVerification = false)
+    {
+        if (forceNativeVerification)
+        {
+            Interlocked.Exchange(ref _forceNativeVerificationRequested, 1);
+        }
+
+        _ = QueueRefreshAsync();
+    }
 
     private async Task QueueRefreshAsync()
     {
         if (!_isWorkStarted ||
             _scheduleFactory == null ||
+            Volatile.Read(ref _isInBackground) != 0 ||
             _cancellation.IsCancellationRequested)
         {
             return;
@@ -164,7 +189,13 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             do
             {
                 Interlocked.Exchange(ref _refreshPending, 0);
-                await RefreshOnceAsync(_cancellation.Token);
+                var forceNativeVerification = Interlocked.Exchange(
+                    ref _forceNativeVerificationRequested,
+                    0) != 0;
+                await RefreshOnceAsync(
+                    _cancellation.Token,
+                    forceNativeVerification,
+                    allowLargeMutations: true);
             }
             while (Volatile.Read(ref _refreshPending) != 0 &&
                    !_cancellation.IsCancellationRequested);
@@ -210,7 +241,10 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         }, FailureRetryDelay);
     }
 
-    private async Task RefreshOnceAsync(CancellationToken cancellationToken)
+    private async Task RefreshOnceAsync(
+        CancellationToken cancellationToken,
+        bool forceNativeVerification,
+        bool allowLargeMutations)
     {
         var scheduleFactory = _scheduleFactory;
         if (scheduleFactory == null)
@@ -218,26 +252,55 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             return;
         }
 
-        var authorized = await _authorizationService.RequestAuthorizationIfNeededAsync();
-        var requests = authorized
+        var schedulingEnabled = scheduleFactory.IsSchedulingEnabled;
+        IReadOnlyList<IosLessonNotificationRequest> candidateRequests = schedulingEnabled
             ? scheduleFactory.Create()
             : Array.Empty<IosLessonNotificationRequest>();
-        if (_lastAuthorizationState == authorized &&
+        var shouldUseSystemNotifications = candidateRequests.Count > 0;
+        var authorized = shouldUseSystemNotifications &&
+                         await _authorizationService.RequestAuthorizationIfNeededAsync();
+        IReadOnlyList<IosLessonNotificationRequest> requests = authorized
+            ? candidateRequests
+            : Array.Empty<IosLessonNotificationRequest>();
+        if (!forceNativeVerification &&
+            _isScheduleSynchronized &&
+            _lastAuthorizationState == authorized &&
             _lastRequests != null &&
             _lastRequests.SequenceEqual(requests))
         {
             return;
         }
 
-        if (!await _scheduler.SynchronizeAsync(requests, cancellationToken))
+        _isScheduleSynchronized = false;
+        IosLessonNotificationSynchronizationResult synchronizationResult;
+        try
         {
-            ScheduleFailureRetry();
-            return;
+            synchronizationResult = await _scheduler.SynchronizeAsync(
+                requests,
+                allowLargeMutations,
+                confirmedResult =>
+                    _queueConsumer?.SetScheduledRequests(
+                        confirmedResult.Requests,
+                        confirmedResult.HasFallbackCapacity),
+                cancellationToken);
+        }
+        catch (IosNotificationSynchronizationRollbackException)
+        {
+            // 回滚失败后旧托管快照也不再可信，不能静默吞掉 fallback。
+            _queueConsumer?.ClearScheduledRequests();
+            throw;
         }
 
+        var synchronizedRequests = synchronizationResult.Requests;
+        _isScheduleSynchronized = true;
         _lastAuthorizationState = authorized;
-        _lastRequests = requests.ToArray();
-        if (!authorized)
+        _lastRequests = synchronizedRequests.ToArray();
+        if (synchronizationResult.ShouldRetry)
+        {
+            // 仅补发在同步期间过期、或被临时 fallback/临近旧请求占用的排程。
+            ScheduleFailureRetry();
+        }
+        if (shouldUseSystemNotifications && !authorized)
         {
             Console.WriteLine("iOS/iPadOS 通知权限未授予。可在系统设置中手动启用。");
         }
@@ -276,10 +339,14 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         {
             // 应用已终止刷新，或系统收回后台执行时间。
         }
+        catch (IosNotificationSynchronizationDeferredException exception)
+        {
+            // 保持上一份原生排程；回到前台时会强制复核并完成全量换表。
+            Console.WriteLine(exception.Message);
+        }
         catch (Exception exception)
         {
             Console.Error.WriteLine($"iOS/iPadOS 退后台前同步课程通知时发生异常：{exception}");
-            ScheduleFailureRetry();
         }
         finally
         {
@@ -299,16 +366,15 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         try
         {
             Interlocked.Exchange(ref _refreshPending, 0);
-            await RefreshOnceAsync(cancellationToken);
+            await RefreshOnceAsync(
+                cancellationToken,
+                forceNativeVerification: true,
+                allowLargeMutations: false);
         }
         finally
         {
             _refreshGate.Release();
-            if (Volatile.Read(ref _refreshPending) != 0 &&
-                !_cancellation.IsCancellationRequested)
-            {
-                QueueRefresh();
-            }
+            // 后台不启动允许全量 mutation 的普通刷新；前台事件会强制复核。
         }
     }
 
@@ -520,7 +586,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     }
 
     private void RollingScheduleRefreshTimerOnTick(object? sender, EventArgs e) =>
-        QueueRefresh();
+        QueueRefresh(forceNativeVerification: true);
 
     private HashSet<INotifyPropertyChanged> CollectAttachedSettingsSources()
     {
@@ -624,6 +690,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             _queueConsumer.Dispose();
             _queueConsumer = null;
         }
+        _isScheduleSynchronized = false;
         DetachChangeSubscriptions();
         DisposeObserver(ref _foregroundObserver);
         DisposeObserver(ref _backgroundObserver);

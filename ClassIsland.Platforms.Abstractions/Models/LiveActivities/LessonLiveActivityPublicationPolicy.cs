@@ -14,7 +14,7 @@ internal static class LessonLiveActivityPublicationPolicy
     {
         ArgumentNullException.ThrowIfNull(content);
 
-        return content.IsUpcomingLesson &&
+        return IsPreparationPhase(content) &&
                preparationNotificationTime is { } preparationTime &&
                content.EndTime is { } endTime &&
                endTime > preparationTime
@@ -23,7 +23,8 @@ internal static class LessonLiveActivityPublicationPolicy
     }
 
     /// <summary>
-    /// 正在上课和课间的活动立即可见；下一节课倒计时必须等到准备上课提醒时间。
+    /// 正在上课和普通课间的活动立即可见；只有课前准备阶段的
+    /// “下一节课”倒计时需要等到准备上课提醒时间。
     /// </summary>
     public static bool ShouldPublish(
         LessonLiveActivityContent content,
@@ -37,7 +38,7 @@ internal static class LessonLiveActivityPublicationPolicy
             return false;
         }
 
-        if (!content.IsUpcomingLesson)
+        if (!IsPreparationPhase(content))
         {
             return true;
         }
@@ -45,4 +46,7 @@ internal static class LessonLiveActivityPublicationPolicy
         return preparationNotificationTime is { } preparationTime &&
                now >= preparationTime;
     }
+
+    private static bool IsPreparationPhase(LessonLiveActivityContent content) =>
+        content.IsUpcomingLesson && content.Phase == LessonLiveActivityPhase.None;
 }

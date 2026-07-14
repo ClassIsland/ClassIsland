@@ -12,6 +12,33 @@ internal sealed class LessonPreparationNotificationTimeline
     private readonly Dictionary<string, PreparationTiming> _preparationTimings = new(StringComparer.Ordinal);
 
     /// <summary>
+    /// 当实时活动可使用的准备提醒发布时间发生变化时触发。
+    /// </summary>
+    public event EventHandler? PublicationTimeChanged;
+
+    /// <summary>
+    /// 无副作用地计算一次新准备提醒应使用的候选时间。
+    /// </summary>
+    public DateTimeOffset? GetCandidateNotificationTime(
+        DateTimeOffset plannedPreparationAt,
+        DateTimeOffset lessonStartAt,
+        DateTimeOffset systemNow)
+    {
+        if (lessonStartAt <= plannedPreparationAt || lessonStartAt <= systemNow)
+        {
+            return null;
+        }
+
+        if (plannedPreparationAt > systemNow + SchedulingSafetyMargin)
+        {
+            return plannedPreparationAt;
+        }
+
+        var catchUpFireAt = CeilingToWholeSecond(systemNow + CatchUpDelay);
+        return lessonStartAt > catchUpFireAt ? catchUpFireAt : null;
+    }
+
+    /// <summary>
     /// 由通知计划器登记有效触发时间。错过原计划时只登记一次补发时间。
     /// </summary>
     public DateTimeOffset? PlanNotification(
@@ -26,43 +53,57 @@ internal sealed class LessonPreparationNotificationTimeline
             return null;
         }
 
+        var candidateFireAt = GetCandidateNotificationTime(
+            plannedPreparationAt,
+            lessonStartAt,
+            systemNow);
+
+        DateTimeOffset? fireAt;
+        var publicationTimeChanged = false;
         lock (_syncRoot)
         {
             RemoveExpiredTimings(systemNow);
-            if (plannedPreparationAt > systemNow + SchedulingSafetyMargin)
+            if (candidateFireAt == plannedPreparationAt)
             {
-                RememberPlannedTiming(
+                publicationTimeChanged = RememberPlannedTiming(
                     notificationIdentifier,
                     plannedPreparationAt,
                     lessonStartAt,
                     plannedPreparationAt);
-                return plannedPreparationAt;
+                fireAt = plannedPreparationAt;
             }
-
-            if (_preparationTimings.TryGetValue(notificationIdentifier, out var existing) &&
-                existing.PlannedPreparationAt == plannedPreparationAt &&
-                existing.LessonStartAt == lessonStartAt)
+            else if (_preparationTimings.TryGetValue(notificationIdentifier, out var existing) &&
+                     existing.PlannedPreparationAt == plannedPreparationAt &&
+                     existing.LessonStartAt == lessonStartAt &&
+                     (existing.IsScheduled ||
+                      existing.FireAt > systemNow + SchedulingSafetyMargin))
             {
-                if (existing.IsScheduled ||
-                    existing.FireAt > systemNow + SchedulingSafetyMargin)
+                fireAt = existing.FireAt;
+            }
+            else
+            {
+                if (candidateFireAt is null)
                 {
-                    return existing.FireAt;
+                    fireAt = null;
+                }
+                else
+                {
+                    RememberPlannedTiming(
+                        notificationIdentifier,
+                        plannedPreparationAt,
+                        lessonStartAt,
+                        candidateFireAt.Value);
+                    fireAt = candidateFireAt.Value;
                 }
             }
-
-            var catchUpFireAt = CeilingToWholeSecond(systemNow + CatchUpDelay);
-            if (lessonStartAt <= catchUpFireAt)
-            {
-                return null;
-            }
-
-            RememberPlannedTiming(
-                notificationIdentifier,
-                plannedPreparationAt,
-                lessonStartAt,
-                catchUpFireAt);
-            return catchUpFireAt;
         }
+
+        if (publicationTimeChanged)
+        {
+            OnPublicationTimeChanged();
+        }
+
+        return fireAt;
     }
 
     /// <summary>
@@ -96,24 +137,37 @@ internal sealed class LessonPreparationNotificationTimeline
     }
 
     /// <summary>
-    /// 仅保留本轮仍会交给系统调度的准备提醒。
+    /// 仅保留本轮经系统最终确认仍存在的准备提醒；已经到达触发时间的
+    /// 已确认提醒视为可能已经送达，并保留至开课。
     /// </summary>
     public void ReconcileScheduledNotifications(
-        IEnumerable<string> notificationIdentifiers,
+        IEnumerable<string> confirmedNotificationIdentifiers,
         DateTimeOffset systemNow)
     {
-        ArgumentNullException.ThrowIfNull(notificationIdentifiers);
-        var identifiers = notificationIdentifiers.ToHashSet(StringComparer.Ordinal);
+        ArgumentNullException.ThrowIfNull(confirmedNotificationIdentifiers);
+        var identifiers = confirmedNotificationIdentifiers.ToHashSet(StringComparer.Ordinal);
+        var publicationTimeChanged = false;
         lock (_syncRoot)
         {
             RemoveExpiredTimings(systemNow);
             foreach (var identifier in _preparationTimings.Keys
                          .Where(x => !identifiers.Contains(x) &&
-                                     !_preparationTimings[x].IsScheduled)
+                                     ShouldRemoveMissingTiming(
+                                         _preparationTimings[x],
+                                         systemNow))
                          .ToArray())
             {
+                var timing = _preparationTimings[identifier];
+                publicationTimeChanged |= timing.IsScheduled ||
+                                          timing.PlannedPreparationAt >
+                                          systemNow + SchedulingSafetyMargin;
                 _preparationTimings.Remove(identifier);
             }
+        }
+
+        if (publicationTimeChanged)
+        {
+            OnPublicationTimeChanged();
         }
     }
 
@@ -125,16 +179,24 @@ internal sealed class LessonPreparationNotificationTimeline
         DateTimeOffset fireAt)
     {
         ValidateIdentifier(notificationIdentifier);
+        var publicationTimeChanged = false;
         lock (_syncRoot)
         {
             if (_preparationTimings.TryGetValue(notificationIdentifier, out var timing) &&
-                timing.FireAt == fireAt)
+                timing.FireAt == fireAt &&
+                !timing.IsScheduled)
             {
                 _preparationTimings[notificationIdentifier] = timing with
                 {
                     IsScheduled = true
                 };
+                publicationTimeChanged = timing.FireAt != timing.PlannedPreparationAt;
             }
+        }
+
+        if (publicationTimeChanged)
+        {
+            OnPublicationTimeChanged();
         }
     }
 
@@ -146,11 +208,15 @@ internal sealed class LessonPreparationNotificationTimeline
         DateTimeOffset fireAt)
     {
         ValidateIdentifier(notificationIdentifier);
+        var publicationTimeChanged = false;
         lock (_syncRoot)
         {
             if (_preparationTimings.TryGetValue(notificationIdentifier, out var timing) &&
                 fireAt < timing.LessonStartAt)
             {
+                publicationTimeChanged = timing.FireAt != fireAt ||
+                                         (!timing.IsScheduled &&
+                                          timing.FireAt != timing.PlannedPreparationAt);
                 _preparationTimings[notificationIdentifier] = timing with
                 {
                     FireAt = fireAt,
@@ -158,9 +224,14 @@ internal sealed class LessonPreparationNotificationTimeline
                 };
             }
         }
+
+        if (publicationTimeChanged)
+        {
+            OnPublicationTimeChanged();
+        }
     }
 
-    private void RememberPlannedTiming(
+    private bool RememberPlannedTiming(
         string notificationIdentifier,
         DateTimeOffset plannedPreparationAt,
         DateTimeOffset lessonStartAt,
@@ -171,7 +242,7 @@ internal sealed class LessonPreparationNotificationTimeline
             existing.LessonStartAt == lessonStartAt &&
             existing.FireAt == fireAt)
         {
-            return;
+            return false;
         }
 
         _preparationTimings[notificationIdentifier] = new PreparationTiming(
@@ -179,7 +250,11 @@ internal sealed class LessonPreparationNotificationTimeline
             lessonStartAt,
             fireAt,
             IsScheduled: false);
+        return true;
     }
+
+    private void OnPublicationTimeChanged() =>
+        PublicationTimeChanged?.Invoke(this, EventArgs.Empty);
 
     private void RemoveExpiredTimings(DateTimeOffset systemNow)
     {
@@ -191,6 +266,12 @@ internal sealed class LessonPreparationNotificationTimeline
             _preparationTimings.Remove(identifier);
         }
     }
+
+    private static bool ShouldRemoveMissingTiming(
+        PreparationTiming timing,
+        DateTimeOffset systemNow) =>
+        !timing.IsScheduled ||
+        timing.FireAt > systemNow + SchedulingSafetyMargin;
 
     private static void ValidateIdentifier(string notificationIdentifier)
     {

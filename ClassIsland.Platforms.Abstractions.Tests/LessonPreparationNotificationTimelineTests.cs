@@ -32,6 +32,49 @@ public sealed class LessonPreparationNotificationTimelineTests
     }
 
     [Fact]
+    public void CandidateTime_MatchesPlannerWithoutRegisteringTimelineState()
+    {
+        var timeline = new LessonPreparationNotificationTimeline();
+        var futurePlanned = Now.AddMinutes(4);
+        var futureStart = Now.AddMinutes(14);
+        var missedPlanned = Now.AddMinutes(-1);
+        var missedStart = Now.AddMinutes(10);
+
+        Assert.Equal(
+            futurePlanned,
+            timeline.GetCandidateNotificationTime(
+                futurePlanned,
+                futureStart,
+                Now));
+        Assert.Equal(
+            Now.AddSeconds(2),
+            timeline.GetCandidateNotificationTime(
+                missedPlanned,
+                missedStart,
+                Now));
+        Assert.Null(timeline.GetCandidateNotificationTime(
+            missedPlanned,
+            Now.AddSeconds(2),
+            Now));
+
+        Assert.Null(timeline.GetLiveActivityPublicationTime(
+            "missed.prepare",
+            missedPlanned,
+            missedStart,
+            Now));
+        Assert.Equal(
+            timeline.GetCandidateNotificationTime(
+                missedPlanned,
+                missedStart,
+                Now),
+            timeline.PlanNotification(
+                "missed.prepare",
+                missedPlanned,
+                missedStart,
+                Now));
+    }
+
+    [Fact]
     public void MissedPreparation_WaitsForPlannerAndSharesCatchUpTime()
     {
         var timeline = new LessonPreparationNotificationTimeline();
@@ -148,7 +191,59 @@ public sealed class LessonPreparationNotificationTimelineTests
     }
 
     [Fact]
-    public void Reconcile_PreservesConfirmedPreparationUntilLessonStarts()
+    public void Reconcile_PreservesConfirmedPreparationStillPresentInSystem()
+    {
+        var timeline = new LessonPreparationNotificationTimeline();
+        var planned = Now.AddMinutes(4);
+        var lessonStart = Now.AddMinutes(14);
+        timeline.PlanNotification("lesson.prepare", planned, lessonStart, Now);
+        timeline.ConfirmNotificationScheduled("lesson.prepare", planned);
+
+        timeline.ReconcileScheduledNotifications(
+            ["lesson.prepare"],
+            planned.AddSeconds(1));
+
+        Assert.Equal(
+            planned,
+            timeline.GetLiveActivityPublicationTime(
+                "lesson.prepare",
+                planned,
+                lessonStart,
+                planned.AddSeconds(2)));
+
+        timeline.ReconcileScheduledNotifications([], lessonStart);
+        Assert.Null(timeline.GetLiveActivityPublicationTime(
+            "lesson.prepare",
+            planned,
+            lessonStart,
+            lessonStart));
+    }
+
+    [Fact]
+    public void Reconcile_RevokesMissingConfirmedPreparationBeforeFireTime()
+    {
+        var timeline = new LessonPreparationNotificationTimeline();
+        var changeCount = 0;
+        timeline.PublicationTimeChanged += (_, _) => changeCount++;
+        var planned = Now.AddMinutes(4);
+        var lessonStart = Now.AddMinutes(14);
+        timeline.PlanNotification("lesson.prepare", planned, lessonStart, Now);
+        timeline.ConfirmNotificationScheduled("lesson.prepare", planned);
+        Assert.Equal(1, changeCount);
+
+        timeline.ReconcileScheduledNotifications([], Now.AddSeconds(1));
+        timeline.ReconcileScheduledNotifications([], Now.AddSeconds(1));
+
+        Assert.Equal(2, changeCount);
+        Assert.Null(timeline.GetLiveActivityPublicationTime(
+            "lesson.prepare",
+            planned,
+            lessonStart,
+            planned.AddSeconds(2)));
+    }
+
+    [Fact]
+    public void Reconcile_PreservesDeliveredPreparationUntilLessonStarts()
     {
         var timeline = new LessonPreparationNotificationTimeline();
         var planned = Now.AddMinutes(4);
@@ -247,6 +342,71 @@ public sealed class LessonPreparationNotificationTimelineTests
             planned,
             lessonStart,
             Now));
+    }
+
+    [Fact]
+    public void FuturePreparation_RaisesChangeOnlyWhenPlannedTimeChanges()
+    {
+        var timeline = new LessonPreparationNotificationTimeline();
+        var changeCount = 0;
+        timeline.PublicationTimeChanged += (_, _) => changeCount++;
+        var planned = Now.AddMinutes(4);
+        var lessonStart = Now.AddMinutes(14);
+
+        timeline.PlanNotification("lesson.prepare", planned, lessonStart, Now);
+        Assert.Equal(1, changeCount);
+        timeline.RestoreNotificationScheduled("lesson.prepare", planned);
+        Assert.Equal(1, changeCount);
+        timeline.PlanNotification("lesson.prepare", planned, lessonStart, Now);
+        Assert.Equal(1, changeCount);
+
+        timeline.PlanNotification(
+            "lesson.prepare",
+            planned.AddMinutes(1),
+            lessonStart.AddMinutes(1),
+            Now);
+        Assert.Equal(2, changeCount);
+    }
+
+    [Fact]
+    public void CatchUpConfirmation_RaisesOneChangeForEffectiveFireTime()
+    {
+        var timeline = new LessonPreparationNotificationTimeline();
+        var changeCount = 0;
+        timeline.PublicationTimeChanged += (_, _) =>
+            Interlocked.Increment(ref changeCount);
+        var planned = Now.AddMinutes(-1);
+        var lessonStart = Now.AddMinutes(10);
+        var firstAttempt = timeline.PlanNotification(
+            "lesson.prepare",
+            planned,
+            lessonStart,
+            Now);
+        var effectiveAttempt = timeline.PlanNotification(
+            "lesson.prepare",
+            planned,
+            lessonStart,
+            firstAttempt!.Value);
+
+        timeline.ConfirmNotificationScheduled(
+            "lesson.prepare",
+            firstAttempt.Value);
+        Assert.Equal(0, changeCount);
+        timeline.ConfirmNotificationScheduled(
+            "lesson.prepare",
+            effectiveAttempt!.Value);
+        timeline.ConfirmNotificationScheduled(
+            "lesson.prepare",
+            effectiveAttempt.Value);
+
+        Assert.Equal(1, changeCount);
+        Assert.Equal(
+            effectiveAttempt,
+            timeline.GetLiveActivityPublicationTime(
+                "lesson.prepare",
+                planned,
+                lessonStart,
+                effectiveAttempt.Value.AddTicks(-1)));
     }
 
     [Theory]

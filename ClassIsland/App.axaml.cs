@@ -1344,13 +1344,35 @@ public partial class App : AppBase, IAppHost
         try
         {
             await EndAppleMobileLiveActivityAsync();
-            await CommonTaskDialogs.ShowDialog(
-                "需要从 App 切换器结束应用",
-                "iOS 不允许 ClassIsland 自行退出或重新启动。请打开 App 切换器，向上滑动 ClassIsland 卡片以结束应用；如果本次操作需要重启，请随后从主屏幕重新打开。");
+            var result = await new FATaskDialog
+            {
+                Header = "需要从 App 切换器结束应用",
+                Content = "iOS 不允许 ClassIsland 自行退出或重新启动。" +
+                          "请打开 App 切换器，向上滑动 ClassIsland 卡片以结束应用；" +
+                          "如果本次操作需要重启，请随后从主屏幕重新打开。" +
+                          "若不再需要结束应用，请点击“取消本次关闭”恢复实时活动。",
+                XamlRoot = GetRootWindow(),
+                Buttons =
+                [
+                    new FATaskDialogButton("取消本次关闭", true),
+                    new FATaskDialogButton("我知道了", false)
+                    {
+                        IsDefault = true
+                    }
+                ]
+            }.ShowAsync();
+            if (!Equals(result, false))
+            {
+                PlatformServices.AppLifetimeService
+                    .ResumeAfterManualTerminationCanceled();
+                Logger?.LogInformation("用户取消了 iOS 手动结束操作，已恢复平台资源。");
+            }
         }
         catch (Exception exception)
         {
             Logger?.LogError(exception, "无法显示 iOS 手动重新打开提示。");
+            PlatformServices.AppLifetimeService
+                .ResumeAfterManualTerminationCanceled();
         }
         finally
         {

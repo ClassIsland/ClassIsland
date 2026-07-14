@@ -52,7 +52,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
         UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
         PlatformServices.AppLifetimeService = new IosAppLifetimeService(
-            PrepareForManualTerminationAsync);
+            PrepareForManualTerminationAsync,
+            ResumeAfterManualTerminationCanceled);
         PlatformServices.FilePickerService = new IosPlatformFilePickerService();
         PlatformServices.LauncherService = new IosLauncherService();
         PlatformServices.LiveActivityService = new IosLiveActivityService();
@@ -184,8 +185,13 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private Task PrepareForManualTerminationAsync(
         CancellationToken cancellationToken)
     {
-        return _liveActivityCoordinator?.StopAndEndAsync(cancellationToken)
+        return _liveActivityCoordinator?.EndCurrentAsync(cancellationToken)
                ?? Task.CompletedTask;
+    }
+
+    private void ResumeAfterManualTerminationCanceled()
+    {
+        _liveActivityCoordinator?.ResumeAfterManualTerminationCanceled();
     }
 
 #if DEVELOPER_PREVIEW

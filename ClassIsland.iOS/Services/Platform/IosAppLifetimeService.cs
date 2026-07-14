@@ -6,7 +6,8 @@ namespace ClassIsland.iOS.Services.Platform;
 /// 遵循 iOS 生命周期约束；系统不允许应用自行重新拉起进程。
 /// </summary>
 internal sealed class IosAppLifetimeService(
-    Func<CancellationToken, Task> prepareForManualTerminationAsync)
+    Func<CancellationToken, Task> prepareForManualTerminationAsync,
+    Action resumeAfterManualTerminationCanceled)
     : IAppLifetimeService
 {
     public void Shutdown()
@@ -26,5 +27,10 @@ internal sealed class IosAppLifetimeService(
         CancellationToken cancellationToken = default)
     {
         return prepareForManualTerminationAsync(cancellationToken);
+    }
+
+    public void ResumeAfterManualTerminationCanceled()
+    {
+        resumeAfterManualTerminationCanceled();
     }
 }

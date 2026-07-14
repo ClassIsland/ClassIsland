@@ -81,7 +81,7 @@ public sealed class LiveActivityContractsTests
     }
 
     [Fact]
-    public void PublicationPolicy_GatesUpcomingLessonDuringBreakAtPreparationTime()
+    public void PublicationPolicy_DoesNotGateOrdinaryBreakForUpcomingLesson()
     {
         var prepareAt = new DateTimeOffset(2026, 7, 12, 14, 30, 0, TimeSpan.FromHours(8));
         var start = prepareAt.AddMinutes(10);
@@ -91,7 +91,7 @@ public sealed class LiveActivityContractsTests
             IsUpcomingLesson = true
         };
 
-        Assert.False(LessonLiveActivityPublicationPolicy.ShouldPublish(
+        Assert.True(LessonLiveActivityPublicationPolicy.ShouldPublish(
             upcoming,
             prepareAt.AddTicks(-1),
             prepareAt));
@@ -99,8 +99,12 @@ public sealed class LiveActivityContractsTests
             upcoming,
             prepareAt,
             prepareAt));
+        Assert.True(LessonLiveActivityPublicationPolicy.ShouldPublish(
+            upcoming,
+            prepareAt.AddMinutes(-30),
+            null));
         Assert.Equal(
-            prepareAt,
+            upcoming.StartTime,
             LessonLiveActivityPublicationPolicy.AlignUpcomingProgressStart(
                 upcoming,
                 prepareAt).StartTime);

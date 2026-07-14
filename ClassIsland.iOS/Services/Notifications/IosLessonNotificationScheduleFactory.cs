@@ -23,14 +23,31 @@ internal sealed class IosLessonNotificationScheduleFactory(
     LessonPreparationNotificationTimeline lessonPreparationTimeline)
 {
     internal const int MaximumPendingNotifications = 60;
-    private const int MinimumPlanningHorizonDays = 7;
     private const int MaximumPlanningHorizonDays = 60;
 
-    private static readonly Guid ProviderGuid = Guid.Parse(
-        "08F0D9C3-C770-4093-A3D0-02F3D90C24BC");
+    private static readonly Guid ProviderGuid =
+        IosNotificationSchedulingPolicy.ClassNotificationProviderId;
 
     internal ClassNotificationSettings ProviderSettings { get; } =
         notificationHostService.GetNotificationProviderSettings<ClassNotificationSettings>(ProviderGuid);
+
+    internal bool IsSchedulingEnabled
+    {
+        get
+        {
+            var appSettings = settingsService.Settings;
+            var providerEnabled =
+                !appSettings.NotificationProvidersEnableStates.TryGetValue(
+                    ProviderGuid.ToString(),
+                    out var configuredProviderEnabled) ||
+                configuredProviderEnabled;
+            return IosNotificationSchedulingPolicy.ShouldRequestAuthorization(
+                appSettings.IsNotificationEnabled,
+                providerEnabled,
+                IosNotificationSchedulingPolicy.SupportedChannelIds.Select(
+                    x => GetDeliveryOptions(x).Enabled));
+        }
+    }
 
     public IReadOnlyList<IosLessonNotificationRequest> Create()
     {
@@ -43,6 +60,8 @@ internal sealed class IosLessonNotificationScheduleFactory(
         var logicalNow = exactTimeService.GetCurrentLocalDateTime();
         var systemNow = DateTimeOffset.Now;
         var requests = new List<IosLessonNotificationRequest>();
+        var preparationCandidates = new Dictionary<string, PreparationCandidate>(
+            StringComparer.Ordinal);
 
         for (var dayOffset = 0; dayOffset < MaximumPlanningHorizonDays; dayOffset++)
         {
@@ -55,25 +74,49 @@ internal sealed class IosLessonNotificationScheduleFactory(
 
             AddDayRequests(
                 requests,
+                preparationCandidates,
                 classPlan,
                 date,
                 logicalNow,
                 systemNow,
                 providerSettings);
-
-            if (dayOffset + 1 >= MinimumPlanningHorizonDays &&
-                requests.Count(x => x.FireAt > systemNow.AddSeconds(1)) >=
-                MaximumPendingNotifications)
-            {
-                break;
-            }
         }
 
-        return requests
-            .Where(x => x.FireAt > systemNow.AddSeconds(1))
+        var selectedRequests = IosLessonNotificationScheduleSelector.Select(
+            requests.Where(x => x.FireAt > systemNow.AddSeconds(1)),
+            MaximumPendingNotifications);
+        var finalizedRequests = new List<IosLessonNotificationRequest>(
+            selectedRequests.Count);
+        foreach (var request in selectedRequests)
+        {
+            if (!preparationCandidates.TryGetValue(
+                    request.Identifier,
+                    out var preparationCandidate))
+            {
+                finalizedRequests.Add(request);
+                continue;
+            }
+
+            var fireAt = lessonPreparationTimeline.PlanNotification(
+                request.Identifier,
+                preparationCandidate.PlannedPreparationAt,
+                preparationCandidate.LessonStartAt,
+                systemNow);
+            if (fireAt is null)
+            {
+                continue;
+            }
+
+            finalizedRequests.Add(request with
+            {
+                FireAt = fireAt.Value,
+                IsCatchUp = fireAt.Value != preparationCandidate.PlannedPreparationAt
+            });
+        }
+
+        return finalizedRequests
             .OrderBy(x => x.FireAt)
             .ThenBy(x => x.Identifier, StringComparer.Ordinal)
-            .Take(MaximumPendingNotifications)
             .ToArray();
     }
 
@@ -161,6 +204,7 @@ internal sealed class IosLessonNotificationScheduleFactory(
 
     private void AddDayRequests(
         ICollection<IosLessonNotificationRequest> requests,
+        IDictionary<string, PreparationCandidate> preparationCandidates,
         ClassPlan classPlan,
         DateTime date,
         DateTime logicalNow,
@@ -241,13 +285,15 @@ internal sealed class IosLessonNotificationScheduleFactory(
                         : providerSettings.ClassOnPreparingText;
                 var plannedPrepareAt = startAt.AddSeconds(-prepareDeltaSeconds);
                 var identifier = $"{identifierPrefix}.prepare";
-                var effectivePrepareAt = lessonPreparationTimeline.PlanNotification(
-                    identifier,
+                var candidateFireAt = lessonPreparationTimeline.GetCandidateNotificationTime(
                     plannedPrepareAt,
                     startAt,
                     systemNow);
-                if (effectivePrepareAt is { } fireAt)
+                if (candidateFireAt is { } fireAt)
                 {
+                    preparationCandidates[identifier] = new PreparationCandidate(
+                        plannedPrepareAt,
+                        startAt);
                     requests.Add(new IosLessonNotificationRequest(
                         identifier,
                         fireAt,
@@ -255,8 +301,10 @@ internal sealed class IosLessonNotificationScheduleFactory(
                         JoinBody(
                             prepareMessage,
                             $"下节课：{subjectText}，{FormatTime(lesson.Item.StartTime)} 开始。"),
+                        IosNotificationSchedulingPolicy.PrepareOnClassChannelId,
                         prepareDelivery.PlaySound,
-                        fireAt != plannedPrepareAt));
+                        fireAt != plannedPrepareAt,
+                        identifierPrefix));
                 }
             }
 
@@ -270,7 +318,9 @@ internal sealed class IosLessonNotificationScheduleFactory(
                     startAt,
                     EnsureText(effectiveSettings.ClassOnMaskText, "上课"),
                     $"{subjectText} · {FormatTime(lesson.Item.StartTime)}–{FormatTime(lesson.Item.EndTime)}",
-                    onClassDelivery.PlaySound));
+                    IosNotificationSchedulingPolicy.OnClassChannelId,
+                    onClassDelivery.PlaySound,
+                    ChainId: identifierPrefix));
             }
         }
 
@@ -307,16 +357,20 @@ internal sealed class IosLessonNotificationScheduleFactory(
                     systemNow),
                 EnsureText(effectiveSettings.ClassOffMaskText, "课间休息"),
                 body,
+                IosNotificationSchedulingPolicy.OnBreakingChannelId,
                 breakingDelivery.PlaySound));
         }
     }
 
-    private (bool Enabled, bool PlaySound) GetDeliveryOptions(string channelId)
+    private (bool Enabled, bool PlaySound) GetDeliveryOptions(string channelId) =>
+        GetDeliveryOptions(Guid.Parse(channelId));
+
+    private (bool Enabled, bool PlaySound) GetDeliveryOptions(Guid channelId)
     {
         var settings = settingsService.Settings;
         NotificationSettings? effectiveSettings = null;
         if (settings.NotificationChannelsNotifySettings.TryGetValue(
-                Guid.Parse(channelId).ToString(),
+                channelId.ToString(),
                 out var channelSettings) &&
             channelSettings.IsSettingsEnabled)
         {
@@ -363,6 +417,10 @@ internal sealed class IosLessonNotificationScheduleFactory(
         string.Join(
             Environment.NewLine,
             parts.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x!.Trim()));
+
+    private sealed record PreparationCandidate(
+        DateTimeOffset PlannedPreparationAt,
+        DateTimeOffset LessonStartAt);
 
     private sealed record LessonEntry(
         int ClassIndex,

@@ -6,7 +6,10 @@ import WidgetKit
 struct ClassIslandLiveActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ClassIslandActivityAttributes.self) { context in
-            ClassIslandLockScreenView(state: context.state)
+            ClassIslandLockScreenView(
+                state: context.state,
+                isStale: context.classIslandIsStale
+            )
                 .widgetURL(context.state.deepLinkURL)
                 .activityBackgroundTint(Color.black.opacity(0.88))
                 .activitySystemActionForegroundColor(.white)
@@ -38,7 +41,11 @@ struct ClassIslandLiveActivityWidget: Widget {
                                 .font(.subheadline)
                                 .lineLimit(2)
                         }
-                        ClassIslandProgressView(state: context.state)
+                        if context.classIslandIsStale {
+                            ClassIslandStaleNotice()
+                        } else {
+                            ClassIslandProgressView(state: context.state)
+                        }
                     }
                 }
             } compactLeading: {
@@ -54,10 +61,17 @@ struct ClassIslandLiveActivityWidget: Widget {
                     }
                 }
             } compactTrailing: {
-                ClassIslandIslandTimer(state: context.state)
+                if context.classIslandIsStale {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                } else {
+                    ClassIslandIslandTimer(state: context.state)
+                }
             } minimal: {
-                Image(systemName: context.state.phase.symbolName)
-                    .foregroundStyle(context.state.phase.tint)
+                Image(systemName: context.classIslandIsStale
+                      ? "exclamationmark.triangle.fill"
+                      : context.state.phase.symbolName)
+                    .foregroundStyle(context.classIslandIsStale ? .orange : context.state.phase.tint)
             }
             .widgetURL(context.state.deepLinkURL)
             .keylineTint(context.state.phase.tint)
@@ -67,6 +81,7 @@ struct ClassIslandLiveActivityWidget: Widget {
 
 private struct ClassIslandLockScreenView: View {
     let state: ClassIslandActivityAttributes.ContentState
+    let isStale: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -99,11 +114,27 @@ private struct ClassIslandLockScreenView: View {
                     .lineLimit(2)
             }
 
-            ClassIslandProgressView(state: state)
+            if isStale {
+                ClassIslandStaleNotice()
+            } else {
+                ClassIslandProgressView(state: state)
+            }
         }
         .padding(.horizontal, 4)
         .padding(.vertical, 2)
         .foregroundStyle(.white)
+    }
+}
+
+private struct ClassIslandStaleNotice: View {
+    var body: some View {
+        Label(
+            "课程状态可能已变化，请打开 ClassIsland 更新",
+            systemImage: "exclamationmark.triangle.fill"
+        )
+            .font(.caption)
+            .foregroundStyle(.orange)
+            .lineLimit(2)
     }
 }
 
@@ -220,5 +251,15 @@ private extension ClassIslandActivityAttributes.ContentState {
 
     var deepLinkURL: URL? {
         URL(string: deepLink)
+    }
+}
+
+private extension ActivityViewContext where Attributes == ClassIslandActivityAttributes {
+    var classIslandIsStale: Bool {
+        let hasPassedEndTime = state.endTime.map { Date() >= $0 } ?? false
+        if #available(iOS 16.2, *) {
+            return isStale || hasPassedEndTime
+        }
+        return hasPassedEndTime
     }
 }

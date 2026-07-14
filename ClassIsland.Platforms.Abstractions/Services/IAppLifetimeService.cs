@@ -22,4 +22,11 @@ public interface IAppLifetimeService
     /// </summary>
     internal Task PrepareForManualTerminationAsync(
         CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+    /// <summary>
+    /// 用户明确取消手动结束操作后，恢复为手动结束而暂停的平台资源。
+    /// </summary>
+    internal void ResumeAfterManualTerminationCanceled()
+    {
+    }
 }
