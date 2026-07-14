@@ -15,6 +15,38 @@ public sealed class ZipArchiveSafetyTests
     }
 
     [Fact]
+    public void ClassIslandDataBudget_CoversPersistentImportBudget()
+    {
+        Assert.Equal(
+            StorageItemMaterializer.DefaultMaximumFileLength,
+            ZipArchiveSafety.ClassIslandDataMaximumEntryLength);
+        Assert.True(
+            ZipArchiveSafety.ClassIslandDataMaximumTotalLength >
+            StorageItemMaterializer.DefaultMaximumTotalLength);
+        Assert.True(
+            ZipArchiveSafety.ClassIslandDataMaximumEntryCount >
+            StorageItemMaterializer.DefaultMaximumFileCount);
+    }
+
+    [Fact]
+    public void ClassIslandDataValidation_AcceptsValidArchive()
+    {
+        using var archive = CreateArchive(("ImportedFiles/item/sound.wav", "sound"));
+
+        ZipArchiveSafety.ValidateForClassIslandDataExtraction(archive);
+    }
+
+    [Fact]
+    public void ClassIslandDataValidation_UsesPortablePathRulesWithoutChangingDefaultPolicy()
+    {
+        using var archive = CreateArchive(("Config/file:stream", "content"));
+
+        ZipArchiveSafety.ValidateForExtraction(archive);
+        Assert.Throws<InvalidDataException>(() =>
+            ZipArchiveSafety.ValidateForClassIslandDataExtraction(archive));
+    }
+
+    [Fact]
     public void TraversalEntry_IsRejected()
     {
         using var archive = CreateArchive(("Profiles/../Settings.json", "{}"));

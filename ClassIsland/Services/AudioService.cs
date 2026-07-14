@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 using Microsoft.Extensions.Logging;
 using SoundFlow.Abstracts;
 using SoundFlow.Abstracts.Devices;
@@ -152,7 +153,7 @@ public class AudioService : IAudioService
 
     public async Task PlayAudioAsync(string filePath, float volume, CancellationToken? cancellationToken = null)
     {
-        using var audio = File.OpenRead(filePath);
+        using var audio = File.OpenRead(ImportedFileReference.Resolve(filePath));
         await PlayAudioAsync(audio, volume, cancellationToken);
     }
 

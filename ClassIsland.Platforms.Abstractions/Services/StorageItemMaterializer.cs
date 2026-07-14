@@ -110,7 +110,9 @@ internal sealed class StorageItemMaterializer
             {
                 var destination = GetUniquePath(
                     operationDirectory,
-                    GetSafeName(folder.Name, "Folder"));
+                    SafeArchivePath.SanitizeFileNameSegment(
+                        folder.Name,
+                        "Folder"));
                 Directory.CreateDirectory(destination);
                 await CopyFolderContentsAsync(
                     folder,
@@ -136,6 +138,45 @@ internal sealed class StorageItemMaterializer
         {
             DisposeItems(folders);
         }
+    }
+
+    /// <summary>
+    /// 清理超过指定保留时间的完整导入操作目录。
+    /// </summary>
+    public int DeleteOperationsOlderThan(TimeSpan retention)
+    {
+        if (retention < TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(retention));
+        }
+
+        if (!Directory.Exists(_stagingRoot))
+        {
+            return 0;
+        }
+
+        var cutoff = DateTime.UtcNow - retention;
+        var deleted = 0;
+        foreach (var directory in Directory.EnumerateDirectories(_stagingRoot))
+        {
+            try
+            {
+                if ((File.GetAttributes(directory) & FileAttributes.ReparsePoint) != 0 ||
+                    Directory.GetLastWriteTimeUtc(directory) > cutoff)
+                {
+                    continue;
+                }
+
+                Directory.Delete(directory, true);
+                deleted++;
+            }
+            catch
+            {
+                // 文件可能仍被正在进行的导入占用，留待下一次清理。
+            }
+        }
+
+        return deleted;
     }
 
     private async Task CopyFolderContentsAsync(
@@ -168,7 +209,9 @@ internal sealed class StorageItemMaterializer
                     {
                         var childDestination = GetUniquePath(
                             destination,
-                            GetSafeName(folder.Name, "Folder"));
+                            SafeArchivePath.SanitizeFileNameSegment(
+                                folder.Name,
+                                "Folder"));
                         Directory.CreateDirectory(childDestination);
                         await CopyFolderContentsAsync(
                             folder,
@@ -191,7 +234,7 @@ internal sealed class StorageItemMaterializer
     {
         var destination = GetUniquePath(
             destinationDirectory,
-            GetSafeName(source.Name, "File"));
+            SafeArchivePath.SanitizeFileNameSegment(source.Name, "File"));
         try
         {
             budget.BeginFile();
@@ -267,26 +310,10 @@ internal sealed class StorageItemMaterializer
         }
     }
 
-    private static string GetSafeName(string? name, string fallback)
-    {
-        var candidate = Path.GetFileName(name?.Trim());
-        if (string.IsNullOrWhiteSpace(candidate) || candidate is "." or "..")
-        {
-            return fallback;
-        }
-
-        foreach (var invalidCharacter in Path.GetInvalidFileNameChars())
-        {
-            candidate = candidate.Replace(invalidCharacter, '_');
-        }
-
-        return string.IsNullOrWhiteSpace(candidate) ? fallback : candidate;
-    }
-
     private static string GetUniquePath(string directory, string name)
     {
         var path = Path.Combine(directory, name);
-        if (!File.Exists(path) && !Directory.Exists(path))
+        if (!PortableNameExists(directory, name))
         {
             return path;
         }
@@ -296,12 +323,19 @@ internal sealed class StorageItemMaterializer
         for (var index = 2; ; index++)
         {
             path = Path.Combine(directory, $"{stem} ({index}){extension}");
-            if (!File.Exists(path) && !Directory.Exists(path))
+            if (!PortableNameExists(directory, Path.GetFileName(path)))
             {
                 return path;
             }
         }
     }
+
+    private static bool PortableNameExists(string directory, string name) =>
+        Directory.EnumerateFileSystemEntries(directory)
+            .Any(path => string.Equals(
+                Path.GetFileName(path),
+                name,
+                StringComparison.OrdinalIgnoreCase));
 
     private static void TryDeleteDirectory(string path)
     {

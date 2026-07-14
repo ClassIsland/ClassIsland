@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Platforms.Abstraction.Stubs.Services;
 
@@ -9,16 +10,24 @@ namespace ClassIsland.iOS.Services.Platform;
 /// <summary>
 /// 在 security-scoped resource 有效期间将选择内容暂存到应用沙盒。
 /// </summary>
-internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFilePickerService
+internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFilePickerService,
+    IPersistentFilePickerService
 {
-    private readonly StorageItemMaterializer _materializer;
+    private const string TemporaryPickerFolderName = "iOSFilePicker";
+    private static readonly TimeSpan TemporaryItemRetention = TimeSpan.FromDays(7);
+    private int _temporaryItemsCleaned;
 
-    public IosPlatformFilePickerService()
+    private StorageItemMaterializer CreateTemporaryMaterializer()
     {
-        // 部分调用方会长期保存所选图片/音频路径，整包导入也需要跨越一次
-        // 用户手动重开，因此不能使用可能被系统清理的 Caches 目录。
-        _materializer = new StorageItemMaterializer(
-            CommonDirectories.AppImportedFilesFolderPath);
+        var materializer = new StorageItemMaterializer(Path.Combine(
+            CommonDirectories.AppTempFolderPath,
+            TemporaryPickerFolderName));
+        if (Interlocked.Exchange(ref _temporaryItemsCleaned, 1) == 0)
+        {
+            materializer.DeleteOperationsOlderThan(TemporaryItemRetention);
+        }
+
+        return materializer;
     }
 
     public override Task<List<string>> MaterializeFilesAsync(
@@ -26,7 +35,29 @@ internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFile
     {
         ArgumentNullException.ThrowIfNull(files);
 
-        return _materializer.MaterializeFilesAsync(files);
+        return CreateTemporaryMaterializer().MaterializeFilesAsync(files);
+    }
+
+    public async Task<List<string>> OpenPersistentFilesPickerAsync(
+        FilePickerOpenOptions options,
+        TopLevel root)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(root);
+
+        var files = await root.StorageProvider.OpenFilePickerAsync(options);
+        return await PersistentImportedFileService.ImportAsync(files);
+    }
+
+    public async Task<List<string>> OpenPersistentFoldersPickerAsync(
+        FolderPickerOpenOptions options,
+        TopLevel root)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(root);
+
+        var folders = await root.StorageProvider.OpenFolderPickerAsync(options);
+        return await PersistentImportedFileService.ImportFoldersAsync(folders);
     }
 
     public override Task<string?> SaveFilePickerAsync(
@@ -45,6 +76,6 @@ internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFile
         ArgumentNullException.ThrowIfNull(root);
 
         var folders = await root.StorageProvider.OpenFolderPickerAsync(options);
-        return await _materializer.MaterializeFoldersAsync(folders);
+        return await CreateTemporaryMaterializer().MaterializeFoldersAsync(folders);
     }
 }

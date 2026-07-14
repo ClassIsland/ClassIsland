@@ -13,6 +13,7 @@ using Avalonia.Rendering.Composition.Animations;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Views;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Services;
@@ -25,6 +26,14 @@ public partial class SplashWindow : SplashWindowBase
 {
     public ISplashService SplashService { get; } = IAppHost.GetService<ISplashService>();
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
+
+    public string SplashCustomLogoSource =>
+        ImportedFileReference.Resolve(
+            SettingsService.Settings.SplashCustomLogoSource);
+
+    public bool UseDefaultSplashLogo =>
+        string.IsNullOrWhiteSpace(
+            SettingsService.Settings.SplashCustomLogoSource);
 
     private IDisposable? _splashStatusObserver;
 

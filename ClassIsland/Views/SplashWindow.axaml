@@ -42,10 +42,10 @@
                        Height="24" 
                        VerticalAlignment="Center"
                        Margin="0 0 8 0"
-                       Classes.use-default-logo="{Binding SettingsService.Settings.SplashCustomLogoSource, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=''}">
+                       Classes.use-default-logo="{Binding UseDefaultSplashLogo}">
                     <asyncImageLoader:AdvancedImage.Styles>
                         <Style Selector="asyncImageLoader|AdvancedImage">
-                            <Setter Property="Source" Value="{Binding SettingsService.Settings.SplashCustomLogoSource}"/>
+                            <Setter Property="Source" Value="{Binding SplashCustomLogoSource}"/>
                             <Style Selector="^.use-default-logo">
                                 <Setter Property="Source" Value="/Assets/AppLogo.png"/>
                             </Style>
@@ -56,7 +56,7 @@
                            VerticalAlignment="Center"
                            FontSize="20"
                            FontWeight="Medium"
-                           IsVisible="{Binding SettingsService.Settings.SplashCustomLogoSource, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=''}">
+                           IsVisible="{Binding UseDefaultSplashLogo}">
                 </TextBlock>
             </StackPanel>
             <!-- Status -->

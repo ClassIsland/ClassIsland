@@ -367,76 +367,10 @@ public partial class DataTransferPage : UserControl
         try
         {
             ViewModel.PageIndex = 3;
-            await Task.Run(() =>
-            {
-                var appRoot = Path.GetFullPath(CommonDirectories.AppRootFolderPath);
-                Directory.CreateDirectory(appRoot);
-                using var archive = ZipFile.OpenRead(root);
-                ZipArchiveSafety.ValidateForExtraction(archive);
-                if (importEntries.HasFlag(ImportEntries.OtherConfig) && Directory.Exists(PluginService.PluginsRootPath))
-                {
-                    Directory.Delete(PluginService.PluginsRootPath, true);
-                }
+            await Task.Run(() => ImportClassIsland2Archive(
+                ImportedFileReference.Resolve(root),
+                importEntries));
 
-                foreach (var entry in archive.Entries)
-                {
-                    var normalizedName = SafeRelativePath.Normalize(entry.FullName);
-                    if (!ShouldImportEntry(normalizedName))
-                    {
-                        continue;
-                    }
-
-                    ExtractEntry(entry, appRoot, normalizedName);
-                }
-
-                return;
-
-                bool ShouldImportEntry(string entryName)
-                {
-                    if ((importEntries & ImportEntries.Settings) == ImportEntries.Settings &&
-                        entryName == "Settings.json")
-                    {
-                        return true;
-                    }
-
-                    if ((importEntries & ImportEntries.Profiles) == ImportEntries.Profiles &&
-                        (entryName == "Profiles" ||
-                         entryName.StartsWith("Profiles/", StringComparison.Ordinal)))
-                    {
-                        return true;
-                    }
-
-                    if ((importEntries & ImportEntries.OtherConfig) != ImportEntries.OtherConfig)
-                    {
-                        return false;
-                    }
-
-                    return entryName == "Config" ||
-                           entryName.StartsWith("Config/", StringComparison.Ordinal) ||
-                           entryName == "Plugins" ||
-                           entryName.StartsWith("Plugins/", StringComparison.Ordinal);
-                }
-
-                static void ExtractEntry(
-                    ZipArchiveEntry entry,
-                    string appDataRoot,
-                    string normalizedName)
-                {
-                    var targetPath = SafeRelativePath.ResolveUnderRoot(
-                        appDataRoot,
-                        normalizedName);
-
-                    if (string.IsNullOrEmpty(entry.Name))
-                    {
-                        Directory.CreateDirectory(targetPath);
-                        return;
-                    }
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(targetPath) ?? appDataRoot);
-                    entry.ExtractToFile(targetPath, true);
-                }
-            });
-            
             AppBase.Current.Restart(["-m", "--importComplete"]);
         }
         catch (Exception e)
@@ -445,6 +379,223 @@ public partial class DataTransferPage : UserControl
             this.ShowErrorToast("导入时发生意外错误", e);
         }
 
+    }
+
+    private static void ImportClassIsland2Archive(
+        string archivePath,
+        ImportEntries importEntries)
+    {
+        var hasSelection = (importEntries & (ImportEntries.Settings |
+                                             ImportEntries.Profiles |
+                                             ImportEntries.OtherConfig)) != 0;
+        if (!hasSelection)
+        {
+            return;
+        }
+
+        var allowedFiles = new HashSet<string>(StringComparer.Ordinal);
+        var allowedDirectories = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "ImportedFiles"
+        };
+        var transactionPaths = new List<string>();
+        if ((importEntries & ImportEntries.Settings) != 0)
+        {
+            allowedFiles.Add("Settings.json");
+            transactionPaths.Add("Settings.json");
+        }
+
+        if ((importEntries & ImportEntries.Profiles) != 0)
+        {
+            allowedDirectories.Add("Profiles");
+            transactionPaths.Add("Profiles");
+        }
+
+        if ((importEntries & ImportEntries.OtherConfig) != 0)
+        {
+            allowedDirectories.Add("Config");
+            allowedDirectories.Add("Plugins");
+            transactionPaths.Add("Config");
+            transactionPaths.Add("Plugins");
+        }
+
+        string? stagingPath = null;
+        try
+        {
+            stagingPath = Directory.CreateTempSubdirectory(
+                "ClassIslandDataImport-").FullName;
+            using (var archive = ZipFile.OpenRead(archivePath))
+            {
+                ZipArchiveSafety.ValidateForClassIslandDataExtraction(archive);
+                var extracted = SafeArchiveExtractor.ExtractSelected(
+                    archive,
+                    stagingPath,
+                    allowedFiles,
+                    allowedDirectories);
+                if (extracted == 0)
+                {
+                    throw new InvalidDataException(
+                        "数据文件中不包含已选择的 ClassIsland 配置。");
+                }
+            }
+
+            EnsureStagedImportContainsSelections(stagingPath, importEntries);
+            ExecuteClassIsland2ImportTransaction(
+                stagingPath,
+                transactionPaths,
+                importEntries);
+        }
+        finally
+        {
+            FileSystemDataTransaction.TryDeleteDirectory(stagingPath);
+        }
+    }
+
+    private static void ExecuteClassIsland2ImportTransaction(
+        string stagingPath,
+        IReadOnlyCollection<string> transactionPaths,
+        ImportEntries importEntries)
+    {
+        var appRoot = Path.GetFullPath(CommonDirectories.AppRootFolderPath);
+        Directory.CreateDirectory(appRoot);
+
+        void ExecuteAppTransaction()
+        {
+            var rollbackPath = Directory.CreateTempSubdirectory(
+                "ClassIslandDataImportRollback-").FullName;
+            FileSystemDataTransaction.Execute(
+                appRoot,
+                rollbackPath,
+                transactionPaths,
+                () => ApplyClassIsland2Import(
+                    stagingPath,
+                    appRoot,
+                    importEntries));
+        }
+
+        var stagedImportedFiles = Path.Combine(stagingPath, "ImportedFiles");
+        if (!ContainsAnyFile(stagedImportedFiles))
+        {
+            ExecuteAppTransaction();
+            return;
+        }
+
+        var importedRoot = Path.TrimEndingDirectorySeparator(
+            Path.GetFullPath(CommonDirectories.AppImportedFilesFolderPath));
+        var importedParent = Path.GetDirectoryName(importedRoot)
+                             ?? throw new InvalidDataException(
+                                 "无法确定持久导入文件目录的父目录。");
+        var importedDirectoryName = Path.GetFileName(importedRoot);
+        Directory.CreateDirectory(importedParent);
+        var importedRollbackPath = Directory.CreateTempSubdirectory(
+            "ClassIslandImportedFilesRollback-").FullName;
+        FileSystemDataTransaction.Execute(
+            importedParent,
+            importedRollbackPath,
+            [importedDirectoryName],
+            ExecuteAppTransaction);
+    }
+
+    private static void ApplyClassIsland2Import(
+        string stagingPath,
+        string appRoot,
+        ImportEntries importEntries)
+    {
+        if ((importEntries & ImportEntries.Settings) != 0)
+        {
+            var settingsSource = Path.Combine(stagingPath, "Settings.json");
+            if (File.Exists(settingsSource))
+            {
+                FileSystemDataTransaction.CopyFileStrict(
+                    settingsSource,
+                    Path.Combine(appRoot, "Settings.json"),
+                    true);
+            }
+        }
+
+        if ((importEntries & ImportEntries.Profiles) != 0)
+        {
+            CopyStagedDirectoryIfPresent(
+                stagingPath,
+                appRoot,
+                "Profiles");
+        }
+
+        if ((importEntries & ImportEntries.OtherConfig) != 0)
+        {
+            CopyStagedDirectoryIfPresent(stagingPath, appRoot, "Config");
+            if (Directory.Exists(Path.Combine(stagingPath, "Plugins")))
+            {
+                FileSystemDataTransaction.DeleteEntry(
+                    Path.Combine(appRoot, "Plugins"));
+                CopyStagedDirectoryIfPresent(
+                    stagingPath,
+                    appRoot,
+                    "Plugins");
+            }
+        }
+
+        var stagedImportedFiles = Path.Combine(stagingPath, "ImportedFiles");
+        if (ContainsAnyFile(stagedImportedFiles))
+        {
+            FileFolderService.CopyFolderStrict(
+                stagedImportedFiles,
+                CommonDirectories.AppImportedFilesFolderPath,
+                true);
+        }
+    }
+
+    private static void EnsureStagedImportContainsSelections(
+        string stagingPath,
+        ImportEntries importEntries)
+    {
+        if ((importEntries & ImportEntries.Settings) != 0 &&
+            !File.Exists(Path.Combine(stagingPath, "Settings.json")))
+        {
+            throw new InvalidDataException("数据文件中不包含应用设置。");
+        }
+
+        if ((importEntries & ImportEntries.Profiles) != 0 &&
+            !ContainsAnyFile(Path.Combine(stagingPath, "Profiles")))
+        {
+            throw new InvalidDataException("数据文件中不包含档案数据。");
+        }
+
+        if ((importEntries & ImportEntries.OtherConfig) != 0 &&
+            !ContainsAnyFile(Path.Combine(stagingPath, "Config")) &&
+            !ContainsAnyFile(Path.Combine(stagingPath, "Plugins")))
+        {
+            throw new InvalidDataException(
+                "数据文件中不包含其它配置或插件数据。");
+        }
+
+        AppDataConfigurationValidator.Validate(
+            stagingPath,
+            (importEntries & ImportEntries.Settings) != 0,
+            (importEntries & ImportEntries.Profiles) != 0,
+            (importEntries & ImportEntries.OtherConfig) != 0);
+    }
+
+    private static bool ContainsAnyFile(string path) =>
+        Directory.Exists(path) &&
+        Directory.EnumerateFiles(
+            path,
+            "*",
+            SearchOption.AllDirectories).Any();
+
+    private static void CopyStagedDirectoryIfPresent(
+        string stagingRoot,
+        string destinationRoot,
+        string directoryName)
+    {
+        var source = Path.Combine(stagingRoot, directoryName);
+        if (Directory.Exists(source))
+        {
+            FileFolderService.CopyFolderStrict(
+                source,
+                Path.Combine(destinationRoot, directoryName),
+                true);
+        }
     }
 
     #endregion    
@@ -566,43 +717,84 @@ public partial class DataTransferPage : UserControl
 
     private async Task CreateClassIsland2ExportArchiveAsync(string path)
     {
-        var temp = Directory.CreateTempSubdirectory("ClassIslandDataExport").FullName;
+        var temp = Directory.CreateTempSubdirectory(
+            "ClassIslandDataExport-").FullName;
+        var destination = Path.GetFullPath(path);
+        var destinationDirectory = Path.GetDirectoryName(destination)
+                                   ?? throw new InvalidOperationException(
+                                       "无法确定导出目标目录。");
+        Directory.CreateDirectory(destinationDirectory);
+        var incompletePath = Path.Combine(
+            destinationDirectory,
+            $".{Path.GetFileName(destination)}.{Guid.NewGuid():N}.tmp");
         try
         {
-            Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
-            Directory.CreateDirectory(Path.Combine(temp, "Plugins/"));
-            Directory.CreateDirectory(Path.Combine(temp, "Config/"));
+            if (ViewModel.IsProfileSelected)
+            {
+                Directory.CreateDirectory(Path.Combine(temp, "Profiles"));
+            }
+            if (ViewModel.IsOtherConfigSelected)
+            {
+                Directory.CreateDirectory(Path.Combine(temp, "Plugins"));
+                Directory.CreateDirectory(Path.Combine(temp, "Config"));
+            }
 
             await Task.Run(() =>
             {
                 if (ViewModel.IsSettingsSelected)
                 {
-                    File.Copy(
+                    FileSystemDataTransaction.CopyFileStrict(
                         Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"),
                         Path.Combine(temp, "Settings.json"));
                 }
                 if (ViewModel.IsProfileSelected)
                 {
-                    FileFolderService.CopyFolder(
-                        Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles"),
-                        Path.Combine(temp, "Profiles/"));
+                    FileFolderService.CopyFolderStrict(
+                        Path.Combine(CommonDirectories.AppRootFolderPath, "Profiles"),
+                        Path.Combine(temp, "Profiles"),
+                        true);
                 }
                 if (ViewModel.IsOtherConfigSelected)
                 {
-                    FileFolderService.CopyFolder(
+                    FileFolderService.CopyFolderStrict(
                         CommonDirectories.AppConfigPath,
-                        Path.Combine(temp, "Config/"));
-                    FileFolderService.CopyFolder(
+                        Path.Combine(temp, "Config"),
+                        true);
+                    FileFolderService.CopyFolderStrict(
                         PluginService.PluginsRootPath,
-                        Path.Combine(temp, "Plugins/"));
+                        Path.Combine(temp, "Plugins"),
+                        true);
                 }
-                File.Delete(path);
-                ZipFile.CreateFromDirectory(temp, path);
+                if ((ViewModel.IsSettingsSelected ||
+                     ViewModel.IsProfileSelected ||
+                     ViewModel.IsOtherConfigSelected) &&
+                    Directory.Exists(
+                        CommonDirectories.AppImportedFilesFolderPath))
+                {
+                    FileFolderService.CopyFolderStrict(
+                        CommonDirectories.AppImportedFilesFolderPath,
+                        Path.Combine(temp, "ImportedFiles"),
+                        true);
+                }
+
+                ZipFile.CreateFromDirectory(
+                    temp,
+                    incompletePath,
+                    CompressionLevel.NoCompression,
+                    false);
+                using (var verificationArchive = ZipFile.OpenRead(
+                           incompletePath))
+                {
+                    ZipArchiveSafety.ValidateForClassIslandDataExtraction(
+                        verificationArchive);
+                }
+                File.Move(incompletePath, destination, true);
             });
         }
         finally
         {
-            StreamExportHelper.TryDeleteTemporaryDirectory(temp);
+            FileSystemDataTransaction.TryDeleteFile(incompletePath);
+            FileSystemDataTransaction.TryDeleteDirectory(temp);
         }
     }
     #endregion

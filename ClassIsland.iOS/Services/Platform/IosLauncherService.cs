@@ -1,3 +1,4 @@
+using ClassIsland.Core.Helpers;
 using ClassIsland.Platforms.Abstraction.Services;
 using Foundation;
 
@@ -12,7 +13,18 @@ internal sealed class IosLauncherService : ILauncherService
         GetDocumentsPath,
         IosSystemUrlOpener.OpenAsync);
 
-    public Task LaunchPath(string path) => _service.LaunchPath(path);
+    public Task LaunchPath(string path)
+    {
+        path = ImportedFileReference.Resolve(path);
+        if (File.Exists(path))
+        {
+            path = Path.GetDirectoryName(path)
+                   ?? throw new DirectoryNotFoundException(
+                       "无法获取所选文件的父目录。");
+        }
+
+        return _service.LaunchPath(path);
+    }
 
     public Task LaunchUrl(string url) => _service.LaunchUrl(url);
 

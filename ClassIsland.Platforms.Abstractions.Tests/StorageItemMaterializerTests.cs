@@ -76,6 +76,80 @@ public sealed class StorageItemMaterializerTests
     }
 
     [Fact]
+    public async Task MaterializeFiles_DisposesEverySecurityScopedSelectionOnFailure()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var disposeCounts = new int[2];
+        var files = new IStorageFile[]
+        {
+            CreateCallbackStorageFile(
+                "first.txt",
+                () => Task.FromResult<Stream>(new MemoryStream([1])),
+                () => disposeCounts[0]++),
+            CreateCallbackStorageFile(
+                "failure.txt",
+                () => Task.FromException<Stream>(new IOException("read failed")),
+                () => disposeCounts[1]++)
+        };
+        var materializer = new StorageItemMaterializer(stagingRoot);
+
+        await Assert.ThrowsAsync<IOException>(() =>
+            materializer.MaterializeFilesAsync(files));
+
+        Assert.Equal([1, 1], disposeCounts);
+        Assert.Empty(Directory.EnumerateFileSystemEntries(stagingRoot));
+    }
+
+    [Fact]
+    public async Task MaterializeFiles_NormalizesNamesForCrossPlatformArchiveRoundTrip()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var files = new IStorageFile[]
+        {
+            CreateCallbackStorageFile(
+                "sound:name.",
+                () => Task.FromResult<Stream>(new MemoryStream([1])),
+                () => { }),
+            CreateCallbackStorageFile(
+                "CON.txt",
+                () => Task.FromResult<Stream>(new MemoryStream([2])),
+                () => { })
+        };
+        var materializer = new StorageItemMaterializer(stagingRoot);
+
+        var paths = await materializer.MaterializeFilesAsync(files);
+
+        Assert.Equal("sound_name", Path.GetFileName(paths[0]));
+        Assert.Equal("_CON.txt", Path.GetFileName(paths[1]));
+    }
+
+    [Fact]
+    public async Task MaterializeFiles_AvoidsCaseInsensitiveNameCollisions()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var files = new IStorageFile[]
+        {
+            CreateCallbackStorageFile(
+                "Logo.png",
+                () => Task.FromResult<Stream>(new MemoryStream([1])),
+                () => { }),
+            CreateCallbackStorageFile(
+                "logo.png",
+                () => Task.FromResult<Stream>(new MemoryStream([2])),
+                () => { })
+        };
+        var materializer = new StorageItemMaterializer(stagingRoot);
+
+        var paths = await materializer.MaterializeFilesAsync(files);
+
+        Assert.Equal("Logo.png", Path.GetFileName(paths[0]));
+        Assert.Equal("logo (2).png", Path.GetFileName(paths[1]));
+    }
+
+    [Fact]
     public async Task MaterializeFolders_RecursivelyCopiesFiles()
     {
         using var scope = new TemporaryDirectory();
@@ -261,6 +335,55 @@ public sealed class StorageItemMaterializerTests
     }
 
     [Fact]
+    public void DeleteOperationsOlderThan_MissingRootReturnsZeroWithoutCreatingIt()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = Path.Combine(scope.Path, "missing-staging");
+        var materializer = new StorageItemMaterializer(stagingRoot);
+
+        var deleted = materializer.DeleteOperationsOlderThan(TimeSpan.Zero);
+
+        Assert.Equal(0, deleted);
+        Assert.False(Directory.Exists(stagingRoot));
+    }
+
+    [Fact]
+    public void DeleteOperationsOlderThan_RejectsNegativeRetention()
+    {
+        using var scope = new TemporaryDirectory();
+        var materializer = new StorageItemMaterializer(
+            Path.Combine(scope.Path, "missing-staging"));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            materializer.DeleteOperationsOlderThan(TimeSpan.FromTicks(-1)));
+    }
+
+    [Fact]
+    public void DeleteOperationsOlderThan_DeletesExpiredAndKeepsRecentOperations()
+    {
+        using var scope = new TemporaryDirectory();
+        var stagingRoot = scope.CreateDirectory("staging");
+        var expiredDirectory = Directory.CreateDirectory(
+            Path.Combine(stagingRoot, "expired")).FullName;
+        var recentDirectory = Directory.CreateDirectory(
+            Path.Combine(stagingRoot, "recent")).FullName;
+        File.WriteAllText(Path.Combine(expiredDirectory, "expired.txt"), "expired");
+        File.WriteAllText(Path.Combine(recentDirectory, "recent.txt"), "recent");
+        Directory.SetLastWriteTimeUtc(
+            expiredDirectory,
+            DateTime.UtcNow - TimeSpan.FromDays(30));
+        var materializer = new StorageItemMaterializer(stagingRoot);
+
+        var deleted = materializer.DeleteOperationsOlderThan(
+            TimeSpan.FromDays(7));
+
+        Assert.Equal(1, deleted);
+        Assert.False(Directory.Exists(expiredDirectory));
+        Assert.True(Directory.Exists(recentDirectory));
+        Assert.True(File.Exists(Path.Combine(recentDirectory, "recent.txt")));
+    }
+
+    [Fact]
     public void TryDeleteFile_DoesNotReplaceTheOriginalFailure()
     {
         var exception = Record.Exception(
@@ -279,6 +402,29 @@ public sealed class StorageItemMaterializerTests
             "Avalonia.Platform.Storage.FileIO.BclStorageFolder",
             new DirectoryInfo(path));
 
+    private static IStorageFile CreateCallbackStorageFile(
+        string name,
+        Func<Task<Stream>> openRead,
+        Action onDisposed)
+    {
+        var file = DispatchProxy.Create<IStorageFile, CallbackDispatchProxy>();
+        ((CallbackDispatchProxy)(object)file).Handler = method => method.Name switch
+        {
+            "get_Name" => name,
+            "OpenReadAsync" => openRead(),
+            "Dispose" => Invoke(onDisposed),
+            _ => throw new NotSupportedException(
+                $"Unexpected storage file call: {method.Name}")
+        };
+        return file;
+    }
+
+    private static object? Invoke(Action action)
+    {
+        action();
+        return null;
+    }
+
     private static object CreateBclStorageItem(string typeName, object fileSystemInfo)
     {
         var type = typeof(IStorageItem).Assembly.GetType(typeName, throwOnError: true)!;
@@ -290,6 +436,17 @@ public sealed class StorageItemMaterializerTests
             ?? throw new InvalidOperationException(
                 $"Avalonia storage constructor is unavailable: {typeName}.");
         return constructor.Invoke([fileSystemInfo]);
+    }
+
+    public class CallbackDispatchProxy : DispatchProxy
+    {
+        public Func<MethodInfo, object?> Handler { get; set; } = null!;
+
+        protected override object? Invoke(
+            MethodInfo? targetMethod,
+            object?[]? args) =>
+            Handler(targetMethod ?? throw new InvalidOperationException(
+                "Proxy method is unavailable."));
     }
 
     private sealed class TemporaryDirectory : IDisposable
