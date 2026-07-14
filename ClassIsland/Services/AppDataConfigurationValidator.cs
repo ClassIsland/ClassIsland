@@ -1,4 +1,7 @@
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Text.Json;
 using ClassIsland.Core.Models.Automation;
 using ClassIsland.Core.Models.Components;
