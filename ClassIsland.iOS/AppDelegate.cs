@@ -20,7 +20,6 @@ using ClassIsland.Shared;
 using ClassIsland.Views;
 using FluentAvalonia.UI.Controls;
 using Foundation;
-using UIKit;
 using UserNotifications;
 
 namespace ClassIsland.iOS;
@@ -33,6 +32,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 {
     private LessonsLiveActivityCoordinator? _liveActivityCoordinator;
     private IosLessonsNotificationCoordinator? _lessonsNotificationCoordinator;
+    private IActivatableLifetime? _activatableLifetime;
     private readonly IosNotificationAuthorizationService _notificationAuthorizationService = new();
     private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
     private App? _app;
@@ -87,6 +87,11 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             lifetime.MainView = viewHost;
             _app = app;
             app.AppStarted += OnAppStarted;
+            _activatableLifetime = app.TryGetFeature<IActivatableLifetime>();
+            if (_activatableLifetime != null)
+            {
+                _activatableLifetime.Activated += OnActivated;
+            }
 
             var splash = new SplashView();
             splash.Show();
@@ -121,26 +126,23 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         });
     }
 
-    public override bool OpenUrl(
-        UIApplication application,
-        NSUrl url,
-        NSDictionary options)
+    private void OnActivated(object? sender, ActivatedEventArgs args)
     {
-        if (!AppNavigationUriParser.TryParseClassIslandUri(
-                url.AbsoluteString,
+        if (args is not ProtocolActivatedEventArgs protocolArguments ||
+            !AppNavigationUriParser.TryParseClassIslandUri(
+                protocolArguments.Uri.AbsoluteUri,
                 out var uri))
         {
-            return false;
+            return;
         }
 
         if (!_isAppNavigationReady)
         {
             _pendingNavigationUri = uri;
-            return true;
+            return;
         }
 
         QueueNavigation(uri!);
-        return true;
     }
 
     private void OnAppStarted(object? sender, EventArgs e)
@@ -235,6 +237,12 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     {
         if (disposing)
         {
+            if (_activatableLifetime != null)
+            {
+                _activatableLifetime.Activated -= OnActivated;
+                _activatableLifetime = null;
+            }
+
             if (_app != null)
             {
                 _app.AppStarted -= OnAppStarted;

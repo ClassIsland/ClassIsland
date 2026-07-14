@@ -100,7 +100,11 @@ Assert-True ($deviceOnlyPlatforms -eq 2) "The Live Activity extension must remai
 $plistKeys = @($infoPlist.plist.dict.key)
 Assert-True (-not ($plistKeys -contains "CFBundleDisplayName")) "Info.plist must not hard-code CFBundleDisplayName; ApplicationTitle must generate it."
 Assert-True ($liveActivityServiceText.Contains('[SupportedOSPlatform("ios15.0")]')) "The managed Live Activity bridge must declare the iOS 15.0 platform floor."
-Assert-True ([regex]::IsMatch($appDelegateText, 'OpenUrl\(\s*UIApplication application,\s*NSUrl url,\s*NSDictionary options\)')) "The AppDelegate URL callback must override the native NSDictionary signature."
+Assert-True (-not [regex]::IsMatch($appDelegateText, 'override\s+bool\s+OpenUrl')) "AvaloniaAppDelegate.OpenUrl is not virtual and must not be overridden."
+Assert-True ($appDelegateText.Contains('app.TryGetFeature<IActivatableLifetime>()')) "The AppDelegate must subscribe to Avalonia protocol activation."
+Assert-True ($appDelegateText.Contains('_activatableLifetime.Activated += OnActivated')) "The AppDelegate must handle protocol activation events."
+Assert-True ($appDelegateText.Contains('_activatableLifetime.Activated -= OnActivated')) "The AppDelegate must unsubscribe from protocol activation events."
+Assert-True ($appDelegateText.Contains('args is not ProtocolActivatedEventArgs')) "The AppDelegate must filter protocol activation events before URI navigation."
 
 Assert-True ($wrapperWorkflowText.Contains("name: Build iOS")) "The observable iOS workflow must keep the Build iOS name."
 Assert-True ($wrapperWorkflowText.Contains("uses: ./.github/workflows/_build_ios_reusable.yml")) "The Build iOS workflow must call the reusable iOS worker."
