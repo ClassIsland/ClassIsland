@@ -213,7 +213,7 @@ public partial class App
             LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(latitude=)(\d*\.?\d*)"), 2));
             LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(longitude=)(\d*\.?\d*)"), 2));
 
-            if (OperatingSystem.IsWindows())
+            if (System.OperatingSystem.IsWindows())
             {
                 builder.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Error);
             }

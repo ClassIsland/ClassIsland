@@ -102,7 +102,7 @@ Assert-True ($privacyReasons["NSPrivacyAccessedAPICategorySystemBootTime"] -cont
 $localNetworkUsageDescription = $infoPlist.SelectSingleNode('/plist/dict/key[.="NSLocalNetworkUsageDescription"]/following-sibling::string[1]')
 Assert-True (-not [string]::IsNullOrWhiteSpace($localNetworkUsageDescription.InnerText)) "The iOS app must explain local-network access used by management servers."
 
-$eventLogGate = [regex]::Match($appServicesText, '(?s)if\s*\(\s*OperatingSystem\.IsWindows\(\)\s*\)\s*\{(?<body>.*?)\}')
+$eventLogGate = [regex]::Match($appServicesText, '(?s)if\s*\(\s*(?:System\.)?OperatingSystem\.IsWindows\(\)\s*\)\s*\{(?<body>.*?)\}')
 Assert-True ($eventLogGate.Success) "EventLogLoggerProvider must be guarded by OperatingSystem.IsWindows()."
 Assert-True ($eventLogGate.Groups["body"].Value.Contains("builder.AddFilter<EventLogLoggerProvider>")) "The Windows logging gate must contain the EventLog filter."
 Assert-True (-not $pluginLoadContextText.Contains('[SupportedOSPlatform("macos")]')) "The path-only Mac plugin resolver must not carry an inaccurate macOS platform annotation."
