@@ -16,7 +16,7 @@ internal static class SafeRelativePath
 
         var normalized = relativePath.Replace('\\', '/').TrimEnd('/');
         if (normalized.Length == 0 ||
-            normalized.StartsWith('/', StringComparison.Ordinal) ||
+            normalized.StartsWith("/", StringComparison.Ordinal) ||
             (normalized.Length >= 3 &&
              char.IsAsciiLetter(normalized[0]) &&
              normalized[1] == ':' &&
