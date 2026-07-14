@@ -70,9 +70,10 @@ public sealed class StorageItemMaterializerTests
 
         Assert.Equal("schedule.yaml", Path.GetFileName(path));
         Assert.Equal("lessons: []", await File.ReadAllTextAsync(path));
-        Assert.True(Path.GetFullPath(path).StartsWith(
+        Assert.StartsWith(
             Path.GetFullPath(stagingRoot) + Path.DirectorySeparatorChar,
-            StringComparison.Ordinal));
+            Path.GetFullPath(path),
+            StringComparison.Ordinal);
     }
 
     [Fact]

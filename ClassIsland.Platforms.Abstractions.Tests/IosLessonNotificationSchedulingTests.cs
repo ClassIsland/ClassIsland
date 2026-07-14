@@ -55,7 +55,9 @@ public sealed class IosLessonNotificationSchedulingTests
         Assert.Equal(60, result.Count);
         foreach (var chain in requests.GroupBy(x => x.ChainId))
         {
-            Assert.Contains(result.Count(x => x.ChainId == chain.Key), [0, 2]);
+            Assert.Contains(
+                result.Count(x => x.ChainId == chain.Key),
+                new[] { 0, 2 });
         }
         Assert.Equal(
             7,
@@ -100,7 +102,9 @@ public sealed class IosLessonNotificationSchedulingTests
                  DateOnly.FromDateTime(firstDay.AddDays(39).LocalDateTime));
         foreach (var chain in requests.Where(x => x.ChainId != null).GroupBy(x => x.ChainId))
         {
-            Assert.Contains(result.Count(x => x.ChainId == chain.Key), [0, 2]);
+            Assert.Contains(
+                result.Count(x => x.ChainId == chain.Key),
+                new[] { 0, 2 });
         }
     }
 
