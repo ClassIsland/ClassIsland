@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Build.Tasks;
 using Nuke.Common;
 using Nuke.Common.IO;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
 using static Nuke.Common.EnvironmentInfo;
@@ -110,7 +111,7 @@ partial class Build
                         .SetProject(IosAppEntryProject)
                         // iOS 的多层项目引用会以不同全局属性重复构建 Avalonia 项目；
                         // 串行执行可避免它们同时写入同一个 obj/Avalonia/resources 文件。
-                        .SetProcessAdditionalArguments("-m:1")
+                        .SetProcessArgumentConfigurator(arguments => arguments.Add("-m:1"))
                         .SetConfiguration(Configuration)
                         .SetProperty("PublishBuilding", true)
                         .SetProperty("PublishPlatform", OsName)
