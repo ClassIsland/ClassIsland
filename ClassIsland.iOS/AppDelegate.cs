@@ -124,7 +124,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     public override bool OpenUrl(
         UIApplication application,
         NSUrl url,
-        UIApplicationOpenUrlOptions options)
+        NSDictionary options)
     {
         if (!AppNavigationUriParser.TryParseClassIslandUri(
                 url.AbsoluteString,

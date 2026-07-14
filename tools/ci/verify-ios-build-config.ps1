@@ -36,6 +36,7 @@ $coverageVerificationText = Read-RepositoryFile "tools/ci/verify-cobertura-cover
 $nukeBuildText = Read-RepositoryFile "build/Build.App.cs"
 $nukeSchema = Read-RepositoryFile ".nuke/build.schema.json" | ConvertFrom-Json
 $liveActivityServiceText = Read-RepositoryFile "ClassIsland.iOS/Services/LiveActivities/IosLiveActivityService.cs"
+$appDelegateText = Read-RepositoryFile "ClassIsland.iOS/AppDelegate.cs"
 
 $supportedVersion = $iosProject.SelectSingleNode("/Project/PropertyGroup/SupportedOSPlatformVersion").InnerText
 Assert-True ($supportedVersion -eq "15.0") "The iOS app minimum supported version must be 15.0."
@@ -98,6 +99,7 @@ Assert-True ($deviceOnlyPlatforms -eq 2) "The Live Activity extension must remai
 $plistKeys = @($infoPlist.plist.dict.key)
 Assert-True (-not ($plistKeys -contains "CFBundleDisplayName")) "Info.plist must not hard-code CFBundleDisplayName; ApplicationTitle must generate it."
 Assert-True ($liveActivityServiceText.Contains('[SupportedOSPlatform("ios15.0")]')) "The managed Live Activity bridge must declare the iOS 15.0 platform floor."
+Assert-True ([regex]::IsMatch($appDelegateText, 'OpenUrl\(\s*UIApplication application,\s*NSUrl url,\s*NSDictionary options\)')) "The AppDelegate URL callback must override the native NSDictionary signature."
 
 Assert-True ($wrapperWorkflowText.Contains("name: Build iOS")) "The observable iOS workflow must keep the Build iOS name."
 Assert-True ($wrapperWorkflowText.Contains("uses: ./.github/workflows/_build_ios_reusable.yml")) "The Build iOS workflow must call the reusable iOS worker."
