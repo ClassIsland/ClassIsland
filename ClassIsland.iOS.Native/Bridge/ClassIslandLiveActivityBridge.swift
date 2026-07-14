@@ -411,7 +411,7 @@ private final class ClassIslandLiveActivityCommandQueue: @unchecked Sendable {
         ))
     }
 
-    func complete(
+    func report(
         result: ClassIslandLiveActivityResult,
         completion: ClassIslandLiveActivityCompletion?,
         context: UnsafeMutableRawPointer?
@@ -455,7 +455,7 @@ public func ci_live_activity_publish_json(
     }
 
     guard let jsonUTF8, let json = String(validatingUTF8: jsonUTF8) else {
-        ClassIslandLiveActivityCommandQueue.shared.complete(
+        ClassIslandLiveActivityCommandQueue.shared.report(
             result: .failure(
                 .invalidContent,
                 message: "json_utf8 must contain valid UTF-8 JSON."
