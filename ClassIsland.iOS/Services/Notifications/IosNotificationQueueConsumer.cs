@@ -1,6 +1,7 @@
 using System.Threading.Channels;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls.NotificationTemplates;
 using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Core.Models.Notification;
