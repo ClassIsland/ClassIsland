@@ -405,12 +405,12 @@ internal sealed class IosLessonNotificationScheduler(
             selected = IosLessonNotificationScheduleSelector.Select(
                 candidates,
                 maximumManagedCount);
-            var selectedIdentifiers = selected
+            var iterationSelectedIdentifiers = selected
                 .Select(x => x.Identifier)
                 .ToHashSet(StringComparer.Ordinal);
             var protectedImminentCount = pending.Count(x =>
                 x.Identifier.StartsWith(IdentifierPrefix, StringComparison.Ordinal) &&
-                !selectedIdentifiers.Contains(x.Identifier) &&
+                !iterationSelectedIdentifiers.Contains(x.Identifier) &&
                 IsImminentPendingNotification(x, systemNow));
             var adjustedMaximum = IosNotificationCapacityPolicy
                 .GetMaximumManagedNotificationCount(
