@@ -138,7 +138,7 @@ internal sealed class StorageItemMaterializer(string stagingRoot)
         }
         catch
         {
-            File.Delete(destination);
+            TryDeleteFile(destination);
             throw;
         }
     }
@@ -192,6 +192,18 @@ internal sealed class StorageItemMaterializer(string stagingRoot)
         try
         {
             Directory.Delete(path, true);
+        }
+        catch
+        {
+            // 保留原始导入异常；残留内容可由用户在 iOS 存储设置中清理。
+        }
+    }
+
+    internal static void TryDeleteFile(string path)
+    {
+        try
+        {
+            File.Delete(path);
         }
         catch
         {

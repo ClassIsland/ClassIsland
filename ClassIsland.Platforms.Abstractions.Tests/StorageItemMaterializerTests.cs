@@ -110,6 +110,15 @@ public sealed class StorageItemMaterializerTests
         Assert.Empty(Directory.EnumerateFileSystemEntries(stagingRoot));
     }
 
+    [Fact]
+    public void TryDeleteFile_DoesNotReplaceTheOriginalFailure()
+    {
+        var exception = Record.Exception(
+            () => StorageItemMaterializer.TryDeleteFile("\0"));
+
+        Assert.Null(exception);
+    }
+
     private static IStorageFile CreateStorageFile(string path) =>
         (IStorageFile)CreateBclStorageItem(
             "Avalonia.Platform.Storage.FileIO.BclStorageFile",
