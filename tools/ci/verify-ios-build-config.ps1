@@ -36,7 +36,10 @@ $coverageVerificationText = Read-RepositoryFile "tools/ci/verify-cobertura-cover
 $nukeBuildText = Read-RepositoryFile "build/Build.App.cs"
 $nukeSchema = Read-RepositoryFile ".nuke/build.schema.json" | ConvertFrom-Json
 $liveActivityServiceText = Read-RepositoryFile "ClassIsland.iOS/Services/LiveActivities/IosLiveActivityService.cs"
+$liveActivityBridgeText = Read-RepositoryFile "ClassIsland.iOS.Native/Bridge/ClassIslandLiveActivityBridge.swift"
 $appDelegateText = Read-RepositoryFile "ClassIsland.iOS/AppDelegate.cs"
+$iosSystemEventsServiceText = Read-RepositoryFile "ClassIsland.iOS/Services/Platform/IosSystemEventsService.cs"
+$iosNotificationCoordinatorText = Read-RepositoryFile "ClassIsland.iOS/Services/Notifications/IosLessonsNotificationCoordinator.cs"
 
 $supportedVersion = $iosProject.SelectSingleNode("/Project/PropertyGroup/SupportedOSPlatformVersion").InnerText
 Assert-True ($supportedVersion -eq "15.0") "The iOS app minimum supported version must be 15.0."
@@ -100,11 +103,26 @@ Assert-True ($deviceOnlyPlatforms -eq 2) "The Live Activity extension must remai
 $plistKeys = @($infoPlist.plist.dict.key)
 Assert-True (-not ($plistKeys -contains "CFBundleDisplayName")) "Info.plist must not hard-code CFBundleDisplayName; ApplicationTitle must generate it."
 Assert-True ($liveActivityServiceText.Contains('[SupportedOSPlatform("ios15.0")]')) "The managed Live Activity bridge must declare the iOS 15.0 platform floor."
+Assert-True ($liveActivityBridgeText.Contains('private let continuation: AsyncStream<Command>.Continuation')) "The Swift bridge must enqueue ActivityKit operations in a FIFO async stream."
+Assert-True ($liveActivityBridgeText.Contains('for await command in stream')) "The Swift bridge must process ActivityKit operations through one sequential consumer."
+Assert-True ($liveActivityBridgeText.Contains('ClassIslandLiveActivityCommandQueue.shared.publish(')) "The Swift publish ABI must use the sequential command queue."
+Assert-True ($liveActivityBridgeText.Contains('ClassIslandLiveActivityCommandQueue.shared.end(')) "The Swift end ABI must use the sequential command queue."
 Assert-True (-not [regex]::IsMatch($appDelegateText, 'override\s+bool\s+OpenUrl')) "AvaloniaAppDelegate.OpenUrl is not virtual and must not be overridden."
 Assert-True ($appDelegateText.Contains('app.TryGetFeature<IActivatableLifetime>()')) "The AppDelegate must subscribe to Avalonia protocol activation."
 Assert-True ($appDelegateText.Contains('_activatableLifetime.Activated += OnActivated')) "The AppDelegate must handle protocol activation events."
 Assert-True ($appDelegateText.Contains('_activatableLifetime.Activated -= OnActivated')) "The AppDelegate must unsubscribe from protocol activation events."
 Assert-True ($appDelegateText.Contains('args is not ProtocolActivatedEventArgs')) "The AppDelegate must filter protocol activation events before URI navigation."
+Assert-True ($appDelegateText.Contains('PlatformServices.SystemEventsService = _systemEventsService')) "The AppDelegate must install the iOS system-time event service."
+Assert-True ($iosSystemEventsServiceText.Contains('UIApplication.SignificantTimeChangeNotification')) "The iOS system event service must observe significant time changes."
+Assert-True ($iosSystemEventsServiceText.Contains('NSTimeZone.SystemTimeZoneDidChangeNotification')) "The iOS system event service must observe time-zone changes."
+Assert-True ($iosSystemEventsServiceText.Contains('TimeZoneInfo.ClearCachedData()')) "The iOS system event service must invalidate cached time-zone data."
+Assert-True ($iosNotificationCoordinatorText.Contains('UIApplication.DidEnterBackgroundNotification')) "The notification coordinator must refresh after entering the background."
+Assert-True ($iosNotificationCoordinatorText.Contains('BeginBackgroundTask(')) "The final notification refresh must request bounded background execution time."
+Assert-True ($iosNotificationCoordinatorText.Contains('private sealed class BackgroundTaskLease')) "The final notification refresh must own an idempotent background task lease."
+Assert-True ($iosNotificationCoordinatorText.Contains('_expirationCancellation.Cancel()')) "The background task expiration handler must cancel pending notification work."
+Assert-True ($iosNotificationCoordinatorText.Contains('application.EndBackgroundTask(identifier)')) "The notification coordinator must immediately release an expired background task lease."
+Assert-True ($iosNotificationCoordinatorText.Contains('PlatformServices.SystemEventsService.TimeChanged += SystemEventsOnTimeChanged')) "The notification coordinator must reschedule after system time or time-zone changes."
+Assert-True ($iosNotificationCoordinatorText.Contains('PlatformServices.SystemEventsService.TimeChanged -= SystemEventsOnTimeChanged')) "The notification coordinator must release its system-time event subscription."
 
 Assert-True ($wrapperWorkflowText.Contains("name: Build iOS")) "The observable iOS workflow must keep the Build iOS name."
 Assert-True ($wrapperWorkflowText.Contains("uses: ./.github/workflows/_build_ios_reusable.yml")) "The Build iOS workflow must call the reusable iOS worker."

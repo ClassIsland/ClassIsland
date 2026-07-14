@@ -16,6 +16,7 @@ using ClassIsland.iOS.Services.Notifications;
 using ClassIsland.iOS.Services.Platform;
 using ClassIsland.iOS.Services.UI;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared;
 using ClassIsland.Views;
 using FluentAvalonia.UI.Controls;
@@ -32,6 +33,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 {
     private LessonsLiveActivityCoordinator? _liveActivityCoordinator;
     private IosLessonsNotificationCoordinator? _lessonsNotificationCoordinator;
+    private IosSystemEventsService? _systemEventsService;
     private IActivatableLifetime? _activatableLifetime;
     private readonly IosNotificationAuthorizationService _notificationAuthorizationService = new();
     private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
@@ -47,6 +49,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         PlatformServices.FilePickerService = new IosPlatformFilePickerService();
         PlatformServices.LauncherService = new IosLauncherService();
         PlatformServices.LiveActivityService = new IosLiveActivityService();
+        _systemEventsService = new IosSystemEventsService();
+        PlatformServices.SystemEventsService = _systemEventsService;
 
         var launchArguments = new List<string> { "--mobile" };
         launchArguments.AddRange(IosPendingLaunchArgumentsStore.Consume());
@@ -260,6 +264,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             _lessonsNotificationCoordinator = null;
             _liveActivityCoordinator?.Dispose();
             _liveActivityCoordinator = null;
+            _systemEventsService?.Dispose();
+            _systemEventsService = null;
         }
 
         base.Dispose(disposing);

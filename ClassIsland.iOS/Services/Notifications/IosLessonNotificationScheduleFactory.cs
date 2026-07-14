@@ -105,7 +105,9 @@ internal sealed class IosLessonNotificationScheduleFactory(
                 nextItem,
                 classPlan,
                 timeLayout);
-        IClassNotificationSettings effectiveSettings = attachedSettings ?? ProviderSettings;
+        IClassNotificationSettings effectiveSettings = attachedSettings is not null
+            ? attachedSettings
+            : ProviderSettings;
         var prepareDelivery = GetDeliveryOptions(
             ClassNotificationProvider.PrepareOnClassChannelId);
         var prepareDeltaSeconds = attachedSettings?.ClassPreparingDeltaTime ??

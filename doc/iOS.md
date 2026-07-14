@@ -23,9 +23,9 @@ Windows 可以编译和测试 C# 层，但无法执行 Xcode、构建 Widget Ext
 
 ## 课程本地通知
 
-iOS 最多保留 64 条 pending local notifications。ClassIsland 为其它系统通知预留 4 条，每次按时间顺序提交最近 60 条课程提醒，并向后扫描最多 60 天以填满这个窗口。应用进入前台、课表或提醒设置改变、NTP 同步结果改变时会立即重排；应用保持活跃时还会每 6 小时补齐一次。
+iOS 最多保留 64 条 pending local notifications。ClassIsland 为其它系统通知预留 4 条，每次按时间顺序提交最近 60 条课程提醒，并向后扫描最多 60 天以填满这个窗口。应用进入前台、课表或提醒设置改变、NTP 同步结果改变、系统时间或时区改变时会立即重排；应用保持活跃时还会每 6 小时补齐一次。进入后台时，应用会申请一次有时限的 iOS background task，以完成挂起前最后一次重排并立即释放执行租约。
 
-`DispatcherTimer` 在应用被 iOS 挂起后不会继续执行，因此滚动窗口不会在无限期后台状态中自行补充。用户重新打开或切回 ClassIsland 后会自动补齐，无需手动操作。需要长期完全不启动应用仍持续更新计划时，必须增加服务端 push 或合适的 iOS BackgroundTasks 方案，但系统仍不保证后台任务准点执行。
+`DispatcherTimer` 在应用被 iOS 挂起后不会继续执行，上述短期 background task 也不是周期任务，因此滚动窗口不会在无限期后台状态中自行补充。用户重新打开或切回 ClassIsland 后会自动补齐，无需手动操作。需要长期完全不启动应用仍持续更新计划时，必须增加服务端 push 或合适的 iOS BackgroundTasks 方案，但系统仍不保证后台任务准点执行。
 
 ## 通过 Files App 查看应用文件
 

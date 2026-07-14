@@ -340,6 +340,95 @@ private actor ClassIslandLiveActivityCoordinator {
     }
 }
 
+@available(iOS 16.1, *)
+private final class ClassIslandLiveActivityCommandQueue: @unchecked Sendable {
+    static let shared = ClassIslandLiveActivityCommandQueue()
+
+    private struct Callback: @unchecked Sendable {
+        let completion: ClassIslandLiveActivityCompletion?
+        let context: UnsafeMutableRawPointer?
+
+        func call(with result: ClassIslandLiveActivityResult) {
+            complete(result, using: completion, context: context)
+        }
+    }
+
+    private enum Command: @unchecked Sendable {
+        case publish(Data, Callback)
+        case end(Int32, Callback)
+        case complete(ClassIslandLiveActivityResult, Callback)
+    }
+
+    private let lock = NSLock()
+    private let continuation: AsyncStream<Command>.Continuation
+
+    private init() {
+        var streamContinuation: AsyncStream<Command>.Continuation?
+        let stream = AsyncStream<Command> { continuation in
+            streamContinuation = continuation
+        }
+        continuation = streamContinuation!
+
+        Task {
+            for await command in stream {
+                switch command {
+                case let .publish(jsonData, callback):
+                    let result = await ClassIslandLiveActivityCoordinator.shared.publish(
+                        jsonData: jsonData
+                    )
+                    callback.call(with: result)
+                case let .end(dismissalPolicy, callback):
+                    let result = await ClassIslandLiveActivityCoordinator.shared.end(
+                        dismissalPolicy: dismissalPolicy
+                    )
+                    callback.call(with: result)
+                case let .complete(result, callback):
+                    callback.call(with: result)
+                }
+            }
+        }
+    }
+
+    func publish(
+        jsonData: Data,
+        completion: ClassIslandLiveActivityCompletion?,
+        context: UnsafeMutableRawPointer?
+    ) {
+        enqueue(.publish(
+            jsonData,
+            Callback(completion: completion, context: context)
+        ))
+    }
+
+    func end(
+        dismissalPolicy: Int32,
+        completion: ClassIslandLiveActivityCompletion?,
+        context: UnsafeMutableRawPointer?
+    ) {
+        enqueue(.end(
+            dismissalPolicy,
+            Callback(completion: completion, context: context)
+        ))
+    }
+
+    func complete(
+        result: ClassIslandLiveActivityResult,
+        completion: ClassIslandLiveActivityCompletion?,
+        context: UnsafeMutableRawPointer?
+    ) {
+        enqueue(.complete(
+            result,
+            Callback(completion: completion, context: context)
+        ))
+    }
+
+    private func enqueue(_ command: Command) {
+        lock.lock()
+        defer { lock.unlock() }
+        continuation.yield(command)
+    }
+}
+
 @_cdecl("ci_live_activity_get_availability")
 public func ci_live_activity_get_availability() -> Int32 {
     guard #available(iOS 16.1, *) else {
@@ -357,33 +446,33 @@ public func ci_live_activity_publish_json(
     _ context: UnsafeMutableRawPointer?
 ) {
     guard #available(iOS 16.1, *) else {
-        Task {
-            complete(
-                .failure(.unsupported, message: "Live Activities require iOS 16.1 or later."),
-                using: completion,
-                context: context
-            )
-        }
+        complete(
+            .failure(.unsupported, message: "Live Activities require iOS 16.1 or later."),
+            using: completion,
+            context: context
+        )
         return
     }
 
     guard let jsonUTF8, let json = String(validatingUTF8: jsonUTF8) else {
-        Task {
-            complete(
-                .failure(.invalidContent, message: "json_utf8 must contain valid UTF-8 JSON."),
-                using: completion,
-                context: context
-            )
-        }
+        ClassIslandLiveActivityCommandQueue.shared.complete(
+            result: .failure(
+                .invalidContent,
+                message: "json_utf8 must contain valid UTF-8 JSON."
+            ),
+            completion: completion,
+            context: context
+        )
         return
     }
 
     // 调用返回后托管层可以立即释放输入指针，因此必须先复制为 Swift Data。
     let jsonData = Data(json.utf8)
-    Task {
-        let result = await ClassIslandLiveActivityCoordinator.shared.publish(jsonData: jsonData)
-        complete(result, using: completion, context: context)
-    }
+    ClassIslandLiveActivityCommandQueue.shared.publish(
+        jsonData: jsonData,
+        completion: completion,
+        context: context
+    )
 }
 
 @_cdecl("ci_live_activity_end")
@@ -393,22 +482,19 @@ public func ci_live_activity_end(
     _ context: UnsafeMutableRawPointer?
 ) {
     guard #available(iOS 16.1, *) else {
-        Task {
-            complete(
-                .failure(.unsupported, message: "Live Activities require iOS 16.1 or later."),
-                using: completion,
-                context: context
-            )
-        }
+        complete(
+            .failure(.unsupported, message: "Live Activities require iOS 16.1 or later."),
+            using: completion,
+            context: context
+        )
         return
     }
 
-    Task {
-        let result = await ClassIslandLiveActivityCoordinator.shared.end(
-            dismissalPolicy: dismissalPolicy
-        )
-        complete(result, using: completion, context: context)
-    }
+    ClassIslandLiveActivityCommandQueue.shared.end(
+        dismissalPolicy: dismissalPolicy,
+        completion: completion,
+        context: context
+    )
 }
 
 private func complete(

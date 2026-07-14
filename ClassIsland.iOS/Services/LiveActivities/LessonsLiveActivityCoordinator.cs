@@ -22,6 +22,7 @@ internal sealed class LessonsLiveActivityCoordinator(
     ILiveActivityService liveActivityService) : IDisposable
 {
     private static readonly TimeSpan FailureRetryDelay = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan ManualTerminationTimeout = TimeSpan.FromSeconds(5);
 
     private readonly CancellationTokenSource _cancellation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
@@ -38,6 +39,7 @@ internal sealed class LessonsLiveActivityCoordinator(
     private bool _isStarted;
     private bool _isWorkStarted;
     private int _isStopping;
+    private long _lastTimerRefreshSecond = long.MinValue;
 
     public void Start()
     {
@@ -92,7 +94,17 @@ internal sealed class LessonsLiveActivityCoordinator(
         QueueRefresh();
     }
 
-    private void OnPostMainTimerTicked(object? sender, EventArgs e) => QueueRefresh();
+    private void OnPostMainTimerTicked(object? sender, EventArgs e)
+    {
+        var currentSecond = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        if (Interlocked.Exchange(ref _lastTimerRefreshSecond, currentSecond) ==
+            currentSecond)
+        {
+            return;
+        }
+
+        QueueRefresh();
+    }
 
     private void QueueRefresh() => _ = QueueRefreshAsync();
 
@@ -146,7 +158,7 @@ internal sealed class LessonsLiveActivityCoordinator(
 
                 var endResult = await liveActivityService.EndAsync(
                     LiveActivityDismissalPolicy.Immediate,
-                    CancellationToken.None);
+                    _cancellation.Token);
                 if (endResult.IsSuccess)
                 {
                     _lastRequestedContent = null;
@@ -180,7 +192,7 @@ internal sealed class LessonsLiveActivityCoordinator(
 
             var result = await liveActivityService.PublishAsync(
                 content,
-                CancellationToken.None);
+                _cancellation.Token);
             if (result.IsSuccess)
             {
                 _lastRequestedContent = content;
@@ -335,15 +347,19 @@ internal sealed class LessonsLiveActivityCoordinator(
             _lessonsService.PostMainTimerTicked -= OnPostMainTimerTicked;
         }
         _isWorkStarted = false;
+        _cancellation.Cancel();
 
         var gateEntered = false;
+        using var timeoutCancellation =
+            CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCancellation.CancelAfter(ManualTerminationTimeout);
         try
         {
-            await _refreshGate.WaitAsync(cancellationToken);
+            await _refreshGate.WaitAsync(timeoutCancellation.Token);
             gateEntered = true;
             var result = await liveActivityService.EndAsync(
                 LiveActivityDismissalPolicy.Immediate,
-                cancellationToken);
+                timeoutCancellation.Token);
             if (result.IsSuccess)
             {
                 _lastRequestedContent = null;
@@ -361,14 +377,19 @@ internal sealed class LessonsLiveActivityCoordinator(
                     $"{result.Code} {result.ErrorMessage}");
             }
         }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            LogWarning(
+                $"在 {ManualTerminationTimeout.TotalSeconds:0} 秒内未能结束实时活动，" +
+                "将继续显示手动结束应用提示。");
+        }
         finally
         {
             if (gateEntered)
             {
                 _refreshGate.Release();
             }
-
-            _cancellation.Cancel();
         }
     }
 

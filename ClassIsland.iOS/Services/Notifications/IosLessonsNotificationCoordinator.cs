@@ -5,6 +5,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.iOS.Services.Platform;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
@@ -35,7 +36,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private readonly HashSet<ClassPlan> _classPlanChangeSources = [];
     private readonly HashSet<TimeLayout> _timeLayoutChangeSources = [];
     private NSObject? _foregroundObserver;
-    private NSObject? _resignActiveObserver;
+    private NSObject? _backgroundObserver;
     private ILessonsService? _lessonsService;
     private IProfileService? _profileService;
     private IExactTimeService? _exactTimeService;
@@ -48,6 +49,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private int _refreshPending;
     private bool _isStarted;
     private bool _isWorkStarted;
+    private int _backgroundRefreshActive;
 
     public IosLessonsNotificationCoordinator(
         IosNotificationAuthorizationService authorizationService)
@@ -82,9 +84,9 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         _foregroundObserver = NSNotificationCenter.DefaultCenter.AddObserver(
             UIApplication.WillEnterForegroundNotification,
             _ => QueueRefresh());
-        _resignActiveObserver = NSNotificationCenter.DefaultCenter.AddObserver(
-            UIApplication.WillResignActiveNotification,
-            _ => QueueRefresh());
+        _backgroundObserver = NSNotificationCenter.DefaultCenter.AddObserver(
+            UIApplication.DidEnterBackgroundNotification,
+            _ => QueueBackgroundRefresh());
 
         if (AppBase.CurrentLifetime == ApplicationLifetime.Running)
         {
@@ -118,6 +120,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         _isWorkStarted = true;
         _lessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
         _exactTimeService.PropertyChanged += ExactTimeServiceOnPropertyChanged;
+        PlatformServices.SystemEventsService.TimeChanged += SystemEventsOnTimeChanged;
         RebuildChangeSubscriptions();
         _attachedSettingsScanTimer.Start();
         _rollingScheduleRefreshTimer.Start();
@@ -148,7 +151,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             do
             {
                 Interlocked.Exchange(ref _refreshPending, 0);
-                await RefreshOnceAsync();
+                await RefreshOnceAsync(_cancellation.Token);
             }
             while (Volatile.Read(ref _refreshPending) != 0 &&
                    !_cancellation.IsCancellationRequested);
@@ -175,7 +178,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         }
     }
 
-    private async Task RefreshOnceAsync()
+    private async Task RefreshOnceAsync(CancellationToken cancellationToken)
     {
         var scheduleFactory = _scheduleFactory;
         if (scheduleFactory == null)
@@ -194,13 +197,82 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             return;
         }
 
-        await _scheduler.SynchronizeAsync(requests, _cancellation.Token);
+        await _scheduler.SynchronizeAsync(requests, cancellationToken);
 
         _lastAuthorizationState = authorized;
         _lastRequests = requests.ToArray();
         if (!authorized)
         {
             Console.WriteLine("iOS/iPadOS 通知权限未授予。可在系统设置中手动启用。");
+        }
+    }
+
+    private void QueueBackgroundRefresh()
+    {
+        if (!_isWorkStarted ||
+            _cancellation.IsCancellationRequested ||
+            Interlocked.CompareExchange(ref _backgroundRefreshActive, 1, 0) != 0)
+        {
+            return;
+        }
+
+        var lease = new BackgroundTaskLease(UIApplication.SharedApplication);
+        if (!lease.TryStart("ClassIsland lesson notification refresh"))
+        {
+            lease.Dispose();
+            Interlocked.Exchange(ref _backgroundRefreshActive, 0);
+            return;
+        }
+
+        _ = RunBackgroundRefreshAsync(lease);
+    }
+
+    private async Task RunBackgroundRefreshAsync(BackgroundTaskLease lease)
+    {
+        try
+        {
+            using var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                _cancellation.Token,
+                lease.ExpirationToken);
+            await RefreshInBackgroundAsync(linkedCancellation.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // 应用已终止刷新，或系统收回后台执行时间。
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"iOS/iPadOS 退后台前同步课程通知时发生异常：{exception}");
+        }
+        finally
+        {
+            lease.Dispose();
+            Interlocked.Exchange(ref _backgroundRefreshActive, 0);
+        }
+    }
+
+    private async Task RefreshInBackgroundAsync(CancellationToken cancellationToken)
+    {
+        if (!_isWorkStarted || _scheduleFactory == null)
+        {
+            return;
+        }
+
+        await _refreshGate.WaitAsync(cancellationToken);
+        try
+        {
+            Interlocked.Exchange(ref _refreshPending, 0);
+            _lastRequests = null;
+            await RefreshOnceAsync(cancellationToken);
+        }
+        finally
+        {
+            _refreshGate.Release();
+            if (Volatile.Read(ref _refreshPending) != 0 &&
+                !_cancellation.IsCancellationRequested)
+            {
+                QueueRefresh();
+            }
         }
     }
 
@@ -368,6 +440,12 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         }
     }
 
+    private void SystemEventsOnTimeChanged(object? sender, EventArgs e)
+    {
+        _lastRequests = null;
+        QueueRefreshDebounced();
+    }
+
     private void QueueRefreshDebounced()
     {
         if (!_isWorkStarted || _cancellation.IsCancellationRequested)
@@ -503,10 +581,11 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         {
             _exactTimeService.PropertyChanged -= ExactTimeServiceOnPropertyChanged;
         }
+        PlatformServices.SystemEventsService.TimeChanged -= SystemEventsOnTimeChanged;
         _notificationHostService?.UnregisterNotificationConsumer(_queueConsumer);
         DetachChangeSubscriptions();
         DisposeObserver(ref _foregroundObserver);
-        DisposeObserver(ref _resignActiveObserver);
+        DisposeObserver(ref _backgroundObserver);
         _lessonsService = null;
         _profileService = null;
         _exactTimeService = null;
@@ -527,5 +606,86 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         NSNotificationCenter.DefaultCenter.RemoveObserver(observer);
         observer.Dispose();
         observer = null;
+    }
+
+    private sealed class BackgroundTaskLease(UIApplication application) : IDisposable
+    {
+        private readonly CancellationTokenSource _expirationCancellation = new();
+        private readonly object _syncRoot = new();
+        private nint _identifier = UIApplication.BackgroundTaskInvalid;
+        private bool _identifierAssigned;
+        private bool _ended;
+
+        public CancellationToken ExpirationToken => _expirationCancellation.Token;
+
+        public bool TryStart(string name)
+        {
+            var identifier = application.BeginBackgroundTask(name, OnExpired);
+            bool endAfterAssignment;
+            lock (_syncRoot)
+            {
+                _identifier = identifier;
+                _identifierAssigned = true;
+                endAfterAssignment = _ended &&
+                                     identifier != UIApplication.BackgroundTaskInvalid;
+            }
+
+            if (endAfterAssignment)
+            {
+                application.EndBackgroundTask(identifier);
+            }
+
+            return identifier != UIApplication.BackgroundTaskInvalid &&
+                   !endAfterAssignment;
+        }
+
+        private void OnExpired()
+        {
+            try
+            {
+                _expirationCancellation.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+                // 正常结束与系统到期回调并发时，租约可能已经释放。
+            }
+            catch (Exception exception)
+            {
+                Console.Error.WriteLine($"取消 iOS 后台通知刷新时发生异常：{exception}");
+            }
+            finally
+            {
+                End();
+            }
+        }
+
+        private void End()
+        {
+            var identifier = UIApplication.BackgroundTaskInvalid;
+            lock (_syncRoot)
+            {
+                if (_ended)
+                {
+                    return;
+                }
+
+                _ended = true;
+                if (_identifierAssigned)
+                {
+                    identifier = _identifier;
+                }
+            }
+
+            if (identifier != UIApplication.BackgroundTaskInvalid)
+            {
+                application.EndBackgroundTask(identifier);
+            }
+        }
+
+        public void Dispose()
+        {
+            End();
+            _expirationCancellation.Dispose();
+        }
     }
 }
