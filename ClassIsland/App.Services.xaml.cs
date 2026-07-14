@@ -139,7 +139,7 @@ public partial class App
         services.AddSingleton<SettingsWindowNew>();
         services.AddSingleton<ProfileSettingsWindow>();
         services.AddTransient<ClassPlanDetailsWindow>();
-        if (!PlatformHelper.IsMobile)
+        if (!PlatformHelper.IsAppleMobile)
         {
             services.AddTransient<WindowRuleDebugWindow>();
         }

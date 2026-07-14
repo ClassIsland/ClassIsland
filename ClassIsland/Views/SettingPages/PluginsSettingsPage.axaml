@@ -216,7 +216,6 @@
                                 <MenuItem Icon="{ci:FluentIcon &#xE88D;}" Header="打开插件文件夹…" Click="MenuItemOpenPluginFolder_OnClick">
                                     <MenuItem.IsVisible>
                                         <OnPlatform Default="True">
-                                            <On Options="Android" Content="False" />
                                             <On Options="iOS" Content="False" />
                                         </OnPlatform>
                                     </MenuItem.IsVisible>
@@ -224,7 +223,6 @@
                                 <MenuItem Icon="{ci:FluentIcon &#xE5FD;}" Header="打开配置文件夹…" Click="MenuItemOpenPluginConfigFolder_OnClick">
                                     <MenuItem.IsVisible>
                                         <OnPlatform Default="True">
-                                            <On Options="Android" Content="False" />
                                             <On Options="iOS" Content="False" />
                                         </OnPlatform>
                                     </MenuItem.IsVisible>
@@ -574,7 +572,6 @@
                                                   Click="MenuItemOpenPluginsFolder_OnClick">
                                             <MenuItem.IsVisible>
                                                 <OnPlatform Default="True">
-                                                    <On Options="Android" Content="False" />
                                                     <On Options="iOS" Content="False" />
                                                 </OnPlatform>
                                             </MenuItem.IsVisible>

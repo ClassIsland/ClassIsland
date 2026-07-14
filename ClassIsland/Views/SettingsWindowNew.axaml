@@ -49,7 +49,6 @@
                                    Click="MenuItemDebugWindowRule_OnClick">
                             <MenuItem.IsVisible>
                                 <OnPlatform Default="True">
-                                    <On Options="Android" Content="False" />
                                     <On Options="iOS" Content="False" />
                                 </OnPlatform>
                             </MenuItem.IsVisible>
