@@ -9,9 +9,9 @@ namespace ClassIsland.Platforms.Abstractions.Tests;
 public sealed class LauncherServiceTests
 {
     [Fact]
-    public void PlatformServices_DefaultsToShellLauncherService()
+    public void PlatformServices_DefaultsToLauncherServiceStub()
     {
-        Assert.IsType<ShellLauncherService>(PlatformServices.LauncherService);
+        Assert.IsType<LauncherServiceStub>(PlatformServices.LauncherService);
     }
 
     [Theory]

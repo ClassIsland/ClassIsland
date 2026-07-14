@@ -8,14 +8,12 @@ namespace ClassIsland.Platforms.Abstractions.Tests;
 public sealed class AvaloniaDefaultPlatformFilePickerServiceTests
 {
     [Fact]
-    public void MaterializeFiles_RejectsNullInput()
+    public async Task MaterializeFiles_RejectsNullInput()
     {
         var service = new AvaloniaDefaultPlatformFilePickerService();
 
-        Assert.Throws<ArgumentNullException>(() =>
-        {
-            _ = service.MaterializeFilesAsync(null!);
-        });
+        await Assert.ThrowsAsync<ArgumentNullException>(
+            () => service.MaterializeFilesAsync(null!));
     }
 
     [Fact]
