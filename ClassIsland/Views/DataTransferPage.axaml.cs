@@ -374,7 +374,7 @@ public partial class DataTransferPage : UserControl
 
         AppBase.Current.Restart(CreateClassIslandImportArguments("--importV2"));
     }
-    
+
     public async Task PerformClassIsland2Import(string root, ImportEntries importEntries)
     {
         try
