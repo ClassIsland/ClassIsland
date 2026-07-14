@@ -401,6 +401,7 @@ Assert-True ($workerWorkflowText.Contains("coverlet.runsettings")) "The iOS work
 Assert-True ($workerWorkflowText.Contains("XPlat Code Coverage")) "The iOS worker must enable the coverlet collector."
 Assert-True ($workerWorkflowText.Contains("verify-cobertura-coverage.ps1")) "The iOS worker must enforce the coverage threshold."
 Assert-True ($workerWorkflowText.Contains("-MinimumLineRate 0.8")) "The iOS worker must enforce at least 80% line coverage."
+Assert-True ($workerWorkflowText.Contains("XCODE_PATH: /Applications/Xcode_26.6.app")) "The iOS worker must select an Xcode version compatible with the current .NET for iOS SDK."
 Assert-True ($workerWorkflowText.Contains('bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"')) "The iOS worker must normalize inherited signatures before verification."
 Assert-True ($workerWorkflowText.Contains("bash ./tools/ci/verify-ios-ipa.sh")) "The iOS worker must run the shared IPA verification script."
 Assert-True ($workerWorkflowText.Contains('name: ${{ inputs.artifact_name }}')) "The iOS worker must expose a caller-controlled artifact name."

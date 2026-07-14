@@ -44,7 +44,7 @@ env:
   IOS_CONFIGURATION: Release
   IOS_RUNTIME_IDENTIFIER: ios-arm64
   APPLICATION_ID: cn.classisland.ios
-  XCODE_PATH: /Applications/Xcode_26.5.app
+  XCODE_PATH: /Applications/Xcode_26.6.app
   IPA_PATH: ${{ github.workspace }}/out/out_app_ios_arm64_selfContained_ipa.ipa
 
 jobs:

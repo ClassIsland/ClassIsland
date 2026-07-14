@@ -165,7 +165,13 @@ jobs:
       retention_days: ${{ fromJSON(needs.resolve_ios_metadata.outputs.retention_days) }}
 
   build_app:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: >-
+      ${{
+        github.event_name != 'pull_request' &&
+        github.ref != 'refs/heads/develop/v2/ios' &&
+        github.ref != 'refs/heads/develop/v2/misha-alpha' &&
+        !startsWith(github.ref, 'refs/tags/ios-v')
+      }}
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-26' || 'windows-2022' ) }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -214,7 +220,7 @@ jobs:
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
         run: |
-          sudo xcode-select -s /Applications/Xcode_26.5.app/Contents/Developer
+          sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
           xcodebuild -version
           xcodebuild -showsdks
           dotnet workload install macos
@@ -251,7 +257,13 @@ jobs:
             ./out/*.pkg
 
   build_android:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: >-
+      ${{
+        github.event_name != 'pull_request' &&
+        github.ref != 'refs/heads/develop/v2/ios' &&
+        github.ref != 'refs/heads/develop/v2/misha-alpha' &&
+        !startsWith(github.ref, 'refs/tags/ios-v')
+      }}
     runs-on: ubuntu-24.04
     env:
       artifact_name: out_app_android_${{ matrix.arch }}_monoaot_apk
@@ -341,7 +353,13 @@ jobs:
           if-no-files-found: error
             
   build_launcher:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: >-
+      ${{
+        github.event_name != 'pull_request' &&
+        github.ref != 'refs/heads/develop/v2/ios' &&
+        github.ref != 'refs/heads/develop/v2/misha-alpha' &&
+        !startsWith(github.ref, 'refs/tags/ios-v')
+      }}
     runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-24.04' }}
     env:
       build_id: launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -458,7 +476,16 @@ jobs:
   pack_app:
     runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-latest' }}
     needs: [ sign_1 ]
-    if: ${{ github.event_name != 'pull_request' && always() && success('build_app') && success('build_launcher') }}
+    if: >-
+      ${{
+        github.event_name != 'pull_request' &&
+        github.ref != 'refs/heads/develop/v2/ios' &&
+        github.ref != 'refs/heads/develop/v2/misha-alpha' &&
+        !startsWith(github.ref, 'refs/tags/ios-v') &&
+        always() &&
+        success('build_app') &&
+        success('build_launcher')
+      }}
     env:
       build_id: app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       artifact_name: out_app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -527,7 +554,13 @@ jobs:
             ${{ github.workspace }}/out_pack/*.exe
           
   build_nupkg:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: >-
+      ${{
+        github.event_name != 'pull_request' &&
+        github.ref != 'refs/heads/develop/v2/ios' &&
+        github.ref != 'refs/heads/develop/v2/misha-alpha' &&
+        !startsWith(github.ref, 'refs/tags/ios-v')
+      }}
     runs-on: windows-2022
     env:
       Solution_Name: ClassIsland.sln
