@@ -36,6 +36,12 @@ public partial class RecoverBackupPage : UserControl
         "Profiles"
     ];
 
+    private static readonly string[] RecoverablePathNames =
+    [
+        .. RecoverableFileNames,
+        .. RecoverableDirectoryNames
+    ];
+
     public FAFrame? MainFrame { get; init; }
 
     public UserControl? LastPage { get; init; }
@@ -105,7 +111,11 @@ public partial class RecoverBackupPage : UserControl
     {
         var appRoot = Path.GetFullPath(CommonDirectories.AppRootFolderPath);
         Directory.CreateDirectory(appRoot);
-        var appTransactionPaths = GetPresentAppDataPaths(stagingPath);
+        var appTransactionPaths = RecoveryTransactionPathPolicy
+            .SelectTransactionPaths(
+                fullRecovery,
+                RecoverablePathNames,
+                GetPresentAppDataPaths(stagingPath));
 
         void ExecuteAppTransaction()
         {

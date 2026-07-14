@@ -33,9 +33,10 @@ public class AudioService : IAudioService
         Logger = logger;
         try
         {
-            _audioEngine = Task.Run(() => new MiniAudioEngine())
-                .GetAwaiter()
-                .GetResult();
+            var initializationTask = Task.Run(() => new MiniAudioEngine());
+            _audioEngine = OperatingSystem.IsIOS()
+                ? initializationTask.GetAwaiter().GetResult()
+                : initializationTask.Result;
         }
         catch (Exception exception) when (OperatingSystem.IsIOS())
         {

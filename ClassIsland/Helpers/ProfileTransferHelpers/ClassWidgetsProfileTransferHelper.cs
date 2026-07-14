@@ -16,6 +16,17 @@ public static class ClassWidgetsProfileTransferHelper
     public static Profile ConvertClassWidgets1ProfileToClassIslandProfile(string path, Profile? profile = null)
     {
         var profileCw = ConfigureFileHelper.LoadConfigUnWrapped<CwProfile>(path);
+        return ConvertClassWidgets1ProfileToClassIslandProfile(profileCw, profile);
+    }
+
+    public static Profile ConvertClassWidgets1ProfileToClassIslandProfile(Stream stream, Profile? profile = null)
+    {
+        var profileCw = ConfigureFileHelper.LoadConfigUnWrapped<CwProfile>(stream);
+        return ConvertClassWidgets1ProfileToClassIslandProfile(profileCw, profile);
+    }
+
+    private static Profile ConvertClassWidgets1ProfileToClassIslandProfile(CwProfile profileCw, Profile? profile)
+    {
         var templateJson = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json"))).ReadToEnd();
         profile ??= JsonSerializer.Deserialize<Profile>(templateJson)!;
         

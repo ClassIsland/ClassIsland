@@ -6,6 +6,7 @@ using ClassIsland.Services;
 using FluentAvalonia.UI.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ClassIsland.Platforms.Abstraction;
@@ -61,17 +62,9 @@ public partial class HomePage : UserControl
         AppBase.Current.Restart(["-m", "--diagnostic", "--verbose"]);
     }
 
-    private async void ButtonOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            await PlatformServices.LauncherService.LaunchPath(
-                Path.GetFullPath(CommonDirectories.AppLogFolderPath));
-        }
-        catch (Exception exception)
-        {
-            this.ShowErrorToast("无法打开日志目录", exception);
-        }
+        PlatformServices.LauncherService.LaunchPath(CommonDirectories.AppLogFolderPath);
     }
 
     private async void ButtonCleanTempFiles_OnClick(object sender, RoutedEventArgs e)

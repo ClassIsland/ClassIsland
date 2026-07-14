@@ -51,13 +51,13 @@ public class CsesExportHelper
             }
         }
 
-        try
+        string? filePath = null;
+        if (!PlatformHelper.IsAppleMobile)
         {
-            var csesProfile = profileService.Profile.ToCsesObject();
-            var filePath = await PlatformServices.FilePickerService.SaveFileAsync(
+            filePath = await PlatformServices.FilePickerService.SaveFilePickerAsync(
                 new FilePickerSaveOptions
                 {
-                    DefaultExtension = ".yml",
+                    DefaultExtension = ".json",
                     FileTypeChoices =
                     [
                         new FilePickerFileType("CSES 课表文件")
@@ -66,25 +66,68 @@ public class CsesExportHelper
                         }
                     ]
                 },
-                root,
-                output => StreamExportHelper.WritePathBasedExportAsync(
-                    output,
-                    ".yml",
-                    path =>
-                    {
-                        CsesLoader.SaveToYamlFile(csesProfile, path);
-                        return Task.CompletedTask;
-                    }));
+                root);
             if (filePath == null)
             {
                 return;
             }
+        }
+
+        try
+        {
+            var csesProfile = profileService.Profile.ToCsesObject();
+            if (PlatformHelper.IsAppleMobile)
+            {
+                filePath = await PlatformServices.FilePickerService.SaveFileAsync(
+                    new FilePickerSaveOptions
+                    {
+                        DefaultExtension = ".yml",
+                        FileTypeChoices =
+                        [
+                            new FilePickerFileType("CSES 课表文件")
+                            {
+                                Patterns = ["*.yml", "*.yaml"]
+                            }
+                        ]
+                    },
+                    root,
+                    output => StreamExportHelper.WritePathBasedExportAsync(
+                        output,
+                        ".yml",
+                        path =>
+                        {
+                            CsesLoader.SaveToYamlFile(csesProfile, path);
+                            return Task.CompletedTask;
+                        }));
+                if (filePath == null)
+                {
+                    return;
+                }
+            }
+
+            if (!PlatformHelper.IsAppleMobile)
+            {
+                var selectedPath = filePath!;
+                using var file = await PlatformServices.FilePickerService.GetFileAsync(selectedPath, root)
+                                 ?? throw new FileNotFoundException("无法打开所选 CSES 文件。", selectedPath);
+                await using var stream = await file.OpenWriteAsync();
+                if (stream.CanSeek)
+                {
+                    stream.SetLength(0);
+                    stream.Position = 0;
+                }
+                await using (var writer = new StreamWriter(stream, leaveOpen: true))
+                {
+                    await writer.WriteAsync(CsesLoader.SaveToYamlString(csesProfile));
+                    await writer.FlushAsync();
+                }
+                var launchPath = PlatformServices.FilePickerService.IsBookmark(selectedPath)
+                    ? selectedPath
+                    : Path.GetDirectoryName(Path.GetFullPath(selectedPath)) ?? selectedPath;
+                await PlatformServices.LauncherService.LaunchPath(launchPath);
+            }
 
             root.ShowSuccessToast($"成功导出到 {filePath}。");
-            if (!PlatformHelper.IsAppleMobile && Path.GetDirectoryName(filePath) is { Length: > 0 } directory)
-            {
-                await PlatformServices.LauncherService.LaunchPath(directory);
-            }
         }
         catch (Exception exception)
         {

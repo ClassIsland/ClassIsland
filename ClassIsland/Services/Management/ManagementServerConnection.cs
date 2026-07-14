@@ -76,6 +76,20 @@ public class ManagementServerConnection : IManagementServerConnection
     
     private string GetNetworkInterfaceMac()
     {
+        if (!OperatingSystem.IsIOS())
+        {
+            // 非 iOS 平台保持上游既有的设备标识语义。
+            return NetworkInterface
+                .GetAllNetworkInterfaces()
+                .First(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
+                            n.OperationalStatus == OperationalStatus.Up &&
+                            n.GetIPProperties().UnicastAddresses.Any(ip =>
+                                ip.Address.AddressFamily == AddressFamily.InterNetwork))
+                .GetPhysicalAddress()
+                .ToString()
+                .ToUpper();
+        }
+
         try
         {
             foreach (var networkInterface in NetworkInterface.GetAllNetworkInterfaces()

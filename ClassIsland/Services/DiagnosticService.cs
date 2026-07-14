@@ -16,7 +16,6 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
-using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 
@@ -108,8 +107,35 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     /// 导出诊断信息到文件
     /// </summary>
     /// <param name="path">保存位置</param>
-    /// <param name="showExportedFile">是否在导出后打开文件所在目录。</param>
+    /// <param name="showExportedFile">是否显示导出的文件</param>
     public async Task ExportDiagnosticData(string path, bool showExportedFile = true)
+    {
+        try
+        {
+            await using (var outputStream = File.Create(path))
+            {
+                await ExportDiagnosticData(outputStream);
+            }
+            if (showExportedFile && (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid()))
+            {
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = Path.GetDirectoryName(path) ?? "",
+                    UseShellExecute = true
+                });
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "无法导出诊断数据。");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// 导出诊断信息到流
+    /// </summary>
+    public async Task ExportDiagnosticData(Stream outputStream)
     {
         try
         {
@@ -131,16 +157,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
             FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppLogFolderPath), Path.Combine(temp, "Logs/"));
 
-            File.Delete(path);
             await Task.Run(() =>
             {
-                ZipFile.CreateFromDirectory(temp, path);
+                ZipFile.CreateFromDirectory(temp, outputStream);
             });
             Directory.Delete(temp, true);
-            if (showExportedFile && Path.GetDirectoryName(path) is { Length: > 0 } directory)
-            {
-                await PlatformServices.LauncherService.LaunchPath(directory);
-            }
         }
         catch (Exception e)
         {

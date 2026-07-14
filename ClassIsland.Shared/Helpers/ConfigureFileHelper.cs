@@ -97,6 +97,16 @@ public class ConfigureFileHelper
     }
 
     /// <summary>
+    /// 从流中加载配置文件。流的生命周期由调用方管理。
+    /// </summary>
+    public static T LoadConfigUnWrapped<T>(Stream stream)
+    {
+        using var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
+        var json = reader.ReadToEnd();
+        return JsonSerializer.Deserialize<T>(json, SerializerOptions) ?? Activator.CreateInstance<T>();
+    }
+
+    /// <summary>
     /// 加载配置文件，并自动创建备份。当加载失败时，将尝试加载备份的配置文件。如果备份文件也加载失败，会返回新的对象。如果希望在发生加载异常时不自动捕获错误，请使用方法 <see cref="LoadConfigUnWrapped{T}"/>。
     /// </summary>
     /// <typeparam name="T">配置文件类型</typeparam>
@@ -114,6 +124,23 @@ public class ConfigureFileHelper
         {
             Logger?.LogError(e, "无法读取 JSON 文件 {}，已返回默认值", path);
             Errors.Add(new ConfigError(path, 1, true, e));
+            return Activator.CreateInstance<T>();
+        }
+    }
+
+    /// <summary>
+    /// 从流中加载配置文件。读取失败时返回新的配置对象，流的生命周期由调用方管理。
+    /// </summary>
+    public static T LoadConfig<T>(Stream stream)
+    {
+        try
+        {
+            return LoadConfigUnWrapped<T>(stream);
+        }
+        catch (Exception e)
+        {
+            Logger?.LogError(e, "无法从流中读取 JSON 文件，已返回默认值");
+            Errors.Add(new ConfigError("<stream>", 1, true, e));
             return Activator.CreateInstance<T>();
         }
     }
@@ -142,6 +169,18 @@ public class ConfigureFileHelper
         var options = writeIndented ? WriteIndentedSerializerOptions.Value : SerializerOptions;
         // 在保存时不对备份文件进行操作，以防止在保存时发生意外断电时，备份文件也受到损坏。
         WriteAllTextSafe(path, JsonSerializer.Serialize<T>(o, options));
+    }
+
+    /// <summary>
+    /// 将配置写入流。流的生命周期由调用方管理。
+    /// </summary>
+    public static void SaveConfig<T>(Stream stream, T o, bool writeIndented = false)
+    {
+        var options = writeIndented ? WriteIndentedSerializerOptions.Value : SerializerOptions;
+        using var writer = new StreamWriter(stream, new UTF8Encoding(false), 1024, true);
+        writer.Write(JsonSerializer.Serialize<T>(o, options));
+        writer.Flush();
+        stream.Flush();
     }
 
     /// <summary>

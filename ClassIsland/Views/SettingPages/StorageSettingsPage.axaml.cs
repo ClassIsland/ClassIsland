@@ -81,7 +81,7 @@ public partial class StorageSettingsPage : SettingsPageBase
         try
         {
             await PlatformServices.LauncherService.LaunchPath(
-                Path.GetFullPath(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups")));
+                Path.Combine(CommonDirectories.AppRootFolderPath, "Backups"));
         }
         catch (Exception exception)
         {

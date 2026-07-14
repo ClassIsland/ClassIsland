@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -143,17 +144,9 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.SettingsTabControlIndex = ViewModel.SettingsTabControlIndex == 0 ? 1 : ViewModel.SettingsTabControlIndex;
     }
 
-    private async void ButtonOpenConfigFolder_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonOpenConfigFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            await PlatformServices.LauncherService.LaunchPath(
-                Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath));
-        }
-        catch (Exception exception)
-        {
-            this.ShowErrorToast("无法打开组件配置目录", exception);
-        }
+        PlatformServices.LauncherService.LaunchPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath);
     }
     
     private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)

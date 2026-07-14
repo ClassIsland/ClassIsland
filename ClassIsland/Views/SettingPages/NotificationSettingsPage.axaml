@@ -111,12 +111,12 @@
 
                                         <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
                                         <!-- 图标 -->
-                                        <ContentPresenter Grid.Column="1" Grid.Row="0"
-                                                          Grid.RowSpan="2"
-                                                          Width="24" Height="24"
-                                                          VerticalAlignment="Center"
-                                                          ClipToBounds="True" Margin="6 6 10 6"
-                                                          Content="{Binding ProviderInstance.IconElement}" />
+                                        <controls1:ReattachableContentPresenter Grid.Column="1" Grid.Row="0"
+                                                                                Grid.RowSpan="2"
+                                                                                Width="24" Height="24"
+                                                                                VerticalAlignment="Center"
+                                                                                ClipToBounds="True" Margin="6 6 10 6"
+                                                                                ContentSource="{Binding ProviderInstance.IconElement}" />
                                         
                                         <!-- 标题 -->
                                         <TextBlock Grid.Column="2" Grid.Row="0"
@@ -164,12 +164,12 @@
                                                               ColumnDefinitions="Auto,*,Auto"
                                                               Margin="-12 4">
                                                             <!-- 图标 -->
-                                                            <ContentPresenter Grid.Column="0" Grid.Row="0"
-                                                                              Grid.RowSpan="2"
-                                                                              Width="24" Height="24"
-                                                                              VerticalAlignment="Center"
-                                                                              ClipToBounds="True" Margin="6"
-                                                                              Content="{Binding ProviderInstance.IconElement}" />
+                                                            <controls1:ReattachableContentPresenter Grid.Column="0" Grid.Row="0"
+                                                                                                    Grid.RowSpan="2"
+                                                                                                    Width="24" Height="24"
+                                                                                                    VerticalAlignment="Center"
+                                                                                                    ClipToBounds="True" Margin="6"
+                                                                                                    ContentSource="{Binding ProviderInstance.IconElement}" />
 
                                                             <!-- 标题 -->
                                                             <TextBlock Grid.Column="1" Grid.Row="0"
@@ -256,7 +256,8 @@
                                                 <ContentPresenter Content="{TemplateBinding Content}"/>
                                             </ControlTemplate>
                                         </controls3:FASettingsExpanderItem.Template>
-                                        <ContentPresenter Content="{Binding ViewModel.SpeechProviderSettingsControl, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}"/>
+                                        <controls1:ReattachableContentPresenter
+                                            ContentSource="{Binding ViewModel.SpeechProviderSettingsControl, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}"/>
                                     </controls3:FASettingsExpanderItem>
                                     <!-- 语音音量 -->
                                     <controls3:FASettingsExpanderItem Content="语音音量">

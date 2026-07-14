@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -157,21 +158,44 @@ public partial class PluginsSettingsPage : SettingsPageBase
             string? file;
             try
             {
-                file = await PlatformServices.FilePickerService.SaveFileAsync(
-                    new FilePickerSaveOptions
+                var options = new FilePickerSaveOptions
+                {
+                    Title = "打包插件",
+                    FileTypeChoices = [IPluginService.PluginPackageFileType],
+                    SuggestedFileName = ViewModel.SelectedPluginInfo.Manifest.Id +
+                                        IPluginService.PluginPackageExtension
+                };
+                var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    file = await PlatformServices.FilePickerService.SaveFileAsync(
+                        options,
+                        topLevel,
+                        output => StreamExportHelper.WritePathBasedExportAsync(
+                            output,
+                            IPluginService.PluginPackageExtension,
+                            path => Services.PluginService.PackagePluginAsync(
+                                ViewModel.SelectedPluginInfo.Manifest.Id,
+                                path)));
+                }
+                else
+                {
+                    file = await PlatformServices.FilePickerService.SaveFilePickerAsync(options, topLevel);
+                    if (file != null)
                     {
-                        Title = "打包插件",
-                        FileTypeChoices = [IPluginService.PluginPackageFileType],
-                        SuggestedFileName = ViewModel.SelectedPluginInfo.Manifest.Id +
-                                            IPluginService.PluginPackageExtension
-                    },
-                    TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow(),
-                    output => StreamExportHelper.WritePathBasedExportAsync(
-                        output,
-                        IPluginService.PluginPackageExtension,
-                        path => Services.PluginService.PackagePluginAsync(
+                        using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                                ?? throw new FileNotFoundException("无法打开所选插件包文件。", file);
+                        await using var outputStream = await storageFile.OpenWriteAsync();
+                        if (outputStream.CanSeek)
+                        {
+                            outputStream.SetLength(0);
+                            outputStream.Position = 0;
+                        }
+                        await Services.PluginService.PackagePluginAsync(
                             ViewModel.SelectedPluginInfo.Manifest.Id,
-                            path)));
+                            outputStream);
+                    }
+                }
             }
             finally
             {
@@ -182,9 +206,12 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 return;
 
             this.ShowSuccessToast($"已将插件 {ViewModel.SelectedPluginInfo.Manifest.Id} 打包到 {file}。");
-            if (!PlatformHelper.IsAppleMobile && Path.GetDirectoryName(file) is { Length: > 0 } directory)
+            if (!PlatformHelper.IsAppleMobile)
             {
-                await PlatformServices.LauncherService.LaunchPath(directory);
+                var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
+                    ? file
+                    : Path.GetDirectoryName(file) ?? file;
+                await PlatformServices.LauncherService.LaunchPath(launchPath);
             }
         }
         catch (Exception ex)
@@ -193,86 +220,91 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
     }
 
-    private async void MenuItemOpenPluginFolder_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemOpenPluginFolder_OnClick(object sender, RoutedEventArgs e)
     {
         if (ViewModel.SelectedPluginInfo == null)
             return;
-        await OpenFolderAsync(ViewModel.SelectedPluginInfo.PluginFolderPath, "插件目录");
+        PlatformServices.LauncherService.LaunchPath(ViewModel.SelectedPluginInfo.PluginFolderPath);
     }
 
     public class PluginInstallPreviewItem : PluginManifest
     {
         public Avalonia.Media.Imaging.Bitmap? IconBitmap { get; set; }
         public string? SourcePath { get; set; }
+        public string? SourceName { get; set; }
     }
 
-    private sealed record PluginInstallPreviewRaw(PluginManifest Manifest, string SourcePath, byte[]? IconBytes);
+    private sealed record PluginInstallPreviewRaw(PluginManifest Manifest, string SourcePath, string SourceName, byte[]? IconBytes);
 
-    private async Task<List<PluginInstallPreviewItem>> GetPluginManifestsAsync(IEnumerable<string> fileNames)
+    private async Task<List<PluginInstallPreviewItem>> GetPluginManifestsAsync(IEnumerable<string> fileNames, TopLevel topLevel)
     {
-        var raws = await Task.Run(() =>
+        var raws = new List<PluginInstallPreviewRaw>();
+
+        var deserializer = new DeserializerBuilder()
+            .IgnoreUnmatchedProperties()
+            .WithTypeConverter(new OSPlatformTypeConverter())
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
+
+        foreach (var fileName in fileNames)
         {
-            var result = new List<PluginInstallPreviewRaw>();
-
-            var deserializer = new DeserializerBuilder()
-                .IgnoreUnmatchedProperties()
-                .WithTypeConverter(new OSPlatformTypeConverter())
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .Build();
-
-            foreach (var fileName in fileNames)
+            try
             {
-                try
+                using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(fileName, topLevel);
+                if (storageFile == null ||
+                    !Path.GetExtension(storageFile.Name).Equals(IPluginService.PluginPackageExtension,
+                        StringComparison.OrdinalIgnoreCase))
                 {
-                    using var pkg = ZipFile.OpenRead(fileName);
-                    ZipArchiveSafety.ValidateForExtraction(pkg);
-                    var mf = pkg.GetEntry(Services.PluginService.PluginManifestFileName);
-                    if (mf == null)
-                        continue;
-                    if (mf.Length > Services.PluginService.MaximumManifestLength)
-                        continue;
+                    continue;
+                }
 
-                    using var reader = new StreamReader(mf.Open());
-                    var mfText = reader.ReadToEnd();
-                    var manifest = deserializer.Deserialize<PluginManifest>(mfText);
-                    if (manifest == null)
-                        continue;
+                await using var packageStream = await storageFile.OpenReadAsync();
+                using var pkg = new ZipArchive(packageStream, ZipArchiveMode.Read, true);
+                ZipArchiveSafety.ValidateForExtraction(pkg);
+                var mf = pkg.GetEntry(Services.PluginService.PluginManifestFileName);
+                if (mf == null)
+                    continue;
+                if (mf.Length > Services.PluginService.MaximumManifestLength)
+                    continue;
 
-                    byte[]? iconBytes = null;
+                using var reader = new StreamReader(mf.Open());
+                var mfText = await reader.ReadToEndAsync();
+                var manifest = deserializer.Deserialize<PluginManifest>(mfText);
+                if (manifest == null)
+                    continue;
 
-                    var iconPath = manifest.Icon?.Replace('\\', '/').TrimStart('/');
-                    if (!string.IsNullOrWhiteSpace(iconPath))
+                byte[]? iconBytes = null;
+
+                var iconPath = manifest.Icon?.Replace('\\', '/').TrimStart('/');
+                if (!string.IsNullOrWhiteSpace(iconPath))
+                {
+                    var iconEntry = pkg.GetEntry(iconPath);
+                    if (iconEntry != null && iconEntry.Length <= 4 * 1024 * 1024)
                     {
-                        var iconEntry = pkg.GetEntry(iconPath);
-                        if (iconEntry != null && iconEntry.Length <= 4 * 1024 * 1024)
+                        try
                         {
-                            try
-                            {
-                                using var iconStream = iconEntry.Open();
-                                using var ms = new MemoryStream();
-                                iconStream.CopyTo(ms);
-                                iconBytes = ms.ToArray();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.LogWarning(ex, "无法加载插件图标：{Icon}", manifest.Icon);
-                            }
+                            await using var iconStream = iconEntry.Open();
+                            using var ms = new MemoryStream();
+                            await iconStream.CopyToAsync(ms);
+                            iconBytes = ms.ToArray();
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogWarning(ex, "无法加载插件图标：{Icon}", manifest.Icon);
                         }
                     }
-                    result.Add(new PluginInstallPreviewRaw(manifest, fileName, iconBytes));
                 }
-                catch (InvalidDataException)
-                {
-                Logger.LogWarning("不是有效插件包：{File}", fileName);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "无法读取插件清单：{File}", fileName);
-                }
+                raws.Add(new PluginInstallPreviewRaw(manifest, fileName, storageFile.Name, iconBytes));
             }
-
-            return result;
-        });
+            catch (InvalidDataException)
+            {
+                Logger.LogWarning("不是有效插件包：{File}", fileName);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "无法读取插件清单：{File}", fileName);
+            }
+        }
 
         var manifests = new List<PluginInstallPreviewItem>();
         foreach (var raw in raws)
@@ -292,7 +324,8 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 Author = m.Author,
                 Dependencies = m.Dependencies?.ToList() ?? [],
                 SupportedOSPlatforms = m.SupportedOSPlatforms?.ToList() ?? [],
-                SourcePath = raw.SourcePath
+                SourcePath = raw.SourcePath,
+                SourceName = raw.SourceName
             };
 
             if (raw.IconBytes is { Length: > 0 })
@@ -322,8 +355,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x.Trim())
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Where(File.Exists)
-            .Where(x => Path.GetExtension(x).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
         if (paths.Count <= 0)
@@ -333,8 +364,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
 
         ViewModel.IsInstallingLocalPlugin = true;
+        var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
         List<PluginInstallPreviewItem> manifests;
-        manifests = await GetPluginManifestsAsync(paths);
+        manifests = await GetPluginManifestsAsync(paths, topLevel);
         if (manifests.Count == 0)
         {
             ViewModel.IsInstallingLocalPlugin = false;
@@ -356,14 +388,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
             DefaultButton = FAContentDialogButton.Primary
         };
 
-        var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
         ViewModel.IsInstallingLocalPlugin = false;
-        if (topLevel == null)
-        {
-            this.ShowErrorToast("找不到父窗口根节点");
-            return;
-        }
-
         var result = await dialog.ShowAsyncAuto(topLevel);
         if (result != FAContentDialogResult.Primary)
             return;
@@ -379,18 +404,16 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 continue;
             }
             path = path.Trim();
-            if (!File.Exists(path))
-            {
-                this.ShowWarningToast($"文件不存在：{path}");
-                failed++;
-                continue;
-            }
             try
             {
+                using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(path, topLevel)
+                                        ?? throw new FileNotFoundException("无法重新打开所选插件包。", path);
                 var dest = Path.Combine(
                     Services.PluginService.PluginsPkgRootPath,
-                    Path.GetFileName(path));
-                File.Copy(path, dest, true);
+                    Path.GetFileName(m.SourceName ?? storageFile.Name));
+                await using var inputStream = await storageFile.OpenReadAsync();
+                await using var outputStream = File.Create(dest);
+                await inputStream.CopyToAsync(outputStream);
                 success++;
             }
             catch (Exception ex)
@@ -447,15 +470,12 @@ public partial class PluginsSettingsPage : SettingsPageBase
         await ProcessInstallFiles(files);
     }
 
-    private async void MenuItemOpenPluginConfigFolder_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemOpenPluginConfigFolder_OnClick(object sender, RoutedEventArgs e)
     {
         if (ViewModel.SelectedPluginInfo == null)
             return;
-        await OpenFolderAsync(
-            Path.Combine(
-                Services.PluginService.PluginConfigsFolderPath,
-                ViewModel.SelectedPluginInfo.Manifest.Id),
-            "插件配置目录");
+        PlatformServices.LauncherService.LaunchPath(Path.Combine(Services.PluginService.PluginConfigsFolderPath,
+            ViewModel.SelectedPluginInfo.Manifest.Id));
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -561,25 +581,10 @@ public partial class PluginsSettingsPage : SettingsPageBase
         OpenDrawer("PluginSourceManageDrawer");
     }
 
-    private async void MenuItemOpenPluginsFolder_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemOpenPluginsFolder_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsPluginMarketOperationsPopupOpened = false;
-        await OpenFolderAsync(
-            Path.GetFullPath(Services.PluginService.PluginsRootPath),
-            "插件目录");
-    }
-
-    private async Task OpenFolderAsync(string path, string folderName)
-    {
-        try
-        {
-            await PlatformServices.LauncherService.LaunchPath(path);
-        }
-        catch (Exception exception)
-        {
-            Logger.LogError(exception, "无法使用系统文件管理器打开{FolderName}。", folderName);
-            this.ShowErrorToast($"无法打开{folderName}", exception);
-        }
+        PlatformServices.LauncherService.LaunchPath(Services.PluginService.PluginsRootPath);
     }
 
     private void ButtonBase2_OnClick(object sender, RoutedEventArgs e)

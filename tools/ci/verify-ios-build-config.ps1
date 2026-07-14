@@ -39,7 +39,7 @@ $ipaVerificationText = Read-RepositoryFile "tools/ci/verify-ios-ipa.sh"
 $coverageVerificationText = Read-RepositoryFile "tools/ci/verify-cobertura-coverage.ps1"
 $coverageRunsettingsText = Read-RepositoryFile "ClassIsland.Platforms.Abstractions.Tests/coverlet.runsettings"
 $artifactInitializationText = Read-RepositoryFile "tools/release-gen/init-artifacts.ps1"
-$nukeBuildText = Read-RepositoryFile "build/Build.App.cs"
+$nukeBuildText = Read-RepositoryFile "build/Build.DesktopApp.cs"
 $nukeSchema = Read-RepositoryFile ".nuke/build.schema.json" | ConvertFrom-Json
 $liveActivityServiceText = Read-RepositoryFile "ClassIsland.iOS/Services/LiveActivities/IosLiveActivityService.cs"
 $liveActivityBridgeText = Read-RepositoryFile "ClassIsland.iOS.Native/Bridge/ClassIslandLiveActivityBridge.swift"
@@ -81,6 +81,8 @@ $recoverBackupPageText = Read-RepositoryFile "ClassIsland/Views/RecoveryPages/Re
 $pluginsSettingsPageText = Read-RepositoryFile "ClassIsland/Views/SettingPages/PluginsSettingsPage.axaml.cs"
 $mobileViewHostText = Read-RepositoryFile "ClassIsland/Controls/UI/MobileViewHost.axaml.cs"
 $settingsWindowText = Read-RepositoryFile "ClassIsland/Views/SettingsWindowNew.axaml.cs"
+$welcomeWindowText = Read-RepositoryFile "ClassIsland/Views/WelcomeWindow.axaml.cs"
+$finishWelcomePageText = Read-RepositoryFile "ClassIsland/Views/WelcomePages/FinishPage.axaml.cs"
 
 $supportedVersion = $iosProject.SelectSingleNode("/Project/PropertyGroup/SupportedOSPlatformVersion").InnerText
 Assert-True ($supportedVersion -eq "15.0") "The iOS app minimum supported version must be 15.0."
@@ -350,6 +352,15 @@ $windowRuleHandler = [regex]::Match(
 Assert-True ($windowRuleHandler.Success) "The window-rule debug handler could not be validated."
 Assert-True ($windowRuleHandler.Value.Contains('if (PlatformHelper.IsAppleMobile)')) "Apple-only window-rule gating must not hide the Android implementation."
 Assert-True (-not $windowRuleHandler.Value.Contains('PlatformHelper.IsMobile')) "The window-rule handler must not reject Android as an unsupported platform."
+$pluginsSettingsRegistration = [regex]::Match(
+    $appServicesText,
+    '(?s)if\s*\(\s*!PlatformHelper\.IsAppleMobile\s*\)\s*\{\s*services\.AddSettingsPage<PluginsSettingsPage>\(\);\s*\}')
+Assert-True ($pluginsSettingsRegistration.Success) "The plugins settings page must be hidden only on iOS/iPadOS."
+Assert-True ($appServicesText.Contains('System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux()')) "Bundled desktop tutorials must not be registered on mobile platforms."
+Assert-True ($welcomeWindowText.Contains('if (!isOnboarding || PlatformHelper.IsAppleMobile)')) "The iOS onboarding flow must omit the desktop system-integration page."
+Assert-True ($finishWelcomePageText.Contains('DesktopTrayTutorial.IsVisible = false') -and
+             $finishWelcomePageText.Contains('DesktopProfileTutorial.IsVisible = false') -and
+             $finishWelcomePageText.Contains('Carousel.SelectedIndex = 2')) "The iOS onboarding finish page must skip desktop-only tray tutorials."
 
 Assert-True ($wrapperWorkflowText.Contains("name: Build iOS")) "The observable iOS workflow must keep the Build iOS name."
 Assert-True ($wrapperWorkflowText.Contains("uses: ./.github/workflows/_build_ios_reusable.yml")) "The Build iOS workflow must call the reusable iOS worker."
@@ -398,7 +409,7 @@ Assert-True ($releaseWorkflowText.Contains("if: `${{ github.event_name == 'workf
 Assert-True ($releaseWorkflowText.Contains('checkout_ref: ${{ inputs.release_tag }}')) "The release iOS build must checkout the requested release tag."
 Assert-True ($releaseWorkflowText.Contains("developer_preview: false")) "The release iOS build must disable DeveloperPreview."
 Assert-True ($releaseWorkflowText.Contains("artifact_name: out_app_ios_arm64_selfContained_ipa")) "The release iOS artifact must use the release collector naming convention."
-Assert-True ($releaseWorkflowText.Contains("needs: [ pack_app, build_nupkg, build_ios_unsigned ]")) "Publishing must wait for the unsigned iOS artifact."
+Assert-True ($releaseWorkflowText.Contains("needs: [ pack_app, build_nupkg, build_android, build_ios_unsigned ]")) "Publishing must wait for Android and unsigned iOS artifacts."
 Assert-True ($releaseWorkflowText.Contains("sha256sum --check")) "Publishing must verify the downloaded iOS checksum."
 Assert-True ($releaseWorkflowText.Contains("./out/*.ipa,./out/*.sha256")) "The release draft must include the unsigned IPA and checksum."
 

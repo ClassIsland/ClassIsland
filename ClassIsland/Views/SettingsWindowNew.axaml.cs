@@ -586,26 +586,47 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
             string? file;
             try
             {
-                file = await PlatformServices.FilePickerService.SaveFileAsync(
-                    new FilePickerSaveOptions
+                var topLevel = TopLevel.GetTopLevel(this)!;
+                var options = new FilePickerSaveOptions
+                {
+                    Title = "导出诊断数据",
+                    SuggestedStartLocation =
+                        await topLevel.StorageProvider.TryGetFolderFromPathAsync(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
+                    FileTypeChoices =
+                    [
+                        new FilePickerFileType("压缩文件")
+                        {
+                            Patterns = ["*.zip"]
+                        }
+                    ]
+                };
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    file = await PlatformServices.FilePickerService.SaveFileAsync(
+                        options,
+                        topLevel,
+                        output => StreamExportHelper.WritePathBasedExportAsync(
+                            output,
+                            ".zip",
+                            path => DiagnosticService.ExportDiagnosticData(path, false)));
+                }
+                else
+                {
+                    file = await PlatformServices.FilePickerService.SaveFilePickerAsync(options, topLevel);
+                    if (file != null)
                     {
-                        Title = "导出诊断数据",
-                        SuggestedStartLocation =
-                            await TopLevel.GetTopLevel(this)!.StorageProvider.TryGetFolderFromPathAsync(
-                                Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
-                        FileTypeChoices =
-                        [
-                            new FilePickerFileType("压缩文件")
-                            {
-                                Patterns = ["*.zip"]
-                            }
-                        ]
-                    },
-                    TopLevel.GetTopLevel(this)!,
-                    output => StreamExportHelper.WritePathBasedExportAsync(
-                        output,
-                        ".zip",
-                        path => DiagnosticService.ExportDiagnosticData(path, false)));
+                        using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                                ?? throw new FileNotFoundException("无法打开所选诊断数据文件。", file);
+                        await using var outputStream = await storageFile.OpenWriteAsync();
+                        if (outputStream.CanSeek)
+                        {
+                            outputStream.SetLength(0);
+                            outputStream.Position = 0;
+                        }
+                        await DiagnosticService.ExportDiagnosticData(outputStream);
+                    }
+                }
             }
             finally
             {
@@ -618,9 +639,12 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
             }
 
             this.ShowSuccessToast($"已导出诊断信息到 {file}。");
-            if (!PlatformHelper.IsAppleMobile && Path.GetDirectoryName(file) is { Length: > 0 } directory)
+            if (!PlatformHelper.IsAppleMobile)
             {
-                await PlatformServices.LauncherService.LaunchPath(directory);
+                var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
+                    ? file
+                    : Path.GetDirectoryName(file) ?? file;
+                await PlatformServices.LauncherService.LaunchPath(launchPath);
             }
         }
         catch (Exception exception)
@@ -642,7 +666,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
     {
         var folderPath = PlatformHelper.IsAppleMobile
             ? CommonDirectories.AppSharedDocumentsFolderPath
-            : Path.GetFullPath(".");
+            : ".";
         await OpenFolderAsync(folderPath, "应用目录");
     }
 
@@ -665,7 +689,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
     {
         try
         {
-            await PlatformServices.LauncherService.LaunchPath(Path.GetFullPath(folderPath));
+            await PlatformServices.LauncherService.LaunchPath(folderPath);
         }
         catch (Exception exception)
         {
@@ -747,7 +771,16 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
         try
         {
-            await ShortcutHelpers.CreateClassSwapShortcutAsync(file);
+            var topLevel = TopLevel.GetTopLevel(this)!;
+            using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                    ?? throw new FileNotFoundException("无法打开所选快捷方式文件。", file);
+            await using var outputStream = await storageFile.OpenWriteAsync();
+            if (outputStream.CanSeek)
+            {
+                outputStream.SetLength(0);
+                outputStream.Position = 0;
+            }
+            await ShortcutHelpers.CreateClassSwapShortcutAsync(outputStream);
             this.ShowSuccessToast($"已创建快捷换课图标到 {file}。");
         }
         catch (Exception exception)

@@ -12,9 +12,10 @@ using ClassIsland.Services;
 namespace ClassIsland.Android;
 
 [Application]
-[SupportedOSPlatform("android")]
+[SupportedOSPlatform("android24.0")]
 public class Application : AvaloniaAndroidApplication<App>
 {
+    
     public static Application Instance { get; private set; } = null!;
     
     protected Application(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
@@ -25,6 +26,7 @@ public class Application : AvaloniaAndroidApplication<App>
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
         PlatformServices.AppLifetimeService = new AndroidAppLifetimeService();
+        PlatformServices.LauncherService = new LauncherService();
 
         var restartParameters = MainActivity.Current?.TryGetTarget(out var mainActivity) == true
             ? mainActivity.Intent?.GetStringArrayExtra(AndroidAppLifetimeService.RestartParametersExtra)
@@ -36,7 +38,7 @@ public class Application : AvaloniaAndroidApplication<App>
         return AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
-                app.OperatingSystem = "windows";
+                app.OperatingSystem = "android";
                 return app;
             })
             .UseAndroid()
@@ -53,11 +55,11 @@ public class Application : AvaloniaAndroidApplication<App>
             })
             .With(new AndroidPlatformOptions()
             {
-                // RenderingMode = [
-                //     AndroidRenderingMode.Vulkan,
-                //     AndroidRenderingMode.Egl,
-                //     AndroidRenderingMode.Software
-                // ]
+                RenderingMode = [
+                    AndroidRenderingMode.Egl,
+                    AndroidRenderingMode.Vulkan,
+                    AndroidRenderingMode.Software
+                ]
             })
             .LogToHostSink();
     }

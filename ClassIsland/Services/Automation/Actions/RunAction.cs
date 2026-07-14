@@ -4,14 +4,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Automation;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Actions;
+using ClassIsland.Platforms.Abstraction;
 using static ClassIsland.Models.Actions.RunActionSettings.RunActionRunType;
 namespace ClassIsland.Services.Automation.Actions;
 
 [ActionInfo("classisland.os.run", "运行", "\uec2e", addDefaultToMenu:false)]
-public class RunAction : ActionBase<RunActionSettings>
+public class RunAction(IUriNavigationService uriNavigationService) : ActionBase<RunActionSettings>
 {
+    public IUriNavigationService UriNavigationService { get; } = uriNavigationService;
+
     protected override async Task OnInvoke()
     {
         await base.OnInvoke();
@@ -30,11 +34,7 @@ public class RunAction : ActionBase<RunActionSettings>
             case File:
             case Folder:
             {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = Settings.Value,
-                    UseShellExecute = true
-                });
+                await PlatformServices.LauncherService.LaunchPath(Settings.Value);
                 break;
             }
             case Url:
@@ -63,6 +63,10 @@ public class RunAction : ActionBase<RunActionSettings>
                     {
                         UseShellExecute = false
                     });
+                }
+                else
+                {
+                    UriNavigationService.NavigateWrapped(new Uri(path));
                 }
 
                 break;

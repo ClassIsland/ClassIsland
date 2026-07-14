@@ -311,22 +311,35 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
-        List<string> file;
         PopupHelper.DisableAllPopups();
-        try
+        var importOptions = new FilePickerOpenOptions()
         {
-            file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
+            Title = "浏览 ClassIsland 2 导出文件",
+            FileTypeFilter = [ new FilePickerFileType("ClassIsland 数据文件")
+                {
+                    Patterns = ["*.cidata"]
+                }
+            ]
+        };
+        List<string> file;
+        if (PlatformHelper.IsAppleMobile)
+        {
+            try
             {
-                Title = "浏览 ClassIsland 2 导出文件",
-                FileTypeFilter = [ new FilePickerFileType("ClassIsland 数据文件")
-                    {
-                        Patterns = ["*.cidata"]
-                    }
-                ]
-            }, topLevel);
+                file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(
+                    importOptions,
+                    topLevel);
+            }
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
         }
-        finally
+        else
         {
+            file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(
+                importOptions,
+                topLevel);
             PopupHelper.RestoreAllPopups();
         }
 
@@ -367,9 +380,32 @@ public partial class DataTransferPage : UserControl
         try
         {
             ViewModel.PageIndex = 3;
-            await Task.Run(() => ImportClassIsland2Archive(
-                ImportedFileReference.Resolve(root),
-                importEntries));
+            var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+            if (PlatformHelper.IsAppleMobile)
+            {
+                var resolvedPath = ImportedFileReference.Resolve(root);
+                using var file = await PlatformServices.FilePickerService.GetFileAsync(
+                                     resolvedPath,
+                                     topLevel)
+                                 ?? throw new FileNotFoundException(
+                                     "无法打开所选 ClassIsland 数据文件。",
+                                     resolvedPath);
+                await using var inputStream = await file.OpenReadAsync();
+                await Task.Run(() => ImportClassIsland2Archive(
+                    inputStream,
+                    importEntries));
+            }
+            else
+            {
+                using var file = await PlatformServices.FilePickerService.GetFileAsync(root, topLevel)
+                                 ?? throw new FileNotFoundException(
+                                     "无法打开所选 ClassIsland 数据文件。",
+                                     root);
+                await using var inputStream = await file.OpenReadAsync();
+                await Task.Run(() => ImportClassIsland2ArchiveUsingUpstreamBehavior(
+                    inputStream,
+                    importEntries));
+            }
 
             AppBase.Current.Restart(["-m", "--importComplete"]);
         }
@@ -381,10 +417,89 @@ public partial class DataTransferPage : UserControl
 
     }
 
-    private static void ImportClassIsland2Archive(
-        string archivePath,
+    private static void ImportClassIsland2ArchiveUsingUpstreamBehavior(
+        Stream archiveStream,
         ImportEntries importEntries)
     {
+        var appRoot = Path.GetFullPath(CommonDirectories.AppRootFolderPath);
+        Directory.CreateDirectory(appRoot);
+        if (importEntries.HasFlag(ImportEntries.OtherConfig) &&
+            Directory.Exists(PluginService.PluginsRootPath))
+        {
+            Directory.Delete(PluginService.PluginsRootPath, true);
+        }
+
+        using var archive = new ZipArchive(
+            archiveStream,
+            ZipArchiveMode.Read,
+            true);
+        foreach (var entry in archive.Entries)
+        {
+            if (!ShouldImportEntry(entry.FullName))
+            {
+                continue;
+            }
+
+            ExtractEntry(entry, appRoot);
+        }
+
+        return;
+
+        bool ShouldImportEntry(string entryName)
+        {
+            var normalizedName = entryName.Replace('\\', '/');
+            if ((importEntries & ImportEntries.Settings) == ImportEntries.Settings &&
+                normalizedName == "Settings.json")
+            {
+                return true;
+            }
+
+            if ((importEntries & ImportEntries.Profiles) == ImportEntries.Profiles &&
+                normalizedName.StartsWith("Profiles/", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            if ((importEntries & ImportEntries.OtherConfig) != ImportEntries.OtherConfig)
+            {
+                return false;
+            }
+
+            return normalizedName.StartsWith("Config/", StringComparison.Ordinal) ||
+                   normalizedName.StartsWith("Plugins/", StringComparison.Ordinal);
+        }
+
+        static void ExtractEntry(ZipArchiveEntry entry, string appDataRoot)
+        {
+            var targetPath = Path.GetFullPath(Path.Combine(
+                appDataRoot,
+                entry.FullName.Replace('/', Path.DirectorySeparatorChar)));
+            var rootWithSeparator = appDataRoot.EndsWith(Path.DirectorySeparatorChar)
+                ? appDataRoot
+                : appDataRoot + Path.DirectorySeparatorChar;
+            if (!targetPath.StartsWith(rootWithSeparator, StringComparison.Ordinal) &&
+                targetPath != appDataRoot)
+            {
+                throw new InvalidDataException($"压缩包包含无效路径：{entry.FullName}");
+            }
+
+            if (string.IsNullOrEmpty(entry.Name))
+            {
+                Directory.CreateDirectory(targetPath);
+                return;
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(targetPath) ?? appDataRoot);
+            entry.ExtractToFile(targetPath, true);
+        }
+    }
+
+    private static void ImportClassIsland2Archive(
+        Stream archiveStream,
+        ImportEntries importEntries)
+    {
+        ArgumentNullException.ThrowIfNull(archiveStream);
+
         var hasSelection = (importEntries & (ImportEntries.Settings |
                                              ImportEntries.Profiles |
                                              ImportEntries.OtherConfig)) != 0;
@@ -424,7 +539,10 @@ public partial class DataTransferPage : UserControl
         {
             stagingPath = Directory.CreateTempSubdirectory(
                 "ClassIslandDataImport-").FullName;
-            using (var archive = ZipFile.OpenRead(archivePath))
+            using (var archive = new ZipArchive(
+                       archiveStream,
+                       ZipArchiveMode.Read,
+                       true))
             {
                 ZipArchiveSafety.ValidateForClassIslandDataExtraction(archive);
                 var extracted = SafeArchiveExtractor.ExtractSelected(
@@ -630,17 +748,10 @@ public partial class DataTransferPage : UserControl
         }
 
         PopupHelper.DisableAllPopups();
-        string? file;
-        try
-        {
-            file = await PlatformServices.FilePickerService.SaveFilePickerAsync(
-                CreateClassIsland2ExportOptions(),
-                topLevel);
-        }
-        finally
-        {
-            PopupHelper.RestoreAllPopups();
-        }
+        var file = await PlatformServices.FilePickerService.SaveFilePickerAsync(
+            CreateClassIsland2ExportOptions(),
+            topLevel);
+        PopupHelper.RestoreAllPopups();
         
         
         ViewModel.ImportSourcePath = file ?? "";
@@ -689,7 +800,51 @@ public partial class DataTransferPage : UserControl
             }
             else
             {
-                await CreateClassIsland2ExportArchiveAsync(ViewModel.ImportSourcePath);
+                var path = ViewModel.ImportSourcePath;
+                var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+                using var file = await PlatformServices.FilePickerService.GetFileAsync(path, topLevel)
+                                 ?? throw new FileNotFoundException(
+                                     "无法打开所选 ClassIsland 数据文件。",
+                                     path);
+                await using var outputStream = await file.OpenWriteAsync();
+                if (outputStream.CanSeek)
+                {
+                    outputStream.SetLength(0);
+                    outputStream.Position = 0;
+                }
+
+                var temp = Directory.CreateTempSubdirectory(
+                    "ClassIslandDataExport").FullName;
+                Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
+                Directory.CreateDirectory(Path.Combine(temp, "Plugins/"));
+                Directory.CreateDirectory(Path.Combine(temp, "Config/"));
+
+                await Task.Run(() =>
+                {
+                    if (ViewModel.IsSettingsSelected)
+                    {
+                        File.Copy(
+                            Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"),
+                            Path.Combine(temp, "Settings.json"));
+                    }
+                    if (ViewModel.IsProfileSelected)
+                    {
+                        FileFolderService.CopyFolder(
+                            Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles"),
+                            Path.Combine(temp, "Profiles/"));
+                    }
+                    if (ViewModel.IsOtherConfigSelected)
+                    {
+                        FileFolderService.CopyFolder(
+                            Path.Combine(CommonDirectories.AppConfigPath),
+                            Path.Combine(temp, "Config/"));
+                        FileFolderService.CopyFolder(
+                            Path.Combine(PluginService.PluginsRootPath),
+                            Path.Combine(temp, "Plugins/"));
+                    }
+                    ZipFile.CreateFromDirectory(temp, outputStream);
+                });
+                Directory.Delete(temp, true);
             }
 
             ViewModel.PageIndex = 4;
@@ -860,17 +1015,30 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
-        List<string> file;
         PopupHelper.DisableAllPopups();
-        try
+        var folderOptions = new FolderPickerOpenOptions()
         {
-            file = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(new FolderPickerOpenOptions()
+            Title = "浏览 Class Widgets 安装（即有 ClassWidgets[.exe]）的文件夹或其数据目录"
+        };
+        List<string> file;
+        if (PlatformHelper.IsAppleMobile)
+        {
+            try
             {
-                Title = "浏览 Class Widgets 安装（即有 ClassWidgets[.exe]）的文件夹或其数据目录"
-            }, topLevel);
+                file = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(
+                    folderOptions,
+                    topLevel);
+            }
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
         }
-        finally
+        else
         {
+            file = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(
+                folderOptions,
+                topLevel);
             PopupHelper.RestoreAllPopups();
         }
 
@@ -981,18 +1149,12 @@ public partial class DataTransferPage : UserControl
                 settings.NotificationChannelsNotifySettings.GetValueOrDefault(channelId) ?? new NotificationSettings();
             chanelSettings.IsNotificationSoundEnabled = true;
             chanelSettings.IsSettingsEnabled = true;
-            var externalAudioRoot = Path.Combine(
-                CommonDirectories.AppConfigPath,
-                "ExternalAudios");
-            var sourcePath = SafeRelativePath.ResolveUnderRoot(
-                Path.Combine(root, "audio"),
-                cwPath);
-            var ciPath = SafeRelativePath.ResolveUnderRoot(
-                externalAudioRoot,
-                cwPath);
-            Directory.CreateDirectory(
-                Path.GetDirectoryName(ciPath) ?? externalAudioRoot);
-            File.Copy(sourcePath, ciPath, true);
+            if (!Directory.Exists(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios")))
+            {
+                Directory.CreateDirectory(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios"));
+            }
+            var ciPath = Path.GetFullPath(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios", cwPath));
+            File.Copy(Path.Combine(root, "audio", cwPath), ciPath, true);
             chanelSettings.NotificationSoundPath = ciPath;
             settings.NotificationChannelsNotifySettings[new Guid(channelId).ToString()] = chanelSettings;
         }

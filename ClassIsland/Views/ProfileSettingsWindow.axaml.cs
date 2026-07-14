@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -374,19 +375,10 @@ public partial class ProfileSettingsWindow : ViewBase
         RefreshProfiles();
     }
 
-    private async void ButtonOpenProfileFolder_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonOpenProfileFolder_OnClick(object sender, RoutedEventArgs e)
     {
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.openFolder", 1);
-        try
-        {
-            await PlatformServices.LauncherService.LaunchPath(
-                Path.GetFullPath(Services.ProfileService.ProfilePath));
-        }
-        catch (Exception exception)
-        {
-            Logger.LogError(exception, "无法使用系统文件管理器打开档案文件夹。");
-            this.ShowErrorToast("无法打开档案文件夹", exception);
-        }
+        PlatformServices.LauncherService.LaunchPath(ProfileService.ProfilePath);
     }
 
     private void ButtonRefreshProfiles_OnClick(object sender, RoutedEventArgs e)

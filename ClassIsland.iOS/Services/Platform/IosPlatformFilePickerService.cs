@@ -38,6 +38,17 @@ internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFile
         return CreateTemporaryMaterializer().MaterializeFilesAsync(files);
     }
 
+    public override async Task<List<string>> OpenFilesPickerAsync(
+        FilePickerOpenOptions options,
+        TopLevel root)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(root);
+
+        var files = await root.StorageProvider.OpenFilePickerAsync(options);
+        return await MaterializeFilesAsync(files);
+    }
+
     public async Task<List<string>> OpenPersistentFilesPickerAsync(
         FilePickerOpenOptions options,
         TopLevel root)

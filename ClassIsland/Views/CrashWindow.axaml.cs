@@ -8,7 +8,6 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers;
-using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 
@@ -84,20 +83,13 @@ public partial class CrashWindow : ViewBase
         TextBoxCrashInfo.Copy();
     }
 
-    private async void ButtonFeedback_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonFeedback_OnClick(object sender, RoutedEventArgs e)
     {
         var uri = new UriBuilder(
             $"https://github.com/ClassIsland/ClassIsland/issues/new");
         uri.Query = 
             $"template=BugReport.yml&stacktrace={HttpUtility.UrlEncode(CrashInfo)}&app_version={HttpUtility.UrlEncode(App.AppVersionLong)}&os_version={HttpUtility.UrlEncode(Environment.OSVersion.Version.ToString())}";
-        try
-        {
-            await PlatformServices.LauncherService.LaunchUrl(uri.ToString());
-        }
-        catch (Exception exception)
-        {
-            this.ShowErrorToast("无法打开问题反馈页面", exception);
-        }
+        PlatformServices.LauncherService.LaunchUrl(uri.ToString());
     }
 
     private void ButtonDebug_OnClick(object sender, RoutedEventArgs e)

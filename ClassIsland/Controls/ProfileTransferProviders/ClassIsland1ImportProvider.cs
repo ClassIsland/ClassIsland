@@ -1,11 +1,14 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls.ProfileTransferProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Helpers.ProfileTransferHelpers;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -33,7 +36,11 @@ public class ClassIsland1ImportProvider : GenericImportProviderBase
     {
         try
         {
-            var profile = ClassIslandV1ProfileTransferHelper.TransferClassIslandV1ProfileToClassIslandProfile(SourceFilePath);
+            var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+            using var file = await PlatformServices.FilePickerService.GetFileAsync(SourceFilePath, topLevel)
+                             ?? throw new FileNotFoundException("无法打开所选课表文件。", SourceFilePath);
+            await using var stream = await file.OpenReadAsync();
+            var profile = ClassIslandV1ProfileTransferHelper.TransferClassIslandV1ProfileToClassIslandProfile(stream);
             if (ImportType == 1)
             {
                 var path = Path.Combine(Services.ProfileService.ProfilePath, NewProfileName + ".json");

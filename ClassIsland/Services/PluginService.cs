@@ -327,7 +327,8 @@ public class PluginService : IPluginService
         var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
         Console.WriteLine($"Resolved load order: {string.Join(", ", loadOrder)}");
 
-        var suppressMacOsPluginLoadBehavior =
+        var forceMonoPluginLoadBehavior =
+            Environment.GetEnvironmentVariable("ClassIsland_DebugForceMonoPluginLoadBehavior") == "1" ||
             Environment.GetEnvironmentVariable("ClassIsland_DebugSuppressMacOSPluginLoadBehavior") == "1";
         // 加载插件
         foreach (var id in loadOrder)
@@ -338,7 +339,7 @@ public class PluginService : IPluginService
             try
             {
                 var fullPath = Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly));
-                var loadContext = new PluginLoadContext(info, fullPath, suppressMacOsPluginLoadBehavior);
+                var loadContext = new PluginLoadContext(info, fullPath, forceMonoPluginLoadBehavior);
                 PluginLoadContexts[info.Manifest.Id] = loadContext;
                 var asm = loadContext.LoadFromAssemblyName(
                     new AssemblyName(Path.GetFileNameWithoutExtension(fullPath)));
@@ -413,6 +414,19 @@ public class PluginService : IPluginService
     /// <exception cref="ArgumentException">当找不到指定插件时抛出此异常</exception>
     public static async Task PackagePluginAsync(string id, string outputPath)
     {
+        if (IPluginService.LoadedPlugins.All(x => x.Manifest.Id != id))
+        {
+            throw new ArgumentException($"找不到插件 {id}。", nameof(id));
+        }
+        await using var outputStream = File.Create(outputPath);
+        await PackagePluginAsync(id, outputStream);
+    }
+
+    /// <summary>
+    /// 异步导出指定插件到流
+    /// </summary>
+    public static async Task PackagePluginAsync(string id, Stream outputStream)
+    {
         var plugin = IPluginService.LoadedPlugins.FirstOrDefault(x => x.Manifest.Id == id);
         if (plugin == null)
         {
@@ -421,9 +435,7 @@ public class PluginService : IPluginService
 
         await Task.Run(() =>
         {
-            if (File.Exists(outputPath))
-                File.Delete(outputPath);
-            ZipFile.CreateFromDirectory(plugin.PluginFolderPath, outputPath);
+            ZipFile.CreateFromDirectory(plugin.PluginFolderPath, outputStream);
         });
     }
 

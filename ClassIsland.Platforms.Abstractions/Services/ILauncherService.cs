@@ -6,14 +6,14 @@ namespace ClassIsland.Platforms.Abstraction.Services;
 public interface ILauncherService
 {
     /// <summary>
-    /// 使用系统文件管理器打开目录。
+    /// 启动一个目录。
     /// </summary>
-    /// <param name="path">要打开的目录。</param>
-    Task LaunchPath(string path);
+    /// <param name="path">要启动的目录</param>
+    public Task LaunchPath(string path);
 
     /// <summary>
-    /// 使用系统默认应用打开外部 URL。
+    /// 启动一个外部 URL
     /// </summary>
-    /// <param name="url">要打开的绝对 URL。</param>
-    Task LaunchUrl(string url);
+    /// <param name="url">URL</param>
+    public Task LaunchUrl(string url);
 }

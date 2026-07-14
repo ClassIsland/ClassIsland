@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.UriNavigation;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.IPC.Abstractions.Services;
@@ -69,7 +70,14 @@ public class UriNavigationService : IUriNavigationService
             }
             else
             {
-                _ = OpenExternalUriAsync(uri);
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    _ = OpenExternalUriAsync(uri);
+                }
+                else
+                {
+                    PlatformServices.LauncherService.LaunchUrl(uri.ToString());
+                }
             }
         });
     }

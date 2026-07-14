@@ -77,6 +77,10 @@ public partial class App : AppBase, IAppHost
     private const string BuildTypeInternal =
 #if SelfContained
         "selfContained";
+#elif AoT
+        "aot";
+#elif MonoAoT
+        "monoaot";
 #else
         "full";
 #endif
@@ -545,7 +549,7 @@ public partial class App : AppBase, IAppHost
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
         Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
 
-        // 检测Mutex
+        // 检测 Mutex
         if (!IsMutexCreateNew && !Design.IsDesignMode)
         {
             if (!ApplicationCommand.WaitMutex)
@@ -559,17 +563,38 @@ public partial class App : AppBase, IAppHost
                     HandleStartupAbort("检测到重复启动的自启动实例");
                     return;
                 }
-                
+
                 await ProcessInstanceExisted();
                 HandleStartupAbort("检测到已有 ClassIsland 实例正在运行");
                 return;
             }
         }
 
+#if RELEASE
+        // TODO: 退出 DP 后记得删
+        await new FATaskDialog()
+        {
+            Title = "ClassIsland",
+            Header = "欢迎使用 2.2-Misha Developer Preview",
+            Content = "此版本仅供开发人员进行早期预览，稳定性欠佳，不适用于生产环境或日常使用。如果您在使用的过程中遇到问题，欢迎前往 GitHub issues 上提交 issue！",
+            IconSource = new AdvancedImageIconSource()
+            {
+                Uri = "avares://ClassIsland/Assets/HoYoStickers/米沙_欢迎光临.png"
+            },
+            XamlRoot = GetRootWindow(),
+            Buttons = [
+                new FATaskDialogButton("确定", true)
+                {
+                    IsDefault = true
+                }
+            ]
+        }.ShowAsync();
+#endif
+
         // 检测临时目录
         if (Environment.CurrentDirectory.Contains(Path.GetTempPath()))
         {
-            await CommonTaskDialogs.ShowDialog("检测到应用正在临时目录下运行", "ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
+            await CommonTaskDialogs.ShowDialog("检测到应用正在临时目录下运行", "ClassIsland 正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
             HandleStartupAbort("应用正在临时目录下运行");
             return;
         }
@@ -577,7 +602,7 @@ public partial class App : AppBase, IAppHost
         // 检测桌面文件夹
         if (Environment.CurrentDirectory == Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) && !Settings.IsWelcomeWindowShowed)
         {
-            var r = await CommonTaskDialogs.ShowDialog("检测到正在桌面上运行", "ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
+            var r = await CommonTaskDialogs.ShowDialog("检测到正在桌面上运行", "ClassIsland 正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
             if (r == (object)true)
             {
                 HandleStartupAbort("应用正在桌面目录中运行");
@@ -594,7 +619,7 @@ public partial class App : AppBase, IAppHost
         }
         catch (Exception ex)
         {
-            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}"+Environment.NewLine+Environment.NewLine+"请将本软件解压到一个合适的位置后再运行。");
+            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland 无法写入当前目录：{ex.Message}"+Environment.NewLine+Environment.NewLine+"请将本软件解压到一个合适的位置后再运行。");
             HandleStartupAbort("应用目录不可写");
             return;
         }
@@ -670,7 +695,7 @@ public partial class App : AppBase, IAppHost
         if (App.ApplicationCommand.Diagnostic)
         {
             var diagService = GetService<DiagnosticService>();
-            Logger.LogInformation("诊断模式已启用!");
+            Logger.LogInformation("诊断模式已启用！");
             Logger.LogDebug("{DiagnosticMessage}", diagService.GetDiagnosticInfo());
         }
         foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Error))
@@ -736,13 +761,13 @@ public partial class App : AppBase, IAppHost
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
         Settings.DiagnosticStartupCount++;
 
-        // 记录MLE
+        // 记录 MLE
         if (ApplicationCommand.PrevSessionMemoryKilled)
         {
             Settings.DiagnosticMemoryKillCount++;
             Settings.DiagnosticLastMemoryKillTime = DateTime.Now;
             #if !DEBUG
-            Logger.LogWarning($"上次会话因MLE结束。MemoryKillCount={Settings.DiagnosticMemoryKillCount}");
+            Logger.LogWarning($"上次会话因 MLE 结束。MemoryKillCount={Settings.DiagnosticMemoryKillCount}");
             #endif
         }
         spanLoadingSettings.Finish();
@@ -869,13 +894,13 @@ public partial class App : AppBase, IAppHost
             }
         }
 
-        // 如果不是开发构建, 则自动重置部分可能影响使用的调试选项
+        // 如果不是开发构建，则自动重置部分可能影响使用的调试选项
         #if !DEBUG
         Settings.IsMainWindowDebugEnabled = false;
         #endif
         
         var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
-        Logger.LogInformation("正在初始化MainWindow。");
+        Logger.LogInformation("正在初始化 MainWindow。");
         GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
         GetService<ISplashService>().CurrentProgress = 55;
 #if DEBUG
@@ -905,7 +930,7 @@ public partial class App : AppBase, IAppHost
         }
         GetService<SignalTriggerHandlerService>();
 
-        // 注册uri导航
+        // 注册 uri 导航
         var uriNavigationService = GetService<IUriNavigationService>();
         uriNavigationService.HandleAppNavigation("test", args => _ = CommonTaskDialogs.ShowDialog("测试导航", $"{args.Uri}"));
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
@@ -1025,7 +1050,8 @@ public partial class App : AppBase, IAppHost
         {
             PlatformServices.DesktopToastService.ShowToastAsync("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", () => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
         }
-        if (Settings.CorruptPluginsDisabledLastSession)
+        if (Settings.CorruptPluginsDisabledLastSession &&
+            !PlatformHelper.IsAppleMobile)
         {
             Settings.CorruptPluginsDisabledLastSession = false;
             var content = new DesktopToastContent()

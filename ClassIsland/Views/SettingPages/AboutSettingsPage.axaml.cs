@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -26,7 +27,6 @@ using ClassIsland.Core.Models.UI;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.AllContributors;
-using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
@@ -69,18 +69,9 @@ public partial class AboutSettingsPage : SettingsPageBase
         IAppHost.TryGetService<IUriNavigationService>()?.NavigateWrapped(new Uri(url));
     }
 
-    private async void Hyperlink2_OnClick(object sender, RoutedEventArgs e)
+    private void Hyperlink2_OnClick(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            await PlatformServices.LauncherService.LaunchUrl("https://github.com/DuguSand/class_form");
-        }
-        catch (Exception exception)
-        {
-            App.GetService<ILogger<AboutSettingsPage>>()
-                .LogError(exception, "无法打开鸣谢项目链接。");
-            this.ShowErrorToast("无法打开链接", exception);
-        }
+        IAppHost.TryGetService<IUriNavigationService>()?.NavigateWrapped(new Uri("https://github.com/DuguSand/class_form"));
     }
 
     private async void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)

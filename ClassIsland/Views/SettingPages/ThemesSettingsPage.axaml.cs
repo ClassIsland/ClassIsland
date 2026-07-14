@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -64,9 +65,9 @@ public partial class ThemesSettingsPage : SettingsPageBase
     }
 
     [RelayCommand]
-    private async Task OpenFolder(ThemeInfo info)
+    private void OpenFolder(ThemeInfo info)
     {
-        await OpenFolderAsync(System.IO.Path.GetFullPath(info.Path), "主题目录");
+        PlatformServices.LauncherService.LaunchPath(info.Path);
     }
 
     [RelayCommand]
@@ -75,21 +76,9 @@ public partial class ThemesSettingsPage : SettingsPageBase
         OpenDrawer("ErrorInfoDrawer", dataContext: info.Error?.ToString());
     }
 
-    private async void ButtonOpenThemeFolder_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonOpenThemeFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        await OpenFolderAsync(ClassIsland.Services.XamlThemeService.ThemesPath, "主题目录");
-    }
-
-    private async Task OpenFolderAsync(string path, string folderName)
-    {
-        try
-        {
-            await PlatformServices.LauncherService.LaunchPath(path);
-        }
-        catch (Exception exception)
-        {
-            this.ShowErrorToast($"无法打开{folderName}", exception);
-        }
+        PlatformServices.LauncherService.LaunchPath(ClassIsland.Services.XamlThemeService.ThemesPath);
     }
 
     private void ListBoxCategory_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -144,26 +133,46 @@ public partial class ThemesSettingsPage : SettingsPageBase
             string? file;
             try
             {
-                file = await PlatformServices.FilePickerService.SaveFileAsync(
-                    new FilePickerSaveOptions
+                var options = new FilePickerSaveOptions
+                {
+                    SuggestedFileName = info.Manifest.Id + ".zip",
+                    Title = "打包主题",
+                    FileTypeChoices =
+                    [
+                        new FilePickerFileType("ClassIsland 主题包")
+                        {
+                            Patterns = ["*.zip"]
+                        }
+                    ]
+                };
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    file = await PlatformServices.FilePickerService.SaveFileAsync(
+                        options,
+                        topLevel,
+                        output => StreamExportHelper.WritePathBasedExportAsync(
+                            output,
+                            ".zip",
+                            path => ViewModel.XamlThemeService.PackageThemeAsync(
+                                info.Manifest.Id,
+                                path)));
+                }
+                else
+                {
+                    file = await PlatformServices.FilePickerService.SaveFilePickerAsync(options, topLevel);
+                    if (file != null)
                     {
-                        SuggestedFileName = info.Manifest.Id + ".zip",
-                        Title = "打包主题",
-                        FileTypeChoices =
-                        [
-                            new FilePickerFileType("ClassIsland 主题包")
-                            {
-                                Patterns = ["*.zip"]
-                            }
-                        ]
-                    },
-                    topLevel,
-                    output => StreamExportHelper.WritePathBasedExportAsync(
-                        output,
-                        ".zip",
-                        path => ViewModel.XamlThemeService.PackageThemeAsync(
-                            info.Manifest.Id,
-                            path)));
+                        using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                                ?? throw new FileNotFoundException("无法打开所选主题包文件。", file);
+                        await using var outputStream = await storageFile.OpenWriteAsync();
+                        if (outputStream.CanSeek)
+                        {
+                            outputStream.SetLength(0);
+                            outputStream.Position = 0;
+                        }
+                        await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, outputStream);
+                    }
+                }
             }
             finally
             {
@@ -174,9 +183,12 @@ public partial class ThemesSettingsPage : SettingsPageBase
                 return;
 
             this.ShowSuccessToast($"已将主题 {info.Manifest.Id} 打包到 {file}。");
-            if (!PlatformHelper.IsAppleMobile && Path.GetDirectoryName(file) is { Length: > 0 } directory)
+            if (!PlatformHelper.IsAppleMobile)
             {
-                await PlatformServices.LauncherService.LaunchPath(directory);
+                var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
+                    ? file
+                    : Path.GetDirectoryName(file) ?? file;
+                await PlatformServices.LauncherService.LaunchPath(launchPath);
             }
         }
         catch (Exception ex)
