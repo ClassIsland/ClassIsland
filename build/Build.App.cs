@@ -29,6 +29,7 @@ partial class Build
                     .SetProperty("PublishBuilding", true)
                     .SetProperty("PublishPlatform", OsName)
                     .SetProperty("ClassIsland_PlatformTarget", Arch)
+                    .SetProperty("GeneratePackageOnBuild", false)
                     .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
                 return;
             }
@@ -55,6 +56,7 @@ partial class Build
                     .SetProperty("PublishBuilding", true)
                     .SetProperty("PublishPlatform", OsName)
                     .SetProperty("ClassIsland_PlatformTarget", Arch)
+                    .SetProperty("GeneratePackageOnBuild", false)
                     .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
                 return;
             }
@@ -110,6 +112,7 @@ partial class Build
                         .SetProperty("PublishBuilding", true)
                         .SetProperty("PublishPlatform", OsName)
                         .SetProperty("ClassIsland_PlatformTarget", Arch)
+                        .SetProperty("GeneratePackageOnBuild", false)
                         .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                         .SetProperty("ArchiveOnBuild", enableCodeSigning)
                         .SetProperty("BuildIpa", true)
