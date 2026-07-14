@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/build_ios.yml'
       - '.github/workflows/_build_ios_reusable.yml'
+      - '.github/workflows/build_release.yml'
       - '.nuke/build.schema.json'
       - 'global.json'
       - '*.props'
@@ -22,6 +23,7 @@ on:
       - 'ClassIsland.sln'
       - 'tools/ci/verify-ios-build-config.ps1'
       - 'tools/ci/verify-ios-ipa.sh'
+      - 'tools/ci/normalize-ios-ipa.sh'
       - 'tools/ci/verify-cobertura-coverage.ps1'
       - 'vendors/EdgeTtsSharp/**'
   push:
@@ -33,6 +35,7 @@ on:
     paths:
       - '.github/workflows/build_ios.yml'
       - '.github/workflows/_build_ios_reusable.yml'
+      - '.github/workflows/build_release.yml'
       - '.nuke/build.schema.json'
       - 'global.json'
       - '*.props'
@@ -50,6 +53,7 @@ on:
       - 'ClassIsland.sln'
       - 'tools/ci/verify-ios-build-config.ps1'
       - 'tools/ci/verify-ios-ipa.sh'
+      - 'tools/ci/normalize-ios-ipa.sh'
       - 'tools/ci/verify-cobertura-coverage.ps1'
       - 'vendors/EdgeTtsSharp/**'
   workflow_dispatch:
@@ -78,4 +82,5 @@ jobs:
       build_number: ${{ format('{0}', github.run_number) }}
       brand_type: Production
       developer_preview: true
+      artifact_name: ${{ format('ClassIsland-iOS-unsigned-{0}-{1}', github.run_number, github.run_attempt) }}
       retention_days: 14

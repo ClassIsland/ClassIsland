@@ -296,4 +296,9 @@ if ! /usr/bin/otool -l "$bridge_binary" | awk '
   exit 1
 fi
 
-shasum -a 256 "$ipa_path" > "$ipa_path.sha256"
+ipa_directory="$(cd "$(dirname "$ipa_path")" && pwd)"
+ipa_basename="$(basename "$ipa_path")"
+(
+  cd "$ipa_directory"
+  shasum -a 256 "$ipa_basename" > "$ipa_basename.sha256"
+)

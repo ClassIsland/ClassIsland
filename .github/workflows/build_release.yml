@@ -34,6 +34,7 @@ jobs:
       build_number: ${{ format('{0}', github.run_number) }}
       brand_type: Production
       developer_preview: false
+      artifact_name: out_app_ios_arm64_selfContained_ipa
       retention_days: 30
 
   build_app:
@@ -360,8 +361,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == 'true' }}
-    if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
-    needs: [ pack_app, build_nupkg ]
+    if: >-
+      ${{
+        always() &&
+        needs.pack_app.result == 'success' &&
+        needs.build_nupkg.result == 'success' &&
+        needs.build_ios_unsigned.result == 'success' &&
+        github.event.inputs.release_tag &&
+        github.event_name != 'pull_request'
+      }}
+    needs: [ pack_app, build_nupkg, build_ios_unsigned ]
     concurrency:
       group: "publish-public"
     environment:
@@ -378,6 +387,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ./out_artifacts
+
+      - name: Verify downloaded iOS release artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_directory="./out_artifacts/out_app_ios_arm64_selfContained_ipa"
+          ipa_name="out_app_ios_arm64_selfContained_ipa.ipa"
+          test -f "$artifact_directory/$ipa_name"
+          test -f "$artifact_directory/$ipa_name.sha256"
+          (
+            cd "$artifact_directory"
+            sha256sum --check "$ipa_name.sha256"
+          )
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -407,7 +429,7 @@ jobs:
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./out/*.zip,./out/*.appx,./out/*.deb,./out/*.pkg"
+          artifacts: "./out/*.zip,./out/*.appx,./out/*.deb,./out/*.pkg,./out/*.ipa,./out/*.sha256"
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -23,6 +23,10 @@ on:
         description: Include developer preview behavior and assets
         required: true
         type: boolean
+      artifact_name:
+        description: Uploaded IPA artifact name
+        required: true
+        type: string
       retention_days:
         description: Artifact retention period
         required: false
@@ -128,6 +132,9 @@ jobs:
           enableCodeSigning: 'false'
         run: ./build.sh PublishApp
 
+      - name: Normalize unsigned IPA
+        run: bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"
+
       - name: Verify unsigned IPA
         run: >-
           bash ./tools/ci/verify-ios-ipa.sh
@@ -148,7 +155,7 @@ jobs:
       - name: Upload unsigned IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ClassIsland-iOS-unsigned-${{ github.run_number }}-${{ github.run_attempt }}
+          name: ${{ inputs.artifact_name }}
           path: |
             ${{ env.IPA_PATH }}
             ${{ env.IPA_PATH }}.sha256
