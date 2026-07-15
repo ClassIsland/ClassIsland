@@ -74,8 +74,30 @@ jobs:
           fi
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve artifact name
+        id: artifact_metadata
+        shell: bash
+        env:
+          REQUESTED_ARTIFACT_NAME: ${{ inputs.artifact_name }}
+          APPLICATION_DISPLAY_VERSION: ${{ inputs.app_version }}
+          APPLICATION_BUILD_NUMBER: ${{ steps.build_metadata.outputs.build_number }}
+        run: |
+          set -euo pipefail
+          if [[ "$REQUESTED_ARTIFACT_NAME" == "auto" ]]; then
+            artifact_name="ClassIsland-iOS-${APPLICATION_DISPLAY_VERSION}-build.${APPLICATION_BUILD_NUMBER}-ios-arm64-unsigned-attempt.${GITHUB_RUN_ATTEMPT}"
+          elif [[ -n "$REQUESTED_ARTIFACT_NAME" ]]; then
+            artifact_name="$REQUESTED_ARTIFACT_NAME"
+          else
+            echo "::error::The iOS artifact name must not be empty"
+            exit 1
+          fi
+          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
+
       - name: Test iOS build-number validation
         run: bash ./tools/ci/test-ios-build-number.sh
+
+      - name: Test iOS display-version validation
+        run: bash ./tools/ci/test-ios-display-version.sh
 
       - name: Verify iOS build configuration
         shell: pwsh
@@ -154,25 +176,16 @@ jobs:
           "$IPA_PATH"
           "$APPLICATION_ID"
           "$IOS_RUNTIME_IDENTIFIER"
+          "${{ inputs.app_version }}"
           "${{ steps.build_metadata.outputs.build_number }}"
-
-      - name: Write build summary
-        run: |
-          {
-            echo "### ClassIsland unsigned iOS IPA"
-            echo "- Bundle ID: \`$APPLICATION_ID\`"
-            echo "- Runtime: \`$IOS_RUNTIME_IDENTIFIER\`"
-            echo "- Build number: \`${{ steps.build_metadata.outputs.build_number }}\`"
-            echo "- SHA-256: \`$(cut -d ' ' -f 1 "$IPA_PATH.sha256")\`"
-            echo "- The IPA must be signed externally before installation."
-          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload unsigned IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.artifact_name }}
+          name: ${{ steps.artifact_metadata.outputs.artifact_name }}
           path: |
             ${{ env.IPA_PATH }}
             ${{ env.IPA_PATH }}.sha256
           if-no-files-found: error
+          overwrite: true
           retention-days: ${{ inputs.retention_days }}

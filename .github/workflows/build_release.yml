@@ -24,7 +24,9 @@ on:
       - 'roslyn/IconsMappingGenerator/**'
       - 'tools/ci/normalize-ios-ipa.sh'
       - 'tools/ci/ios-build-number.sh'
+      - 'tools/ci/ios-display-version.sh'
       - 'tools/ci/test-ios-build-number.sh'
+      - 'tools/ci/test-ios-display-version.sh'
       - 'tools/ci/verify-ios-build-config.ps1'
       - 'tools/ci/verify-ios-ipa.sh'
       - 'tools/ci/verify-cobertura-coverage.ps1'
@@ -55,7 +57,10 @@ jobs:
     name: Resolve iOS build metadata
     if: >-
       ${{
-        github.event_name == 'pull_request' ||
+        (
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        ) ||
         github.event_name == 'workflow_dispatch' ||
         github.ref == 'refs/heads/master' ||
         github.ref == 'refs/heads/develop/v2/ios' ||
@@ -72,55 +77,53 @@ jobs:
       artifact_name: ${{ steps.metadata.outputs.artifact_name }}
       retention_days: ${{ steps.metadata.outputs.retention_days }}
     steps:
+      - name: Checkout iOS version source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: >-
+            ${{
+              github.event_name == 'workflow_dispatch' && inputs.release_tag ||
+              github.event_name == 'pull_request' && github.event.pull_request.head.sha ||
+              github.sha
+            }}
+
       - name: Resolve iOS version
         id: metadata
         shell: bash
         env:
           DISPATCH_RELEASE_TAG: ${{ inputs.release_tag }}
-          DISPATCH_PRIMARY_VERSION: ${{ inputs.primary_version }}
-          PULL_REQUEST_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-
-          resolve_release_version() {
-            local version_source="${1#ios-v}"
-            version_source="${version_source#v}"
-            if [[ ! "$version_source" =~ ^([0-9]+\.[0-9]+\.[0-9]+)(\.[0-9]+)?$ ]]; then
-              echo "::error::iOS release versions must contain three or four numeric components: $1"
-              exit 1
-            fi
-
-            app_version="${BASH_REMATCH[1]}"
-          }
+          source ./tools/ci/ios-display-version.sh
 
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
-            checkout_ref="$DISPATCH_RELEASE_TAG"
-            resolve_release_version "$DISPATCH_PRIMARY_VERSION"
+            version_source="$DISPATCH_RELEASE_TAG"
             developer_preview=false
           elif [[ "$GITHUB_REF_TYPE" == "tag" && "$GITHUB_REF_NAME" == ios-v* ]]; then
-            checkout_ref="$GITHUB_SHA"
-            resolve_release_version "$GITHUB_REF_NAME"
+            version_source="$GITHUB_REF_NAME"
             developer_preview=false
           elif [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-            checkout_ref="$PULL_REQUEST_HEAD_SHA"
-            app_version="0.0.${GITHUB_RUN_NUMBER}"
             developer_preview=true
           else
-            checkout_ref="$GITHUB_SHA"
-            app_version="0.0.${GITHUB_RUN_NUMBER}"
             developer_preview=true
           fi
 
-          if [[ ! "$app_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::iOS ApplicationDisplayVersion must contain exactly three numeric components: $app_version"
-            exit 1
+          if [[ -z "${version_source:-}" ]]; then
+            if ! version_source="$(git describe --tags --abbrev=0 --match '[0-9]*.[0-9]*.[0-9]*' HEAD)"; then
+              echo "::error::Unable to derive the iOS display version from the Android release tags"
+              exit 1
+            fi
           fi
+          app_version="$(resolve_ios_display_version "$version_source")"
+          validate_ios_display_version "$app_version"
+          checkout_ref="$(git rev-parse HEAD)"
 
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             artifact_name="out_app_ios_arm64_selfContained_ipa"
             retention_days=30
           else
-            artifact_name="ClassIsland-iOS-unsigned-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
+            artifact_name="auto"
             retention_days=14
           fi
 

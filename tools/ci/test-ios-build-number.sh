@@ -35,8 +35,8 @@ assert_status 1 assert_ios_bundle_build_number "Live Activity extension" 3202 32
 
 assert_status 64 bash "$script_directory/verify-ios-ipa.sh"
 assert_status 64 bash "$script_directory/verify-ios-ipa.sh" missing.ipa cn.classisland.ios ios-arm64
-assert_status 64 bash "$script_directory/verify-ios-ipa.sh" missing.ipa cn.classisland.ios ios-arm64 1 extra
-assert_status 64 bash "$script_directory/verify-ios-ipa.sh" missing.ipa cn.classisland.ios ios-arm64 invalid
-assert_status 1 bash "$script_directory/verify-ios-ipa.sh" missing.ipa cn.classisland.ios ios-arm64 1
+assert_status 64 bash "$script_directory/verify-ios-ipa.sh" missing.ipa cn.classisland.ios ios-arm64 2.1.0 1 extra
+assert_status 64 bash "$script_directory/verify-ios-ipa.sh" missing.ipa cn.classisland.ios ios-arm64 2.1.0 invalid
+assert_status 1 bash "$script_directory/verify-ios-ipa.sh" missing.ipa cn.classisland.ios ios-arm64 2.1.0 1
 
 echo "iOS build-number validation tests passed."
