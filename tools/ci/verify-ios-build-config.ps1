@@ -371,12 +371,11 @@ Assert-True ($appText.Contains('if (Equals(result, true))')) "Manual-termination
 
 Assert-True (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot ".github/workflows/build_ios.yml"))) "The split Build iOS workflow must remain removed."
 Assert-True ($releaseWorkflowText.Contains("pull_request:")) "The unified Build workflow must validate iOS changes on pull requests."
-Assert-True ($releaseWorkflowText.Contains(".github/workflows/_build_ios_reusable.yml")) "The unified Build workflow must trigger when the reusable iOS worker changes."
-Assert-True ($releaseWorkflowText.Contains("tools/ci/normalize-ios-ipa.sh")) "The unified Build workflow must trigger when IPA normalization changes."
-Assert-True ($releaseWorkflowText.Contains("tools/ci/ios-build-number.sh") -and $releaseWorkflowText.Contains("tools/ci/test-ios-build-number.sh")) "The unified Build workflow must trigger when iOS build-number validation changes."
-Assert-True ($releaseWorkflowText.Contains("tools/ci/ios-display-version.sh") -and $releaseWorkflowText.Contains("tools/ci/test-ios-display-version.sh")) "The unified Build workflow must trigger when iOS display-version validation changes."
-Assert-True ($releaseWorkflowText.Contains("ClassIsland.Android/**")) "Android changes must trigger pull-request validation."
-Assert-True ($releaseWorkflowText.Contains("tools/release-gen/init-artifacts.ps1")) "Release artifact collection changes must trigger pull-request validation."
+Assert-True ($releaseWorkflowText.Contains(".github/workflows/**")) "All unified workflow changes must trigger pull-request validation."
+Assert-True ($releaseWorkflowText.Contains("tools/**")) "CI validation and release tooling changes must trigger pull-request validation."
+Assert-True ($releaseWorkflowText.Contains("ClassIsland*/**")) "All ClassIsland entry projects must trigger pull-request validation."
+Assert-True ($releaseWorkflowText.Contains("platforms/**")) "Desktop platform implementation changes must trigger pull-request validation."
+Assert-True ($releaseWorkflowText.Contains("installer/**")) "Installer changes must trigger pull-request validation."
 Assert-True ($releaseWorkflowText.Contains("github.ref == 'refs/heads/develop/v2/misha-alpha'")) "The unified Build workflow must validate pushes to develop/v2/misha-alpha."
 Assert-True ($releaseWorkflowText.Contains("startsWith(github.ref, 'refs/tags/ios-v')")) "The unified Build workflow must validate ios-v* tags."
 Assert-True ($releaseWorkflowText.Contains("Checkout iOS version source") -and $releaseWorkflowText.Contains("fetch-depth: 0")) "The iOS metadata job must checkout complete Git history."
@@ -389,14 +388,33 @@ Assert-True ($releaseWorkflowText.Contains('checkout_ref="$(git rev-parse HEAD)"
 Assert-True ($releaseWorkflowText.Contains("developer_preview=false")) "Release dispatch and ios-v* tag builds must disable DeveloperPreview."
 Assert-True ($releaseWorkflowText.Contains("developer_preview=true")) "PR and branch iOS builds must enable DeveloperPreview."
 Assert-True ($releaseWorkflowText.Contains("DISPATCH_RELEASE_TAG: `${{ inputs.release_tag }}")) "A release dispatch must expose the Android release tag to iOS version resolution."
-Assert-True ($releaseWorkflowText.Contains("github.event.pull_request.head.sha")) "Pull-request iOS builds must use the pull-request head commit."
+Assert-True (-not $releaseWorkflowText.Contains("github.event.pull_request.head.sha")) "Pull-request iOS builds must use GitHub's tested merge commit instead of bypassing it with the head commit."
 Assert-True ($releaseWorkflowText.Contains('artifact_name="auto"')) "Non-release iOS artifacts must use metadata-based automatic naming."
 Assert-True ($releaseWorkflowText.Contains("checkout_ref: `${{ needs.resolve_ios_metadata.outputs.checkout_ref }}")) "The iOS job must build the ref resolved by the unified metadata job."
 Assert-True ($releaseWorkflowText.Contains("artifact_name: `${{ needs.resolve_ios_metadata.outputs.artifact_name }}")) "The iOS artifact name must be resolved alongside its build metadata."
 Assert-True ($releaseWorkflowText.Contains("retention_days: `${{ fromJSON(needs.resolve_ios_metadata.outputs.retention_days) }}")) "The iOS artifact retention must be resolved alongside its build metadata."
-Assert-True ($releaseWorkflowText.Contains("github.event.pull_request.head.repo.full_name == github.repository")) "Authenticated iOS builds must not execute fork pull-request code."
+Assert-True (-not $releaseWorkflowText.Contains("github.event.pull_request.head.repo.full_name == github.repository")) "Approved fork pull requests must be eligible for the same read-only iOS validation as repository pull requests."
 Assert-True ($releaseWorkflowText.Contains("group: ios-`${{ github.workflow }}-`${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}")) "The unified iOS caller must isolate release dispatches from branch concurrency."
 Assert-True ($releaseWorkflowText.Contains("cancel-in-progress: `${{ github.event_name != 'workflow_dispatch' }}")) "Release iOS builds must not be cancelled by a later branch push."
+
+foreach ($jobName in @("build_app", "build_android", "build_launcher", "build_nupkg")) {
+    $jobHeader = [regex]::Match($releaseWorkflowText, "(?ms)^  ${jobName}:\r?\n(?<header>.*?)(?=^    steps:)")
+    Assert-True ($jobHeader.Success) "The unified Build workflow is missing the $jobName job."
+    Assert-True (-not [regex]::IsMatch($jobHeader.Groups["header"].Value, "(?m)^    if:")) "The $jobName job must run for branch and pull-request validation."
+}
+Assert-True ($releaseWorkflowText.Contains("Resolve Android signing mode")) "Android validation must detect whether release signing credentials are available."
+Assert-True ($releaseWorkflowText.Contains("AndroidKeyStore: `${{ steps.android_signing.outputs.enabled }}")) "Android validation must support unsigned fork and pull-request builds."
+Assert-True ($releaseWorkflowText.Contains("REQUIRE_SIGNING: `${{ github.event_name == 'workflow_dispatch' }}") -and
+             $releaseWorkflowText.Contains("Android signing credentials are required for release dispatches.")) "Android release dispatches must fail rather than publish an unsigned APK."
+Assert-True ($releaseWorkflowText.Contains("test_signing_key: `${{ github.event_name != 'pull_request' && secrets.TEST_SIGNING_KEY || '' }}")) "Desktop pull-request builds must not receive signing credentials."
+Assert-True ($releaseWorkflowText.Contains("ANDROID_KEYSTORE_BASE64: `${{ github.event_name != 'pull_request' && secrets.ANDROID_KEYSTORE_BASE64 || '' }}")) "Android pull-request builds must not receive signing credentials."
+Assert-True ($releaseWorkflowText.Contains("github.repository == 'ClassIsland/ClassIsland'") -and
+             $releaseWorkflowText.Contains("github.ref != 'refs/heads/develop/v2/ios'") -and
+             $releaseWorkflowText.Contains("github.ref != 'refs/heads/develop/v2/misha-alpha'")) "NuGet publishing must remain disabled in forks, pull requests, and iOS development branches."
+Assert-True ($releaseWorkflowText.Contains("needs: [ build_app, build_launcher, sign_1 ]")) "Desktop packaging must explicitly depend on both build jobs and the optional signing job."
+Assert-True ($releaseWorkflowText.Contains("needs.build_app.result == 'success'") -and
+             $releaseWorkflowText.Contains("needs.build_launcher.result == 'success'") -and
+             $releaseWorkflowText.Contains("needs.sign_1.result == 'skipped'")) "Desktop packaging must run after successful unsigned pull-request builds without requiring release signing."
 
 Assert-True ($workerWorkflowText.Contains("workflow_call:")) "The shared iOS worker must be a reusable workflow."
 foreach ($inputName in @("checkout_ref", "app_version", "brand_type", "developer_preview", "artifact_name", "retention_days")) {
@@ -427,6 +445,9 @@ Assert-True ($workerWorkflowText.Contains("coverlet.runsettings")) "The iOS work
 Assert-True ($workerWorkflowText.Contains("XPlat Code Coverage")) "The iOS worker must enable the coverlet collector."
 Assert-True ($workerWorkflowText.Contains("verify-cobertura-coverage.ps1")) "The iOS worker must enforce the coverage threshold."
 Assert-True ($workerWorkflowText.Contains("-MinimumLineRate 0.8")) "The iOS worker must enforce at least 80% line coverage."
+Assert-True (-not $workerWorkflowText.Contains("Upload platform abstraction coverage")) "Coverage must remain a validation gate without producing a second iOS artifact."
+$iosArtifactUploadCount = ([regex]::Matches($workerWorkflowText, "uses:\s+actions/upload-artifact@v4")).Count
+Assert-True ($iosArtifactUploadCount -eq 1) "The iOS worker must publish exactly one artifact containing the unsigned IPA."
 Assert-True ($workerWorkflowText.Contains("XCODE_PATH: /Applications/Xcode_26.6.app")) "The iOS worker must select an Xcode version compatible with the current .NET for iOS SDK."
 Assert-True ($workerWorkflowText.Contains('bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"')) "The iOS worker must normalize inherited signatures before verification."
 Assert-True ($workerWorkflowText.Contains("bash ./tools/ci/verify-ios-ipa.sh")) "The iOS worker must run the shared IPA verification script."

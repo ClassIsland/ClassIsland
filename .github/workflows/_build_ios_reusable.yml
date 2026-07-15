@@ -138,14 +138,6 @@ jobs:
           --settings ClassIsland.Platforms.Abstractions.Tests/coverlet.runsettings
           --results-directory "$RUNNER_TEMP/ios-tests"
 
-      - name: Upload platform abstraction coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: ClassIsland-iOS-coverage-${{ github.run_number }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/ios-tests/**/coverage.cobertura.xml
-          if-no-files-found: error
-          retention-days: ${{ inputs.retention_days }}
-
       - name: Verify platform abstraction coverage
         shell: pwsh
         run: >-

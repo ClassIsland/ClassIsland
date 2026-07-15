@@ -3,36 +3,28 @@ name: Build
 on:
   pull_request:
     paths:
-      - '.github/workflows/build_release.yml'
-      - '.github/workflows/_build_ios_reusable.yml'
-      - '.nuke/build.schema.json'
+      - '.github/workflows/**'
+      - '.gitmodules'
+      - '.nuke/**'
       - 'global.json'
+      - '*.cs'
       - '*.props'
+      - '*.targets'
+      - '*.sln'
+      - '*.slnf'
       - 'build/**'
+      - 'build.cmd'
       - 'build.sh'
-      - 'ClassIsland.Android/**'
-      - 'ClassIsland.iOS/**'
-      - 'ClassIsland.iOS.Native/**'
-      - 'ClassIsland/**'
-      - 'ClassIsland.Core/**'
-      - 'ClassIsland.Shared/**'
-      - 'ClassIsland.Shared.IPC/**'
-      - 'ClassIsland.Platforms.Abstractions/**'
-      - 'ClassIsland.Platforms.Abstractions.Tests/**'
-      - 'ClassIsland.Filter.iOS.slnf'
-      - 'ClassIsland.sln'
-      - 'roslyn/IconsMappingGenerator/**'
-      - 'tools/ci/normalize-ios-ipa.sh'
-      - 'tools/ci/ios-build-number.sh'
-      - 'tools/ci/ios-display-version.sh'
-      - 'tools/ci/test-ios-build-number.sh'
-      - 'tools/ci/test-ios-display-version.sh'
-      - 'tools/ci/verify-ios-build-config.ps1'
-      - 'tools/ci/verify-ios-ipa.sh'
-      - 'tools/ci/verify-cobertura-coverage.ps1'
-      - 'tools/release-gen/init-artifacts.ps1'
-      - 'vendors/EdgeTtsSharp/**'
-      - 'vendors/PhainonDistributionCenter.Shared/**'
+      - 'build.ps1'
+      - 'ClassIsland*/**'
+      - 'Demos/**'
+      - 'examples/**'
+      - 'installer/**'
+      - 'platforms/**'
+      - 'phainon*.yml'
+      - 'roslyn/**'
+      - 'tools/**'
+      - 'vendors/**'
   push:
   workflow_dispatch:
     inputs:
@@ -57,10 +49,7 @@ jobs:
     name: Resolve iOS build metadata
     if: >-
       ${{
-        (
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.head.repo.full_name == github.repository
-        ) ||
+        github.event_name == 'pull_request' ||
         github.event_name == 'workflow_dispatch' ||
         github.ref == 'refs/heads/master' ||
         github.ref == 'refs/heads/develop/v2/ios' ||
@@ -84,7 +73,6 @@ jobs:
           ref: >-
             ${{
               github.event_name == 'workflow_dispatch' && inputs.release_tag ||
-              github.event_name == 'pull_request' && github.event.pull_request.head.sha ||
               github.sha
             }}
 
@@ -147,10 +135,6 @@ jobs:
           github.ref == 'refs/heads/develop/v2/ios' ||
           github.ref == 'refs/heads/develop/v2/misha-alpha' ||
           startsWith(github.ref, 'refs/tags/ios-v')
-        ) &&
-        (
-          github.event_name != 'pull_request' ||
-          github.event.pull_request.head.repo.full_name == github.repository
         )
       }}
     permissions:
@@ -169,16 +153,6 @@ jobs:
       retention_days: ${{ fromJSON(needs.resolve_ios_metadata.outputs.retention_days) }}
 
   build_app:
-    if: >-
-      ${{
-        github.event_name == 'workflow_dispatch' ||
-        (
-          github.event_name != 'pull_request' &&
-          github.ref != 'refs/heads/develop/v2/ios' &&
-          github.ref != 'refs/heads/develop/v2/misha-alpha' &&
-          !startsWith(github.ref, 'refs/tags/ios-v')
-        )
-      }}
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-26' || 'windows-2022' ) }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -243,9 +217,9 @@ jobs:
           buildType: ${{ matrix.build_type }}
           package: ${{ matrix.package }}
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
-          test_signing_key: ${{ secrets.TEST_SIGNING_KEY }}
-          ApiSigningKey: ${{ secrets.API_SIGNING_KEY}}
-          ApiSigningKeyPs: ${{ secrets.API_SIGNING_KEY_PS }}
+          test_signing_key: ${{ github.event_name != 'pull_request' && secrets.TEST_SIGNING_KEY || '' }}
+          ApiSigningKey: ${{ github.event_name != 'pull_request' && secrets.API_SIGNING_KEY || '' }}
+          ApiSigningKeyPs: ${{ github.event_name != 'pull_request' && secrets.API_SIGNING_KEY_PS || '' }}
           arch: ${{ matrix.arch }}
           osName: ${{ matrix.os }}
           appVersion: ${{ steps.tagName.outputs.tag }} 
@@ -264,16 +238,6 @@ jobs:
             ./out/*.pkg
 
   build_android:
-    if: >-
-      ${{
-        github.event_name == 'workflow_dispatch' ||
-        (
-          github.event_name != 'pull_request' &&
-          github.ref != 'refs/heads/develop/v2/ios' &&
-          github.ref != 'refs/heads/develop/v2/misha-alpha' &&
-          !startsWith(github.ref, 'refs/tags/ios-v')
-        )
-      }}
     runs-on: ubuntu-24.04
     env:
       artifact_name: out_app_android_${{ matrix.arch }}_monoaot_apk
@@ -310,22 +274,47 @@ jobs:
       - uses: little-core-labs/get-git-tag@v3.0.1
         id: tagName
 
-      - name: Decode Android keystore
+      - name: Resolve Android signing mode
+        id: android_signing
         shell: bash
         env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_BASE64: ${{ github.event_name != 'pull_request' && secrets.ANDROID_KEYSTORE_BASE64 || '' }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          ANDROID_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.ANDROID_KEY_PASSWORD || '' }}
+          ANDROID_KEY_ALIAS: ${{ github.event_name != 'pull_request' && vars.ANDROID_KEY_ALIAS || '' }}
+          REQUIRE_SIGNING: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$ANDROID_KEYSTORE_BASE64" &&
+                -n "$ANDROID_KEYSTORE_PASSWORD" &&
+                -n "$ANDROID_KEY_PASSWORD" &&
+                -n "$ANDROID_KEY_ALIAS" ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$REQUIRE_SIGNING" == "true" ]]; then
+            echo "::error::Android signing credentials are required for release dispatches."
+            exit 1
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Android signing credentials are unavailable; building an unsigned validation APK."
+          fi
+
+      - name: Decode Android keystore
+        if: ${{ steps.android_signing.outputs.enabled == 'true' }}
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ github.event_name != 'pull_request' && secrets.ANDROID_KEYSTORE_BASE64 || '' }}
         run: |
           set -euo pipefail
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/classisland.keystore"
           test -s "$RUNNER_TEMP/classisland.keystore"
 
-      - name: Build and sign Android APK
+      - name: Build Android APK
         env:
-          AndroidKeyStore: true
+          AndroidKeyStore: ${{ steps.android_signing.outputs.enabled }}
           AndroidSigningKeyStore: ${{ runner.temp }}/classisland.keystore
-          AndroidSigningStorePass: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          AndroidSigningKeyPass: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          AndroidSigningKeyAlias: ${{ vars.ANDROID_KEY_ALIAS }}
+          AndroidSigningStorePass: ${{ github.event_name != 'pull_request' && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          AndroidSigningKeyPass: ${{ github.event_name != 'pull_request' && secrets.ANDROID_KEY_PASSWORD || '' }}
+          AndroidSigningKeyAlias: ${{ github.event_name != 'pull_request' && vars.ANDROID_KEY_ALIAS || '' }}
           appVersion: ${{ steps.tagName.outputs.tag }}
           arch: ${{ matrix.arch }}
           osName: android
@@ -335,17 +324,20 @@ jobs:
           isProductionBuild: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' }}
         run: ./build.sh PublishAndroidApp
 
-      - name: Verify Android APK signature
+      - name: Verify Android APK
         shell: bash
         env:
+          EXPECT_SIGNED: ${{ steps.android_signing.outputs.enabled }}
           EXPECTED_APPLICATION_ID: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' && 'cn.classisland.android' || 'cn.classisland.android.beta' }}
         run: |
           set -euo pipefail
           APK_PATH="$(find ./out -maxdepth 1 -type f -name '*.apk' -print -quit)"
           test -n "$APK_PATH"
-          APKSIGNER_PATH="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner -print | sort -V | tail -n 1)"
-          test -n "$APKSIGNER_PATH"
-          "$APKSIGNER_PATH" verify --verbose "$APK_PATH"
+          if [[ "$EXPECT_SIGNED" == "true" ]]; then
+            APKSIGNER_PATH="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner -print | sort -V | tail -n 1)"
+            test -n "$APKSIGNER_PATH"
+            "$APKSIGNER_PATH" verify --verbose "$APK_PATH"
+          fi
           AAPT_PATH="$(find "$ANDROID_HOME/build-tools" -type f -name aapt -print | sort -V | tail -n 1)"
           test -n "$AAPT_PATH"
           "$AAPT_PATH" dump badging "$APK_PATH" | grep -F "package: name='$EXPECTED_APPLICATION_ID'"
@@ -363,16 +355,6 @@ jobs:
           if-no-files-found: error
             
   build_launcher:
-    if: >-
-      ${{
-        github.event_name == 'workflow_dispatch' ||
-        (
-          github.event_name != 'pull_request' &&
-          github.ref != 'refs/heads/develop/v2/ios' &&
-          github.ref != 'refs/heads/develop/v2/misha-alpha' &&
-          !startsWith(github.ref, 'refs/tags/ios-v')
-        )
-      }}
     runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-24.04' }}
     env:
       build_id: launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -488,21 +470,13 @@ jobs:
             
   pack_app:
     runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-latest' }}
-    needs: [ sign_1 ]
+    needs: [ build_app, build_launcher, sign_1 ]
     if: >-
       ${{
         always() &&
-        (
-          github.event_name == 'workflow_dispatch' ||
-          (
-            github.event_name != 'pull_request' &&
-            github.ref != 'refs/heads/develop/v2/ios' &&
-            github.ref != 'refs/heads/develop/v2/misha-alpha' &&
-            !startsWith(github.ref, 'refs/tags/ios-v')
-          )
-        ) &&
-        success('build_app') &&
-        success('build_launcher')
+        needs.build_app.result == 'success' &&
+        needs.build_launcher.result == 'success' &&
+        (needs.sign_1.result == 'success' || needs.sign_1.result == 'skipped')
       }}
     env:
       build_id: app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -572,16 +546,6 @@ jobs:
             ${{ github.workspace }}/out_pack/*.exe
           
   build_nupkg:
-    if: >-
-      ${{
-        github.event_name == 'workflow_dispatch' ||
-        (
-          github.event_name != 'pull_request' &&
-          github.ref != 'refs/heads/develop/v2/ios' &&
-          github.ref != 'refs/heads/develop/v2/misha-alpha' &&
-          !startsWith(github.ref, 'refs/tags/ios-v')
-        )
-      }}
     runs-on: windows-2022
     env:
       Solution_Name: ClassIsland.sln
@@ -615,7 +579,19 @@ jobs:
           ./build.ps1 BuildNupkg --isRelease $env:is_release
       
       - name: Upload Nuget packages to GitHub registry
-        if: ${{ github.event_name != 'pull_request' }} 
+        if: >-
+          ${{
+            github.repository == 'ClassIsland/ClassIsland' &&
+            (
+              github.event_name == 'workflow_dispatch' ||
+              (
+                github.event_name != 'pull_request' &&
+                github.ref != 'refs/heads/develop/v2/ios' &&
+                github.ref != 'refs/heads/develop/v2/misha-alpha' &&
+                !startsWith(github.ref, 'refs/tags/ios-v')
+              )
+            )
+          }}
         env:
           GHPKG_KEY: ${{ secrets.GITHUB_TOKEN }}
           MYGET_ORG_KEY: ${{ secrets.MYGET_ORG_KEY }}
