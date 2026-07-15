@@ -382,7 +382,8 @@ Assert-True ($releaseWorkflowText.Contains("checkout_ref: `${{ needs.resolve_ios
 Assert-True ($releaseWorkflowText.Contains("artifact_name: `${{ needs.resolve_ios_metadata.outputs.artifact_name }}")) "The iOS artifact name must be resolved alongside its build metadata."
 Assert-True ($releaseWorkflowText.Contains("retention_days: `${{ fromJSON(needs.resolve_ios_metadata.outputs.retention_days) }}")) "The iOS artifact retention must be resolved alongside its build metadata."
 Assert-True ($releaseWorkflowText.Contains("github.event.pull_request.head.repo.full_name == github.repository")) "Authenticated iOS builds must not execute fork pull-request code."
-Assert-True ($releaseWorkflowText.Contains("group: ios-`${{ github.workflow }}-`${{ github.ref }}")) "The unified iOS caller must retain its concurrency group."
+Assert-True ($releaseWorkflowText.Contains("group: ios-`${{ github.workflow }}-`${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}")) "The unified iOS caller must isolate release dispatches from branch concurrency."
+Assert-True ($releaseWorkflowText.Contains("cancel-in-progress: `${{ github.event_name != 'workflow_dispatch' }}")) "Release iOS builds must not be cancelled by a later branch push."
 
 Assert-True ($workerWorkflowText.Contains("workflow_call:")) "The shared iOS worker must be a reusable workflow."
 foreach ($inputName in @("checkout_ref", "app_version", "build_number", "brand_type", "developer_preview", "artifact_name", "retention_days")) {
