@@ -448,6 +448,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         {
             return;
         }
+        TutorialService.PushToNextSentenceByTag("classisland.settingsWindow.open");
         base.Open(owner);
     }
 
