@@ -1,17 +1,3 @@
-# 新增功能
-
-2.2 - Misha（米沙） 的新增功能。
-
-## 移动端支持
-
-本版本为 ClassIsland 引入了移动端支持。现在，您可以在支持的手机、平板等安卓设备上运行 ClassIsland 了！
-
-## 框架升级
-
-本版本将 .NET 升级到了 10.0，Avalonia 升级到了 12.1，一定程度上可提升应用的性能与稳定性。
-
-***
-
 # 2.1.1.0
 
 ![banner](https://res.classisland.tech/banners/2.2-Misha-DP1.webp)
@@ -29,7 +15,7 @@
 
 ## 🚀 新增功能与优化
 
-- 【应用】升级到 .NET 10、Avalonia 12 和 FluentAvalonia 3
+- 【应用】迁移到 Avalonia 12 和 FluentAvalonia 3
 - 【平台/Android】实现在 Android 平台上运行
 - 【UI】引入 MishaViewEngine
 
