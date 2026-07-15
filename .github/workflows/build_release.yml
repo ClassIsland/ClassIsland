@@ -23,6 +23,8 @@ on:
       - 'ClassIsland.sln'
       - 'roslyn/IconsMappingGenerator/**'
       - 'tools/ci/normalize-ios-ipa.sh'
+      - 'tools/ci/ios-build-number.sh'
+      - 'tools/ci/test-ios-build-number.sh'
       - 'tools/ci/verify-ios-build-config.ps1'
       - 'tools/ci/verify-ios-ipa.sh'
       - 'tools/ci/verify-cobertura-coverage.ps1'
@@ -158,7 +160,6 @@ jobs:
     with:
       checkout_ref: ${{ needs.resolve_ios_metadata.outputs.checkout_ref }}
       app_version: ${{ needs.resolve_ios_metadata.outputs.app_version }}
-      build_number: ${{ format('{0}', github.run_number) }}
       brand_type: Production
       developer_preview: ${{ needs.resolve_ios_metadata.outputs.developer_preview == 'true' }}
       artifact_name: ${{ needs.resolve_ios_metadata.outputs.artifact_name }}

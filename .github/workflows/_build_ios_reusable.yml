@@ -11,10 +11,6 @@ on:
         description: Application display version
         required: true
         type: string
-      build_number:
-        description: Monotonic application build number
-        required: true
-        type: string
       brand_type:
         description: ClassIsland brand type
         required: true
@@ -62,6 +58,24 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ inputs.checkout_ref }}
+
+      - name: Resolve application build number
+        id: build_metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          build_number="$(git rev-list --count HEAD)"
+          if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
+            echo "::error::Unable to derive the iOS build number from Git history"
+            exit 1
+          fi
+          if (( build_number < 1 )); then
+            build_number=1
+          fi
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
+
+      - name: Test iOS build-number validation
+        run: bash ./tools/ci/test-ios-build-number.sh
 
       - name: Verify iOS build configuration
         shell: pwsh
@@ -126,7 +140,6 @@ jobs:
           buildName: app
           configuration: ${{ env.IOS_CONFIGURATION }}
           appVersion: ${{ inputs.app_version }}
-          buildNumber: ${{ inputs.build_number }}
           brandType: ${{ inputs.brand_type }}
           DeveloperPreview: ${{ inputs.developer_preview && 'true' || 'false' }}
           enableCodeSigning: 'false'
@@ -141,6 +154,7 @@ jobs:
           "$IPA_PATH"
           "$APPLICATION_ID"
           "$IOS_RUNTIME_IDENTIFIER"
+          "${{ steps.build_metadata.outputs.build_number }}"
 
       - name: Write build summary
         run: |
@@ -148,6 +162,7 @@ jobs:
             echo "### ClassIsland unsigned iOS IPA"
             echo "- Bundle ID: \`$APPLICATION_ID\`"
             echo "- Runtime: \`$IOS_RUNTIME_IDENTIFIER\`"
+            echo "- Build number: \`${{ steps.build_metadata.outputs.build_number }}\`"
             echo "- SHA-256: \`$(cut -d ' ' -f 1 "$IPA_PATH.sha256")\`"
             echo "- The IPA must be signed externally before installation."
           } >> "$GITHUB_STEP_SUMMARY"

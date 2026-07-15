@@ -146,9 +146,6 @@
           "type": "string",
           "description": "BuildName"
         },
-        "BuildNumber": {
-          "type": "string"
-        },
         "BuildType": {
           "type": "string",
           "description": "BuildType"

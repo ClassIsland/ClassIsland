@@ -2,14 +2,20 @@
 
 set -euo pipefail
 
-if [[ "$#" -ne 3 ]]; then
-  echo "Usage: $0 <ipa-path> <application-id> <runtime-identifier>" >&2
+script_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_directory/ios-build-number.sh"
+
+if [[ "$#" -ne 4 ]]; then
+  echo "Usage: $0 <ipa-path> <application-id> <runtime-identifier> <build-number>" >&2
   exit 64
 fi
 
 readonly ipa_path="$1"
 readonly application_id="$2"
 readonly runtime_identifier="$3"
+readonly expected_build_number="$4"
+
+validate_ios_build_number "$expected_build_number" || exit $?
 
 if [[ ! -f "$ipa_path" ]]; then
   echo "::error::Unsigned IPA was not produced at $ipa_path"
@@ -131,7 +137,9 @@ assert_privacy_collected_type "NSPrivacyCollectedDataTypeProductInteraction"
 
 app_bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app_bundle/Info.plist")"
 app_display_name="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$app_bundle/Info.plist")"
+app_build_number="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$app_bundle/Info.plist")"
 extension_bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$extension_bundle/Info.plist")"
+extension_build_number="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$extension_bundle/Info.plist")"
 if [[ "$app_bundle_id" != "$application_id" ]]; then
   echo "::error::The app bundle ID is $app_bundle_id, expected $application_id"
   exit 1
@@ -140,6 +148,8 @@ if [[ "$extension_bundle_id" != "$application_id.LiveActivityExtension" ]]; then
   echo "::error::The extension bundle ID is $extension_bundle_id, expected $application_id.LiveActivityExtension"
   exit 1
 fi
+assert_ios_bundle_build_number "app" "$app_build_number" "$expected_build_number" || exit $?
+assert_ios_bundle_build_number "Live Activity extension" "$extension_build_number" "$expected_build_number" || exit $?
 if [[ "$app_display_name" != "ClassIsland" ]]; then
   echo "::error::The app display name is $app_display_name, expected ClassIsland"
   exit 1

@@ -38,7 +38,6 @@ partial class Build : NukeBuild
     [Parameter("API_SIGNING_KEY")] readonly string ApiSigningKey;
     [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
     [Parameter] readonly string AppVersion;
-    [Parameter] readonly string BuildNumber;
     [Parameter] readonly string BrandType;
     [Parameter] readonly string CodesignKey;
     [Parameter] readonly string CodesignProvision;
@@ -103,12 +102,11 @@ partial class Build : NukeBuild
                 var missingBuildParameter = new[]
                 {
                     AppVersion,
-                    BuildNumber,
                     BrandType
                 }.Any(string.IsNullOrWhiteSpace);
                 if (missingBuildParameter)
                 {
-                    throw new InvalidOperationException("iOS IPA publishing requires appVersion, buildNumber, and brandType.");
+                    throw new InvalidOperationException("iOS IPA publishing requires appVersion and brandType.");
                 }
 
                 var missingSigningParameter = EnableCodeSigning && new[]

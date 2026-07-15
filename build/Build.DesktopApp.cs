@@ -68,6 +68,7 @@ public partial class Build
     Target CompileApp => t => t
         .DependsOn(GenerateSecrets)
         .DependsOn(GenerateMetadata)
+        .DependsOn(PopulateGitVersion)
         .DependsOn(CleanDesktopApp)
         .Executes(() =>
         {
@@ -93,7 +94,7 @@ public partial class Build
                         .SetProperty("EnableCodeSigning", enableCodeSigning)
                         .SetProperty("BrandType", BrandType)
                         .SetProperty("ApplicationDisplayVersion", AppVersion)
-                        .SetProperty("ApplicationVersion", BuildNumber)
+                        .SetProperty("ApplicationVersion", Math.Max(GitCommitCount, 1))
                         .SetProperty("IpaPackagePath", IosPublishArtifactPath);
 
                     if (string.Equals(

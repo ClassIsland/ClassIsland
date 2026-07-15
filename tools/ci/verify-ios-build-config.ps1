@@ -35,10 +35,14 @@ $workerWorkflowText = Read-RepositoryFile ".github/workflows/_build_ios_reusable
 $releaseWorkflowText = Read-RepositoryFile ".github/workflows/build_release.yml"
 $ipaNormalizationText = Read-RepositoryFile "tools/ci/normalize-ios-ipa.sh"
 $ipaVerificationText = Read-RepositoryFile "tools/ci/verify-ios-ipa.sh"
+$iosBuildNumberText = Read-RepositoryFile "tools/ci/ios-build-number.sh"
+$iosBuildNumberTestsText = Read-RepositoryFile "tools/ci/test-ios-build-number.sh"
 $coverageVerificationText = Read-RepositoryFile "tools/ci/verify-cobertura-coverage.ps1"
 $coverageRunsettingsText = Read-RepositoryFile "ClassIsland.Platforms.Abstractions.Tests/coverlet.runsettings"
 $artifactInitializationText = Read-RepositoryFile "tools/release-gen/init-artifacts.ps1"
+$nukeRootBuildText = Read-RepositoryFile "build/Build.cs"
 $nukeBuildText = Read-RepositoryFile "build/Build.DesktopApp.cs"
+$androidBuildText = Read-RepositoryFile "build/Build.AndroidApp.cs"
 $nukeSchema = Read-RepositoryFile ".nuke/build.schema.json" | ConvertFrom-Json
 $liveActivityServiceText = Read-RepositoryFile "ClassIsland.iOS/Services/LiveActivities/IosLiveActivityService.cs"
 $liveActivityBridgeText = Read-RepositoryFile "ClassIsland.iOS.Native/Bridge/ClassIslandLiveActivityBridge.swift"
@@ -367,6 +371,7 @@ Assert-True (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot ".github/wo
 Assert-True ($releaseWorkflowText.Contains("pull_request:")) "The unified Build workflow must validate iOS changes on pull requests."
 Assert-True ($releaseWorkflowText.Contains(".github/workflows/_build_ios_reusable.yml")) "The unified Build workflow must trigger when the reusable iOS worker changes."
 Assert-True ($releaseWorkflowText.Contains("tools/ci/normalize-ios-ipa.sh")) "The unified Build workflow must trigger when IPA normalization changes."
+Assert-True ($releaseWorkflowText.Contains("tools/ci/ios-build-number.sh") -and $releaseWorkflowText.Contains("tools/ci/test-ios-build-number.sh")) "The unified Build workflow must trigger when iOS build-number validation changes."
 Assert-True ($releaseWorkflowText.Contains("ClassIsland.Android/**")) "Android changes must trigger pull-request validation."
 Assert-True ($releaseWorkflowText.Contains("tools/release-gen/init-artifacts.ps1")) "Release artifact collection changes must trigger pull-request validation."
 Assert-True ($releaseWorkflowText.Contains("github.ref == 'refs/heads/develop/v2/misha-alpha'")) "The unified Build workflow must validate pushes to develop/v2/misha-alpha."
@@ -386,10 +391,20 @@ Assert-True ($releaseWorkflowText.Contains("group: ios-`${{ github.workflow }}-`
 Assert-True ($releaseWorkflowText.Contains("cancel-in-progress: `${{ github.event_name != 'workflow_dispatch' }}")) "Release iOS builds must not be cancelled by a later branch push."
 
 Assert-True ($workerWorkflowText.Contains("workflow_call:")) "The shared iOS worker must be a reusable workflow."
-foreach ($inputName in @("checkout_ref", "app_version", "build_number", "brand_type", "developer_preview", "artifact_name", "retention_days")) {
+foreach ($inputName in @("checkout_ref", "app_version", "brand_type", "developer_preview", "artifact_name", "retention_days")) {
     Assert-True ($workerWorkflowText.Contains("${inputName}:")) "The reusable iOS worker is missing the $inputName input."
 }
+Assert-True (-not $workerWorkflowText.Contains("description: Monotonic application build number")) "The iOS build number must be derived from Git instead of supplied by the caller."
 Assert-True ($workerWorkflowText.Contains('ref: ${{ inputs.checkout_ref }}')) "The reusable iOS worker must checkout the requested ref."
+Assert-True ($workerWorkflowText.Contains("fetch-depth: 0")) "The iOS worker must fetch complete Git history before calculating ApplicationVersion."
+Assert-True ($workerWorkflowText.Contains('build_number="$(git rev-list --count HEAD)"')) "The iOS worker must derive ApplicationVersion from the checked-out Git commit count."
+Assert-True ($workerWorkflowText.Contains("if (( build_number < 1 )); then") -and $workerWorkflowText.Contains("build_number=1")) "The iOS build number must use the same minimum value as Android ApplicationVersion."
+Assert-True ($workerWorkflowText.Contains("bash ./tools/ci/test-ios-build-number.sh")) "The iOS worker must run build-number validation tests."
+Assert-True (-not $workerWorkflowText.Contains("buildNumber:")) "The iOS worker must not duplicate NUKE's Git-derived ApplicationVersion logic."
+Assert-True (-not $releaseWorkflowText.Contains("build_number: `${{ format('{0}', github.run_number) }}")) "The unified caller must not use github.run_number as the iOS ApplicationVersion."
+Assert-True ($androidBuildText.Contains('SetProperty("ApplicationVersion", Math.Max(GitCommitCount, 1))')) "Android ApplicationVersion must remain based on GitCommitCount."
+Assert-True ($nukeBuildText.Contains(".DependsOn(PopulateGitVersion)")) "NUKE app publishing must populate GitCommitCount before assigning ApplicationVersion."
+Assert-True (-not $nukeRootBuildText.Contains("readonly string BuildNumber")) "NUKE must not expose a caller-supplied iOS BuildNumber parameter."
 Assert-True ($workerWorkflowText.Contains("NUGET_AUTH_TOKEN: `${{ github.token }}")) "The reusable iOS worker must use its scoped GITHUB_TOKEN for package restore."
 Assert-True ($workerWorkflowText.Contains("packages: read")) "The reusable iOS worker must request read-only package access."
 Assert-True ($workerWorkflowText.Contains("IOS_CONFIGURATION: Release")) "The unsigned IPA must use a Release app build."
@@ -427,7 +442,14 @@ Assert-True ($releaseWorkflowText.Contains("./out/*.ipa,./out/*.sha256")) "The r
 Assert-True ($artifactInitializationText.Contains('$payloadName')) "Release checksum regeneration must reference the renamed payload by basename."
 Assert-True ($artifactInitializationText.Contains('Get-FileHash -LiteralPath $payloadPath -Algorithm SHA256')) "Release artifact normalization must regenerate SHA-256 sidecars."
 
-Assert-True ($ipaVerificationText.Contains("<ipa-path> <application-id> <runtime-identifier>")) "IPA verification must document its three required arguments."
+Assert-True ($ipaVerificationText.Contains("<ipa-path> <application-id> <runtime-identifier> <build-number>")) "IPA verification must document its four required arguments."
+Assert-True ($ipaVerificationText.Contains("app_build_number") -and $ipaVerificationText.Contains("extension_build_number") -and $ipaVerificationText.Contains("CFBundleVersion")) "IPA verification must validate the app and extension build numbers."
+Assert-True ($iosBuildNumberText.Contains("validate_ios_build_number") -and $iosBuildNumberText.Contains("assert_ios_bundle_build_number")) "iOS build-number validation must expose testable validation functions."
+foreach ($invalidBuildNumber in @('""', "0", "-1", "1.2", "invalid")) {
+    Assert-True ($iosBuildNumberTestsText.Contains("validate_ios_build_number $invalidBuildNumber")) "iOS build-number tests are missing invalid value $invalidBuildNumber."
+}
+Assert-True ($iosBuildNumberTestsText.Contains('assert_ios_bundle_build_number app 3202 3201')) "iOS build-number tests must reject an app mismatch."
+Assert-True ($iosBuildNumberTestsText.Contains('assert_ios_bundle_build_number "Live Activity extension" 3202 3201')) "iOS build-number tests must reject an extension mismatch."
 Assert-True ($ipaVerificationText.Contains("MonoTouchDebugConfiguration.txt")) "IPA verification must reject MonoTouch debug configuration."
 Assert-True ($ipaVerificationText.Contains("libxamarin-dotnet-debug")) "IPA verification must reject the remote-debug runtime."
 Assert-True ($ipaVerificationText.Contains('assert_minimum_ios "$app_binary" "The main app" "15.0"')) "IPA verification must assert iOS 15.0 for the main app."
@@ -459,6 +481,7 @@ Assert-True ($nukeBuildText.Contains('SetProperty("BuildIpa", true)')) "NUKE iOS
 $iosPublishProperties = [regex]::Match($nukeBuildText, '(?s)DotNetPublish\(settings =>.*?SetProject\(IosAppEntryProject\).*?if \(!EnableCodeSigning\)')
 Assert-True ($iosPublishProperties.Success) "The NUKE iOS publish block could not be validated."
 Assert-True ($iosPublishProperties.Value.Contains('SetProcessAdditionalArguments("-m:1")')) "NUKE iOS publish must serialize duplicate Avalonia project-reference builds."
+Assert-True ($iosPublishProperties.Value.Contains('SetProperty("ApplicationVersion", Math.Max(GitCommitCount, 1))')) "NUKE iOS publishing must use the same ApplicationVersion calculation as Android."
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("PublishBuilding", true)')) "NUKE iOS publish must exclude non-publish fallback secrets."
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("PublishPlatform", OsName)')) "NUKE iOS publish must not inherit the macOS runner platform."
 Assert-True ($iosPublishProperties.Value.Contains('SetProperty("ClassIsland_PlatformTarget", Arch)')) "NUKE iOS publish must define the release architecture."
@@ -471,5 +494,10 @@ $enableCodeSigningSchema = @($nukeSchema.allOf) |
     Where-Object { $null -ne $_ } |
     Select-Object -First 1
 Assert-True ($enableCodeSigningSchema.type -eq "boolean") "The NUKE schema must expose EnableCodeSigning as a boolean parameter."
+$buildNumberSchema = @($nukeSchema.allOf) |
+    ForEach-Object { $_.properties.BuildNumber } |
+    Where-Object { $null -ne $_ } |
+    Select-Object -First 1
+Assert-True ($null -eq $buildNumberSchema) "The NUKE schema must not expose a caller-supplied iOS BuildNumber parameter."
 
 Write-Output "iOS build configuration verification passed."
