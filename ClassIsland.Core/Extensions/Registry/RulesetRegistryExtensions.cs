@@ -1,6 +1,7 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Ruleset;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,14 +18,16 @@ public static class RulesetRegistryExtensions
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
-    /// <param name="name">规则名称。/</param>
+    /// <param name="name">规则名称。</param>
     /// <param name="iconGlyph">规则图标。</param>
     /// <param name="onHandle">规则处理程序。</param>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddRule(this IServiceCollection services, string id, string name = "",
         string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
-        Register(id, name, iconGlyph, onHandle);
+        var info = Register(id, name, iconGlyph, onHandle);
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly());
         return services;
     }
 
@@ -33,16 +36,19 @@ public static class RulesetRegistryExtensions
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
-    /// <param name="name">规则名称。/</param>
+    /// <param name="name">规则名称。</param>
     /// <param name="iconGlyph">规则图标。</param>
     /// <param name="onHandle">规则处理程序。</param>
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddRule<TSettings>(this IServiceCollection services, string id, string name = "",
         string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
         var info = Register(id, name, iconGlyph, onHandle);
         info.SettingsType = typeof(TSettings);
+
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TSettings));
         return services;
     }
 
@@ -51,12 +57,13 @@ public static class RulesetRegistryExtensions
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
-    /// <param name="name">规则名称。/</param>
+    /// <param name="name">规则名称。</param>
     /// <param name="iconGlyph">规则图标。</param>
     /// <param name="onHandle">规则处理程序。</param>
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
-    /// <typeparam name="TSettingsControl">规则设置控件类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TSettingsControl">规则设置控件类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddRule<TSettings, TSettingsControl>(this IServiceCollection services, string id, string name = "",
         string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null) where TSettingsControl : RuleSettingsControlBase
     {
@@ -64,13 +71,14 @@ public static class RulesetRegistryExtensions
         services.AddKeyedTransient<RuleSettingsControlBase, TSettingsControl>(id);
         info.SettingsType = typeof(TSettings);
         info.SettingsControlType = typeof(TSettingsControl);
-        info.ContributorInfo = ContributorInfoHelper.Extract(info.SettingsControlType);
+
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TSettingsControl));
         return services;
     }
 
 
-    private static RuleRegistryInfo Register(string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
+    private static RuleRegistryInfo Register(string id, string name,
+        string iconGlyph, RuleRegistryInfo.HandleDelegate? onHandle)
     {
         if (IRulesetService.Rules.ContainsKey(id))
         {
@@ -80,9 +88,6 @@ public static class RulesetRegistryExtensions
         var info = new RuleRegistryInfo(id, name, iconGlyph);
         info.Handle += onHandle;
         IRulesetService.Rules.Add(id, info);
-        
-        info.ContributorInfo ??= new();
-        RegistryContext.LastContributorInfo = info.ContributorInfo;
         
         return info;
     }

@@ -10,6 +10,9 @@ namespace ClassIsland.Core.Attributes;
 [AttributeUsage(AttributeTargets.All)]
 public class ContributorInfo(string details) : Attribute
 {
+    /// 是否为 ClassIsland 内置功能。
+    public bool IsBuiltIn { get; internal set; } = false;
+
     /// 插件 ID。设置此项以自动获取插件名称和插件支持信息。
     public string? PluginId { get; set; }
 
@@ -20,28 +23,37 @@ public class ContributorInfo(string details) : Attribute
     [JsonIgnore] public string? PluginName => PluginInfo?.Manifest.Name;
 
     /// 插件支持信息。
-    [JsonIgnore] public string? PluginMessage => CustomizedPluginMessage ?? (_defaultPluginMessage ??= BuildDefaultMessage(PluginInfo));
+    [JsonIgnore] public string? PluginMessage
+    {
+        get => _pluginMessage ??= !IsBuiltIn ? BuildDefaultMessage(PluginInfo) :
+            "这是 ClassIsland 内置提供的功能。";
+    }
+    string? _pluginMessage;
 
     /// 已解析的插件信息。
     [JsonIgnore] public PluginInfo? PluginInfo
     {
         get
         {
-            if (_pluginInfo is null && PluginId is not null)
+            if (IsBuiltIn || PluginId is null) return null;
+
+            if (_pluginInfo is null)
             {
                 _pluginInfo = IPluginService.LoadedPlugins
                     .FirstOrDefault(p => p.Manifest.Id == PluginId);
             }
             return _pluginInfo;
         }
-        internal set => _pluginInfo = value;
+        internal set
+        {
+            _pluginInfo = value;
+            PluginId = value?.Manifest.Id;
+            _pluginMessage = value?.ContributorMessage;
+        }
     }
+    PluginInfo? _pluginInfo;
 
-    private PluginInfo? _pluginInfo;
-    private string? _defaultPluginMessage;
-    internal string? CustomizedPluginMessage;
-
-    private static string? BuildDefaultMessage(PluginInfo? plugin)
+    static string? BuildDefaultMessage(PluginInfo? plugin)
     {
         if (plugin is null) return null;
         var m = plugin.Manifest;
@@ -49,7 +61,7 @@ public class ContributorInfo(string details) : Attribute
         if (!string.IsNullOrEmpty(m.Name))
             sb.AppendLine($"插件  **{m.Name}**");
         if (!string.IsNullOrEmpty(m.Author))
-            sb.AppendLine($"作者  @{m.Author}");
+            sb.AppendLine($"作者  **{m.Author}**");
         sb.Append($"项目主页  [插件详情页](classisland://app/settings/classisland.plugins?pluginId={m.Id}&ci_keepHistory=true)");
         if (!string.IsNullOrEmpty(m.Url))
             sb.Append($" [在浏览器中打开↗]({m.Url})");
@@ -64,5 +76,5 @@ public class ContributorInfo(string details) : Attribute
     /// <see cref="ContributorInfo"/>
     public static implicit operator ContributorInfo(string details) => new(details);
 
-    public override string ToString() => $"[{PluginId}|{Details}]";
+    public override string ToString() => $"[{PluginId}|{PluginMessage}|{Details}]";
 }

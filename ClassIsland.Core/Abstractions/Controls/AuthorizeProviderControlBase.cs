@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 认证提供方控件基类。在该类上标记 <see cref="ContributorInfo"/> 信息。
+/// 认证提供方控件基类。在该类上标记 <see cref="ContributorInfo"/> 特性。
 /// </summary>
 public abstract class AuthorizeProviderControlBase : UserControl
 {

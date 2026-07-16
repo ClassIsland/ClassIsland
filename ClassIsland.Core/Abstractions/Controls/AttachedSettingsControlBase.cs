@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 可附加设置的控件。在该类上标记 <see cref="ContributorInfo"/> 信息。
+/// 可附加设置的控件。在该类上标记 <see cref="ContributorInfo"/> 特性。
 /// </summary>
 public abstract class AttachedSettingsControlBase : UserControl, INotifyPropertyChanged
 {

@@ -47,12 +47,14 @@ public interface IPluginService
     {
         ["amiya"]  = "Amiya",
         ["baiyao"] = "白杳",
-        ["ryo"]    = "DannyFeng",
+        ["clover"] = "Clover Yan",
         ["doctor"] = "Doctor-yoi",
         ["dryice"] = "干冰DryIce",
+        ["laoshui"]= "LaoShui",
         ["lipoly"] = "LiPolymer",
         ["lrs"]    = "lrs2187",
         ["lyxwx"]  = "流焰xwx",
+        ["ryo"]    = "DannyFeng",
         ["wrc"]    = "HelloWRC",
         ["xiaowuap"] = "吴恩泽",
     };

@@ -104,19 +104,12 @@
                              Color="{Binding #This.ViewModel.InputValue}" />
             </DataTemplate>
             <DataTemplate x:Key=".enums">
-                <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsInfo.Enums}"
+                <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsInfo?.Enums}"
                           SelectedIndex="{Binding #This.ViewModel.InputValue, Converter={StaticResource PreventNullConverter}}" />
             </DataTemplate>
             <DataTemplate x:Key=".string">
                 <TextBox VerticalAlignment="Center"
-                         Text="{Binding #This.ViewModel.InputValue}"
-                         AcceptsReturn="{Binding #This.ViewModel.IsInContentPresenter2}">
-                    <TextBox.Styles>
-                        <Style Selector="TextBox[AcceptsReturn=True]">
-                            <Setter Property="TextWrapping" Value="Wrap" />
-                        </Style>
-                    </TextBox.Styles>
-                </TextBox>
+                         Text="{Binding #This.ViewModel.InputValue}"/>
             </DataTemplate>
         </local:ModifyAppSettingsActionControlTemplateSelector>
     </ci:ActionSettingsControlBase.Resources>

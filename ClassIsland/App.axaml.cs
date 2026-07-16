@@ -626,7 +626,7 @@ public partial class App : AppBase, IAppHost
         FileFolderService.CreateFolders();
         PluginService.ProcessPluginsInstall();
         bool isSystemSpeechSystemExist = false;
-        ContributorInfoHelper.ClassIslandAssemblies.Add(typeof(App).Assembly);
+        ContributorInfoHelper.BuiltInAssemblies.Add(typeof(App).Assembly);
         var spanHostBuilding = spanPreInit.StartChild("startup-host-building");
 
         IAppHost.Host = Microsoft.Extensions.Hosting.Host

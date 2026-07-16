@@ -1,7 +1,8 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Services.Registry;
 
@@ -16,8 +17,9 @@ public static class AuthorizeProviderRegistryExtensions
     /// 注册认证提供方。
     /// </summary>
     /// <param name="services"></param>
-    /// <typeparam name="TProvider">认证提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TProvider">认证提供方类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <returns>原来的<see cref="IServiceCollection"/>对象</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddAuthorizeProvider<TProvider>(this IServiceCollection services) where TProvider : AuthorizeProviderControlBase
     {
         var provider = typeof(TProvider);
@@ -32,11 +34,10 @@ public static class AuthorizeProviderRegistryExtensions
             throw new ArgumentException($"此认证提供方id {info.Id} 已经被占用。");
         }
 
-        info.ContributorInfo = ContributorInfoHelper.Extract(provider);
         info.AuthorizeProviderType = provider;
         services.AddKeyedTransient<AuthorizeProviderControlBase, TProvider>(info.Id);
         AuthorizeProviderRegistryService.RegisteredAuthorizeProviders.Add(info);
-
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TProvider));
         return services;
     }
 }

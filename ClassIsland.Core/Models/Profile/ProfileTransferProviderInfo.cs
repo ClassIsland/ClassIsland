@@ -56,5 +56,5 @@ public class ProfileTransferProviderInfo
     /// <summary>
     /// 贡献者信息。
     /// </summary>
-    public ContributorInfo? ContributorInfo { get; set; }
+    public ContributorInfo ContributorInfo { get; set; }
 }

@@ -1,4 +1,6 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
@@ -17,23 +19,26 @@ public static class SpeechProviderRegistryExtensions
     /// <summary>
     /// 注册一个语音提供方
     /// </summary>
-    /// <typeparam name="TSpeechProvider">语音提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TSpeechProvider">语音提供方类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 服务集合</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddSpeechProvider<TSpeechProvider>(this IServiceCollection services) where TSpeechProvider : class, ISpeechService
     {
         var info = Register(services, typeof(TSpeechProvider));
         services.AddKeyedSingleton<ISpeechService, TSpeechProvider>(info.Id);
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TSpeechProvider));
         return services;
     }
 
     /// <summary>
     /// 注册一个语音提供方
     /// </summary>
-    /// <typeparam name="TSpeechProvider">语音提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TSpeechProvider">语音提供方类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <typeparam name="TSpeechProviderSettingsControl">语音提供方设置控件类型</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 服务集合</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddSpeechProvider<TSpeechProvider, TSpeechProviderSettingsControl>(this IServiceCollection services)
         where TSpeechProvider : class, ISpeechService
         where TSpeechProviderSettingsControl : SpeechProviderControlBase
@@ -41,6 +46,7 @@ public static class SpeechProviderRegistryExtensions
         var info = Register(services, typeof(TSpeechProvider), typeof(TSpeechProviderSettingsControl));
         services.AddKeyedSingleton<ISpeechService, TSpeechProvider>(info.Id);
         services.AddKeyedSingleton<SpeechProviderControlBase, TSpeechProviderSettingsControl>(info.Id);
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TSpeechProvider));
         return services;
     }
 
@@ -58,7 +64,6 @@ public static class SpeechProviderRegistryExtensions
             throw new ArgumentException($"此语音提供方id {info.Id} 已经被占用。");
         }
 
-        info.ContributorInfo = ContributorInfoHelper.Extract(provider);
         info.SettingsControlType = provider;
 
         if (settings != null)

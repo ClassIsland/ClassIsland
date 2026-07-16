@@ -1,10 +1,10 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Helpers;
-using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
-using ClassIsland.Shared.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Extensions.Registry;
@@ -17,30 +17,34 @@ public static class NotificationProviderRegistryExtensions
     /// <summary>
     /// 注册一个提醒提供方
     /// </summary>
-    /// <typeparam name="TNotificationProvider">提醒提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TNotificationProvider">提醒提供方类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 服务集合</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddNotificationProvider<TNotificationProvider>(this IServiceCollection services) where TNotificationProvider : NotificationProviderBase
     {
-        Register(services, typeof(TNotificationProvider));
+        var info = Register(services, typeof(TNotificationProvider));
         services.AddHostedService<TNotificationProvider>();
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TNotificationProvider));
         return services;
     }
 
     /// <summary>
     /// 注册一个提醒提供方
     /// </summary>
-    /// <typeparam name="TNotificationProvider">提醒提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TNotificationProvider">提醒提供方类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <typeparam name="TNotificationProviderSettingsControl">提醒提供方设置控件类型</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 服务集合</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
-    public static IServiceCollection AddNotificationProvider<TNotificationProvider, TNotificationProviderSettingsControl>(this IServiceCollection services) 
-        where TNotificationProvider : NotificationProviderBase 
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static IServiceCollection AddNotificationProvider<TNotificationProvider, TNotificationProviderSettingsControl>(this IServiceCollection services)
+        where TNotificationProvider : NotificationProviderBase
         where TNotificationProviderSettingsControl : NotificationProviderControlBase
     {
         var info = Register(services, typeof(TNotificationProvider), typeof(TNotificationProviderSettingsControl));
         services.AddHostedService<TNotificationProvider>();
         services.AddKeyedTransient<NotificationProviderControlBase, TNotificationProviderSettingsControl>(info.Guid);
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TNotificationProvider));
         return services;
     }
 
@@ -70,14 +74,12 @@ public static class NotificationProviderRegistryExtensions
             info.RegisteredChannels.Add(i);
         }
 
-        info.ContributorInfo = ContributorInfoHelper.Extract(notificationProvider);
-
         if (settings != null)
         {
             info.SettingsType = settings;
         }
         NotificationProviderRegistryService.RegisteredProviders.Add(info);
-        
+
         return info;
     }
 }

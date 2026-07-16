@@ -1,9 +1,10 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers;
-using ClassIsland.Core.Services.Registry;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Extensions.Registry;
@@ -16,10 +17,11 @@ public static class AttachedSettingsRegistryExtensions
     /// <summary>
     /// 注册附加设置控件。
     /// </summary>
-    /// <typeparam name="T">要注册的附加设置控件类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="T">要注册的附加设置控件类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     /// <exception cref="InvalidOperationException">如果注册的控件没有添加<see cref="AttachedSettingsControlInfo"/>和<see cref="AttachedSettingsUsage"/>属性，或此附加设置控件的 GUID 已经被占用，则会抛出此异常。</exception>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddAttachedSettingsControl<T>(this IServiceCollection services) where T : AttachedSettingsControlBase
     {
         var type = typeof(T);
@@ -37,8 +39,6 @@ public static class AttachedSettingsRegistryExtensions
         {
             throw new InvalidOperationException($"此附加设置控件id {info.Guid} 已经被占用。");
         }
-
-        info.ContributorInfo = ContributorInfoHelper.Extract(type);
         services.AddKeyedTransient<AttachedSettingsControlBase, T>(info.Guid);
         info.AttachedSettingsControlType = typeof(T);
         info.Targets = usages.Targets;
@@ -65,6 +65,7 @@ public static class AttachedSettingsRegistryExtensions
             IAttachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(info);
         }
 
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(T));
         return services;
     }
 }

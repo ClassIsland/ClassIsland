@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -25,45 +27,50 @@ public static class ProfileTransferProviderRegisterExtensions
     /// <param name="funcHandler">提供方处理器</param>
     /// <param name="icon">提供方图标表达式</param>
     /// <returns>原来的<see cref="IServiceCollection"/>对象。</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddProfileTransferProvider(this IServiceCollection services, string id, string name, ProfileTransferProviderType type ,Action<TopLevel> funcHandler,
         string? icon = null)
     {
-        RegisterCore(new ProfileTransferProviderInfo()
+        var info = new ProfileTransferProviderInfo()
         {
             Id = id,
             Name = name,
             Type = type,
             FunctionHandler = funcHandler,
-            Icon = IconExpressionHelper.TryParseOrNull(icon ?? "\ue68f") 
-        });
+            Icon = IconExpressionHelper.TryParseOrNull(icon ?? "\ue68f")
+        };
+        RegisterCore(info);
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly());
         return services;
     }
 
     /// <summary>
-    /// 注册一个档案迁移提供方。使用 <see cref="ContributorRegistryExtensions.WithContributorInfo"/> 附加贡献者信息。
+    /// 注册一个档案迁移提供方
     /// </summary>
-    /// <typeparam name="TProvider">要注册的提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TProvider">要注册的提供方类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">提供方 id</param>
     /// <param name="type">迁移类型</param>
     /// <param name="name">提供方名称</param>
     /// <param name="icon">提供方图标表达式</param>
     /// <returns>原来的<see cref="IServiceCollection"/>对象。</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddProfileTransferProvider<TProvider>(this IServiceCollection services, string id, string name, ProfileTransferProviderType type,
         string? icon = null) where TProvider : ProfileTransferProviderControlBase
     {
         var controlType = typeof(TProvider);
-        RegisterCore(new ProfileTransferProviderInfo()
+        var info = new ProfileTransferProviderInfo()
         {
             Id = id,
             Name = name,
             Type = type,
             HandlerControlType = controlType,
-            ContributorInfo = ContributorInfoHelper.Extract(controlType),
             Icon = IconExpressionHelper.TryParseOrNull(icon ?? "\ue68f"),
             UseFullWidth = controlType.GetCustomAttributes(false).OfType<FullWidthPageAttribute>().Any(),
             HidePageTitle = controlType.GetCustomAttributes(false).OfType<HidePageTitleAttribute>().Any()
-        });
+        };
+        RegisterCore(info);
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TProvider));
         return services;
     }
 
@@ -73,10 +80,7 @@ public static class ProfileTransferProviderRegisterExtensions
         {
             throw new InvalidOperationException($"已存在 id 为 {info.Id} 的迁移提供方");
         }
-        
-        info.ContributorInfo ??= new();
-        RegistryContext.LastContributorInfo = info.ContributorInfo;
-        
+
         IProfileTransferService.Providers.Add(info);
     }
 }

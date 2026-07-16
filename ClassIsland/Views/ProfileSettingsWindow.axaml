@@ -1510,11 +1510,12 @@
                                                 <ci:Field Label="课间名称">
                                                     <AutoCompleteBox
                                                         ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CurrentProfileBreakNames}"
-                                                        Text="{Binding ViewModel.SelectedTimePoint.BreakName}"
+                                                        Text="{Binding ViewModel.SelectedTimePoint?.BreakName}"
                                                         GotFocus="StackPanelBreakingTimePointSettings_OnGotFocus"/>
                                                 </ci:Field>
                                                 <ci:ContributorBadge VerticalAlignment="Top"
                                                                      HorizontalAlignment="Right"
+                                                                     PluginId="ClassIsland"
                                                                      Details="自定义课间名称 @RoboMico @dryice"/>
                                             </Panel>
                                             <Separator Margin="0 4 0 8" />

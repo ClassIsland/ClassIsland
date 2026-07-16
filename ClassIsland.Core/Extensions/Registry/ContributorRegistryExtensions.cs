@@ -4,7 +4,6 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace ClassIsland.Core.Extensions.Registry;
 
 /// <summary>
@@ -33,44 +32,19 @@ public static class ContributorRegistryExtensions
     }
 
     /// 对刚刚注册的对象附加贡献者信息。
-    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection WithContributorInfo(this IServiceCollection services, ContributorInfo contributorInfo)
     {
         var refInfo = RegistryContext.LastContributorInfo;
-        if (refInfo is null)
-            throw new InvalidOperationException(
-                "未找到最近注册的项。请确保跟在 AddRule/AddTrigger/AddProfileTransferProvider 等特定注册方法之后调用。");
+        if (refInfo == null) throw new InvalidOperationException(
+            "未找到最近注册的项。请确保跟在 AddRule/AddProfileTransferProvider 等特定注册方法之后调用。");
 
         if (contributorInfo.Details != null)
             refInfo.Details = contributorInfo.Details;
 
         if (contributorInfo.PluginId != null)
             refInfo.PluginId = contributorInfo.PluginId;
-        else
-        {
-            var assembly = Assembly.GetCallingAssembly();
-            if (ContributorInfoHelper.IsBuiltInAssembly(assembly))
-            {
-                refInfo.PluginId = "ClassIsland";
-            }
-            else
-            {
-                var plugin = IPluginService.GetPluginInfo(assembly);
-                if (plugin != null)
-                {
-                    refInfo.PluginInfo = plugin;
-                    refInfo.PluginId = plugin.Manifest.Id;
-                    refInfo.CustomizedPluginMessage = plugin.ContributorMessage;
-                }
-                else
-                {
-                    throw new InvalidOperationException(
-                        $"意外：未能通过程序集找到插件。{assembly.FullName} {contributorInfo}");
-                }
-            }
-        }
 
-        RegistryContext.LastContributorInfo = null;
+        RegistryContext.LastContributorInfo = null!;
         return services;
     }
 }

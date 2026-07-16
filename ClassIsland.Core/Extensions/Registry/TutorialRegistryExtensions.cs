@@ -1,6 +1,8 @@
+using System.Reflection;
 using System.Text.Json;
 using Avalonia.Platform;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Tutorial;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,6 +33,10 @@ public static class TutorialRegistryExtensions
             throw new InvalidOperationException($"已注册具有相同 ID 的教学组 {content.Id}");
         }
         ITutorialService.RegisteredTutorialGroups.Add(content);
+
+        content.ContributorInfo ??= new();
+        ContributorInfoHelper.AttachPluginInfo(content.ContributorInfo, Assembly.GetCallingAssembly());
+        RegistryContext.LastContributorInfo = content.ContributorInfo;
         return services;
     }
 }

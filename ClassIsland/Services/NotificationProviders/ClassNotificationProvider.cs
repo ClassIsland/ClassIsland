@@ -23,7 +23,7 @@ namespace ClassIsland.Services.NotificationProviders;
 [NotificationChannelInfo(PrepareOnClassChannelId, "准备上课提醒", "\ue21a", description:"在上课前指定时间发出提醒。")]
 [NotificationChannelInfo(OnClassChannelId, "上课提醒", "\uE479", description: "在上课时发出提醒。")]
 [NotificationChannelInfo(OnBreakingChannelId, "下课提醒", "\ue4c3", description: "在下课时发出提醒。")]
-[ContributorInfo("上下课提醒 @wrc\\任课教师提醒 @cloveryan @wrc")]
+[ContributorInfo("上下课提醒  @wrc\\任课教师提醒  @clover  @wrc")]
 public class ClassNotificationProvider : NotificationProviderBase<ClassNotificationSettings>
 {
     public const string PrepareOnClassChannelId = "CDDFE7FF-B904-4C73-B458-82793B2F66E9";

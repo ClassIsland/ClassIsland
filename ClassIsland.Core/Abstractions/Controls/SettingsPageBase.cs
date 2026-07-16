@@ -7,7 +7,7 @@ using FluentAvalonia.UI.Controls;
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 设置页面基类。在该类上标记 <see cref="ContributorInfo"/> 信息。
+/// 设置页面基类。在该类上标记 <see cref="ContributorInfo"/> 特性。
 /// </summary>
 public abstract class SettingsPageBase : UserControl
 {

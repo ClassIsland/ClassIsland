@@ -92,7 +92,8 @@ public partial class SimpleRichText : ContentControl
                     CommandParameter = match.Groups[2].Value,
                     Height = 15,
                     Margin = new(0, 0, 0, -1),
-                    Padding = new(0)
+                    Padding = new(0),
+                    FontSize = FontSize,
                 };
                 tb.Inlines.Add(new InlineUIContainer { Child = link });
             }

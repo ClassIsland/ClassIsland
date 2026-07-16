@@ -22,7 +22,7 @@ public class SettingsPageInfo : Attribute
 
     public SettingsPageCategory Category { get; } = SettingsPageCategory.External;
 
-    public ContributorInfo? ContributorInfo { get; set; }
+    public ContributorInfo ContributorInfo { get; set; }
     
     public SettingsPageInfo(string id, string name, SettingsPageCategory category=SettingsPageCategory.External)
     {

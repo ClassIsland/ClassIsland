@@ -1,8 +1,7 @@
-﻿using System.Windows;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using Avalonia.Controls.Templates;
-using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Weather;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,14 +21,13 @@ public static class WeatherIconTemplateRegistryExtensions
     /// <param name="name">天气图标模板名称</param>
     /// <param name="template">天气图标模板内容</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 实例</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddWeatherIconTemplate(this IServiceCollection services, string id, string name, IDataTemplate template)
     {
         var info = new WeatherIconTemplateRegistryInfo(id, name, template);
         IWeatherService.RegisteredTemplates.Add(info);
-        
-        info.ContributorInfo ??= new();
-        RegistryContext.LastContributorInfo = info.ContributorInfo;
-        
+
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly());
         return services;
     } 
 }

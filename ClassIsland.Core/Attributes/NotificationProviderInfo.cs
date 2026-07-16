@@ -59,7 +59,7 @@ public class NotificationProviderInfo : Attribute
     /// <summary>
     /// 贡献者信息。
     /// </summary>
-    public ContributorInfo? ContributorInfo { get; set; }
+    public ContributorInfo ContributorInfo { get; set; }
 
     /// <inheritdoc />
     public NotificationProviderInfo(string guid, string name, string iconGlyph, string description = "") : this(guid, name,

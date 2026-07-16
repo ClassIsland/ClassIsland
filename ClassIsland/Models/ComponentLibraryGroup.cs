@@ -1,15 +1,14 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Attributes;
-
 namespace ClassIsland.Models;
 
-public class ComponentLibraryGroup(ContributorInfo? contributorInfo)
+public class ComponentLibraryGroup(ContributorInfo contributorInfo)
 {
-    public ContributorInfo? ContributorInfo { get; } = contributorInfo;
+    ContributorInfo ContributorInfo { get; } = contributorInfo;
 
-    public string GroupName => ContributorInfo?.PluginName ?? "ClassIsland";
+    public string GroupName => GetGroupName(ContributorInfo);
 
-    public bool HasContributor => ContributorInfo != null;
+    public static string GetGroupName(ContributorInfo info) => info.IsBuiltIn ? "ClassIsland" : info.PluginName ?? "???";
 
-    public ObservableCollection<ComponentInfo> Items { get; } = new();
+    public ObservableCollection<ComponentInfo> Items { get; } = [];
 }

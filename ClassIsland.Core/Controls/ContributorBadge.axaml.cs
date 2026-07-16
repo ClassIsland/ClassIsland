@@ -14,75 +14,64 @@ public partial class ContributorBadge : UserControl
     /// <inheritdoc cref="ContributorBadge"/>
     public ContributorBadge() => InitializeComponent();
 
-    // protected override Size MeasureOverride(Size availableSize)
-    // {
-    //     // 先尝试展开状态
-    //     RootButton.IsKeepingExpanded = true;
-    //     var expandedSize = base.MeasureOverride(availableSize);
-    //
-    //     // 如果展开状态宽度超出可用空间，且可用空间有限，回退到紧凑模式（仅图标）
-    //     if (expandedSize.Width > availableSize.Width && double.IsFinite(availableSize.Width))
-    //     {
-    //         RootButton.IsKeepingExpanded = false;
-    //         return base.MeasureOverride(availableSize);
-    //     }
-    //
-    //     return expandedSize;
-    // }
-
     /// 该功能的贡献者信息。
-    public ContributorInfo? ContributorInfo
+    public ContributorInfo ContributorInfo
     {
         get => _contributorInfo;
         set
         {
-            _contributorInfo = value;
+            _contributorInfo = value ?? new();
             RaisePropertyChanged(PluginNameProperty, null, PluginName);
             RaisePropertyChanged(MarkdownProperty, null, Markdown);
         }
     }
-    ContributorInfo? _contributorInfo;
+    ContributorInfo _contributorInfo = new();
     public static readonly DirectProperty<ContributorBadge, ContributorInfo?> ContributorInfoProperty =
         RegisterDirect<ContributorBadge, ContributorInfo?>(nameof(ContributorInfo), o => o.ContributorInfo, (o, v) => o.ContributorInfo = v);
 
-    /// 提供该功能的插件名称。
-    public string? PluginName
+    /// 提供该功能的插件 id。
+    public string? PluginId
     {
-        get => ContributorInfo?.PluginName ?? _pluginName;
+        get => ContributorInfo.PluginId;
         set
         {
-            _pluginName = value;
-            RaisePropertyChanged(PluginNameProperty, null, PluginName);
+            if (value == "ClassIsland")
+                ContributorInfo.IsBuiltIn = true;
+            else
+                ContributorInfo.PluginId = value;
         }
     }
-    string? _pluginName;
+
+    public static readonly DirectProperty<ContributorBadge, string?> PluginIdProperty =
+        RegisterDirect<ContributorBadge, string?>(nameof(PluginId), o => o.PluginId, (o, v) => o.PluginId = v);
+
+    public string? PluginName => ContributorInfo.PluginName;
     public static readonly DirectProperty<ContributorBadge, string?> PluginNameProperty =
-        RegisterDirect<ContributorBadge, string?>(nameof(PluginName), o => o.PluginName, (o, v) => o.PluginName = v);
+        RegisterDirect<ContributorBadge, string?>(nameof(PluginName), o => o.PluginName);
     
-    /// 该功能的贡献者描述。
+    /// 该功能的贡献者详情。
     public string? Details
     {
-        get => ContributorInfo?.Details ?? _details;
+        get => ContributorInfo.Details;
         set
         {
-            _details = value;
+            ContributorInfo.Details = value;
             RaisePropertyChanged(MarkdownProperty, null, Markdown);
         }
     }
-    string? _details;
 
     public string Markdown
     {
         get
         {
-            var msg = ContributorInfo?.PluginMessage;
-            Opacity = 1.0;
+            var msg = ContributorInfo.PluginMessage;
+            IsVisible = true;
             if (msg == null)
             {
                 if (Details == null)
                 {
-                    Opacity = !string.IsNullOrEmpty(PluginName) ? 1.0 : 0.0;
-                    return $"插件名称  **{PluginName}**";
+                    IsVisible = !string.IsNullOrEmpty(PluginId);
+                    return $"插件名称  **{PluginId}**";
                 }
                 else
                     return Details;
@@ -90,7 +79,13 @@ public partial class ContributorBadge : UserControl
             else
             {
                 if (Details == null)
+                {
+                    if (ContributorInfo.IsBuiltIn)
+                    {
+                        IsVisible = false;
+                    }
                     return msg;
+                }
                 else
                     return $@"{Details}\\{msg}";
             }

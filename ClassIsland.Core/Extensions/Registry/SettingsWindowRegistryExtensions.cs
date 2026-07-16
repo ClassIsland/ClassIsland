@@ -1,10 +1,11 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.SettingsWindow;
 using ClassIsland.Core.Services.Registry;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Core.Extensions.Registry;
 
@@ -17,9 +18,10 @@ public static class SettingsWindowRegistryExtensions
     /// 注册设置页面
     /// </summary>
     /// <param name="services"></param>
-    /// <typeparam name="T">设置页面类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="T">设置页面类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddSettingsPage<T>(this IServiceCollection services) where T : SettingsPageBase
     {
         var type = typeof(T);
@@ -35,8 +37,6 @@ public static class SettingsWindowRegistryExtensions
             throw new ArgumentException($"此设置页面id {info.Id} 已经被占用。");
         }
 
-        info.ContributorInfo = ContributorInfoHelper.Extract(type);
-
         if (attributes.OfType<FullWidthPageAttribute>().Any())
         {
             info.UseFullWidth = true;
@@ -51,6 +51,7 @@ public static class SettingsWindowRegistryExtensions
         }
         services.AddKeyedTransient<SettingsPageBase, T>(info.Id);
         SettingsWindowRegistryService.Registered.Add(info);
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(T));
         return services;
     }
 

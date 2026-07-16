@@ -5,7 +5,7 @@ using ClassIsland.Core.Attributes;
 namespace ClassIsland.Core.Abstractions.Services.SpeechService;
 
 /// <summary>
-/// TTS服务接口。在该类上标记 <see cref="ContributorInfo"/> 信息。
+/// TTS服务接口。在该类上标记 <see cref="ContributorInfo"/> 特性。
 /// </summary>
 public interface ISpeechService
 {

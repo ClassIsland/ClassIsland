@@ -35,7 +35,7 @@ public partial class TutorialGroup : ObservableObject, IXmlnsAttached
     /// <summary>
     /// 贡献者信息。
     /// </summary>
-    [ObservableProperty] ContributorInfo? _contributorInfo;
+    [ObservableProperty] ContributorInfo _contributorInfo = null!;
     
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
 }

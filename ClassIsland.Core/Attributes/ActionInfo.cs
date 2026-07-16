@@ -44,5 +44,5 @@ public class ActionInfo(string id, string name, string? iconGlyph = null, bool a
     /// <summary>
     /// 贡献者信息。
     /// </summary>
-    public ContributorInfo? ContributorInfo { get; set; }
+    public ContributorInfo ContributorInfo { get; set; }
 }

@@ -1,4 +1,6 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Components;
@@ -15,29 +17,33 @@ public static class ComponentRegistryExtensions
     /// <summary>
     /// 注册主界面组件
     /// </summary>
-    /// <typeparam name="TComponent">组件类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TComponent">组件类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <param name="services"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddComponent<TComponent>(this IServiceCollection services) where TComponent : ComponentBase
     {
-        Register(services, typeof(TComponent));
+        var info = Register(services, typeof(TComponent));
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TComponent));
         return services;
     }
 
     /// <summary>
     /// 注册主界面组件
     /// </summary>
-    /// <typeparam name="TComponent">组件类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TComponent">组件类型。在该类上标记 <see cref="ContributorInfo"/> 特性。</typeparam>
     /// <typeparam name="TSettings">组件设置控件类型</typeparam>
     /// <param name="services"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static IServiceCollection AddComponent<TComponent, TSettings>(this IServiceCollection services) where TComponent : ComponentBase where TSettings : class
     {
-        Register(services, typeof(TComponent), typeof(TSettings));
+        var info = Register(services, typeof(TComponent), typeof(TSettings));
+        info.ContributorInfo = ContributorInfoHelper.Setup(Assembly.GetCallingAssembly(), typeof(TComponent));
         return services;
     }
 
-    private static ComponentInfo Register(IServiceCollection services, Type component, Type? settings = null) 
+    private static ComponentInfo Register(IServiceCollection services, Type component, Type? settings = null)
     {
         var attributes = component.GetCustomAttributes(false);
         if (attributes.FirstOrDefault(x => x is ComponentInfo) is not ComponentInfo info)
@@ -52,16 +58,13 @@ public static class ComponentRegistryExtensions
 
         services.AddTransient(component);
         info.ComponentType = component;
-        foreach (var migrationSource in attributes.Where(x => x is MigrateFromAttribute).Cast<MigrateFromAttribute>())
+        foreach (var migrationSource in attributes.OfType<MigrateFromAttribute>())
         {
             ComponentRegistryService.MigrationPairs[new Guid(migrationSource.Id)] = info.Guid;
         }
 
         info.IsComponentContainer =
             attributes.FirstOrDefault(x => x is ContainerComponent) != null;
-
-        info.ContributorInfo = ContributorInfoHelper.Extract(component);
-
         if (settings != null)
         {
             services.AddTransient(settings);

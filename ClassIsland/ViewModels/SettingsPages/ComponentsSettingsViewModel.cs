@@ -71,7 +71,7 @@ public partial class ComponentsSettingsViewModel : ObservableRecipient
 
         foreach (var component in ComponentRegistryService.Registered)
         {
-            var key = component.ContributorInfo?.PluginName ?? "";
+            var key = ComponentLibraryGroup.GetGroupName(component.ContributorInfo);
             if (!groups.TryGetValue(key, out var group))
             {
                 group = new(component.ContributorInfo);
