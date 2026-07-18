@@ -1,4 +1,4 @@
-﻿---
+---
 name: cipx-manifest
 description: ClassIsland 插件清单 manifest.yml 的完整格式参考和字段说明。
 ---

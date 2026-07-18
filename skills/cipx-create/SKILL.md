@@ -1,4 +1,4 @@
-﻿---
+---
 name: cipx-create
 description: 创建 ClassIsland 插件项目：使用 cipx-template 脚手架生成插件项目结构。
 ---

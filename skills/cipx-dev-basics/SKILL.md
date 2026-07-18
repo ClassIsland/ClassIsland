@@ -1,4 +1,4 @@
-﻿---
+---
 name: cipx-dev-basics
 description: ClassIsland 插件基础知识：程序集隔离、资源引用、依赖注入、访问 AppBase、保存插件配置、以及插件中图标使用注意事项。
 ---

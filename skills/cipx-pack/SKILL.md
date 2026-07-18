@@ -1,4 +1,4 @@
-﻿---
+---
 name: cipx-pack
 description: 打包 ClassIsland 插件为 .cipx 格式：构建、生成插件包和校验和。
 ---

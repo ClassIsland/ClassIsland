@@ -1,4 +1,4 @@
-﻿---
+---
 name: cipx-dev-env
 description: 配置 ClassIsland 插件开发环境：检查操作系统、安装 .NET SDK/Git/PowerShell Core、配置环境变量、安装项目模板。
 ---
