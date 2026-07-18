@@ -145,69 +145,83 @@
         </ScrollViewer>
         <Grid x:Key="ComponentsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}"
               RowDefinitions="* Auto Auto">
-            <ListBox ItemsSource="{Binding ViewModel.ComponentInfos}"
-                     SelectedItem="{Binding ViewModel.SelectedComponentInfo}"
-                     Classes="drag-source">
-                <ListBox.Styles>
-                    <Style Selector="ListBox.drag-source ListBoxItem">
-                        <Setter Property="Interaction.Behaviors">
-                            <BehaviorCollectionTemplate>
-                                <BehaviorCollection>
-                                    <ci:AdvancedManagedContextDragBehavior 
-                                        PreviewOpacity="0.5"
-                                        HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
-                                    </ci:AdvancedManagedContextDragBehavior>
-                                </BehaviorCollection>
-                            </BehaviorCollectionTemplate>
-                        </Setter>
-                    </Style>
-                </ListBox.Styles>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
-                              Margin="0 8" Height="50">
-                            <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                               Width="24"/>
-                            <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
-                                                        Grid.RowSpan="2"
-                                                        Width="32" Height="32"
-                                                        VerticalAlignment="Center"
-                                                        ClipToBounds="False"
-                                                        TextElement.FontSize="32"
-                                                        Classes="repair-fontsize"
-                                                        Margin="0 -4 4 0"
-                                                        IconSource="{Binding IconSource}"/>
-                            <TextBlock Grid.Row="0" Grid.Column="2"
-                                       Text="{Binding Name}"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Top"
-                                       Margin="0 0 0 1"
-                                       TextTrimming="CharacterEllipsis"/>
-                            <TextBlock Grid.Row="1" Grid.Column="2"
-                                       Text="{Binding Description}"
-                                       Opacity="0.75"
-                                       FontSize="12"
-                                       FontWeight="Regular"
-                                       TextWrapping="Wrap"
-                                       HorizontalAlignment="Stretch"
-                                       TextAlignment="Left"
-                                       TextTrimming="CharacterEllipsis"/>
-                            
-                        </Grid>
+            <ScrollViewer Grid.Row="0" Padding="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding ViewModel.ComponentGroups}">
+                    <ItemsControl.Styles>
+                        <Style Selector="ListBox.drag-source ListBoxItem">
+                            <Setter Property="Interaction.Behaviors">
+                                <BehaviorCollectionTemplate>
+                                    <BehaviorCollection>
+                                        <ci:AdvancedManagedContextDragBehavior
+                                            PreviewOpacity="0.5"
+                                            HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
+                                        </ci:AdvancedManagedContextDragBehavior>
+                                    </BehaviorCollection>
+                                </BehaviorCollectionTemplate>
+                            </Setter>
+                        </Style>
+                    </ItemsControl.Styles>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="components:ComponentGroup">
+                            <StackPanel Margin="0 0 0 12">
+                                <TextBlock Text="{Binding GroupName}"
+                                           FontWeight="SemiBold"
+                                           Margin="0 0 0 4"/>
+                                <ListBox ItemsSource="{Binding Components}"
+                                         SelectedItem="{Binding $parent[editMode:EditModeView].ViewModel.SelectedComponentInfo, Mode=OneWayToSource}"
+                                         Classes="drag-source"
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
+                                              Margin="0 8" Height="50">
+                                            <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                                               Width="24"/>
+                                            <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
+                                                                        Grid.RowSpan="2"
+                                                                        Width="32" Height="32"
+                                                                        VerticalAlignment="Center"
+                                                                        ClipToBounds="False"
+                                                                        TextElement.FontSize="32"
+                                                                        Classes="repair-fontsize"
+                                                                        Margin="0 -4 4 0"
+                                                                        IconSource="{Binding IconSource}"/>
+                                            <TextBlock Grid.Row="0" Grid.Column="2"
+                                                       Text="{Binding Name}"
+                                                       HorizontalAlignment="Left"
+                                                       VerticalAlignment="Top"
+                                                       Margin="0 0 0 1"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="2"
+                                                       Text="{Binding Description}"
+                                                       Opacity="0.75"
+                                                       FontSize="12"
+                                                       FontWeight="Regular"
+                                                       TextWrapping="Wrap"
+                                                       HorizontalAlignment="Stretch"
+                                                       TextAlignment="Left"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel>
+                                            <Interaction.Behaviors>
+                                                <BehaviorCollection>
+                                                    <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
+                                                </BehaviorCollection>
+                                            </Interaction.Behaviors>
+                                        </WrapPanel>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                        </StackPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel>
-                            <Interaction.Behaviors>
-                                <BehaviorCollection>
-                                    <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
-                                </BehaviorCollection>
-                            </Interaction.Behaviors>
-                        </WrapPanel>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
             <Separator Grid.Row="1" Margin="0 4" />
             <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Text="将组件拖动到主界面上即可添加组件。" Classes="l-instructive"

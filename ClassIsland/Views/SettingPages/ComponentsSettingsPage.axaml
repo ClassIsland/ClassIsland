@@ -346,54 +346,70 @@
                         Classes="compact"
                         SelectedIndex="{Binding ViewModel.SettingsTabControlIndex}">
                 <TabItem Header="组件库">
-                    <ListBox ItemsSource="{x:Static registry:ComponentRegistryService.Registered}"
-                             Classes="drag-source">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
-                                      Margin="0 8" Height="50">
-                                    <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                                       Width="24"/>
-                                    
-                                    <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
-                                                                Grid.RowSpan="2"
-                                                                Width="32" Height="32"
-                                                                VerticalAlignment="Center"
-                                                                ClipToBounds="False"
-                                                                TextElement.FontSize="32"
-                                                                Classes="repair-fontsize"
-                                                                Margin="0 -4 4 0"
-                                                                IconSource="{Binding IconSource}"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="2"
-                                               Text="{Binding Name}"
-                                               HorizontalAlignment="Left"
-                                               VerticalAlignment="Top"
-                                               Margin="0 0 0 1"
-                                               TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="2"
-                                               Text="{Binding Description}"
-                                               Opacity="0.75"
-                                               FontSize="12"
-                                               FontWeight="Regular"
-                                               TextWrapping="Wrap"
-                                               HorizontalAlignment="Stretch"
-                                               TextAlignment="Left"
-                                               TextTrimming="CharacterEllipsis"/>
-                                </Grid>
+                    <!-- 按来源分组展示组件库 -->
+                    <ScrollViewer Padding="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ViewModel.GroupedComponents}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="components:ComponentGroup">
+                                    <StackPanel Margin="0 4 0 8">
+                                        <TextBlock Text="{Binding GroupName}"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0 8 0 4"/>
+                                        <ListBox ItemsSource="{Binding Components}"
+                                                 Classes="drag-source"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                            <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
+                                                      Margin="0 8" Height="50">
+                                                    <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                                                       Width="24"/>
+
+                                                    <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
+                                                                                Grid.RowSpan="2"
+                                                                                Width="32" Height="32"
+                                                                                VerticalAlignment="Center"
+                                                                                ClipToBounds="False"
+                                                                                TextElement.FontSize="32"
+                                                                                Classes="repair-fontsize"
+                                                                                Margin="0 -4 4 0"
+                                                                                IconSource="{Binding IconSource}"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="2"
+                                                               Text="{Binding Name}"
+                                                               HorizontalAlignment="Left"
+                                                               VerticalAlignment="Top"
+                                                               Margin="0 0 0 1"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="2"
+                                                               Text="{Binding Description}"
+                                                               Opacity="0.75"
+                                                               FontSize="12"
+                                                               FontWeight="Regular"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Stretch"
+                                                               TextAlignment="Left"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel>
+                                                    <Interaction.Behaviors>
+                                                        <BehaviorCollection>
+                                                            <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
+                                                        </BehaviorCollection>
+                                                    </Interaction.Behaviors>
+                                                </WrapPanel>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                    </ListBox>
+                                </StackPanel>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel>
-                                    <Interaction.Behaviors>
-                                        <BehaviorCollection>
-                                            <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
-                                        </BehaviorCollection>
-                                    </Interaction.Behaviors>
-                                </WrapPanel>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
+                        </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </TabItem>
                 <TabItem Header="组件设置" IsVisible="{Binding ViewModel.IsComponentSettingsVisible}">
                     <ci:ComponentPresenter Settings="{Binding ViewModel.SelectedComponentSettings}"
