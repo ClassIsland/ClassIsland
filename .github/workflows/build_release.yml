@@ -19,6 +19,8 @@ on:
 
 env:
   PDC_CLIENT_VERSION: 1.0.1.0
+  MACOS_DOTNET_SDK_VERSION: 10.0.302
+  MACOS_XCODE_PATH: /Applications/Xcode_26.6.app/Contents/Developer
 
 jobs:
   build_app:
@@ -65,15 +67,17 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: ${{ matrix.os == 'macos' && env.MACOS_DOTNET_SDK_VERSION || '10.0.x' }}
       
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
         run: |
-          sudo xcode-select -s /Applications/Xcode_26.5.app/Contents/Developer
+          test "$(dotnet --version)" = "$MACOS_DOTNET_SDK_VERSION"
+          sudo xcode-select -s "$MACOS_XCODE_PATH"
           xcodebuild -version
           xcodebuild -showsdks
-          dotnet workload install macos
+          dotnet workload install macos --version "$MACOS_DOTNET_SDK_VERSION"
+          test "$(dotnet workload --version)" = "$MACOS_DOTNET_SDK_VERSION"
         
       - name: Add GitHub Package Registry
         run: dotnet nuget add source --username ClassIsland --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
