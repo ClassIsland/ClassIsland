@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
@@ -17,7 +20,7 @@ using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
-
+using ClassIsland.Models;
 
 namespace ClassIsland.Views;
 
@@ -77,6 +80,12 @@ public partial class ClassChangingWindow : MyWindow
     private void ButtonNext_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SlideIndex = 1;
+    }
+    
+    private void ButtonAdvancedClassChanging_OnClick(object sender, RoutedEventArgs e)
+    {
+        Dispatcher.UIThread.InvokeAsync(() =>{App.GetService<ProfileSettingsWindow>().Open(new Uri("classisland://app/profile/adjustment"));} );
+        Close();
     }
 
     private async void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
