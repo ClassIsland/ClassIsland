@@ -291,6 +291,10 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
             && IsDescendant(captured, AssociatedObject))
         {
             _captured = false;
+            _enableDrag = false;
+            _dragStarted = false;
+            _itemsControl = null;
+            _draggedContainer = null;
             Released();
             return;
         }

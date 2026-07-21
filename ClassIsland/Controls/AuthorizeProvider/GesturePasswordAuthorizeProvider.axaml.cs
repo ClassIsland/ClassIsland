@@ -81,6 +81,15 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
         }
     }
 
+    private void GestureGrid_OnGestureTooShort(object? sender, EventArgs e)
+    {
+        TooShortError = true;
+        DispatcherTimer.RunOnce(() =>
+        {
+            TooShortError = false;
+        }, TimeSpan.FromSeconds(1.5));
+    }
+
     private void HandleEditingGesture(int[] path)
     {
         if (_firstGesture == null)
@@ -155,7 +164,8 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
         var pathBytes = Encoding.UTF8.GetBytes(pathString).ToList();
         pathBytes.AddRange(saltBytes);
         var hash = SHA256.HashData(pathBytes.ToArray());
-        return Convert.ToBase64String(hash) == Settings.GestureHash;
+        var expectedHash = Convert.FromBase64String(Settings.GestureHash);
+        return CryptographicOperations.FixedTimeEquals(hash, expectedHash);
     }
 
     private void ButtonChangeGesture_OnClick(object sender, RoutedEventArgs e)
