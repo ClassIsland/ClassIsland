@@ -1,31 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
 using Avalonia.Data.Converters;
-using Avalonia.Platform;
-using Sentry.Protocol;
 
 namespace ClassIsland.Converters;
 public class SupportedOSPlatformsToBooleanConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        OSPlatform currentOsPlatform = default;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        var currentOsPlatform = Core.Enums.OSPlatform.Unknown;
+        if (OperatingSystem.IsWindows())
         {
-            currentOsPlatform = OSPlatform.Windows;
+            currentOsPlatform = Core.Enums.OSPlatform.Windows;
         }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        else if (OperatingSystem.IsLinux())
         {
-            currentOsPlatform = OSPlatform.Linux;
+            currentOsPlatform = Core.Enums.OSPlatform.Linux;
         }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        else if (OperatingSystem.IsMacOS())
         {
-            currentOsPlatform = OSPlatform.OSX;
+            currentOsPlatform = Core.Enums.OSPlatform.macOS;
         }
-        if (value is List<OSPlatform> s)
+        else if(OperatingSystem.IsAndroid())
+        {
+            currentOsPlatform = Core.Enums.OSPlatform.Android;
+        }
+        else if(OperatingSystem.IsIOS())
+        {
+            currentOsPlatform = Core.Enums.OSPlatform.iOS;
+        }
+        if (value is List<Core.Enums.OSPlatform> s)
         {
             return !s.Contains(currentOsPlatform);
         }
