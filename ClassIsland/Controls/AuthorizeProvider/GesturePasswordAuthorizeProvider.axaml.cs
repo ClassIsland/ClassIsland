@@ -81,6 +81,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     private void GestureGrid_OnGestureCompleted(object? sender, int[] path)
     {
         TooShortError = false;
+        NeedConfirmError = false;
         if (IsEditingMode)
         {
             HandleEditingGesture(path);
