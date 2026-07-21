@@ -290,12 +290,27 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
             && !ReferenceEquals(captured, AssociatedObject)
             && IsDescendant(captured, AssociatedObject))
         {
+            RemoveTransforms(_itemsControl);
+            if (_itemsControl is not null)
+            {
+                foreach (var control in _itemsControl.GetRealizedContainers())
+                {
+                    SetDraggingPseudoClasses(control, false);
+                }
+            }
+
+            if (_draggedContainer is not null)
+            {
+                SetDraggingPseudoClasses(_draggedContainer, false);
+            }
+
             _captured = false;
             _enableDrag = false;
             _dragStarted = false;
+            _draggedIndex = -1;
+            _targetIndex = -1;
             _itemsControl = null;
             _draggedContainer = null;
-            Released();
             return;
         }
 

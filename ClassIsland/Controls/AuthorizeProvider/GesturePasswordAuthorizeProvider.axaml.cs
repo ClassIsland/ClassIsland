@@ -18,6 +18,7 @@ namespace ClassIsland.Controls.AuthorizeProvider;
 public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControlBase<GesturePasswordAuthorizeSettings>
 {
     private int[]? _firstGesture;
+    private bool _isCooldownActive;
 
     public static readonly StyledProperty<bool> AuthorizeFailedProperty =
         AvaloniaProperty.Register<GesturePasswordAuthorizeProvider, bool>(nameof(AuthorizeFailed));
@@ -44,6 +45,15 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     {
         get => GetValue(TooShortErrorProperty);
         set => SetValue(TooShortErrorProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> NeedConfirmErrorProperty =
+        AvaloniaProperty.Register<GesturePasswordAuthorizeProvider, bool>(nameof(NeedConfirmError));
+
+    public bool NeedConfirmError
+    {
+        get => GetValue(NeedConfirmErrorProperty);
+        set => SetValue(NeedConfirmErrorProperty, value);
     }
 
     public static readonly StyledProperty<bool> ProtectGestureProperty =
@@ -104,6 +114,8 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
             {
                 SaveGesture(_firstGesture);
                 ProtectGesture = true;
+                ConfirmFailed = false;
+                NeedConfirmError = false;
                 InstructionText.Text = "请绘制手势密码";
             }
             else
@@ -129,11 +141,14 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
         }
         else
         {
+            if (_isCooldownActive) return;
+            _isCooldownActive = true;
+            AuthorizeFailed = true;
             IsEnabled = false;
             DispatcherTimer.RunOnce(() =>
             {
                 IsEnabled = true;
-                AuthorizeFailed = true;
+                _isCooldownActive = false;
                 GestureGrid.Reset();
             }, TimeSpan.FromMilliseconds(RandomNumberGenerator.GetInt32(1000, 3000)));
         }
@@ -172,6 +187,8 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     {
         ProtectGesture = false;
         _firstGesture = null;
+        ConfirmFailed = false;
+        NeedConfirmError = false;
         InstructionText.Text = "请绘制手势密码";
         GestureGrid.Reset();
     }
@@ -185,7 +202,8 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
 
         if (_firstGesture != null)
         {
-            return true;
+            NeedConfirmError = true;
+            return false;
         }
 
         TooShortError = true;
