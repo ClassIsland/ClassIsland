@@ -151,6 +151,7 @@ public class GesturePasswordGrid : Control
         {
             var path = _selectedNodes.ToArray();
             Path = path;
+            InvalidateVisual();
             GestureCompleted?.Invoke(this, path);
         }
         else
