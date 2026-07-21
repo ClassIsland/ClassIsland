@@ -37,6 +37,11 @@ public class GesturePasswordGrid : Control
     }
 
     public event EventHandler<int[]>? GestureCompleted;
+    public event EventHandler? GestureTooShort;
+
+    private static readonly Pen s_linePen = new(s_lineBrush, LineThickness, lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
+    private static readonly Pen s_linePendingPen = new(s_linePendingBrush, LineThickness, lineCap: PenLineCap.Round);
+    private static readonly Pen s_innerRingPen = new(s_innerRingBrush, 2);
 
     public GesturePasswordGrid()
     {
@@ -150,6 +155,7 @@ public class GesturePasswordGrid : Control
         }
         else
         {
+            GestureTooShort?.Invoke(this, EventArgs.Empty);
             Reset();
         }
     }
@@ -187,12 +193,11 @@ public class GesturePasswordGrid : Control
     {
         if (_selectedNodes.Count < 2) return;
 
-        var pen = new Pen(s_lineBrush, LineThickness, lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
         for (var i = 0; i < _selectedNodes.Count - 1; i++)
         {
             var from = _nodePositions[_selectedNodes[i]];
             var to = _nodePositions[_selectedNodes[i + 1]];
-            context.DrawLine(pen, from, to);
+            context.DrawLine(s_linePen, from, to);
         }
     }
 
@@ -200,9 +205,8 @@ public class GesturePasswordGrid : Control
     {
         if (!_isPressed || _lastNodeIndex < 0) return;
 
-        var pen = new Pen(s_linePendingBrush, LineThickness, lineCap: PenLineCap.Round);
         var from = _nodePositions[_lastNodeIndex];
-        context.DrawLine(pen, from, _currentPointer);
+        context.DrawLine(s_linePendingPen, from, _currentPointer);
     }
 
     private void DrawNodes(DrawingContext context)
@@ -223,8 +227,7 @@ public class GesturePasswordGrid : Control
 
             if (isSelected)
             {
-                var innerPen = new Pen(s_innerRingBrush, 2);
-                context.DrawEllipse(null, innerPen, pos, (radius - 5) * 2, (radius - 5) * 2);
+                context.DrawEllipse(null, s_innerRingPen, pos, (radius - 5) * 2, (radius - 5) * 2);
             }
         }
     }
