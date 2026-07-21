@@ -286,6 +286,15 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
 
     private void PointerMoved(object? sender, PointerEventArgs e)
     {
+        if (_captured && e.Pointer.Captured is Visual captured
+            && !ReferenceEquals(captured, AssociatedObject)
+            && IsDescendant(captured, AssociatedObject))
+        {
+            _captured = false;
+            Released();
+            return;
+        }
+
         var properties = e.GetCurrentPoint(AssociatedObject).Properties;
         if (_captured
             && properties.IsLeftButtonPressed)
@@ -436,5 +445,15 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
         var transformBuilder = new TransformOperations.Builder(1);
         transformBuilder.AppendTranslate(x, y);
         control.RenderTransform = transformBuilder.Build();
+    }
+
+    private static bool IsDescendant(Visual child, Visual parent)
+    {
+        for (var current = child; current != null; current = current.GetVisualParent())
+        {
+            if (ReferenceEquals(current, parent))
+                return true;
+        }
+        return false;
     }
 }
