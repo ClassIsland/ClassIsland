@@ -18,15 +18,15 @@
 
 <a href="https://trendshift.io/repositories/14441" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14441" alt="ClassIsland%2FClassIsland | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-<a href="https://hellogithub.com/repository/ClassIsland/ClassIsland" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=fb844b7286244bf8a1d67bfd228a95c7&claim_uid=kZp2qRKGVYrXoTS" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+<a href="https://hellogithub.com/repository/ClassIsland/ClassIsland" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=fb844b7286244bf8a1d67bfd228a95c7&claim_uid=kZp2qRKGVYrXoTS" alt="Featured | HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 
 ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显示工具，可以在 Windows PC、Mac 及 Linux 设备屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
-#### 💬[Classlsland QQ 频道](https://pd.qq.com/s/grr6qwqwj) | [Classlsland QQ 群组 1 群](https://qm.qq.com/q/4NsDQKiAuQ) | [2 群](https://qm.qq.com/q/MhWCvrk7mu)
+#### 💬[ClassIsland QQ 频道](https://pd.qq.com/s/grr6qwqwj) | [ClassIsland QQ 群组 1 群](https://qm.qq.com/q/4NsDQKiAuQ) | [2 群](https://qm.qq.com/q/MhWCvrk7mu)
 
-#### [🌐 官方网站](https://classisland.tech/) | [🚀 软件下载](https://classisland.tech/download)｜[📚 项目文档](https://docs.classisland.tech)｜[🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop)
+#### [🌐 官方网站](https://classisland.tech/) | [🚀 软件下载](https://classisland.tech/download) | [📚 项目文档](https://docs.classisland.tech) | [🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop)
 
 ###### [观看介绍视频，快速了解突破创新 →](https://www.bilibili.com/video/BV12fFoefEGn/)
 
@@ -62,7 +62,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 ### 其它功能
 
 - [x] 通过[自动化](https://docs.classisland.tech/app/automation.html)在特定事件发生时/特定时间自动执行某些操作（如显示提醒、打开应用/文件/网页等），提高教学效率
-- [x] 显示当前的[天气](https://docs.classisland.tech/app/advanced#天气)信息、降水提示、6 小时/3 天天气预报和极端天气预警等信息，支持根据定位获取天气信息
+- [x] 显示当前的[天气](https://docs.classisland.tech/app/advanced#天气)信息、降水提示、6 小时 / 3 天天气预报和极端天气预警等信息，支持根据定位获取天气信息
 - [x] 自动同步软件时间、手动对齐铃声
 - [x] 使用密码等认证方式保护应用设置和课表配置
 - [x] 丝滑、流畅的过渡动画
@@ -184,12 +184,12 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-49-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-50-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
 
-感谢以下同学为本项目为本项目的开发提供支持（[✨](https://allcontributors.org/docs/zh-cn/emoji-key)）：
+感谢以下同学为本项目的开发提供支持（[✨](https://allcontributors.org/docs/zh-cn/emoji-key)）：
 
 <!-- autocorrect-disable -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -260,6 +260,9 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Akiyama-Mizuki-44"><img src="https://avatars.githubusercontent.com/u/63501294?v=4?s=100" width="100px;" alt="Lewis Hamilton"/><br /><sub><b>Lewis Hamilton</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Akiyama-Mizuki-44" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://jbyc.cc"><img src="https://avatars.githubusercontent.com/u/177214309?v=4?s=100" width="100px;" alt="Jbyccc"/><br /><sub><b>Jbyccc</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Braydenccc" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Victory-Aogu"><img src="https://avatars.githubusercontent.com/u/294148985?v=4?s=100" width="100px;" alt="TZ^"/><br /><sub><b>TZ^</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Victory-Aogu" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -286,7 +289,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <img alt="SignPath" src="https://signpath.org/assets/favicon-50x50.png" />
     </td>
     <td>
-    Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certficate by <a href="https://signpath.org/">SignPath Foundation</a>
+    Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certificate by <a href="https://signpath.org/">SignPath Foundation</a>
     </td>
   </tr> 
   <tr>
