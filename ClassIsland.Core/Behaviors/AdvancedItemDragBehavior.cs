@@ -288,7 +288,8 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
     {
         if (_captured && e.Pointer.Captured is Visual captured
             && !ReferenceEquals(captured, AssociatedObject)
-            && IsDescendant(captured, AssociatedObject))
+            && IsDescendant(captured, AssociatedObject)
+            && !(captured is TouchDragThumb))
         {
             RemoveTransforms(_itemsControl);
             if (_itemsControl is not null)
