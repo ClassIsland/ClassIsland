@@ -66,7 +66,7 @@ public class PluginService : IPluginService
 
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
-            .WithTypeConverter(new OSPlatformTypeConverter())
+            .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
@@ -117,7 +117,7 @@ public class PluginService : IPluginService
 
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
-            .WithTypeConverter(new OSPlatformTypeConverter())
+            .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
