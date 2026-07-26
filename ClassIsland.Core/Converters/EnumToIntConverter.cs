@@ -9,6 +9,11 @@ namespace ClassIsland.Core.Converters;
 /// </summary>
 public class EnumToIntConverter : IValueConverter
 {
+    /// <summary>
+    /// <see cref="EnumToIntConverter"/> 的实例
+    /// </summary>
+    public static EnumToIntConverter Instance { get; } = new();
+    
     /// <inheritdoc />
     public object? Convert(
         object? value,
@@ -78,5 +83,10 @@ public class EnumToIntConverter : IValueConverter
         {
             return BindingOperations.DoNothing;
         }
+    }
+
+    private EnumToIntConverter()
+    {
+        
     }
 }

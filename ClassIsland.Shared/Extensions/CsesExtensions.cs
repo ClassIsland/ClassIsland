@@ -140,7 +140,7 @@ public static class CsesExtensions
 
         profile.RefreshTimeLayouts();
         foreach (var i in profile.ClassPlans.Where(x => x.Value is
-                     { TimeLayout: not null, IsEnabled: true, TimeRule.WeekCountDivTotal: <= 2, TimeRule.WeekCountDiv: <= 2 }).ToList())
+                     { TimeLayout: not null, IsEnabled: true, TimeRule.WeekCountDivTotal: <= 2, TimeRule.WeekCountDiv: <= 2, TimeRule.Type: TimeRule.TimeRuleType.Weekly }).ToList())
         {
             i.Value.RefreshClassesList();
             var schedule = new Schedule()
