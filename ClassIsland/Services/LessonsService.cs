@@ -583,12 +583,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         if (plan.IsOverlay || !plan.IsEnabled)
             return false;
-
-        if (plan.TimeRule.WeekDay != (int)time.DayOfWeek)
-        {
-            return false;
-        }
-
+        
         if (plan.AssociatedGroup != ClassPlanGroup.GlobalGroupGuid &&
             plan.AssociatedGroup != Profile.SelectedClassPlanGroupId &&
             plan.AssociatedGroup != Profile.TempClassPlanGroupId)
@@ -596,14 +591,28 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
-        if (plan.TimeRule.WeekCountDivTotal > SettingsService.Settings.MultiWeekRotationMaxCycle)
-            return false;
-
-        if (plan.TimeRule.WeekCountDiv == 0)
-            return true;
-
-        var rotation = GetCyclePositionsByDate(time);
-        return plan.TimeRule.WeekCountDiv == rotation[plan.TimeRule.WeekCountDivTotal];
+        switch (plan.TimeRule.Type)
+        {
+            case TimeRule.TimeRuleType.Weekly:
+                if (plan.TimeRule.WeekDay != (int)time.DayOfWeek)
+                {
+                    return false;
+                }
+                if (plan.TimeRule.WeekCountDivTotal > SettingsService.Settings.MultiWeekRotationMaxCycle)
+                    return false;
+                if (plan.TimeRule.WeekCountDiv == 0)
+                    return true;
+                var rotation = GetCyclePositionsByDate(time);
+                return plan.TimeRule.WeekCountDiv == rotation[plan.TimeRule.WeekCountDivTotal];
+            case TimeRule.TimeRuleType.Date:
+                return plan.TimeRule.EnableDates.Contains(DateOnly.FromDateTime(time));
+            case TimeRule.TimeRuleType.Loop:
+                var days = (time.Date - Settings.SingleWeekStartTime).Days;
+                return days % Math.Max(plan.TimeRule.LoopCycleDays, 1) == plan.TimeRule.LoopOffsetDays;
+            default:
+                return false;
+        }
+        
     }
 
     /// <summary>

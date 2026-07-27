@@ -18,37 +18,149 @@
         <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap"
                    Classes="l-instructive"/>
         
-        <StackPanel Orientation="Horizontal" Classes="items-valign-center"
-                    x:Name="StackPanelWeekDivSettings"
-                    Margin="0 8 0 0"
-                    Spacing="2">
-            <TextBlock Text="每"
-                       Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
-            <ComboBox x:Name="WeekCountDivTotalListBox"
-                     SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivTotalIndex}"
-                     Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
-            <TextBlock Text="的"
-                       Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
-            <ComboBox x:Name="WeekCountDivListBox"
-                      SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
-        </StackPanel>
-
-        <TextBlock Text="当今天是：" Margin="0 6 0 0" />
-        <ListBox ItemsSource="{x:Static viewModels:TimeRuleEditViewModel.WeekDayOptions}"
-                 SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.WeekDay, Converter={StaticResource PreventNullConverter}}"
-                 Theme="{StaticResource ChipListBoxTheme}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}"
-                               HorizontalAlignment="Center"/>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.ItemsPanel>
+        <TabStrip Theme="{StaticResource TabStripStyle}"
+                  Classes="compact"
+                  SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.Type, Converter={x:Static ci:EnumToIntConverter.Instance}}"
+                  Margin="0 6 0 0"
+                  HorizontalAlignment="Stretch">
+            <TabStrip.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="7"/>
+                    <UniformGrid Columns="3"/>
                 </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-        </ListBox>
+            </TabStrip.ItemsPanel>
+            <TabStripItem>
+                <ci:AnimatedIconButton Glyph="{ci:FI CalendarRegular}" Text="每周" 
+                                             Classes="display-role"
+                                             IsKeepingExpanded="True"/>
+            </TabStripItem>
+            <TabStripItem>
+                <ci:AnimatedIconButton Glyph="{ci:FI CalendarDayRegular}" Text="某天" 
+                                             Classes="display-role"
+                                             IsKeepingExpanded="True"/>
+            </TabStripItem>
+            <TabStripItem>
+                <ci:AnimatedIconButton Glyph="{ci:FI ArrowRepeatAllRegular}" Text="循环" 
+                                       Classes="display-role"
+                                       IsKeepingExpanded="True"/>
+            </TabStripItem>
+        </TabStrip>
+        
+        <ci:ReusableTabControl 
+            Padding="0"
+            Margin="0 4 0 0"
+            SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.Type, Converter={x:Static ci:EnumToIntConverter.Instance}}">
+            <TabItem IsVisible="False">
+                <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Classes="items-valign-center"
+                                x:Name="StackPanelWeekDivSettings"
+                                Spacing="2">
+                        <TextBlock Text="每"
+                                   Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
+                        <ComboBox x:Name="WeekCountDivTotalListBox"
+                                  SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivTotalIndex}"
+                                  Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
+                        <TextBlock Text="的"
+                                   Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
+                        <ComboBox x:Name="WeekCountDivListBox"
+                                  SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="当今天是：" />
+                    <ListBox ItemsSource="{x:Static viewModels:TimeRuleEditViewModel.WeekDayOptions}"
+                             SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.WeekDay, Converter={StaticResource PreventNullConverter}}"
+                             Theme="{StaticResource ChipListBoxTheme}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                           HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="7"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </StackPanel>
+            </TabItem>
+            <TabItem IsVisible="False">
+                <StackPanel Spacing="2" >
+                    <TextBlock Text="当今天是以下任意日期："/>
+                    <ListBox ItemsSource="{Binding $parent[controls:TimeRuleEditControl].TimeRule.EnableDates}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel >
+                                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0"
+                                                DockPanel.Dock="Right">
+                                        
+                                        <Button Theme="{StaticResource TransparentButton}"
+                                                ToolTip.Tip="编辑"
+                                                Command="{Binding $parent[controls:TimeRuleEditControl].PreEditSelectedDateCommand}"
+                                                CommandParameter="{Binding}">
+                                            <Button.Flyout>
+                                                <Flyout Placement="Top">
+                                                    <StackPanel Spacing="8">
+                                                        <TextBlock Text="修改日期" FontWeight="Bold"/>
+                                                        <CalendarDatePicker SelectedDate="{Binding $parent[controls:TimeRuleEditControl].ViewModel.NewDateTime}"/>
+                                                        <Button Content="确定" Classes="accent"
+                                                                Tag="{Binding}"
+                                                                Command="{Binding $parent[controls:TimeRuleEditControl].CommitEditSelectedDateCommand}"
+                                                                CommandParameter="{Binding $self}"/>
+                                                    </StackPanel>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                            <ci:FluentIcon Glyph="{ci:FI EditRegular}"/>
+                                        </Button>
+                                        <Button Theme="{StaticResource TransparentButton}"
+                                                Command="{Binding $parent[controls:TimeRuleEditControl].RemoveDateCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="移除">
+                                            <ci:FluentIcon Glyph="{ci:FI DismissRegular}"/>
+                                        </Button>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}, StringFormat='yyyy/MM/dd ddd'}"
+                                               VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Theme="{StaticResource TransparentButton}">
+                        <Button.Flyout>
+                            <Flyout Placement="Top">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="添加启用日期" FontWeight="Bold"/>
+                                    <CalendarDatePicker SelectedDate="{Binding $parent[controls:TimeRuleEditControl].ViewModel.NewDateTime}"/>
+                                    <Button Content="确定" Classes="accent"
+                                            Command="{Binding $parent[controls:TimeRuleEditControl].CommitEditSelectedDateCommand}"
+                                            CommandParameter="{Binding $self}"/>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                        <ci:IconText Glyph="{ci:FI AddRegular}" Text="添加"/>
+                    </Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem IsVisible="False">
+                <StackPanel Spacing="6">
+                    <WrapPanel Classes="items-valign-center" ItemSpacing="4">
+                        <TextBlock Text="从开学起，每"/>
+                        <NumericUpDown Value="{Binding $parent[controls:TimeRuleEditControl].TimeRule.LoopCycleDays, Converter={x:Static ci:NotNaNConverter.Instance}}"
+                                       MinWidth="100"
+                                       Minimum="1"/>
+                        <TextBlock Text="天启用一次。"/>
+                    </WrapPanel>
+                    <WrapPanel Classes="items-valign-center" ItemSpacing="4">
+                        <TextBlock Text="向后偏移"/>
+                        <NumericUpDown Value="{Binding $parent[controls:TimeRuleEditControl].TimeRule.LoopOffsetDays, Converter={x:Static ci:NotNaNConverter.Instance}}"
+                                       MinWidth="100"
+                                       Minimum="0"
+                                       Maximum="{Binding $parent[controls:TimeRuleEditControl].TimeRule.LoopCycleDays, Converter={x:Static controls:TimeRuleEditControl.CycleDaysToMaxOffsetDaysConverter}}"/>
+                        <TextBlock Text="天。"/>
+                    </WrapPanel>
+                </StackPanel>
+            </TabItem>
+        </ci:ReusableTabControl>
+       
         
     </StackPanel>
 </UserControl>

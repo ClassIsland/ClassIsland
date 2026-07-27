@@ -8,26 +8,23 @@ namespace ClassIsland.Shared.Models.Profile;
 /// <summary>
 /// 代表一个课表<see cref="ClassPlan"/>触发规则。
 /// </summary>
-public class TimeRule : ObservableRecipient
+public partial class TimeRule : ObservableRecipient
 {
-    private int _weekDay = new();
-    private int _weekCountDiv = 0;
-    private int _weekCountDivTotal = 2;
+    /// <summary>
+    /// 时间规则类型
+    /// </summary>
+    [ObservableProperty] [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    private TimeRuleType _type;
+
+    #region Weekly
 
     /// <summary>
     /// 在一周中的哪一天启用这个课表
     /// </summary>
-    public int WeekDay
-    {
-        get => _weekDay;
-        set
-        {
-            if (Equals(value, _weekDay)) return;
-            _weekDay = value;
-            OnPropertyChanged();
-        }
-    }
-
+    [ObservableProperty] 
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    private int _weekDay;
+    
     /// <summary>
     /// 在多周轮换中的哪一周启用这个课表
     /// </summary>
@@ -35,17 +32,10 @@ public class TimeRule : ObservableRecipient
     /// 0 - 不轮换<br/>
     /// n - 第 n 周
     /// </value>
-    public int WeekCountDiv
-    {
-        get => _weekCountDiv;
-        set
-        {
-            if (value == _weekCountDiv) return;
-            _weekCountDiv = value;
-            OnPropertyChanged();
-        }
-    }
-
+    [ObservableProperty]
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    private int _weekCountDiv = 0;
+    
     /// <summary>
     /// 多周轮换总周数
     /// </summary>
@@ -53,18 +43,57 @@ public class TimeRule : ObservableRecipient
     /// 2 - 双周轮换<br/>
     /// n - n周轮换<br/>
     /// </value>
-    public int WeekCountDivTotal
+    [ObservableProperty]
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    private int _weekCountDivTotal = 2;
+    
+    #endregion
+
+    #region Dete
+
+    /// <summary>
+    /// 要启用的日期
+    /// </summary>
+#if NET6_0_OR_GREATER
+    [ObservableProperty] private ObservableCollection<DateOnly> _enableDates = [DateOnly.FromDateTime(DateTime.Today)];
+#else
+    [ObservableProperty] private ObservableCollection<string> _enableDates = [];
+#endif
+
+    #endregion
+
+    #region Loop
+
+    /// <summary>
+    /// 循环启用周期长度
+    /// </summary>
+    [ObservableProperty] private int _loopCycleDays = 3;
+
+    /// <summary>
+    /// 循环偏移天数
+    /// </summary>
+    [ObservableProperty] 
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    private int _loopOffsetDays = 0;
+
+    #endregion
+
+    /// <summary>
+    /// 时间规则类型
+    /// </summary>
+    public enum TimeRuleType
     {
-        get => _weekCountDivTotal;
-        set
-        {
-            if (value == _weekCountDivTotal) return;
-            // if (WeekCountDiv > WeekCountDivTotal)
-            // {
-            //     WeekCountDiv = 0;
-            // }
-            _weekCountDivTotal = value;
-            OnPropertyChanged();
-        }
+        /// <summary>
+        /// 每周启用
+        /// </summary>
+        Weekly,
+        /// <summary>
+        /// 特定日期启用
+        /// </summary>
+        Date,
+        /// <summary>
+        /// 循环启用
+        /// </summary>
+        Loop,
     }
 }

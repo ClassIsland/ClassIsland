@@ -10,6 +10,7 @@ using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Extensions;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Views;
 using CsesSharp;
 using FluentAvalonia.UI.Controls;
@@ -25,6 +26,10 @@ public class CsesExportHelper
         var warnings = new List<string>();
         foreach (var i in profileService.Profile.ClassPlans)
         {
+            if (i.Value.TimeRule.Type != TimeRule.TimeRuleType.Weekly)
+            {
+                warnings.Add($"课程表 {i.Value.Name}：无法导出非每周启用的课表。");
+            }
             if (i.Value.TimeRule.WeekCountDivTotal > 2 || i.Value.TimeRule.WeekCountDiv > 2)
             {
                 warnings.Add($"课程表 {i.Value.Name}：无法导出包含 2 周以上轮换的课表。");
