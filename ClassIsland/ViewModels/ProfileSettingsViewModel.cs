@@ -155,7 +155,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
 
         ProfileService.Profile.ClassPlans
-            .ToObservableChangeSet<ObservableDictionary<Guid, ClassPlan>, KeyValuePair<Guid, ClassPlan>>()
+            .ToObservableChangeSet<ObservableOrderedDictionary<Guid, ClassPlan>, KeyValuePair<Guid, ClassPlan>>()
             .Subscribe(changeSet =>
             {
                 foreach (var change in changeSet)
