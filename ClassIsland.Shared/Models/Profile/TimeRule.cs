@@ -14,7 +14,14 @@ public partial class TimeRule : ObservableRecipient
     /// 时间规则类型
     /// </summary>
     [ObservableProperty] [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [NotifyPropertyChangedFor(nameof(TypeString))]
     private TimeRuleType _type;
+
+    /// <summary>
+    /// 时间规则类型（字符串版）
+    /// </summary>
+    [JsonIgnore]
+    public string TypeString => Type.ToString();
 
     #region Weekly
 

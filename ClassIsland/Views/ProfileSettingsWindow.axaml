@@ -603,11 +603,42 @@
                                                                 IsVisible="{Binding !IsGroup}"
                                                                 Classes="ClassPlanTag l-secondary"
                                                                 Classes.IsTagActivated="{Binding ClassPlan.IsActivated}">
+                                                            <Classes.IsWrong>
+                                                                <MultiBinding
+                                                                            Converter="{x:Static BoolConverters.And}">
+                                                                            <Binding Path="ClassPlan.IsEnabled" />
+                                                                            <Binding Path="!ClassPlan.IsOverlay" />
+                                                                            <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                    Converter="{x:Static ObjectConverters.Equal}"
+                                                                                    ConverterParameter="Date"/>
+                                                                            <Binding Path="ClassPlan.TimeRule.EnableDates.Count"
+                                                                                    Converter="{x:Static ObjectConverters.Equal}">
+                                                                                <Binding.ConverterParameter>
+                                                                                    <x:Int32>0</x:Int32>
+                                                                                </Binding.ConverterParameter>
+                                                                            </Binding>
+                                                                        </MultiBinding>
+                                                            </Classes.IsWrong>
                                                             <StackPanel Orientation="Horizontal"
                                                                         VerticalAlignment="Center">
                                                                 <ci:FluentIcon Classes="ClassTimeRuleTagIcon"
                                                                                Classes.IsEnabled="{Binding ClassPlan.IsEnabled}"
                                                                                Classes.IsOverlay="{Binding ClassPlan.IsOverlay}">
+                                                                    <Classes.IsWeekly>
+                                                                        <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                Converter="{x:Static ObjectConverters.Equal}"
+                                                                                ConverterParameter="Weekly"/>
+                                                                    </Classes.IsWeekly>
+                                                                    <Classes.IsDate>
+                                                                        <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                Converter="{x:Static ObjectConverters.Equal}"
+                                                                                ConverterParameter="Date"/>
+                                                                    </Classes.IsDate>
+                                                                    <Classes.IsLoop>
+                                                                        <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                Converter="{x:Static ObjectConverters.Equal}"
+                                                                                ConverterParameter="Loop"/>
+                                                                    </Classes.IsLoop>
                                                                     <ci:FluentIcon.Styles>
                                                                         <Style Selector="ci|FluentIcon.ClassTimeRuleTagIcon">
                                                                             <Setter Property="Glyph"
@@ -615,7 +646,21 @@
                                                                             <Style Selector="^.IsEnabled">
                                                                                 <Setter Property="Glyph"
                                                                                         Value="{ci:FI TagMultipleRegular}" />
+                                                                                
+                                                                                <Style Selector="^.IsWeekly">
+                                                                                    <Setter Property="Glyph"
+                                                                                        Value="{ci:FI CalendarRegular}" />
+                                                                                </Style>
+                                                                                <Style Selector="^.IsDate">
+                                                                                    <Setter Property="Glyph"
+                                                                                        Value="{ci:FI CalendarDayRegular}" />
+                                                                                </Style>
+                                                                                <Style Selector="^.IsLoop">
+                                                                                    <Setter Property="Glyph"
+                                                                                        Value="{ci:FI ArrowRepeatAllFilled}" />
+                                                                                </Style>
                                                                             </Style>
+                                                                            
                                                                             <Style Selector="^.IsOverlay">
                                                                                 <Setter Property="Glyph"
                                                                                         Value="{ci:FI LayerRegular}" />
@@ -631,6 +676,9 @@
                                                                             Converter="{x:Static BoolConverters.And}">
                                                                             <Binding Path="ClassPlan.IsEnabled" />
                                                                             <Binding Path="!ClassPlan.IsOverlay" />
+                                                                            <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                    Converter="{x:Static ObjectConverters.Equal}"
+                                                                                    ConverterParameter="Weekly"/>
                                                                         </MultiBinding>
                                                                     </TextBlock.IsVisible>
                                                                 </TextBlock>
@@ -648,6 +696,9 @@
                                                                                 ConverterParameter="{StaticResource Zero}" />
                                                                             <Binding Path="ClassPlan.IsEnabled" />
                                                                             <Binding Path="!ClassPlan.IsOverlay" />
+                                                                            <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                    Converter="{x:Static ObjectConverters.Equal}"
+                                                                                    ConverterParameter="Weekly"/>
                                                                         </MultiBinding>
                                                                     </TextBlock.IsVisible>
 
@@ -656,6 +707,65 @@
                                                                     <Run
                                                                         Text="{Binding ClassPlan.TimeRule.WeekCountDivTotal}" />
                                                                     <Run Text="周" />
+                                                                </TextBlock>
+                                                                
+                                                                <TextBlock Margin="2 0 0 0"
+                                                                           Text="{Binding ClassPlan.TimeRule.EnableDates[0], StringFormat='yy/MM/dd'}">
+                                                                    <TextBlock.IsVisible>
+                                                                        <MultiBinding
+                                                                            Converter="{x:Static BoolConverters.And}">
+                                                                            <Binding Path="ClassPlan.IsEnabled" />
+                                                                            <Binding Path="!ClassPlan.IsOverlay" />
+                                                                            <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                    Converter="{x:Static ObjectConverters.Equal}"
+                                                                                    ConverterParameter="Date"/>
+                                                                        </MultiBinding>
+                                                                    </TextBlock.IsVisible>
+                                                                </TextBlock>
+                                                                
+                                                                <TextBlock Margin="2 0 0 0"
+                                                                           Text="...">
+                                                                    <TextBlock.IsVisible>
+                                                                        <MultiBinding
+                                                                            Converter="{x:Static BoolConverters.And}">
+                                                                            <Binding Path="ClassPlan.IsEnabled" />
+                                                                            <Binding Path="!ClassPlan.IsOverlay" />
+                                                                            <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                    Converter="{x:Static ObjectConverters.Equal}"
+                                                                                    ConverterParameter="Date"/>
+                                                                            <Binding Path="ClassPlan.TimeRule.EnableDates.Count"
+                                                                                    Converter="{x:Static ObjectConverters.NotEqual}">
+                                                                                <Binding.ConverterParameter>
+                                                                                    <x:Int32>0</x:Int32>
+                                                                                </Binding.ConverterParameter>
+                                                                            </Binding>
+                                                                            <Binding Path="ClassPlan.TimeRule.EnableDates.Count"
+                                                                                    Converter="{x:Static ObjectConverters.NotEqual}">
+                                                                                <Binding.ConverterParameter>
+                                                                                    <x:Int32>1</x:Int32>
+                                                                                </Binding.ConverterParameter>
+                                                                            </Binding>
+                                                                        </MultiBinding>
+                                                                    </TextBlock.IsVisible>
+                                                                </TextBlock>
+                                                                
+                                                                <TextBlock Margin="2 0 0 0">
+                                                                    <TextBlock.IsVisible>
+                                                                        <MultiBinding
+                                                                            Converter="{x:Static BoolConverters.And}">
+                                                                            <Binding Path="ClassPlan.IsEnabled" />
+                                                                            <Binding Path="!ClassPlan.IsOverlay" />
+                                                                            <Binding Path="ClassPlan.TimeRule.TypeString"
+                                                                                    Converter="{x:Static ObjectConverters.Equal}"
+                                                                                    ConverterParameter="Loop"/>
+                                                                        </MultiBinding>
+                                                                    </TextBlock.IsVisible>
+
+                                                                    <Run Text="{Binding ClassPlan.TimeRule.LoopOffsetDays}"/>
+                                                                    <Run Text="/" />
+                                                                    <Run
+                                                                        Text="{Binding ClassPlan.TimeRule.LoopCycleDays}" />
+                                                                    <Run Text="天"/>
                                                                 </TextBlock>
 
                                                                 <TextBlock Margin="2 0 0 0" Padding="0 0 4 0"
