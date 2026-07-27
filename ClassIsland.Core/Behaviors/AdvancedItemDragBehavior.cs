@@ -6,11 +6,13 @@
 using System.Collections;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media.Transformation;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactivity;
 using ClassIsland.Core.Controls;
@@ -31,6 +33,8 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
     private ItemsControl? _itemsControl;
     private Control? _draggedContainer;
     private bool _captured;
+    private Control? _pendingReattachContainer;
+    private ItemsControl? _ownerItemsControl;
 
     /// <summary>
     /// Identifies the <see cref="Orientation"/> avalonia property.
@@ -87,8 +91,15 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
     }
 
     /// <inheritdoc />
-    protected override void OnAttachedToVisualTree()
+    protected override void OnAttached()
     {
+        base.OnAttached();
+        StopWatchingForContainerReuse();
+        _ownerItemsControl = AssociatedObject?.Parent as ItemsControl ??
+                             (AssociatedObject is not null
+                                 ? ItemsControl.ItemsControlFromItemContainer(AssociatedObject)
+                                 : null);
+
         if (AssociatedObject is not null)
         {
             AssociatedObject.AddHandler(InputElement.PointerReleasedEvent, PointerReleased, RoutingStrategies.Tunnel);
@@ -99,15 +110,26 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
     }
 
     /// <inheritdoc />
-    protected override void OnDetachedFromVisualTree()
+    protected override void OnDetaching()
     {
         if (AssociatedObject is not null)
         {
+            if (_ownerItemsControl is not null &&
+                SupportsContainerContent(AssociatedObject) &&
+                GetContainerContent(AssociatedObject) is null)
+            {
+                // Virtualized item containers are cleared and reused without necessarily
+                // leaving the visual tree, so wait for this container to receive new content.
+                WatchForContainerReuse(AssociatedObject);
+            }
+
             AssociatedObject.RemoveHandler(InputElement.PointerReleasedEvent, PointerReleased);
             AssociatedObject.RemoveHandler(InputElement.PointerPressedEvent, PointerPressed);
             AssociatedObject.RemoveHandler(InputElement.PointerMovedEvent, PointerMoved);
             AssociatedObject.RemoveHandler(InputElement.PointerCaptureLostEvent, PointerCaptureLost);
         }
+
+        base.OnDetaching();
     }
 
     private void PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -282,6 +304,84 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
                 } 
             }
         }
+    }
+
+    private void WatchForContainerReuse(Control control)
+    {
+        if (ReferenceEquals(_pendingReattachContainer, control))
+        {
+            return;
+        }
+
+        StopWatchingForContainerReuse();
+        _pendingReattachContainer = control;
+        control.PropertyChanged += ContainerOnPropertyChanged;
+    }
+
+    private void StopWatchingForContainerReuse()
+    {
+        if (_pendingReattachContainer is not null)
+        {
+            _pendingReattachContainer.PropertyChanged -= ContainerOnPropertyChanged;
+            _pendingReattachContainer = null;
+        }
+    }
+
+    private void ContainerOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (sender is not Control control ||
+            !IsContainerContentProperty(control, e.Property) ||
+            GetContainerContent(control) is null)
+        {
+            return;
+        }
+
+        StopWatchingForContainerReuse();
+        Dispatcher.UIThread.Post(() => RestoreBehavior(control));
+    }
+
+    private void RestoreBehavior(Control control)
+    {
+        if (AssociatedObject is not null ||
+            _ownerItemsControl is null ||
+            _ownerItemsControl.IndexFromContainer(control) < 0 ||
+            !control.IsSet(Interaction.BehaviorsProperty))
+        {
+            return;
+        }
+
+        var behaviors = Interaction.GetBehaviors(control);
+        if (behaviors.Any(x => x is AdvancedItemDragBehavior))
+        {
+            return;
+        }
+
+        behaviors.Add(this);
+    }
+
+    private static bool SupportsContainerContent(Control control)
+    {
+        return control is ContentControl or ContentPresenter;
+    }
+
+    private static bool IsContainerContentProperty(Control control, AvaloniaProperty property)
+    {
+        return control switch
+        {
+            ContentControl => property == ContentControl.ContentProperty,
+            ContentPresenter => property == ContentPresenter.ContentProperty,
+            _ => false
+        };
+    }
+
+    private static object? GetContainerContent(Control control)
+    {
+        return control switch
+        {
+            ContentControl contentControl => contentControl.Content,
+            ContentPresenter contentPresenter => contentPresenter.Content,
+            _ => null
+        };
     }
 
     private void PointerMoved(object? sender, PointerEventArgs e)

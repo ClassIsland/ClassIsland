@@ -13,7 +13,7 @@ namespace ClassIsland.Core.ComponentModels;
 public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKey : notnull
 {
     private readonly IDictionary<TKey, TValue> _dictionary;
-    private readonly bool _isOrderedDictionary;
+    private readonly ObservableOrderedDictionary<TKey, TValue>? _orderedDictionary;
     private readonly Func<TKey> _newKey;
     private bool _isProcessing = false;
 
@@ -33,7 +33,7 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
     public SyncDictionaryList(IDictionary<TKey, TValue> dictionary, Func<TKey> newKey, KeyValuePair<TKey, TValue>? defaultValue=null)
     {
         _dictionary = dictionary;
-        _isOrderedDictionary = dictionary is ObservableOrderedDictionary<TKey, TValue>;
+        _orderedDictionary = dictionary as ObservableOrderedDictionary<TKey, TValue>;
         _newKey = newKey;
         DefaultValue = defaultValue;
 
@@ -69,7 +69,7 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     {
                         break;
                     }
-                    var insertIndex = _isOrderedDictionary && e.NewStartingIndex >= 0
+                    var insertIndex = _orderedDictionary != null && e.NewStartingIndex >= 0
                         ? e.NewStartingIndex + (DefaultValue == null ? 0 : 1)
                         : List.Count;
                     foreach (var i in e.NewItems.OfType<KeyValuePair<TKey, TValue>>())
@@ -122,13 +122,23 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     {
                         break;
                     }
-                    foreach (var i in e.NewItems)
+                    var insertIndex = Math.Max(
+                        0,
+                        e.NewStartingIndex - (DefaultValue == null ? 0 : 1));
+                    foreach (var i in e.NewItems.OfType<KeyValuePair<TKey, TValue>>())
                     {
                         if (DefaultValue != null && Equals(i, DefaultValue.Value))
                         {
                             continue;
                         }
-                        _dictionary[_newKey()] = (TValue)i;
+                        if (_orderedDictionary != null && e.NewStartingIndex >= 0)
+                        {
+                            _orderedDictionary.Insert(insertIndex++, i);
+                        }
+                        else
+                        {
+                            _dictionary[_newKey()] = i.Value;
+                        }
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
@@ -136,13 +146,18 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     {
                         break;
                     }
-                    foreach (var i in e.OldItems)
+                    foreach (var i in e.OldItems.OfType<KeyValuePair<TKey, TValue>>())
                     {
                         if (DefaultValue != null && Equals(i, DefaultValue.Value))
                         {
                             continue;
                         }
-                        foreach (var k in _dictionary.Where(k => k.Value?.Equals(i) ?? false))
+                        if (_orderedDictionary != null)
+                        {
+                            _orderedDictionary.Remove(i.Key);
+                            continue;
+                        }
+                        foreach (var k in _dictionary.Where(k => k.Value?.Equals(i.Value) ?? false))
                         {
                             _dictionary.Remove(k.Key);
                             break;

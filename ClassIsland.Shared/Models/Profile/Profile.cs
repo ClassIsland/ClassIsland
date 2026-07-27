@@ -198,6 +198,21 @@ public class Profile : ObservableRecipient
             case NotifyCollectionChangedAction.Replace:
                 break;
             case NotifyCollectionChangedAction.Move:
+                if (e.OldItems is not { Count: > 0 }
+                    || e.OldItems[0] is not Subject subject
+                    || e.NewStartingIndex < 0)
+                {
+                    break;
+                }
+
+                var subjectEntry = Subjects.FirstOrDefault(i => ReferenceEquals(i.Value, subject));
+                if (!ReferenceEquals(subjectEntry.Value, subject))
+                {
+                    break;
+                }
+
+                Subjects.Remove(subjectEntry.Key);
+                Subjects.Insert(e.NewStartingIndex, subjectEntry);
                 break;
             case NotifyCollectionChangedAction.Reset:
                 break;

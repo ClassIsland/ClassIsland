@@ -39,6 +39,8 @@
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:ClassPlanGroup"
                                               x:Key="ClassPlanGroupIdToClassPlanGroupConverter"
                                               Dictionary="{Binding ViewModel.ProfileService.Profile.ClassPlanGroups}"/>
+        <views:ClassPlanTreeDropHandler x:Key="ClassPlanTreeDropHandler"/>
+        <views:SubjectDataGridDropHandler x:Key="SubjectDataGridDropHandler"/>
         <ci:BindingProxy x:TypeArguments="profile:ClassPlanGroup"
                          x:Key="ClassPlanGroupBindingProxy"
                          Data="{Binding ViewModel.ProfileService.Profile.SelectedClassPlanGroupId, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}, Mode=OneWay}"/>
@@ -547,12 +549,68 @@
                                             <Style Selector="TreeView#ClassPlansTreeView > TreeViewItem">
                                                 <Setter Property="IsExpanded" Value="True" />
                                             </Style>
+                                            <Style Selector="TreeView#ClassPlansTreeView TreeViewItem">
+                                                <Setter Property="Interaction.Behaviors">
+                                                    <BehaviorCollectionTemplate>
+                                                        <BehaviorCollection>
+                                                            <ci:AdvancedManagedContextDragBehavior
+                                                                Context="{Binding}"
+                                                                DataFormat="{x:Static views:ClassPlanTreeDropHandler.DataFormat}"
+                                                                HorizontalDragThreshold="3"
+                                                                VerticalDragThreshold="3"
+                                                                PreviewOpacity="0.5">
+                                                                <ci:AdvancedManagedContextDragBehavior.IsEnabled>
+                                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                                        <Binding Path="!IsGroup"/>
+                                                                        <Binding
+                                                                            Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing"
+                                                                            Converter="{StaticResource InvertBooleanConverter}"/>
+                                                                    </MultiBinding>
+                                                                </ci:AdvancedManagedContextDragBehavior.IsEnabled>
+                                                            </ci:AdvancedManagedContextDragBehavior>
+                                                        </BehaviorCollection>
+                                                    </BehaviorCollectionTemplate>
+                                                </Setter>
+                                            </Style>
+                                            <Style Selector="Border.ClassPlanTreeNodeRoot">
+                                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                            </Style>
+                                            <Style Selector="Border.ClassPlanTreeNodeRoot.class-plan-drop-before">
+                                                <Setter Property="BorderBrush"
+                                                        Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                                <Setter Property="BorderThickness" Value="0 2 0 0"/>
+                                            </Style>
+                                            <Style Selector="Border.ClassPlanTreeNodeRoot.class-plan-drop-after">
+                                                <Setter Property="BorderBrush"
+                                                        Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                                <Setter Property="BorderThickness" Value="0 0 0 2"/>
+                                            </Style>
+                                            <Style Selector="Border.ClassPlanTreeNodeRoot.class-plan-drop-into-group">
+                                                <Setter Property="BorderBrush"
+                                                        Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                                <Setter Property="BorderThickness" Value="1"/>
+                                                <Setter Property="Background"
+                                                        Value="{DynamicResource AccentFillColorTertiaryBrush}"/>
+                                            </Style>
                                         </TreeView.Styles>
                                         
                                         <TreeView.ItemTemplate>
                                             <TreeDataTemplate x:DataType="profile2:ClassPlansTreeNode"
                                                               ItemsSource="{Binding SubPlans}">
-                                                <Panel Background="Transparent">
+                                                <Border Background="Transparent"
+                                                        HorizontalAlignment="Stretch"
+                                                        VerticalAlignment="Center"
+                                                        Classes="ClassPlanTreeNodeRoot">
+                                                    <Interaction.Behaviors>
+                                                        <BehaviorCollection>
+                                                            <ManagedContextDropBehavior
+                                                                AcceptDataFormat="{x:Static views:ClassPlanTreeDropHandler.DataFormat}"
+                                                                AllowDrop="True"
+                                                                Context="{Binding}"
+                                                                Handler="{StaticResource ClassPlanTreeDropHandler}"/>
+                                                        </BehaviorCollection>
+                                                    </Interaction.Behaviors>
                                                     <StackPanel Orientation="Horizontal">
                                                         <StackPanel.Styles>
                                                             <Style Selector="Border.ClassPlanTag">
@@ -581,6 +639,10 @@
                                                         </StackPanel.Styles>
                                                         
                                                         <!-- 名称 -->
+                                                        <Panel IsVisible="{Binding !IsGroup}">
+                                                            <ci:TouchDragThumb Width="20" Margin="-4 0 4 0"
+                                                                               IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}" />
+                                                        </Panel>
                                                         <ci:FluentIcon Glyph="{ci:FI GroupRegular}" Margin="0 0 4 0"
                                                                        IsVisible="{Binding IsGroup}" />
                                                         <Panel IsVisible="{Binding IsGroup}">
@@ -805,7 +867,7 @@
                                                             </StackPanel>
                                                         </Border>
                                                     </StackPanel>
-                                                </Panel>
+                                                </Border>
                                             </TreeDataTemplate>
                                         </TreeView.ItemTemplate>
                                     </TreeView>
@@ -1221,11 +1283,29 @@
                                          ItemsSource="{Binding ViewModel.TimeLayouts.List, Mode=OneWay}"
                                          SelectedValue="{Binding ViewModel.SelectedTimeLayout, Mode=TwoWay}"
                                          SelectedValueBinding="{Binding Value}">
+                                    <ListBox.Styles>
+                                        <Style Selector="ListBox:not(.no-drag) ListBoxItem">
+                                            <Setter Property="Interaction.Behaviors">
+                                                <BehaviorCollectionTemplate>
+                                                    <BehaviorCollection>
+                                                        <ci:AdvancedItemDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="3"
+                                                                Orientation="Vertical"/>
+                                                    </BehaviorCollection>
+                                                </BehaviorCollectionTemplate>
+                                            </Setter>
+                                        </Style>
+                                    </ListBox.Styles>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid HorizontalAlignment="Stretch">
-                                                <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left" />
+                                            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="Auto * Auto"
+                                                  Classes="items-valign-center">
+                                                <ci:TouchDragThumb Grid.Column="0" Margin="-8 0 4 0"/>
+                                                <TextBlock Text="{Binding Value.Name}"
+                                                           Margin="0 0 4 0"
+                                                           Grid.Column="1" TextTrimming="{x:Static TextTrimming.WordEllipsis}"
+                                                           HorizontalAlignment="Left" />
                                                 <ci:FluentIcon Glyph="&#xE4D2;" HorizontalAlignment="Right"
+                                                               Grid.Column="2"
                                                                ToolTip.Tip="此时间表正在活动。"
                                                                IsVisible="{Binding Value.IsActivated, Mode=OneWay}" />
                                             </Grid>
@@ -1709,9 +1789,28 @@
                                       GridLinesVisibility="All"
                                       CanUserSortColumns="False"
                                       FontSize="13">
+                                <Interaction.Behaviors>
+                                    <BehaviorCollection>
+                                        <ManagedContextDropBehavior
+                                            AcceptDataFormat="{x:Static views:SubjectDataGridDropHandler.DataFormat}"
+                                            AllowDrop="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}}"
+                                            Context="{Binding ViewModel.ProfileService.Profile.EditingSubjects}"
+                                            Handler="{StaticResource SubjectDataGridDropHandler}"/>
+                                    </BehaviorCollection>
+                                </Interaction.Behaviors>
                                 <DataGrid.Styles>
                                     <Style Selector="DataGridRow TextBlock, DataGridRow TextBox">
                                         <Setter Property="TextElement.FontSize" Value="13"/>
+                                    </Style>
+                                    <Style Selector="DataGridRow.DraggingUp">
+                                        <Setter Property="BorderBrush"
+                                                Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                        <Setter Property="BorderThickness" Value="0 2 0 0"/>
+                                    </Style>
+                                    <Style Selector="DataGridRow.DraggingDown">
+                                        <Setter Property="BorderBrush"
+                                                Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                        <Setter Property="BorderThickness" Value="0 0 0 2"/>
                                     </Style>
                                 </DataGrid.Styles>
                                 <DataGrid.Columns>
@@ -1719,8 +1818,21 @@
                                                             Width="50">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Grid>
-                                                    <ci:FluentIcon Classes="l-instructive">
+                                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                      Background="Transparent">
+                                                    <Interaction.Behaviors>
+                                                        <ci:AdvancedManagedContextDragBehavior
+                                                            Context="{Binding}"
+                                                            DataFormat="{x:Static views:SubjectDataGridDropHandler.DataFormat}"
+                                                            HorizontalDragThreshold="33550336"
+                                                            VerticalDragThreshold="3"
+                                                            CanDragWithoutDragThumb="True"
+                                                            PreviewOpacity="0.5"
+                                                            IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}}"/>
+                                                    </Interaction.Behaviors>
+                                                    <ci:TouchDragThumb HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="32" Opacity="0"/>
+                                                    <ci:FluentIcon Classes="l-instructive"
+                                                                   ToolTip.Tip="拖拽调整科目顺序">
                                                         <Interaction.Behaviors>
                                                             <DataTriggerBehavior Binding="{Binding IsOutDoor}" Value="True">
                                                                 <AddClassAction ClassName="out-door"/>

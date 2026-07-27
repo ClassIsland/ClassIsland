@@ -43,12 +43,12 @@ public abstract class BaseDataGridDropHandler<T> : DropHandlerBase
     /// <inheritdoc />
     public override bool Validate(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
     {
-        if (e.Source is Control c && sender is DataGrid dg)
+        if (sender is DataGrid dg)
         {
             var valid = Validate(dg, e, sourceContext, targetContext, false);
             if (valid)
             {
-                var row = FindDataGridRowFromChildView(c);
+                var row = FindDataGridRowAtPointer(dg, e);
                 if (row is not null)
                 {
                     var isDirectionUp = e.GetPosition(row).Y < row.Bounds.Height / 2;
@@ -66,7 +66,7 @@ public abstract class BaseDataGridDropHandler<T> : DropHandlerBase
     public override bool Execute(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
     {
         ClearDraggingStyleFromAllRows(sender);
-        if (e.Source is Control && sender is DataGrid dg)
+        if (sender is DataGrid dg)
         {
             return Validate(dg, e, sourceContext, targetContext, true);
         }
@@ -103,10 +103,10 @@ public abstract class BaseDataGridDropHandler<T> : DropHandlerBase
 
         var insertIndex = targetIndex;
 
-        if (e.Source is Control c)
+        var row = FindDataGridRowAtPointer(dg, e);
+        if (row is not null)
         {
-            var row = FindDataGridRowFromChildView(c);
-            if (row is not null && e.GetPosition(row).Y > row.Bounds.Height / 2)
+            if (e.GetPosition(row).Y > row.Bounds.Height / 2)
             {
                 insertIndex = targetIndex + 1;
             }
@@ -155,7 +155,19 @@ public abstract class BaseDataGridDropHandler<T> : DropHandlerBase
 
     private static DataGridRow? FindDataGridRowFromChildView(StyledElement sourceChild)
     {
-        return sourceChild.FindLogicalAncestorOfType<DataGridRow>();
+        return sourceChild as DataGridRow ?? sourceChild.FindLogicalAncestorOfType<DataGridRow>();
+    }
+
+    private static DataGridRow? FindDataGridRowAtPointer(DataGrid dataGrid, DragEventArgs e)
+    {
+        if (dataGrid.GetVisualAt(e.GetPosition(dataGrid)) is StyledElement target)
+        {
+            return FindDataGridRowFromChildView(target);
+        }
+
+        return e.Source is StyledElement source
+            ? FindDataGridRowFromChildView(source)
+            : null;
     }
 
     private static DataGridRowsPresenter? GetRowsPresenter(Visual v)
