@@ -1,25 +1,19 @@
 using ClassIsland.Models;
 using System;
-using System.Collections.Generic;
 using System.CommandLine.NamingConventionBinder;
 using System.CommandLine;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia;
-using ClassIsland;
 using ClassIsland.Core;
 using ClassIsland.Core.Converters;
 using ClassIsland.Core.Enums;
-using ClassIsland.Extensions;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
-using HotAvalonia;
 using Sentry;
 using System.Diagnostics;
-using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.JsonConverters;
@@ -35,7 +29,7 @@ public static class Program
     {
         AppDomain.CurrentDomain.UnhandledException += DiagnosticService.ProcessDomainUnhandledException;
         AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
-        
+
         ConfigureFileHelper.SerializerOptions.Converters.Add(new ColorHexJsonConverter());
         ConfigureFileHelper.SerializerOptions.Converters.Add(new GuidEmptyFallbackConverter());
 
@@ -56,7 +50,7 @@ public static class Program
             new Option<bool>(["--diagnostic", "-d"], "启用诊断模式(包括详细输出)，并在桌面上生成一份诊断数据"),
             new Option<bool>(["--safe", "-s"], "启用安全模式"),
             new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动"),
-            new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录"), 
+            new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录"),
             new Option<string>(["--importV2"], "指定要导入的 ClassIsland 2.x 配置目录"),
             new Option<string>(["--importEntries"], "指定要导入的 ClassIsland 1.7 配置信息"),
             new Option<bool>(["--importComplete"], "启动时显示导入完成窗口"),
@@ -68,7 +62,7 @@ public static class Program
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);
-        
+
         GlobalStorageService.InitializeGlobalStorage();
 
         if (App.ApplicationCommand.Diagnostic)
@@ -110,11 +104,12 @@ public static class Program
         }
 
         var sentryEnabled = GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
-        if (sentryEnabled )
+        if (sentryEnabled)
         {
             SentrySdk.Init(ConfigureSentry);
         }
-        try {
+        try
+        {
             if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is { } priorityStr && uint.TryParse(priorityStr, out uint priority))
             {
                 SetProcessPriority(priority);
@@ -129,7 +124,7 @@ public static class Program
         UserData.RegisterAssembly(typeof(Program).Assembly);
         UserData.RegisterAssembly(typeof(Tutorial).Assembly);
         UserData.RegisterAssembly(typeof(Profile).Assembly);
-        
+
         return () => new App()
         {
             Mutex = mutex,
@@ -137,7 +132,7 @@ public static class Program
             IsSentryEnabled = sentryEnabled
         };
     }
-    
+
     /// <summary>
     /// 用于在发现另一个实例正在运行时，将启动 URI 通过 IPC 发送给已运行实例并退出当前进程。
     /// 此方法在启动参数包含 URI 时被调用以支持单实例的 URI 导航。
@@ -157,7 +152,7 @@ public static class Program
             // ignored
         }
     }
-    
+
     /// <summary>
     /// 配置 Sentry SDK 的运行时选项。
     /// 在启用 Sentry 时由 <see cref="AppEntry"/> 调用以初始化全局监控参数。
@@ -194,7 +189,7 @@ public static class Program
         options.EnableMetrics = true;
         options.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info || log is { Template: "当前内存使用: {}" } ? null : log);
     }
-    
+
     /// <summary>
     /// 设置应用程序的 <see cref="ProcessPriorityClass"/>。
     /// 无效值将回退到 <see cref="ProcessPriorityClass.Normal"/>。
