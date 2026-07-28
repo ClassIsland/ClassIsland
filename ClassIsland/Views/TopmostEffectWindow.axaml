@@ -12,7 +12,11 @@
         Closing="TopmostEffectWindow_OnClosing"
         CanResize="False"
         SystemDecorations="None"
+        Name="Root"
         Loaded="Control_OnLoaded">
+    <Window.CacheMode>
+        <BitmapCache RenderAtScale="{Binding SettingsService.Settings.NotificationEffectRenderingScale, Mode=OneWay, ElementName=Root}"/>
+    </Window.CacheMode>
     <Grid>
         <ItemsControl VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch"

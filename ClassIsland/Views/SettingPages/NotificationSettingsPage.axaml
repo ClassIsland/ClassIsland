@@ -1,4 +1,4 @@
-<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.NotificationSettingsPage"
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.NotificationSettingsPage"
                            xmlns="https://github.com/avaloniaui"
                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -294,6 +294,20 @@
                                     <controls3:FASettingsExpanderItem>
                                         <CheckBox Content="默认启用" IsChecked="{Binding ViewModel.SettingsService.Settings.IsNotificationEffectEnabled}"
                                                   Margin="0 0 0 6" />
+                                    </controls3:FASettingsExpanderItem>
+                                    <controls3:FASettingsExpanderItem
+                                        Description="提醒特效渲染时的精度，使用较低的精度性能可以获得较好的性能。"
+                                        Content="提醒特效渲染精度"
+                                        IconSource="{ci:FluentIconSource {ci:FI LayerDiagonalSparkleRegular}}">
+                                        <controls3:FASettingsExpanderItem.Footer>
+                                            <Slider Minimum="0.1" Maximum="1.5"
+                                                    TickFrequency="0.05"
+                                                    Width="150"
+                                                    Value="{Binding ViewModel.SettingsService.Settings.NotificationEffectRenderingScale}"
+                                                    Classes="auto-tooltip"
+                                                    ci:SliderDragTooltipAssist.StringFormat="F2"
+                                                    IsSnapToTickEnabled="True" />
+                                        </controls3:FASettingsExpanderItem.Footer>
                                     </controls3:FASettingsExpanderItem>
                                 </controls3:FASettingsExpander>
                                 
