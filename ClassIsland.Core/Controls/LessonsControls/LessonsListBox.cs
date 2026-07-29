@@ -40,11 +40,11 @@ public class LessonsListBox : ListBox
         set => SetValue(ClassPlanProperty, value);
     }
 
-    public static readonly AttachedProperty<ObservableDictionary<Guid, Subject>> SubjectsProperty =
-        AvaloniaProperty.RegisterAttached<LessonsListBox, Control, ObservableDictionary<Guid, Subject>>("Subjects", inherits:true);
+    public static readonly AttachedProperty<ObservableOrderedDictionary<Guid, Subject>> SubjectsProperty =
+        AvaloniaProperty.RegisterAttached<LessonsListBox, Control, ObservableOrderedDictionary<Guid, Subject>>("Subjects", inherits:true);
 
-    public static void SetSubjects(Control obj, ObservableDictionary<Guid, Subject> value) => obj.SetValue(SubjectsProperty, value);
-    public static ObservableDictionary<Guid, Subject> GetSubjects(Control obj) => obj.GetValue(SubjectsProperty);
+    public static void SetSubjects(Control obj, ObservableOrderedDictionary<Guid, Subject> value) => obj.SetValue(SubjectsProperty, value);
+    public static ObservableOrderedDictionary<Guid, Subject> GetSubjects(Control obj) => obj.GetValue(SubjectsProperty);
 
     public static readonly AttachedProperty<bool> IsLiveUpdatingEnabledProperty =
         AvaloniaProperty.RegisterAttached<LessonsListBox, Control, bool>("IsLiveUpdatingEnabled", false, true);

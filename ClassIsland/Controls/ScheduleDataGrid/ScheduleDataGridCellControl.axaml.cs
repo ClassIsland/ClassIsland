@@ -58,11 +58,11 @@ public class ScheduleDataGridCellControl : TemplatedControl
         set => SetValue(IsEditPopupOpenProperty, value);
     }
 
-    public static readonly AttachedProperty<ObservableDictionary<Guid, Subject>> SubjectsProperty =
-        AvaloniaProperty.RegisterAttached<ScheduleDataGridCellControl, Control, ObservableDictionary<Guid, Subject>>("Subjects", inherits: true);
+    public static readonly AttachedProperty<ObservableOrderedDictionary<Guid, Subject>> SubjectsProperty =
+        AvaloniaProperty.RegisterAttached<ScheduleDataGridCellControl, Control, ObservableOrderedDictionary<Guid, Subject>>("Subjects", inherits: true);
 
-    public static void SetSubjects(Control obj, ObservableDictionary<Guid, Subject> value) => obj.SetValue(SubjectsProperty, value);
-    public static ObservableDictionary<Guid, Subject> GetSubjects(Control obj) => obj.GetValue(SubjectsProperty);
+    public static void SetSubjects(Control obj, ObservableOrderedDictionary<Guid, Subject> value) => obj.SetValue(SubjectsProperty, value);
+    public static ObservableOrderedDictionary<Guid, Subject> GetSubjects(Control obj) => obj.GetValue(SubjectsProperty);
 
     public static readonly AttachedProperty<SyncDictionaryList<Guid, Subject>> SubjectsListProperty =
         AvaloniaProperty.RegisterAttached<ScheduleDataGridCellControl, Control, SyncDictionaryList<Guid, Subject>>("SubjectsList", inherits: true);
