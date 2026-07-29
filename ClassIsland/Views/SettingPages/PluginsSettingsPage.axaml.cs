@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 using ClassIsland.Core.Extensions.UI;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
@@ -21,27 +18,21 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Core.Controls;
-using ClassIsland.Core.Enums;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Services;
-using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
-using FluentAvalonia.UI.Data;
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 using ReactiveUI;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization;
 using Path = System.IO.Path;
-using System.Runtime.InteropServices;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -131,7 +122,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 break;
         }
     }
-    
+
 
     private void ButtonUninstall_OnClick(object sender, RoutedEventArgs e)
     {
@@ -529,8 +520,8 @@ public partial class PluginsSettingsPage : SettingsPageBase
             var result = await new FAContentDialog()
             {
                 Title = "缺少依赖项",
-                Content = "此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？" +Environment.NewLine +Environment.NewLine +
-                          "未找到的必选依赖项："+Environment.NewLine + string.Join(Environment.NewLine, missingPlugins),
+                Content = "此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？" + Environment.NewLine + Environment.NewLine +
+                          "未找到的必选依赖项：" + Environment.NewLine + string.Join(Environment.NewLine, missingPlugins),
                 SecondaryButtonText = "取消",
                 PrimaryButtonText = "继续",
                 DefaultButton = FAContentDialogButton.Secondary
@@ -608,7 +599,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         ViewModel.UpdateMergedPlugins();
     }
-    
+
 
     private void TextBoxFilter_OnKeyDown(object sender, KeyEventArgs e)
     {

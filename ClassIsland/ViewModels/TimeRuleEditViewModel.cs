@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -17,4 +18,6 @@ public partial class TimeRuleEditViewModel : ObservableObject
     
     [ObservableProperty]
     private int _weekCountDivTotalIndex;
+
+    [ObservableProperty] private DateTime _newDateTime = DateTime.Today;
 }

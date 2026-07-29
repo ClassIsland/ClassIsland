@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
+using ClassIsland.Core.Enums;
 
 public class OSPlatformTypeConverter : IYamlTypeConverter
 {
@@ -21,12 +21,16 @@ public class OSPlatformTypeConverter : IYamlTypeConverter
             return OSPlatform.Windows;
         if (value.Equals("Linux", StringComparison.OrdinalIgnoreCase))
             return OSPlatform.Linux;
-        if (value.Equals("OSX", StringComparison.OrdinalIgnoreCase) || value.Equals("MacOS", StringComparison.OrdinalIgnoreCase))
-            return OSPlatform.OSX;
+        if (value.Equals("OSX", StringComparison.OrdinalIgnoreCase) || value.Equals("macOS", StringComparison.OrdinalIgnoreCase))
+            return OSPlatform.macOS;
+        if (value.Equals("Android", StringComparison.OrdinalIgnoreCase))
+            return OSPlatform.Android;
+        if (value.Equals("iOS", StringComparison.OrdinalIgnoreCase))
+            return OSPlatform.iOS;
 
-        return OSPlatform.Create(value);
+        return OSPlatform.Unknown;
     }
-    
+
     public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
         if (value is not OSPlatform platform)
@@ -39,8 +43,10 @@ public class OSPlatformTypeConverter : IYamlTypeConverter
 
         if (platform.Equals(OSPlatform.Windows)) platformName = "Windows";
         else if (platform.Equals(OSPlatform.Linux)) platformName = "Linux";
-        else if (platform.Equals(OSPlatform.OSX)) platformName = "OSX";
-        else platformName = platform.ToString();
+        else if (platform.Equals(OSPlatform.macOS)) platformName = "macOS";
+        else if (platform.Equals(OSPlatform.Android)) platformName = "Android";
+        else if (platform.Equals(OSPlatform.iOS)) platformName = "iOS";
+        else platformName = "Unknown";
 
         emitter.Emit(new Scalar(platformName));
     }
