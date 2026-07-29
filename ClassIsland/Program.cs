@@ -38,6 +38,7 @@ public static class Program
         
         ConfigureFileHelper.SerializerOptions.Converters.Add(new ColorHexJsonConverter());
         ConfigureFileHelper.SerializerOptions.Converters.Add(new GuidEmptyFallbackConverter());
+        ConfigureFileHelper.SerializerOptions.Converters.Add(new OSPlatformConverter_Json());
 
         var command = new RootCommand
         {
