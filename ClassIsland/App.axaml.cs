@@ -645,7 +645,7 @@ public partial class App : AppBase, IAppHost
             Logger.LogWarning("插件加载失败:{PluginName}({PluginID},{PluginVersion}):{PluginLoadException}", plugin.Manifest.Name,plugin.Manifest.Id, plugin.Manifest.Version, plugin.Exception);
         }
         Logger.LogInformation(
-            PluginService.PluginLoadedStatus.Any(p => p.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : "此次会话没有加载插件。",
+            PluginService.PluginLoadedStatus.Any(p => p.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : ApplicationCommand.Safe ? "安全模式下不加载插件。" : "此次会话没有加载插件。",
             string.Join(",", PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Loaded).Select(p => $"{p.Manifest.Name}({p.Manifest.Id},{p.Manifest.Version})"))
         );
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();

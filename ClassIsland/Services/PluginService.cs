@@ -172,6 +172,11 @@ public class PluginService : IPluginService
                 PluginLoadedStatus.Add(info);
             }
         }
+        if (App.ApplicationCommand.Safe)
+        {
+            AppBase.Current.AppStarted += CurrentOnAppStarted;
+            return;
+        }
         var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
         Console.WriteLine($"Resolved load order: {string.Join(", ", loadOrder)}");
 

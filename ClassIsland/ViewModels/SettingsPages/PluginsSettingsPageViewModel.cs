@@ -21,7 +21,8 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
     public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
     public ILogger<PluginsSettingsPage> Logger { get; }
-    
+    public bool IsAppSafeMode => App.ApplicationCommand.Safe;
+
     [ObservableProperty] private PluginInfo? _selectedPluginInfo;
     [ObservableProperty] private string _readmeDocument = "";
     [ObservableProperty] private bool _isPluginOperationsPopupOpened = false;
