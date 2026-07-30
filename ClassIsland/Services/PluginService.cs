@@ -134,9 +134,20 @@ public class PluginService : IPluginService
             {
                 continue;
             }
+            string manifestYaml = string.Empty;
 
-            var manifestYaml = File.ReadAllText(manifestPath);
-            var manifest = deserializer.Deserialize<PluginManifest?>(manifestYaml);
+            PluginManifest? manifest = null;
+            try
+            {
+                manifestYaml = File.ReadAllText(manifestPath);
+                manifest = deserializer.Deserialize<PluginManifest?>(manifestYaml);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"尝试解析插件清单时出错:{0}", e);
+                continue;
+            }
+
             if (manifest == null)
             {
                 continue;
