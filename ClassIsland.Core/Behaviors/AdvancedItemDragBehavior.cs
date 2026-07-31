@@ -112,7 +112,11 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
 
     private void PointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        var isFromDragThumb = (e.Source as Control)?.FindAncestorOfType<TouchDragThumb>() is not null;
+        if ((e.Source as Control)?.FindAncestorOfType<IDragBlockingTarget>(true) is not null)
+        {
+            return;
+        }
+        var isFromDragThumb = IsFromDragThumb(e);
         var isFromCurrentThumb = e.Source is Control c1 && UITreeHelper.HasParent(c1, AssociatedObject);
         if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is {} selectable && !Equals(selectable, AssociatedObject))
         {
@@ -286,35 +290,6 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
 
     private void PointerMoved(object? sender, PointerEventArgs e)
     {
-        if (_captured && e.Pointer.Captured is Visual captured
-            && !ReferenceEquals(captured, AssociatedObject)
-            && IsDescendant(captured, AssociatedObject)
-            && !(captured is TouchDragThumb))
-        {
-            RemoveTransforms(_itemsControl);
-            if (_itemsControl is not null)
-            {
-                foreach (var control in _itemsControl.GetRealizedContainers())
-                {
-                    SetDraggingPseudoClasses(control, false);
-                }
-            }
-
-            if (_draggedContainer is not null)
-            {
-                SetDraggingPseudoClasses(_draggedContainer, false);
-            }
-
-            _captured = false;
-            _enableDrag = false;
-            _dragStarted = false;
-            _draggedIndex = -1;
-            _targetIndex = -1;
-            _itemsControl = null;
-            _draggedContainer = null;
-            return;
-        }
-
         var properties = e.GetCurrentPoint(AssociatedObject).Properties;
         if (_captured
             && properties.IsLeftButtonPressed)
@@ -467,13 +442,6 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
         control.RenderTransform = transformBuilder.Build();
     }
 
-    private static bool IsDescendant(Visual child, Visual parent)
-    {
-        for (var current = child; current != null; current = current.GetVisualParent())
-        {
-            if (ReferenceEquals(current, parent))
-                return true;
-        }
-        return false;
-    }
+    private static bool IsFromDragThumb(PointerEventArgs e) =>
+        (e.Source as Control)?.FindAncestorOfType<TouchDragThumb>() is not null;
 }
