@@ -4,10 +4,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using ClassIsland.Core.Behaviors;
 
 namespace ClassIsland.Controls.GesturePassword;
 
-public class GesturePasswordGrid : Control
+public class GesturePasswordGrid : Control, IDragBlockingTarget
 {
     private const int GridSize = 3;
     private const double NodeRadius = 12;
