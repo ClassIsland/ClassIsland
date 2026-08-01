@@ -146,7 +146,7 @@
                               HorizontalContentAlignment="Left"
                               SelectedIndex="{Binding ViewModel.SettingsService.Settings.ColorSource}">
                         <ComboBox.ItemContainerTheme>
-                            <ControlTheme TargetType="ComboBoxItem">
+                            <ControlTheme TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
                                 <Setter Property="IsVisible" Value="{Binding IsVisible}" />
                                 <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
                             </ControlTheme>
