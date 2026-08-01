@@ -115,6 +115,19 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
         }
     }
 
+    public async Task<WeatherQueryResult> RefreshWeatherWithResultAsync()
+    {
+        IsRefreshingWeather = true;
+        try
+        {
+            return await _weatherService.QueryWeatherWithResultAsync();
+        }
+        finally
+        {
+            IsRefreshingWeather = false;
+        }
+    }
+
     public async Task SelectCityAsync(City? city)
     {
         if (city == null) return;
@@ -146,8 +159,15 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
 
     partial void OnSelectedLocationSourceChanged(int value)
     {
-        if (value is < 0 or > 1) return;
-        if (value == _settingsService.Settings.WeatherLocationSource) return;
+        if (value is not (0 or 1) ||
+            value == _settingsService.Settings.WeatherLocationSource)
+        {
+            return;
+        }
         _settingsService.Settings.WeatherLocationSource = value;
+        if (value == 1)
+        {
+            _ = RefreshWeatherAsync();
+        }
     }
 }

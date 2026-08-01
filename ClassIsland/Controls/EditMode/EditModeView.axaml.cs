@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -130,8 +130,8 @@ public partial class EditModeView : UserControl
         OpenDrawer("ComponentsDrawer", "组件库");
         ViewModel.TargetComponentsList = target;
         // 重载组件库列表项目，修复切换视图后无法拖拽的问题。
-        ViewModel.ComponentInfos = [];
-        ViewModel.ComponentInfos = ComponentRegistryService.Registered;
+        ViewModel.ComponentGroups = [];
+        ViewModel.ComponentGroups = ComponentRegistryService.GetGroupedSortedComponents();
         ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.componentsLib.open");
     }
     

@@ -1,44 +1,121 @@
 # AGENTS.md
 
 ## Repo Shape
-- Main solution: `ClassIsland.sln`; platform-filtered solutions exist as `ClassIsland.Filter.Linux.slnf` and `ClassIsland.Filter.MacOs.slnf`.
-- Runtime app entrypoint is `ClassIsland.Desktop/Program.cs`; the Avalonia app/library code lives in `ClassIsland/`, and shared UI/services live mostly in `ClassIsland.Core/`.
-- Platform services are split under `platforms/ClassIsland.Platforms.{Windows,Linux,MacOs}` and wired by compile constants from `CrossPlatformProps.props`.
-- `ClassIsland.Shared` and `ClassIsland.Shared.IPC` multi-target `net8.0;net472`; avoid APIs unavailable on `net472` there.
+- Main solution: `ClassIsland.sln`; platform-filtered solutions: `ClassIsland.Filter.Linux.slnf`, `ClassIsland.Filter.MacOs.slnf`.
+- Runtime app entrypoint: `ClassIsland.Desktop/Program.cs`; Avalonia app/library: `ClassIsland/`; shared UI/services: `ClassIsland.Core/`.
+- Platform services: `platforms/ClassIsland.Platforms.{Windows,Linux,MacOs}`, wired by `CrossPlatformProps.props`.
+- `ClassIsland.Shared` and `ClassIsland.Shared.IPC` multi-target `net8.0;net472`; avoid APIs unavailable on `net472`.
 - `ClassIsland.Launcher` targets `net9.0`; most app projects target `net8.0`.
 
 ## SDK And Restore
-- `global.json` requests .NET SDK `9.0.0` with `rollForward: latestFeature`; launcher/native-AOT work needs .NET 9 SDK, not just .NET 8.
-- CI checks out submodules recursively; this repo depends on `vendors/EdgeTtsSharp` (`classisland-v2` branch). If restore/build complains about missing vendor code, run `git submodule update --init --recursive`.
-- CI adds the GitHub Package Registry source `https://nuget.pkg.github.com/ClassIsland/index.json`; local restores may need equivalent credentials if a package is unavailable from public NuGet.
+- `global.json` requests .NET SDK `9.0.100` with `rollForward: latestFeature`; launcher/native-AOT work needs .NET 9 SDK, not just .NET 8.
+- Repo depends on `vendors/EdgeTtsSharp` (`classisland-v2` branch). If missing, run `git submodule update --init --recursive`.
+- CI uses GitHub Package Registry: `https://nuget.pkg.github.com/ClassIsland/index.json`.
 
 ## Build Commands
-- Fast focused compile for the desktop app: `dotnet build ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Debug`.
-- Build a single library/package project directly, for example: `dotnet build ClassIsland.Core/ClassIsland.Core.csproj -c Debug`.
-- Use NUKE only for release/publish builds; do not use the wrapper default target for normal verification.
-- Release-style app packaging must call `PublishApp` explicitly: on Windows use `./build.ps1 PublishApp --OsName windows --Arch x64 --Package folder --BuildType full --BuildName appBase --AppVersion 0.0.0.0`; on Unix use `./build.sh PublishApp` with the same arguments.
+- Desktop app: `dotnet build ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Debug`
+- Single library: `dotnet build ClassIsland.Core/ClassIsland.Core.csproj -c Debug`
+- Use NUKE only for release/publish builds, not verification.
+- Release packaging: `./build.ps1 PublishApp` (Windows) or `./build.sh PublishApp` (Unix) with required metadata.
 - `PublishApp` requires metadata: `--OsName windows|linux|macos`, `--Arch x64|x86|arm64`, `--Package folder|deb|pkg`, `--BuildType full|selfContained`, `--BuildName appBase|app`, `--AppVersion <version>`.
-- Launcher packaging uses `PublishLauncher` and publishes native AOT self-contained output from `ClassIsland.Launcher`.
+- Launcher packaging: `PublishLauncher` (native AOT self-contained).
 - Plugin dev environment target `InitPluginDevEnv` writes user environment variables/profile blocks pointing at `out/ClassIsland_Dev`; do not run it casually during verification.
 
+## Agent Workflow
+Before editing:
+1. Inspect related existing code.
+2. Identify the current design pattern.
+3. Explain the planned changes.
+4. Only then modify files.
+Avoid speculative refactoring.
+When requirements are unclear:
+- Ask the user when changes affect architecture, behavior, compatibility, or public APIs.
+- For minor implementation details, follow existing project patterns.
+
+## Priority Rules
+When instructions conflict, follow this order:
+1. Preserve existing architecture and behavior.
+2. Keep changes minimal and focused.
+3. Prefer existing patterns over introducing new abstractions.
+4. Do not modify unrelated files.
+5. Ask before making large architectural changes.
+
+## Compatibility Rules
+- Preserve existing public APIs whenever possible.
+- Avoid breaking API changes unless explicitly required.
+- If an API change is necessary:
+  - Explain the reason.
+  - Identify affected consumers.
+  - Inform the user before making the change.
+  - Consider backward-compatible alternatives or migration paths.
+
 ## Platform Targeting
-- `CrossPlatformProps.props` auto-selects platform constants from the host OS for normal builds; release builds override this with `PublishBuilding=true` and `PublishPlatform=<os>`.
-- `ClassIsland.Desktop` conditionally references exactly one platform implementation based on `Platforms_Windows`, `Platforms_Linux`, or `Platforms_MacOs`.
-- Linux install/runtime docs require X11; Wayland/XWayland is not considered supported.
+- `CrossPlatformProps.props` auto-selects platform constants from host OS for normal builds; release builds override this with `PublishBuilding=true` and `PublishPlatform=<os>`.
+- `ClassIsland.Desktop` conditionally references one platform based on `Platforms_Windows`, `Platforms_Linux`, `Platforms_MacOs`.
+- Linux requires X11; Wayland/XWayland not supported.
 
 ## Generated And Output Files
-- NUKE writes release artifacts to `out/`; plugin builds may write `.cipx` files under a plugin project's `cipx/` directory.
-- `ClassIsland/secrets.g.cs` is generated by NUKE `GenerateSecrets` and deleted by `PostCleanup`; never commit generated secret files.
-- Ignore and do not edit transient `*_wpftmp.csproj` files such as those under `ClassIsland.Core/`.
-- CsWin32 inputs live in `NativeMethods.txt`/`NativeMethods.json` under platform projects; generated interop code comes from the package.
+- NUKE artifacts: `out/`; plugin builds: `.cipx` files.
+- `ClassIsland/secrets.g.cs` is generated by NUKE `GenerateSecrets` and deleted by `PostCleanup`; never commit.
+- Ignore `*_wpftmp.csproj` files.
+- CsWin32 inputs: `NativeMethods.txt`/`NativeMethods.json`.
 
 ## Tests And Verification
-- No test projects are present in the solution; prefer focused `dotnet build <project>` verification for code changes.
-- After every code change, run at least one compile check; for app changes, use `dotnet build ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Debug` rather than NUKE.
-- If automated tests become available or the touched area has an executable test path, run the relevant automated tests too.
-- If automated testing is not available or cannot cover the changed feature, tell the user what related behavior still needs manual verification.
-- For platform-specific changes, build the affected entry project with the intended host/platform settings; a Windows-host debug build will not compile Linux/macOS-specific code unless invoked through the publish properties/filter.
+- No test projects in solution; prefer `dotnet build <project>`.
+- After code changes, run at least one compile check; for app changes, use `dotnet build ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Debug` rather than NUKE.
+- If automated tests become available, run the relevant automated tests too.
+- If automated testing is not available, tell the user what related behavior still needs manual verification.
+- For platform-specific changes, build with intended host/platform settings; a Windows-host debug build will not compile Linux/macOS-specific code unless invoked through publish properties.
+
+## Verification Rules
+Before claiming work is complete:
+1. Run the relevant verification command.
+2. Read the full output.
+3. Report results based on actual verification.
+When verification is unavailable:
+- Clearly state what was checked.
+- Clearly state what could not be verified.
+- Do not present assumptions as confirmed results.
+
+## Debugging Rules
+When encountering any bug, test failure, or unexpected behavior:
+1. Read error messages carefully.
+2. Reproduce the issue when possible.
+3. Check recent changes.
+4. Trace data flow and identify the root cause before fixing.
+Avoid:
+- Making changes based only on assumptions.
+- Applying multiple unrelated fixes at once.
+- Changing code without a clear hypothesis.
+Red flags — STOP and follow process:
+- "Quick fix for now, investigate later"
+- "Just try changing X and see if it works"
+- Proposing solutions before tracing data flow
+
+## Avalonia Development Rules
+1. Search first for existing patterns.
+2. Follow MVVM, ReactiveUI, DynamicData.
+3. Composition over inheritance.
+4. Keep ViewModels platform-independent.
+
+## Anti-Patterns
+Do NOT:
+- Skip design for "simple" tasks.
+- Add comments that only explain what the code already expresses.
+- Use `this.` qualifier.
+- Claim completion without verification.
+- Fix symptoms without root cause.
+Comments should explain intent, constraints, workarounds, or non-obvious decisions.
+When unsure: ask the user.
 
 ## Contribution Conventions
-- `CONTRIBUTING.md` asks for Conventional Commits with scopes from `doc/Contributing/Scopes.md` when committing.
-- Feature work should target `master`; fixes for currently maintained stable versions may target the matching maintenance branch.
+- Use Conventional Commits with scopes from `doc/Contributing/Scopes.md`.
+- Feature work → `master`; fixes → maintenance branch.
+- Before writing commit messages, read `doc/Contributing/Scopes.md` to get valid scope names.
+- Before contributing code, read `CONTRIBUTING.md` to understand contribution guidelines.
+
+## Release Packaging
+Only when explicitly requested:
+```bash
+./build.ps1 PublishApp --OsName windows --Arch x64 --Package folder --BuildType full --BuildName appBase --AppVersion 0.0.0.0
+```
