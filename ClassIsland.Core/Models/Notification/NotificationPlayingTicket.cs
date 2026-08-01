@@ -39,6 +39,16 @@ public class NotificationPlayingTicket : ObservableRecipient
     public required NotificationRequest Request { get; init; }
     
     /// <summary>
+    /// 遮罩内容不可变快照
+    /// </summary>
+    public NotificationContentSnapshot? MaskSnapshot { get; init; }
+    
+    /// <summary>
+    /// 正文内容不可变快照
+    /// </summary>
+    public NotificationContentSnapshot? OverlaySnapshot { get; init; }
+    
+    /// <summary>
     /// 该提醒请求实际要应用的提醒高级设置
     /// </summary>
     public required INotificationSettings Settings { get; init; }

@@ -233,6 +233,12 @@
                                         <CheckBox Content="默认启用" IsChecked="{Binding ViewModel.SettingsService.Settings.IsSpeechEnabled}"
                                                   Margin="0 0 0 6" />
                                     </controls3:SettingsExpanderItem>
+                                    <!-- 允许语音继续播放 -->
+                                    <controls3:SettingsExpanderItem>
+                                        <CheckBox Content="允许在通知结束后继续完成播放而非直接截断"
+                                                  IsChecked="{Binding ViewModel.SettingsService.Settings.AllowSpeechContinueAfterEnd}"
+                                                  Margin="0 0 0 6" />
+                                    </controls3:SettingsExpanderItem>
                                     <!-- 语音引擎 -->
                                     <controls3:SettingsExpanderItem Content="语音引擎">
                                         <controls3:SettingsExpanderItem.Footer>
@@ -308,6 +314,12 @@
                                     <controls3:SettingsExpanderItem>
                                         <CheckBox Content="默认启用"
                                                   IsChecked="{Binding ViewModel.SettingsService.Settings.IsNotificationSoundEnabled}"
+                                                  Margin="0 0 0 6" />
+                                    </controls3:SettingsExpanderItem>
+                                    <!-- 允许音效继续播放 -->
+                                    <controls3:SettingsExpanderItem>
+                                        <CheckBox Content="允许在通知结束后继续完成播放而非直接截断"
+                                                  IsChecked="{Binding ViewModel.SettingsService.Settings.AllowSoundContinueAfterEnd}"
                                                   Margin="0 0 0 6" />
                                     </controls3:SettingsExpanderItem>
                                     <controls3:SettingsExpanderItem Content="音效音量">

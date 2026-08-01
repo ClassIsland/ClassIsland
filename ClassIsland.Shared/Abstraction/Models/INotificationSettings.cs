@@ -58,4 +58,22 @@ public interface INotificationSettings
         get;
         set;
     }
+
+    /// <summary>
+    /// 是否允许语音在通知结束后继续完成播放而非直接截断
+    /// </summary>
+    public bool AllowSpeechContinueAfterEnd
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// 是否允许提醒音效在通知结束后继续完成播放而非直接截断
+    /// </summary>
+    public bool AllowSoundContinueAfterEnd
+    {
+        get;
+        set;
+    }
 }

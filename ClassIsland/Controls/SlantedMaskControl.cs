@@ -123,11 +123,14 @@ public class SlantedMaskControl : Control
         // 初始化为 closed
         Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = 0.0;
 
-        this.GetObservable(Region0ProgressProperty).Subscribe(_ => InvalidateVisual());
-        this.GetObservable(Region1ProgressProperty).Subscribe(_ => InvalidateVisual());
-        this.GetObservable(Region2ProgressProperty).Subscribe(_ => InvalidateVisual());
-        this.GetObservable(Region3ProgressProperty).Subscribe(_ => InvalidateVisual());
-        this.GetObservable(Region4ProgressProperty).Subscribe(_ => InvalidateVisual());
+        Observable.Merge(
+            this.GetObservable(Region0ProgressProperty),
+            this.GetObservable(Region1ProgressProperty),
+            this.GetObservable(Region2ProgressProperty),
+            this.GetObservable(Region3ProgressProperty),
+            this.GetObservable(Region4ProgressProperty)
+        ).Subscribe(_ => InvalidateVisual());
+
         this.GetObservable(IsOpenedProperty).Skip(1).Subscribe(_ =>
         {
             if (IsOpened)
@@ -275,7 +278,7 @@ public class SlantedMaskControl : Control
     {
         base.Render(context);
 
-        var size = Bounds;
+        var size = Bounds.Size;
         if (size.Width <= 0 || size.Height <= 0) return;
 
         double h = SlantedHeight;
@@ -312,7 +315,7 @@ public class SlantedMaskControl : Control
         for (int i = 0; i < 5; i++)
         {
             double prog = p[i];
-            if (prog < 0.0) continue;
+            if (prog <= 0.0001) continue;
 
             double rx0 = startX[i];
             double rx1 = startX[i + 1];
@@ -321,7 +324,7 @@ public class SlantedMaskControl : Control
             double fullW = totalW * weight[i + 1] + 0.5;
             double currentW = fullW * prog;
             if (currentW < 0.0001) continue;
-            
+
             var p1 = new Point(rCenter - currentW / 2.0, 0);
             var p2 = new Point(rCenter + currentW / 2.0, 0);
             var p3 = new Point(rCenter + currentW / 2.0 - offset, h);
