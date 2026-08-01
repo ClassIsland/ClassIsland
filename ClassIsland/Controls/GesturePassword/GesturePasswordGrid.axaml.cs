@@ -56,15 +56,15 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         if (w <= 0 || h <= 0) return false;
 
         var padding = HitRadius + 4;
-        var cellW = (w - padding * 2) / (GridSize - 1);
-        var cellH = (h - padding * 2) / (GridSize - 1);
+        var cellW = (w - (padding * 2)) / (GridSize - 1);
+        var cellH = (h - (padding * 2)) / (GridSize - 1);
 
         for (var row = 0; row < GridSize; row++)
         for (var col = 0; col < GridSize; col++)
         {
-            _nodePositions[row * GridSize + col] = new Point(
-                padding + col * cellW,
-                padding + row * cellH);
+            _nodePositions[(row * GridSize) + col] = new Point(
+                padding + (col * cellW),
+                padding + (row * cellH));
         }
         return true;
     }
@@ -75,7 +75,7 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         {
             var dx = position.X - _nodePositions[i].X;
             var dy = position.Y - _nodePositions[i].Y;
-            if (dx * dx + dy * dy <= HitRadius * HitRadius)
+            if ((dx * dx) + (dy * dy) <= HitRadius * HitRadius)
                 return i;
         }
         return -1;
@@ -94,7 +94,7 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         {
             var midRow = (fromRow + toRow) / 2;
             var midCol = (fromCol + toCol) / 2;
-            var mid = midRow * GridSize + midCol;
+            var mid = (midRow * GridSize) + midCol;
             if (mid != from && mid != to && !_selectedNodes.Contains(mid))
             {
                 _selectedNodes.Add(mid);
@@ -126,17 +126,7 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         if (!_isPressed) return;
 
         e.Handled = true;
-        var pos = e.GetPosition(this);
-        _currentPointer = pos;
-
-        var nodeIndex = HitTestNode(pos);
-        if (nodeIndex >= 0 && nodeIndex != _lastNodeIndex && !_selectedNodes.Contains(nodeIndex))
-        {
-            InsertIntermediateNode(_lastNodeIndex, nodeIndex);
-            _selectedNodes.Add(nodeIndex);
-            _lastNodeIndex = nodeIndex;
-        }
-
+        ProcessHitTest(e.GetPosition(this));
         InvalidateVisual();
     }
 
@@ -147,6 +137,8 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         _isPressed = false;
         e.Pointer.Capture(null);
         e.Handled = true;
+
+        ProcessHitTest(e.GetPosition(this));
 
         if (_selectedNodes.Count >= 4)
         {
@@ -162,6 +154,18 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         }
     }
 
+    private void ProcessHitTest(Point pos)
+    {
+        _currentPointer = pos;
+        var nodeIndex = HitTestNode(pos);
+        if (nodeIndex >= 0 && nodeIndex != _lastNodeIndex && !_selectedNodes.Contains(nodeIndex))
+        {
+            InsertIntermediateNode(_lastNodeIndex, nodeIndex);
+            _selectedNodes.Add(nodeIndex);
+            _lastNodeIndex = nodeIndex;
+        }
+    }
+
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
@@ -174,6 +178,7 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
 
     public void Reset()
     {
+        _isPressed = false;
         _selectedNodes.Clear();
         _lastNodeIndex = -1;
         _currentPointer = default;
