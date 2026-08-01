@@ -157,6 +157,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         var r = LoadConfig<Profile>(path);
 
         Profile = r;
+        Profile.RefreshTimeLayouts();
         if (ManagementService.IsManagementEnabled)
         {
             await MergeManagementProfileAsync();
