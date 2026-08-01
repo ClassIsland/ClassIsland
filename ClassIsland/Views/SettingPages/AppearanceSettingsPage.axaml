@@ -124,12 +124,14 @@
                                         Header="应用主题"
                                         Description="控制应用的明暗主题。">
                 <controls2:SettingsExpander.Footer>
-                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                    <ComboBox ItemsSource="{Binding ViewModel.ThemeOptions}"
                               SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}"
                               HorizontalContentAlignment="Left">
-                        <controls1:IconText Glyph="&#xE5CB;" Text="跟随系统" />
-                        <controls1:IconText Glyph="&#xF465;" Text="明亮" />
-                        <controls1:IconText Glyph="&#xF44B;" Text="黑暗" />
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <controls1:IconText Glyph="{Binding Glyph}" Text="{Binding Text}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>
@@ -139,22 +141,21 @@
                                         Header="主题色来源"
                                         Description="控制应用选取主题色的途径。">
                 <controls2:SettingsExpander.Footer>
-                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                    <ComboBox ItemsSource="{Binding ViewModel.ColorSourceOptions}"
                               SelectionChanged="ButtonUpdateWallpaper_OnClick"
                               HorizontalContentAlignment="Left"
                               SelectedIndex="{Binding ViewModel.SettingsService.Settings.ColorSource}">
-                        <ComboBoxItem>
-                            <controls1:IconText Glyph="&#xED39;" Text="自定义" />
-                        </ComboBoxItem>
-                        <ComboBoxItem IsVisible="False" IsEnabled="False">
-                            <controls1:IconText Glyph="&#xF42D;" Text="系统壁纸" />
-                        </ComboBoxItem>
-                        <ComboBoxItem>
-                            <controls1:IconText Glyph="&#xEA1D;" Text="系统" />
-                        </ComboBoxItem>
-                        <ComboBoxItem IsVisible="False" IsEnabled="False">
-                            <controls1:IconText Glyph="&#xEEED;" Text="屏幕主题色"/>
-                        </ComboBoxItem>
+                        <ComboBox.ItemContainerTheme>
+                            <ControlTheme TargetType="ComboBoxItem">
+                                <Setter Property="IsVisible" Value="{Binding IsVisible}" />
+                                <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                            </ControlTheme>
+                        </ComboBox.ItemContainerTheme>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <controls1:IconText Glyph="{Binding Glyph}" Text="{Binding Text}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>
