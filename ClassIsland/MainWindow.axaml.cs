@@ -190,6 +190,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     public NativeMenu MoreOptionsMenu { get; } = [];
 
+    private NativeMenu? _appMenu;
+    private IReadOnlyList<NativeMenuItemBase> _appMenuItems = [];
+    private bool _isUpdatingTrayMenuSeparators;
+
     #endregion
 
     #region Initialization
@@ -269,6 +273,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
         var menu = this.FindResource("AppMenu") as NativeMenu;
+        if (menu is not null)
+        {
+            InitializeTrayMenuSeparators(menu);
+        }
         TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         TaskBarIconService.MainTaskBarIcon.Clicked += MainTaskBarIconOnClicked;
@@ -332,6 +340,102 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
         TutorialService.BeginNotCompletedTutorials("classisland.getStarted.welcome/init");
+    }
+
+    private void InitializeTrayMenuSeparators(NativeMenu menu)
+    {
+        if (_appMenu is not null)
+        {
+            return;
+        }
+
+        // Avalonia's Win32 and DBus exporters ignore IsVisible on separators, so update the item collection itself.
+        _appMenu = menu;
+        _appMenuItems = menu.Items.ToList();
+
+        foreach (var item in _appMenuItems.OfType<NativeMenuItem>())
+        {
+            if (item is not NativeMenuItemSeparator)
+            {
+                item.PropertyChanged += TrayMenuItemOnPropertyChanged;
+            }
+        }
+
+        UpdateTrayMenuSeparators();
+    }
+
+    private void TrayMenuItemOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == NativeMenuItem.IsVisibleProperty)
+        {
+            UpdateTrayMenuSeparators();
+        }
+    }
+
+    private void UpdateTrayMenuSeparators()
+    {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(UpdateTrayMenuSeparators);
+            return;
+        }
+
+        if (_appMenu is null || _isUpdatingTrayMenuSeparators)
+        {
+            return;
+        }
+
+        _isUpdatingTrayMenuSeparators = true;
+        try
+        {
+            var updatedItems = new List<NativeMenuItemBase>(_appMenuItems.Count);
+            var currentGroup = new List<NativeMenuItemBase>();
+            NativeMenuItemSeparator? separatorBeforeGroup = null;
+            var hasVisibleGroup = false;
+
+            void AddCurrentGroup()
+            {
+                if (currentGroup.Count == 0)
+                {
+                    return;
+                }
+
+                var isGroupVisible = currentGroup.Any(item => item is NativeMenuItem { IsVisible: true });
+                if (isGroupVisible && hasVisibleGroup && separatorBeforeGroup is not null)
+                {
+                    updatedItems.Add(separatorBeforeGroup);
+                }
+
+                updatedItems.AddRange(currentGroup);
+                hasVisibleGroup |= isGroupVisible;
+                currentGroup.Clear();
+            }
+
+            foreach (var item in _appMenuItems)
+            {
+                if (item is NativeMenuItemSeparator separator)
+                {
+                    AddCurrentGroup();
+                    separatorBeforeGroup = separator;
+                }
+                else
+                {
+                    currentGroup.Add(item);
+                }
+            }
+
+            AddCurrentGroup();
+
+            _appMenu.Items.Clear();
+            foreach (var item in updatedItems)
+            {
+                _appMenu.Items.Add(item);
+            }
+        }
+        finally
+        {
+            _isUpdatingTrayMenuSeparators = false;
+        }
     }
 
     public override void Show()
