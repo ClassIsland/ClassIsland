@@ -174,6 +174,7 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
 
     public void Reset()
     {
+        _isPressed = false;
         _selectedNodes.Clear();
         _lastNodeIndex = -1;
         _currentPointer = default;

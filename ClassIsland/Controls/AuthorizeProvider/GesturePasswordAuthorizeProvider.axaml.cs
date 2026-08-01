@@ -19,6 +19,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
 {
     private int[]? _firstGesture;
     private bool _isCooldownActive;
+    private IDisposable? _confirmResetTimer;
 
     public static readonly StyledProperty<bool> AuthorizeFailedProperty =
         AvaloniaProperty.Register<GesturePasswordAuthorizeProvider, bool>(nameof(AuthorizeFailed));
@@ -68,6 +69,19 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     public GesturePasswordAuthorizeProvider()
     {
         InitializeComponent();
+        GestureGrid.AddHandler(InputElement.PointerPressedEvent, GestureGrid_OnPointerPressed, RoutingStrategies.Bubble, true);
+    }
+
+    private void GestureGrid_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        CancelConfirmResetTimer();
+        ConfirmFailed = false;
+    }
+
+    private void CancelConfirmResetTimer()
+    {
+        _confirmResetTimer?.Dispose();
+        _confirmResetTimer = null;
     }
 
     private void GesturePasswordAuthorizeProvider_OnLoaded(object sender, RoutedEventArgs e)
@@ -113,6 +127,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
         {
             if (PathsMatch(_firstGesture, path))
             {
+                CancelConfirmResetTimer();
                 SaveGesture(_firstGesture);
                 ProtectGesture = true;
                 ConfirmFailed = false;
@@ -124,8 +139,9 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
                 ConfirmFailed = true;
                 _firstGesture = null;
                 InstructionText.Text = "请绘制手势密码";
-                DispatcherTimer.RunOnce(() =>
+                _confirmResetTimer = DispatcherTimer.RunOnce(() =>
                 {
+                    _confirmResetTimer = null;
                     ConfirmFailed = false;
                     GestureGrid.Reset();
                 }, TimeSpan.FromSeconds(1.5));
@@ -186,6 +202,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
 
     private void ButtonChangeGesture_OnClick(object sender, RoutedEventArgs e)
     {
+        CancelConfirmResetTimer();
         ProtectGesture = false;
         _firstGesture = null;
         ConfirmFailed = false;
