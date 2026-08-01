@@ -138,8 +138,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         Interval = TimeSpan.FromMilliseconds(1)
     };
 
-    private DispatcherTimer TouchInFadingTimer { get; set; } = new();
-
     private Stopwatch RawInputUpdateStopWatch { get; } = new();
 
     private ClassChangingWindow? ClassChangingWindow { get; set; }
@@ -246,7 +244,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
-        TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
         TaskBarIconService.MoreOptionsMenu = MoreOptionsMenu;
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
@@ -433,12 +430,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             ReCheckTopmostState();
             SetBottom();
         }
-    }
-
-    private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
-    {
-        ViewModel.IsMouseIn = false;
-        TouchInFadingTimer.Stop();
     }
 
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
@@ -674,7 +665,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         } 
         if (msg == 0x00FF) // WM_INPUT
         {
-            if (RawInputUpdateStopWatch.ElapsedMilliseconds < 20)
+            if (RawInputUpdateStopWatch.ElapsedMilliseconds < 10)
             {
                 return IntPtr.Zero;
             }
