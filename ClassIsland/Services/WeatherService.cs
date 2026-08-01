@@ -43,7 +43,13 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         Interval = TimeSpan.FromMinutes(5)
     };
 
-    public bool IsWeatherRefreshed { get; set; } = false;
+    private bool _isWeatherRefreshed = false;
+
+    public bool IsWeatherRefreshed
+    {
+        get => _isWeatherRefreshed;
+        set => SetProperty(ref _isWeatherRefreshed, value);
+    }
 
     public bool IsPosUpdated { get; set; } = false;
 

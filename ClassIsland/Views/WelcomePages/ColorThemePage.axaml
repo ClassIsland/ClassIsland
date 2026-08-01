@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,7 +19,7 @@
         <TextBlock Text="设置 ClassIsland 的主题外观。" HorizontalAlignment="Center"
                    Margin="0 0 0 8"/>
         
-        <ListBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}">
+        <ListBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}" HorizontalAlignment="Center">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"/>
@@ -27,18 +27,18 @@
             </ListBox.ItemsPanel>
             <ListBoxItem>
                 <StackPanel Margin="0 8 0 4">
-                    <Panel>
+                    <Panel Width="120" Height="75">
                         <ThemeVariantScope RequestedThemeVariant="Dark">
                             <ThemeVariantScope.Clip>
-                                <RectangleGeometry Rect="0 0 72 75"/>
+                                <RectangleGeometry Rect="0 0 60 75"/>
                             </ThemeVariantScope.Clip>
-                            <demo:ThemeDemo Width="144" />
+                            <demo:ThemeDemo Width="120" />
                         </ThemeVariantScope>
                         <ThemeVariantScope RequestedThemeVariant="Light">
                             <ThemeVariantScope.Clip>
-                                <RectangleGeometry Rect="72 0 72 75"/>
+                                <RectangleGeometry Rect="60 0 60 75"/>
                             </ThemeVariantScope.Clip>
-                            <demo:ThemeDemo Width="144" />
+                            <demo:ThemeDemo Width="120" />
                         </ThemeVariantScope>
                     </Panel>
                     <RadioButton Content="跟随系统" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
@@ -47,7 +47,7 @@
             <ListBoxItem>
                 <StackPanel Margin="0 8 0 4">
                     <ThemeVariantScope RequestedThemeVariant="Light">
-                        <demo:ThemeDemo Width="144" />
+                        <demo:ThemeDemo Width="120" />
                     </ThemeVariantScope>
                     <RadioButton Content="明亮" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
                 </StackPanel>
@@ -55,9 +55,34 @@
             <ListBoxItem>
                 <StackPanel Margin="0 8 0 4">
                     <ThemeVariantScope RequestedThemeVariant="Dark">
-                        <demo:ThemeDemo Width="144" />
+                        <demo:ThemeDemo Width="120" />
                     </ThemeVariantScope>
                     <RadioButton Content="黑暗" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
+                </StackPanel>
+            </ListBoxItem>
+                    <ListBoxItem>
+                <StackPanel Margin="0 8 0 4">
+                    <Panel Width="120" Height="75">
+                        <ThemeVariantScope RequestedThemeVariant="Dark">
+                            <ThemeVariantScope.Clip>
+                                <RectangleGeometry Rect="0 0 60 75"/>
+                            </ThemeVariantScope.Clip>
+                            <demo:ThemeDemo Width="120" />
+                        </ThemeVariantScope>
+                        <ThemeVariantScope RequestedThemeVariant="Light">
+                            <ThemeVariantScope.Clip>
+                                <RectangleGeometry Rect="60 0 60 75"/>
+                            </ThemeVariantScope.Clip>
+                            <demo:ThemeDemo Width="120" />
+                        </ThemeVariantScope>
+                        <ci:FluentIcon Glyph="&#xF464;"
+                                       FontSize="22"
+                                       Foreground="#ffff20"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Top"
+                                       Margin="0,2,4,0"/>
+                    </Panel>
+                    <RadioButton Content="跟随日出日落" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
                 </StackPanel>
             </ListBoxItem>
         </ListBox>
