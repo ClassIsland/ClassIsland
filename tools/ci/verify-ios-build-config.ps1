@@ -79,6 +79,7 @@ $safeChildDirectoryPathText = Read-RepositoryFile "ClassIsland.Platforms.Abstrac
 $appText = Read-RepositoryFile "ClassIsland/App.axaml.cs"
 $appServicesText = Read-RepositoryFile "ClassIsland/App.Services.xaml.cs"
 $pluginLoadContextText = Read-RepositoryFile "ClassIsland/PluginLoadContext.cs"
+$pluginServiceAbstractionText = Read-RepositoryFile "ClassIsland.Core/Abstractions/Services/IPluginService.cs"
 $pluginServiceText = Read-RepositoryFile "ClassIsland/Services/PluginService.cs"
 $pluginMarketServiceText = Read-RepositoryFile "ClassIsland/Services/PluginMarketService.cs"
 $xamlThemeServiceText = Read-RepositoryFile "ClassIsland/Services/XamlThemeService.cs"
@@ -193,6 +194,29 @@ Assert-True ($deviceOnlyPlatforms -eq 2) "The Live Activity extension must remai
 
 $plistKeys = @($infoPlist.plist.dict.key)
 Assert-True (-not ($plistKeys -contains "CFBundleDisplayName")) "Info.plist must not hard-code CFBundleDisplayName; ApplicationTitle must generate it."
+$exportedTypeDeclarations = $infoPlist.SelectSingleNode('/plist/dict/key[.="UTExportedTypeDeclarations"]/following-sibling::array[1]')
+Assert-True ($null -ne $exportedTypeDeclarations) "Info.plist must export custom file types used by the iOS file picker."
+$exportedTypesByIdentifier = @{}
+foreach ($typeDeclaration in @($exportedTypeDeclarations.dict)) {
+    $identifier = $typeDeclaration.SelectSingleNode('key[.="UTTypeIdentifier"]/following-sibling::string[1]')
+    if ($null -ne $identifier) {
+        $exportedTypesByIdentifier[$identifier.InnerText] = $typeDeclaration
+    }
+}
+foreach ($expectedType in @(
+    @{ Identifier = "cn.classisland.data"; Extension = "cidata" },
+    @{ Identifier = "cn.classisland.plugin-package"; Extension = "cipx" })) {
+    Assert-True ($exportedTypesByIdentifier.ContainsKey($expectedType.Identifier)) "Info.plist must export $($expectedType.Identifier)."
+    $typeDeclaration = $exportedTypesByIdentifier[$expectedType.Identifier]
+    $extensions = @($typeDeclaration.SelectNodes('key[.="UTTypeTagSpecification"]/following-sibling::dict[1]/key[.="public.filename-extension"]/following-sibling::array[1]/string') | ForEach-Object { $_.InnerText })
+    $conformingTypes = @($typeDeclaration.SelectNodes('key[.="UTTypeConformsTo"]/following-sibling::array[1]/string') | ForEach-Object { $_.InnerText })
+    Assert-True ($extensions -contains $expectedType.Extension) "$($expectedType.Identifier) must declare .$($expectedType.Extension)."
+    Assert-True ($conformingTypes -contains "public.data") "$($expectedType.Identifier) must conform to public.data."
+}
+Assert-True ($dataTransferPageText.Contains('Patterns = PlatformHelper.IsAppleMobile ? null : ["*.cidata"]')) "The iOS data import picker must avoid resolving the custom extension from Patterns."
+Assert-True ($dataTransferPageText.Contains('AppleUniformTypeIdentifiers = ["cn.classisland.data"]')) "The iOS data import picker must use the registered data UTI."
+Assert-True ($pluginServiceAbstractionText.Contains('Patterns = PlatformHelper.IsAppleMobile ? null : ["*.cipx"]')) "The iOS plugin picker must avoid resolving the custom extension from Patterns."
+Assert-True ($pluginServiceAbstractionText.Contains('AppleUniformTypeIdentifiers = ["cn.classisland.plugin-package"]')) "The iOS plugin picker must use the registered plugin package UTI."
 Assert-True ($liveActivityServiceText.Contains('[SupportedOSPlatform("ios15.0")]')) "The managed Live Activity bridge must declare the iOS 15.0 platform floor."
 Assert-True ($liveActivityBridgeText.Contains('private let continuation: AsyncStream<Command>.Continuation')) "The Swift bridge must enqueue ActivityKit operations in a FIFO async stream."
 Assert-True ($liveActivityBridgeText.Contains('bufferingPolicy: .bufferingNewest(Self.maximumBufferedCommands)')) "The Swift ActivityKit command stream must have a bounded newest-value buffer."

@@ -317,7 +317,8 @@ public partial class DataTransferPage : UserControl
             Title = "浏览 ClassIsland 2 导出文件",
             FileTypeFilter = [ new FilePickerFileType("ClassIsland 数据文件")
                 {
-                    Patterns = ["*.cidata"]
+                    Patterns = PlatformHelper.IsAppleMobile ? null : ["*.cidata"],
+                    AppleUniformTypeIdentifiers = ["cn.classisland.data"]
                 }
             ]
         };
