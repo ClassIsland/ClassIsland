@@ -19,6 +19,7 @@ using Octokit;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.ComponentModels;
 using System.Runtime.InteropServices;
@@ -518,7 +519,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     [JsonIgnore]
     public bool IsSentryEnabled
     {
-        get => GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
+        get
+        {
+            var preference = GlobalStorageService.GetValue("IsSentryEnabled");
+            return preference == "1" ||
+                   preference == null && !PlatformHelper.IsAppleMobile;
+        }
         set
         {
             try

@@ -19,9 +19,11 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
 using CommunityToolkit.Mvvm.Input;
@@ -141,35 +143,67 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         if (ViewModel.SelectedPluginInfo == null || StorageProvider == null)
             return;
-        PopupHelper.DisableAllPopups();
-        var file = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
-        {
-            Title = "打包插件",
-            FileTypeChoices = [
-                IPluginService.PluginPackageFileType
-            ],
-            SuggestedFileName = ViewModel.SelectedPluginInfo.Manifest.Id + IPluginService.PluginPackageExtension
-        }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
-        PopupHelper.RestoreAllPopups();
-
-        if (file == null)
-            return;
         try
         {
-            var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
-            using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
-                                    ?? throw new FileNotFoundException("无法打开所选插件包文件。", file);
-            await using var outputStream = await storageFile.OpenWriteAsync();
-            if (outputStream.CanSeek)
+            PopupHelper.DisableAllPopups();
+            string? file;
+            try
             {
-                outputStream.SetLength(0);
-                outputStream.Position = 0;
+                var options = new FilePickerSaveOptions
+                {
+                    Title = "打包插件",
+                    FileTypeChoices = [IPluginService.PluginPackageFileType],
+                    SuggestedFileName = ViewModel.SelectedPluginInfo.Manifest.Id +
+                                        IPluginService.PluginPackageExtension
+                };
+                var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    file = await PlatformServices.FilePickerService.SaveFileAsync(
+                        options,
+                        topLevel,
+                        output => StreamExportHelper.WritePathBasedExportAsync(
+                            output,
+                            IPluginService.PluginPackageExtension,
+                            path => Services.PluginService.PackagePluginAsync(
+                                ViewModel.SelectedPluginInfo.Manifest.Id,
+                                path)));
+                }
+                else
+                {
+                    file = await PlatformServices.FilePickerService.SaveFilePickerAsync(options, topLevel);
+                    if (file != null)
+                    {
+                        using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                                ?? throw new FileNotFoundException("无法打开所选插件包文件。", file);
+                        await using var outputStream = await storageFile.OpenWriteAsync();
+                        if (outputStream.CanSeek)
+                        {
+                            outputStream.SetLength(0);
+                            outputStream.Position = 0;
+                        }
+                        await Services.PluginService.PackagePluginAsync(
+                            ViewModel.SelectedPluginInfo.Manifest.Id,
+                            outputStream);
+                    }
+                }
             }
-            await Services.PluginService.PackagePluginAsync(ViewModel.SelectedPluginInfo.Manifest.Id, outputStream);
-            var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
-                ? file
-                : Path.GetDirectoryName(file) ?? file;
-            await PlatformServices.LauncherService.LaunchPath(launchPath);
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
+
+            if (file == null)
+                return;
+
+            this.ShowSuccessToast($"已将插件 {ViewModel.SelectedPluginInfo.Manifest.Id} 打包到 {file}。");
+            if (!PlatformHelper.IsAppleMobile)
+            {
+                var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
+                    ? file
+                    : Path.GetDirectoryName(file) ?? file;
+                await PlatformServices.LauncherService.LaunchPath(launchPath);
+            }
         }
         catch (Exception ex)
         {
@@ -217,8 +251,11 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
                 await using var packageStream = await storageFile.OpenReadAsync();
                 using var pkg = new ZipArchive(packageStream, ZipArchiveMode.Read, true);
+                ZipArchiveSafety.ValidateForExtraction(pkg);
                 var mf = pkg.GetEntry(Services.PluginService.PluginManifestFileName);
                 if (mf == null)
+                    continue;
+                if (mf.Length > Services.PluginService.MaximumManifestLength)
                     continue;
 
                 using var reader = new StreamReader(mf.Open());
@@ -233,7 +270,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 if (!string.IsNullOrWhiteSpace(iconPath))
                 {
                     var iconEntry = pkg.GetEntry(iconPath);
-                    if (iconEntry != null)
+                    if (iconEntry != null && iconEntry.Length <= 4 * 1024 * 1024)
                     {
                         try
                         {
@@ -394,18 +431,34 @@ public partial class PluginsSettingsPage : SettingsPageBase
             return;
         }
         ViewModel.IsPluginMarketOperationsPopupOpened = false;
-        PopupHelper.DisableAllPopups();
-        var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
+        List<string> files;
+        try
         {
-            Title = "从本地安装插件",
-            FileTypeFilter = [IPluginService.PluginPackageFileType],
-            AllowMultiple = true
-        }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
-        PopupHelper.RestoreAllPopups();
-        if (file == null || file.Count == 0)
+            PopupHelper.DisableAllPopups();
+            try
+            {
+                files = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
+                {
+                    Title = "从本地安装插件",
+                    FileTypeFilter = [IPluginService.PluginPackageFileType],
+                    AllowMultiple = true
+                }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
+            }
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
+        }
+        catch (Exception ex)
+        {
+            this.ShowErrorToast("无法读取选择的插件包", ex);
+            return;
+        }
+
+        if (files.Count == 0)
             return;
 
-        await ProcessInstallFiles(file);
+        await ProcessInstallFiles(files);
     }
 
     private void MenuItemOpenPluginConfigFolder_OnClick(object sender, RoutedEventArgs e)
@@ -576,28 +629,15 @@ public partial class PluginsSettingsPage : SettingsPageBase
         ViewModel.IsDetailsShown = true;
     }
 
-    private static List<string> GetDraggedLocalFilePaths(DragEventArgs e)
+    private static List<IStorageFile> GetDraggedStorageFiles(DragEventArgs e)
     {
-        var result = new List<string>();
         var files = e.DataTransfer.TryGetFiles();
-        if (files == null)
-            return result;
-
-        foreach (var file in files)
-        {
-            var path = file.TryGetLocalPath();
-            if (!string.IsNullOrWhiteSpace(path))
-            {
-                result.Add(path);
-            }
-        }
-
-        return result;
+        return files?.OfType<IStorageFile>().ToList() ?? [];
     }
 
     private void Grid_DragEnter(object sender, DragEventArgs e)
     {
-        var files = GetDraggedLocalFilePaths(e);
+        var files = GetDraggedStorageFiles(e);
         if (files.Count == 0 || ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
         {
             ViewModel.IsDragEntering = false;
@@ -605,7 +645,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
             return;
         }
 
-        var supported = files.Count(x => Path.GetExtension(x).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase));
+        var supported = files.Count(x => Path.GetExtension(x.Name).Equals(
+            IPluginService.PluginPackageExtension,
+            StringComparison.OrdinalIgnoreCase));
         ViewModel.IsDragEntering = true;
         ViewModel.DragInstallTotalCount = files.Count;
         ViewModel.DragInstallSupportedCount = supported;
@@ -630,11 +672,26 @@ public partial class PluginsSettingsPage : SettingsPageBase
         if (ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
             return;
 
-        var files = GetDraggedLocalFilePaths(e);
+        var files = GetDraggedStorageFiles(e)
+            .Where(x => Path.GetExtension(x.Name).Equals(
+                IPluginService.PluginPackageExtension,
+                StringComparison.OrdinalIgnoreCase))
+            .ToList();
         if (files.Count == 0)
             return;
 
-        await ProcessInstallFiles(files.Where(x => Path.GetExtension(x).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase)));
+        List<string> paths;
+        try
+        {
+            paths = await PlatformServices.FilePickerService.MaterializeFilesAsync(files);
+        }
+        catch (Exception ex)
+        {
+            this.ShowErrorToast("无法读取拖入的插件包", ex);
+            return;
+        }
+
+        await ProcessInstallFiles(paths);
     }
 
     private void Grid_DragLeave(object sender, DragEventArgs e)

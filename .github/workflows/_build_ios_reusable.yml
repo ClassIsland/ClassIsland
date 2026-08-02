@@ -1,0 +1,183 @@
+name: Build unsigned iOS IPA worker
+
+on:
+  workflow_call:
+    inputs:
+      checkout_ref:
+        description: Git ref or SHA to build
+        required: true
+        type: string
+      app_version:
+        description: Application display version
+        required: true
+        type: string
+      brand_type:
+        description: ClassIsland brand type
+        required: true
+        type: string
+      developer_preview:
+        description: Include developer preview behavior and assets
+        required: true
+        type: boolean
+      artifact_name:
+        description: Uploaded IPA artifact name
+        required: true
+        type: string
+      retention_days:
+        description: Artifact retention period
+        required: false
+        default: 14
+        type: number
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
+  IOS_CONFIGURATION: Release
+  IOS_RUNTIME_IDENTIFIER: ios-arm64
+  APPLICATION_ID: cn.classisland.ios
+  XCODE_PATH: /Applications/Xcode_26.6.app
+  IPA_PATH: ${{ github.workspace }}/out/out_app_ios_arm64_selfContained_ipa.ipa
+
+jobs:
+  build-unsigned-ipa:
+    name: Build unsigned iOS IPA
+    runs-on: macos-26
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ inputs.checkout_ref }}
+
+      - name: Resolve application build number
+        id: build_metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          build_number="$(git rev-list --count HEAD)"
+          if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
+            echo "::error::Unable to derive the iOS build number from Git history"
+            exit 1
+          fi
+          if (( build_number < 1 )); then
+            build_number=1
+          fi
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve artifact name
+        id: artifact_metadata
+        shell: bash
+        env:
+          REQUESTED_ARTIFACT_NAME: ${{ inputs.artifact_name }}
+          APPLICATION_DISPLAY_VERSION: ${{ inputs.app_version }}
+          APPLICATION_BUILD_NUMBER: ${{ steps.build_metadata.outputs.build_number }}
+        run: |
+          set -euo pipefail
+          if [[ "$REQUESTED_ARTIFACT_NAME" == "auto" ]]; then
+            artifact_name="ClassIsland-iOS-${APPLICATION_DISPLAY_VERSION}-build.${APPLICATION_BUILD_NUMBER}-ios-arm64-unsigned-attempt.${GITHUB_RUN_ATTEMPT}"
+          elif [[ -n "$REQUESTED_ARTIFACT_NAME" ]]; then
+            artifact_name="$REQUESTED_ARTIFACT_NAME"
+          else
+            echo "::error::The iOS artifact name must not be empty"
+            exit 1
+          fi
+          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
+
+      - name: Test iOS build-number validation
+        run: bash ./tools/ci/test-ios-build-number.sh
+
+      - name: Test iOS display-version validation
+        run: bash ./tools/ci/test-ios-display-version.sh
+
+      - name: Verify iOS build configuration
+        shell: pwsh
+        run: ./tools/ci/verify-ios-build-config.ps1
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+          xcodebuild -showsdks
+          xcodebuild -project ClassIsland.iOS.Native/ClassIsland.iOS.Native.xcodeproj -list
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Add GitHub Packages source
+        env:
+          NUGET_AUTH_TOKEN: ${{ github.token }}
+        run: >-
+          dotnet nuget add source
+          --username github-actions
+          --password "$NUGET_AUTH_TOKEN"
+          --store-password-in-clear-text
+          --name github
+          "https://nuget.pkg.github.com/ClassIsland/index.json"
+
+      - name: Restore iOS workload
+        run: dotnet workload restore "$IOS_PROJECT"
+
+      - name: Run platform abstraction tests
+        run: >-
+          dotnet test
+          ClassIsland.Platforms.Abstractions.Tests/ClassIsland.Platforms.Abstractions.Tests.csproj
+          -c Release
+          --collect:"XPlat Code Coverage"
+          --settings ClassIsland.Platforms.Abstractions.Tests/coverlet.runsettings
+          --results-directory "$RUNNER_TEMP/ios-tests"
+
+      - name: Verify platform abstraction coverage
+        shell: pwsh
+        run: >-
+          ./tools/ci/verify-cobertura-coverage.ps1
+          -ResultsDirectory "${{ runner.temp }}/ios-tests"
+          -MinimumLineRate 0.8
+
+      - name: Build unsigned iOS IPA through NUKE
+        env:
+          osName: ios
+          arch: arm64
+          package: ipa
+          buildType: selfContained
+          buildName: app
+          configuration: ${{ env.IOS_CONFIGURATION }}
+          appVersion: ${{ inputs.app_version }}
+          brandType: ${{ inputs.brand_type }}
+          DeveloperPreview: ${{ inputs.developer_preview && 'true' || 'false' }}
+          enableCodeSigning: 'false'
+        run: ./build.sh PublishApp
+
+      - name: Normalize unsigned IPA
+        run: bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"
+
+      - name: Verify unsigned IPA
+        run: >-
+          bash ./tools/ci/verify-ios-ipa.sh
+          "$IPA_PATH"
+          "$APPLICATION_ID"
+          "$IOS_RUNTIME_IDENTIFIER"
+          "${{ inputs.app_version }}"
+          "${{ steps.build_metadata.outputs.build_number }}"
+
+      - name: Upload unsigned IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact_metadata.outputs.artifact_name }}
+          path: |
+            ${{ env.IPA_PATH }}
+            ${{ env.IPA_PATH }}.sha256
+          if-no-files-found: error
+          overwrite: true
+          retention-days: ${{ inputs.retention_days }}

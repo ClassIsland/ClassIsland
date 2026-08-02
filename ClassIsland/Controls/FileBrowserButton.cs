@@ -8,6 +8,7 @@ using Avalonia.Platform.Storage;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using Microsoft.Win32;
 
 namespace ClassIsland.Controls;
@@ -51,6 +52,18 @@ public class FileBrowserButton : Button
         set => SetValue(IsFolderProperty, value);
     }
 
+    public static readonly StyledProperty<bool> PersistSelectionProperty =
+        AvaloniaProperty.Register<FileBrowserButton, bool>(nameof(PersistSelection));
+
+    /// <summary>
+    /// 是否要求平台返回适合长期保存的文件引用。
+    /// </summary>
+    public bool PersistSelection
+    {
+        get => GetValue(PersistSelectionProperty);
+        set => SetValue(PersistSelectionProperty, value);
+    }
+
     public event EventHandler? FileSelected;
 
     protected override Type StyleKeyOverride => typeof(Button);
@@ -62,19 +75,35 @@ public class FileBrowserButton : Button
     {
         base.OnClick();
         var storageProvider = AppBase.Current.GetRootWindow().StorageProvider;
+        var root = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+        using var suggestedStartLocation = string.IsNullOrWhiteSpace(StartFolder)
+            ? null
+            : await storageProvider.TryGetFolderFromPathAsync(StartFolder);
 
         // 启动异步操作以打开对话框。
         if (!IsFolder)
         {
             PopupHelper.DisableAllPopups();
-            var files = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions
+            var options = new FilePickerOpenOptions
             {
-                SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
+                SuggestedStartLocation = suggestedStartLocation,
                 FileTypeFilter = FileTypes.AsReadOnly(),
                 AllowMultiple = false,
                 SuggestedFileName = CurrentPath
-            }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
-            PopupHelper.RestoreAllPopups();
+            };
+            List<string> files;
+            try
+            {
+                files = PersistSelection
+                    ? await PlatformServices.FilePickerService
+                        .OpenPersistentFilesPickerAsync(options, root)
+                    : await PlatformServices.FilePickerService
+                        .OpenFilesPickerAsync(options, root);
+            }
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
 
             if (files.Count > 0)
             {
@@ -84,13 +113,25 @@ public class FileBrowserButton : Button
         else
         {
             PopupHelper.DisableAllPopups();
-            var folders = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(new FolderPickerOpenOptions()
+            var options = new FolderPickerOpenOptions
             {
-                SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
+                SuggestedStartLocation = suggestedStartLocation,
                 AllowMultiple = false,
                 SuggestedFileName = CurrentPath
-            }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
-            PopupHelper.RestoreAllPopups();
+            };
+            List<string> folders;
+            try
+            {
+                folders = PersistSelection
+                    ? await PlatformServices.FilePickerService
+                        .OpenPersistentFoldersPickerAsync(options, root)
+                    : await PlatformServices.FilePickerService
+                        .OpenFoldersPickerAsync(options, root);
+            }
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
 
             if (folders.Count > 0)
             {

@@ -2,7 +2,6 @@ using ClassIsland.Core.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
@@ -40,9 +39,11 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using DynamicData;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Data;
@@ -488,6 +489,12 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
     bool IsShowingRestartDialog = false;
     private async void ShowRestartDialog()
     {
+        if (PlatformHelper.IsAppleMobile)
+        {
+            AppBase.Current.Restart();
+            return;
+        }
+
         if (!IsShowingRestartDialog)
         {
             IsShowingRestartDialog = true;
@@ -577,37 +584,69 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
             this.ShowToast(message);
             PopupHelper.DisableAllPopups();
-            var file = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
+            string? file;
+            try
             {
-                Title = "导出诊断数据",
-                SuggestedStartLocation =
-                    await TopLevel.GetTopLevel(this)!.StorageProvider.TryGetFolderFromPathAsync(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
-                FileTypeChoices =
-                [
-                    new FilePickerFileType("压缩文件")
+                var topLevel = TopLevel.GetTopLevel(this)!;
+                var options = new FilePickerSaveOptions
+                {
+                    Title = "导出诊断数据",
+                    SuggestedStartLocation =
+                        await topLevel.StorageProvider.TryGetFolderFromPathAsync(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
+                    FileTypeChoices =
+                    [
+                        new FilePickerFileType("压缩文件")
+                        {
+                            Patterns = ["*.zip"]
+                        }
+                    ]
+                };
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    file = await PlatformServices.FilePickerService.SaveFileAsync(
+                        options,
+                        topLevel,
+                        output => StreamExportHelper.WritePathBasedExportAsync(
+                            output,
+                            ".zip",
+                            path => DiagnosticService.ExportDiagnosticData(path, false)));
+                }
+                else
+                {
+                    file = await PlatformServices.FilePickerService.SaveFilePickerAsync(options, topLevel);
+                    if (file != null)
                     {
-                        Patterns = ["*.zip"]
+                        using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                                ?? throw new FileNotFoundException("无法打开所选诊断数据文件。", file);
+                        await using var outputStream = await storageFile.OpenWriteAsync();
+                        if (outputStream.CanSeek)
+                        {
+                            outputStream.SetLength(0);
+                            outputStream.Position = 0;
+                        }
+                        await DiagnosticService.ExportDiagnosticData(outputStream);
                     }
-                ]
-            }, TopLevel.GetTopLevel(this)!);
-            PopupHelper.RestoreAllPopups();
+                }
+            }
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
+
             if (file == null)
             {
                 return;
             }
 
-            var topLevel = TopLevel.GetTopLevel(this)!;
-            using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
-                                    ?? throw new FileNotFoundException("无法打开所选诊断数据文件。", file);
-            await using var outputStream = await storageFile.OpenWriteAsync();
-            if (outputStream.CanSeek)
-            {
-                outputStream.SetLength(0);
-                outputStream.Position = 0;
-            }
-            await DiagnosticService.ExportDiagnosticData(outputStream);
             this.ShowSuccessToast($"已导出诊断信息到 {file}。");
+            if (!PlatformHelper.IsAppleMobile)
+            {
+                var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
+                    ? file
+                    : Path.GetDirectoryName(file) ?? file;
+                await PlatformServices.LauncherService.LaunchPath(launchPath);
+            }
         }
         catch (Exception exception)
         {
@@ -619,24 +658,45 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         }
     }
 
-    private void MenuItemOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        PlatformServices.LauncherService.LaunchPath(CommonDirectories.AppLogFolderPath);
+        await OpenFolderAsync(CommonDirectories.AppLogFolderPath, "日志目录");
     }
 
-    private void MenuItemOpenAppFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemOpenAppFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        PlatformServices.LauncherService.LaunchPath(".");
+        var folderPath = PlatformHelper.IsAppleMobile
+            ? CommonDirectories.AppSharedDocumentsFolderPath
+            : ".";
+        await OpenFolderAsync(folderPath, "应用目录");
     }
 
     private void MenuItemDebugWindowRule_OnClick(object sender, RoutedEventArgs e)
     {
+        if (PlatformHelper.IsAppleMobile)
+        {
+            return;
+        }
+
         IAppHost.GetService<WindowRuleDebugWindow>().Show();
     }
 
-    private void MenuItemOpenDataFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemOpenDataFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        PlatformServices.LauncherService.LaunchPath(CommonDirectories.AppRootFolderPath);
+        await OpenFolderAsync(CommonDirectories.AppRootFolderPath, "数据目录");
+    }
+
+    private async Task OpenFolderAsync(string folderPath, string folderName)
+    {
+        try
+        {
+            await PlatformServices.LauncherService.LaunchPath(folderPath);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "无法使用系统文件管理器打开{FolderName}。", folderName);
+            this.ShowErrorToast($"无法打开{folderName}", exception);
+        }
     }
 
     private async void MenuItemAddDesktopShortcut_OnClick(object? sender, RoutedEventArgs e)

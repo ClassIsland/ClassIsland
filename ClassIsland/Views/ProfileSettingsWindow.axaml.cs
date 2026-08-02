@@ -33,6 +33,7 @@ using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Models.Profile;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -46,7 +47,6 @@ using HotAvalonia;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ClassIsland.Helpers;
-using ClassIsland.Platforms.Abstraction;
 using Sentry;
 
 namespace ClassIsland.Views;

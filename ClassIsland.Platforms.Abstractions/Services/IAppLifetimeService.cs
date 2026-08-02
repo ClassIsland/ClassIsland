@@ -16,4 +16,17 @@ public interface IAppLifetimeService
     /// <param name="parameters">重启时使用的参数</param>
     /// <param name="restartToLauncher">是否重启至启动器</param>
     internal void Restart(string[] parameters, bool restartToLauncher);
+
+    /// <summary>
+    /// 在需要用户手动结束进程的平台上，等待平台资源进入可终止状态。
+    /// </summary>
+    internal Task PrepareForManualTerminationAsync(
+        CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+    /// <summary>
+    /// 用户明确取消手动结束操作后，恢复为手动结束而暂停的平台资源。
+    /// </summary>
+    internal void ResumeAfterManualTerminationCanceled()
+    {
+    }
 }

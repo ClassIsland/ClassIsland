@@ -139,7 +139,10 @@ public partial class App
         services.AddSingleton<SettingsWindowNew>();
         services.AddSingleton<ProfileSettingsWindow>();
         services.AddTransient<ClassPlanDetailsWindow>();
-        services.AddTransient<WindowRuleDebugWindow>();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            services.AddTransient<WindowRuleDebugWindow>();
+        }
         // services.AddTransient<ConfigErrorsWindow>();
         services.AddTransient<TimeAdjustmentWindow>();
         // services.AddTransient<ExcelExportWindow>();
@@ -173,7 +176,10 @@ public partial class App
         {
             services.AddSettingsPage<UpdateSettingsPage>();
         }
-        services.AddSettingsPage<PluginsSettingsPage>();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            services.AddSettingsPage<PluginsSettingsPage>();
+        }
         services.AddSettingsPage<ThemesSettingsPage>();
         services.AddSettingsPage<TestSettingsPage>();
         services.AddSettingsPage<DebugPage>();
@@ -210,7 +216,10 @@ public partial class App
             LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(latitude=)(\d*\.?\d*)"), 2));
             LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(longitude=)(\d*\.?\d*)"), 2));
 
-            builder.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Error);
+            if (System.OperatingSystem.IsWindows())
+            {
+                builder.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Error);
+            }
             builder.AddConsoleFormatter<ClassIslandConsoleFormatter, ConsoleFormatterOptions>();
             builder.AddConsole(console => { console.FormatterName = "classisland"; });
             builder.AddSentry(o =>
@@ -268,13 +277,19 @@ public partial class App
         services.AddRule<SunRiseSetRuleSettings, SunRiseSetRuleSettingsControl>("classisland.weather.sunRiseSet", "是否日出/日落", "\uE150");
         // 行动提供方
         services.AddAction<SignalTriggerSettings, BroadcastSignalActionSettingsControl>("classisland.broadcastSignal", "广播信号", "\uE561");
-        services.AddAction<RunAction, RunActionSettingsControl>();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            services.AddAction<RunAction, RunActionSettingsControl>();
+        }
         services.AddAction<NotificationAction, NotificationActionSettingsControl>();
         services.AddAction<SleepAction, SleepActionSettingsControl>();
         services.AddAction<ModifyAppSettingsAction, ModifyAppSettingsActionSettingsControl>();
         services.AddAction<WeatherNotificationAction, WeatherNotificationActionSettingControl>();
-        services.AddAction<AppQuitAction>();
-        services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            services.AddAction<AppQuitAction>();
+            services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();
+        }
 
         // 认证提供方
         services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
@@ -322,7 +337,10 @@ public partial class App
             services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.getStarted.json"));
         }
         // Plugins
-        if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
+        if (!PlatformHelper.IsAppleMobile &&
+            !ApplicationCommand.Safe &&
+            string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) &&
+            string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {
             PluginService.InitializePlugins(context, services);
         }

@@ -6,6 +6,7 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Models.Plugins;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Protobuf.AuditEvent;
@@ -31,6 +32,9 @@ namespace ClassIsland.Services;
 /// </summary>
 public class PluginService : IPluginService
 {
+    internal const long MaximumManifestLength = 1024 * 1024;
+    private const string InstallStagingPrefix = ".install-";
+    private const string InstallBackupPrefix = ".backup-";
     public static readonly string PluginsRootPath = Path.Combine(CommonDirectories.AppRootFolderPath, "Plugins");
 
     public static readonly string PluginsIndexPath = Path.Combine(CommonDirectories.AppConfigPath, "PluginsIndex");
@@ -63,6 +67,7 @@ public class PluginService : IPluginService
         {
             Directory.CreateDirectory(PluginsRootPath);
         }
+        RecoverInterruptedPluginInstalls();
 
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
@@ -72,30 +77,184 @@ public class PluginService : IPluginService
 
         foreach (var pkgPath in Directory.EnumerateFiles(PluginsPkgRootPath).Where(x => Path.GetExtension(x) == IPluginService.PluginPackageExtension))
         {
+            string? stagingPath = null;
+            var installed = false;
             try
             {
                 using var pkg = ZipFile.OpenRead(pkgPath);
+                ZipArchiveSafety.ValidateForExtraction(pkg);
                 var mf = pkg.GetEntry(PluginManifestFileName);
                 if (mf == null)
-                    continue;
-                var mfText = new StreamReader(mf.Open()).ReadToEnd();
-                var manifest = deserializer.Deserialize<PluginManifest>(mfText);
-                var targetPath = Path.Combine(PluginsRootPath, manifest.Id);
-                Console.Write($"正在处理插件安装: {manifest.Name}({manifest.Id},{manifest.Version})...");
-                if (Directory.Exists(targetPath))
                 {
-                    Directory.Delete(targetPath, true);
+                    throw new InvalidDataException("插件包缺少 manifest.yml。");
                 }
-                Directory.CreateDirectory(targetPath);
-                ZipFile.ExtractToDirectory(pkgPath, targetPath);
+                if (mf.Length > MaximumManifestLength)
+                {
+                    throw new InvalidDataException("插件 manifest.yml 超过大小上限。");
+                }
+
+                PluginManifest manifest;
+                using (var manifestReader = new StreamReader(mf.Open()))
+                {
+                    manifest = deserializer.Deserialize<PluginManifest>(manifestReader.ReadToEnd())
+                               ?? throw new InvalidDataException("插件 manifest.yml 内容为空。");
+                }
+
+                var targetPath = SafeChildDirectoryPath.Resolve(
+                    PluginsRootPath,
+                    manifest.Id);
+                Console.Write($"正在处理插件安装: {manifest.Name}({manifest.Id},{manifest.Version})...");
+                stagingPath = SafeChildDirectoryPath.Resolve(
+                    PluginsPkgRootPath,
+                    $"{InstallStagingPrefix}{manifest.Id}-{Guid.NewGuid():N}");
+                Directory.CreateDirectory(stagingPath);
+                pkg.ExtractToDirectory(stagingPath);
+
+                var extractedManifestPath = SafeRelativePath.ResolveUnderRoot(
+                    stagingPath,
+                    PluginManifestFileName);
+                if (!File.Exists(extractedManifestPath))
+                {
+                    throw new InvalidDataException("插件包解压后缺少 manifest.yml。");
+                }
+                var entranceAssemblyPath = SafeRelativePath.ResolveUnderRoot(
+                    stagingPath,
+                    manifest.EntranceAssembly);
+                if (!File.Exists(entranceAssemblyPath))
+                {
+                    throw new InvalidDataException(
+                        $"插件入口程序集不存在：{manifest.EntranceAssembly}");
+                }
+
+                ReplacePluginDirectory(stagingPath, targetPath, manifest.Id);
+                stagingPath = null;
                 InstalledPlugins.Add(manifest);
+                installed = true;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            File.Delete(pkgPath);
-            Console.WriteLine("完成!");
+            finally
+            {
+                if (stagingPath != null)
+                {
+                    TryDeleteDirectory(stagingPath);
+                }
+
+                try
+                {
+                    File.Delete(pkgPath);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"删除插件包失败：{exception.Message}");
+                }
+
+                Console.WriteLine(installed ? "完成!" : "安装失败!");
+            }
+        }
+    }
+
+    private static void RecoverInterruptedPluginInstalls()
+    {
+        foreach (var backupPath in Directory.EnumerateDirectories(PluginsPkgRootPath)
+                     .Where(x => Path.GetFileName(x).StartsWith(
+                         InstallBackupPrefix,
+                         StringComparison.Ordinal)))
+        {
+            var id = Path.GetFileName(backupPath)[InstallBackupPrefix.Length..];
+            try
+            {
+                var targetPath = SafeChildDirectoryPath.Resolve(PluginsRootPath, id);
+                if (Directory.Exists(targetPath))
+                {
+                    TryDeleteDirectory(backupPath);
+                }
+                else
+                {
+                    Directory.Move(backupPath, targetPath);
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"恢复插件安装事务失败：{exception.Message}");
+            }
+        }
+
+        foreach (var stagingPath in Directory.EnumerateDirectories(PluginsPkgRootPath)
+                     .Where(x => Path.GetFileName(x).StartsWith(
+                         InstallStagingPrefix,
+                         StringComparison.Ordinal)))
+        {
+            TryDeleteDirectory(stagingPath);
+        }
+    }
+
+    private static void ReplacePluginDirectory(
+        string stagingPath,
+        string targetPath,
+        string pluginId)
+    {
+        var backupPath = SafeChildDirectoryPath.Resolve(
+            PluginsPkgRootPath,
+            $"{InstallBackupPrefix}{pluginId}");
+        if (Directory.Exists(backupPath))
+        {
+            if (Directory.Exists(targetPath))
+            {
+                TryDeleteDirectory(backupPath);
+            }
+            else
+            {
+                Directory.Move(backupPath, targetPath);
+            }
+        }
+
+        var targetBackedUp = false;
+        try
+        {
+            if (File.Exists(targetPath))
+            {
+                throw new IOException($"插件目标路径不是目录：{targetPath}");
+            }
+            if (Directory.Exists(targetPath))
+            {
+                Directory.Move(targetPath, backupPath);
+                targetBackedUp = true;
+            }
+
+            Directory.Move(stagingPath, targetPath);
+        }
+        catch
+        {
+            if (targetBackedUp &&
+                !Directory.Exists(targetPath) &&
+                Directory.Exists(backupPath))
+            {
+                Directory.Move(backupPath, targetPath);
+            }
+            throw;
+        }
+
+        if (targetBackedUp)
+        {
+            TryDeleteDirectory(backupPath);
+        }
+    }
+
+    private static void TryDeleteDirectory(string path)
+    {
+        try
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine($"清理临时插件目录失败：{exception.Message}");
         }
     }
 
