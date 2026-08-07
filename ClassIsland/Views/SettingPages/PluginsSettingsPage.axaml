@@ -516,6 +516,9 @@
             <controls1:ListDetailView.LeftContent>
                 <Grid RowDefinitions="Auto,*">
                     <StackPanel Grid.Row="0">
+                        <controls2:InfoBar Message="应用正处于安全模式，将不加载任何插件。"
+                                       Severity="Warning"
+                                       IsOpen="{Binding ViewModel.IsAppSafeMode}"/>
                         <Grid Margin="4 0">
                             <TextBox Watermark="搜索插件…"
                                      Text="{Binding ViewModel.PluginFilterText, UpdateSourceTrigger=PropertyChanged}"
@@ -569,7 +572,6 @@
                                     IsEnabled="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
                                 <ci:IconText Glyph="&#xE0B5;" Text="刷新"/>
                             </Button>
-
                         </DockPanel>
                         <ProgressBar IsVisible="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource}"
                                      IsIndeterminate="True"/>
