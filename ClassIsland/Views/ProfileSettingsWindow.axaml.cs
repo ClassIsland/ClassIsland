@@ -844,7 +844,27 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.duplicate", 1);
     }
     
-    private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonDeleteTimeLayoutMenu_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (this.FindResource("DeleteTimeLayoutConfirmFlyout") is not Flyout flyout)
+        {
+            return;
+        }
+
+        var target = sender is CommandBarButton { IsInOverflow: true }
+            ? GetOverflowAnchor()
+            : (Control)sender;
+        flyout.ShowAt(target);
+    }
+
+    private Control GetOverflowAnchor()
+    {
+        return (Control?)CommandBarTimeLayout.GetVisualDescendants()
+            .OfType<Button>()
+            .FirstOrDefault(b => b.Name == "MoreButton") ?? CommandBarTimeLayout;
+    }
+
+    private void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
         var key = ViewModel.ProfileService.Profile.TimeLayouts
             .FirstOrDefault(x => x.Value == ViewModel.SelectedTimeLayout).Key;
