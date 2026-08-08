@@ -353,7 +353,7 @@ public partial class ProfileSettingsWindow : MyWindow
             DefaultButton = ContentDialogButton.Primary,
             PrimaryButtonText = "新建",
             SecondaryButtonText = "取消"
-        }.ShowAsync();
+        }.ShowAsync(this);
 
         var path = Path.Combine(Services.ProfileService.ProfilePath, $"{textBox.Text}.json");
         if (r != ContentDialogResult.Primary || File.Exists(path))
