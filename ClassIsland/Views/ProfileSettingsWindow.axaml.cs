@@ -851,6 +851,10 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
 
+        // 确认弹窗的生命周期不再绑定在“删除时间表”按钮上：按钮在 CommandBar 溢出区时，
+        // 点击后 FluentAvalonia 会关闭溢出弹窗并使按钮从可视化树分离，若 Flyout 以按钮为
+        // placement target，会因 target 分离被自动关闭。因此按钮在溢出区时改为锚定到
+        // CommandBar 行的溢出按钮（三个点）。
         var target = sender is CommandBarButton { IsInOverflow: true }
             ? GetOverflowAnchor()
             : (Control)sender;
