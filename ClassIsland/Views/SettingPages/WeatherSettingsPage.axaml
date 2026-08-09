@@ -122,7 +122,7 @@
                                     ToolTip.Tip="刷新"
                                     Width="40" Height="40"
                                     Theme="{StaticResource TransparentButton}"
-                                    Command="{Binding ViewModel.RefreshWeatherCommand}"
+                                    Click="ButtonRefreshWeather_OnClick"
                                     IsVisible="{Binding !ViewModel.IsRefreshingWeather}" />
                             <controls3:ProgressRing Width="40" Height="40"
                                                   IsIndeterminate="True"

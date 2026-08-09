@@ -205,7 +205,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
             var deserializer = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
-                .WithTypeConverter(new OSPlatformTypeConverter())
+                .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
