@@ -98,6 +98,62 @@ internal static class SunriseSunsetSchedule
         return false;
     }
 
+    public static bool TryGetLatestTransitionAtOrBefore(
+        IReadOnlyList<RangedValue>? schedule,
+        SunTransition transition,
+        DateOnly earliestForecastDate,
+        DateTimeOffset atOrBefore,
+        IReadOnlySet<DateOnly>? excludedForecastDates,
+        out DateTimeOffset latestTransition)
+    {
+        latestTransition = default;
+        DateTimeOffset? candidate = null;
+        if (schedule == null)
+        {
+            return false;
+        }
+
+        foreach (var item in schedule)
+        {
+            if (transition is SunTransition.Sunrise or SunTransition.Either)
+            {
+                UpdateCandidate(item.From);
+            }
+
+            if (transition is SunTransition.Sunset or SunTransition.Either)
+            {
+                UpdateCandidate(item.To);
+            }
+        }
+
+        if (candidate == null)
+        {
+            return false;
+        }
+
+        latestTransition = candidate.Value;
+        return true;
+
+        void UpdateCandidate(string value)
+        {
+            if (!TryParseTransition(value, out var parsed))
+            {
+                return;
+            }
+
+            var forecastDate = DateOnly.FromDateTime(parsed.Date);
+            if (parsed > atOrBefore ||
+                forecastDate < earliestForecastDate ||
+                excludedForecastDates?.Contains(forecastDate) == true ||
+                candidate != null && parsed <= candidate.Value)
+            {
+                return;
+            }
+
+            candidate = parsed;
+        }
+    }
+
     private static bool TryParseTransition(string value, out DateTimeOffset transition)
     {
         return DateTimeOffset.TryParse(

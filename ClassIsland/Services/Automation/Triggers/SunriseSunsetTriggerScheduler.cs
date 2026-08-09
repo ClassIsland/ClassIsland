@@ -76,17 +76,34 @@ internal sealed class SunriseSunsetTriggerScheduler
     {
         var now = _sunriseSunsetService.GetCurrentTime();
         var previousScheduledTarget = _scheduledTarget;
-        var crossedScheduledTarget = previousScheduledTarget != null && previousScheduledTarget <= now;
 
         _delayCancellationTokenSource?.Cancel();
         _delayCancellationTokenSource?.Dispose();
         _delayCancellationTokenSource = null;
         _scheduledTarget = null;
 
-        if (_isLoaded && crossedScheduledTarget)
+        if (_isLoaded && previousScheduledTarget != null)
         {
-            // 刷新或校时可能恰好抢在到期回调前执行，此时先补上已跨过的边界，避免漏触发。
-            TriggerTarget(previousScheduledTarget!.Value);
+            var earliestForecastDate = DateOnly.FromDateTime(previousScheduledTarget.Value.Date);
+            var revisedCrossedTarget = default(DateTimeOffset);
+            var hasRevisedCrossedTarget = _sunriseSunsetService.HasFreshForecast &&
+                                          _sunriseSunsetService.TryGetLatestTransitionAtOrBefore(
+                                              _transition,
+                                              earliestForecastDate,
+                                              now,
+                                              _triggeredForecastDates,
+                                              out revisedCrossedTarget);
+
+            if (hasRevisedCrossedTarget)
+            {
+                // 预报可能把尚未到达的边界修订到过去，必须按新时间补触发，而不是只检查旧计时目标。
+                TriggerTarget(revisedCrossedTarget);
+            }
+            else if (previousScheduledTarget <= now)
+            {
+                // 刷新或校时可能恰好抢在到期回调前执行，此时补上已跨过但已从预报中移除的旧边界。
+                TriggerTarget(previousScheduledTarget.Value);
+            }
         }
 
         if (!_isLoaded ||
@@ -142,7 +159,11 @@ internal sealed class SunriseSunsetTriggerScheduler
 
     private void TriggerTarget(DateTimeOffset target)
     {
-        _triggeredForecastDates.Add(DateOnly.FromDateTime(target.Date));
+        if (!_triggeredForecastDates.Add(DateOnly.FromDateTime(target.Date)))
+        {
+            return;
+        }
+
         _trigger();
     }
 }
