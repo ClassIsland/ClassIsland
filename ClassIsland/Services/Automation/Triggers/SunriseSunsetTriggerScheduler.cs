@@ -16,6 +16,7 @@ internal sealed class SunriseSunsetTriggerScheduler
     private readonly Action _trigger;
     private readonly HashSet<DateOnly> _triggeredForecastDates = [];
     private CancellationTokenSource? _delayCancellationTokenSource;
+    private DateTimeOffset? _lastScheduleObservationTime;
     private DateTimeOffset? _scheduledTarget;
     private bool _isLoaded;
 
@@ -53,6 +54,7 @@ internal sealed class SunriseSunsetTriggerScheduler
         _delayCancellationTokenSource?.Cancel();
         _delayCancellationTokenSource?.Dispose();
         _delayCancellationTokenSource = null;
+        _lastScheduleObservationTime = null;
         _scheduledTarget = null;
     }
 
@@ -82,32 +84,18 @@ internal sealed class SunriseSunsetTriggerScheduler
         _delayCancellationTokenSource = null;
         _scheduledTarget = null;
 
-        if (_isLoaded && previousScheduledTarget != null)
+        if (TryGetCrossedTarget(now, previousScheduledTarget, out var crossedTarget))
         {
-            var earliestForecastDate = DateOnly.FromDateTime(previousScheduledTarget.Value.Date);
-            var revisedCrossedTarget = default(DateTimeOffset);
-            var hasRevisedCrossedTarget = _sunriseSunsetService.HasFreshForecast &&
-                                          _sunriseSunsetService.TryGetLatestTransitionAtOrBefore(
-                                              _transition,
-                                              earliestForecastDate,
-                                              now,
-                                              _triggeredForecastDates,
-                                              out revisedCrossedTarget);
-
-            if (hasRevisedCrossedTarget)
-            {
-                // 预报可能把尚未到达的边界修订到过去，必须按新时间补触发，而不是只检查旧计时目标。
-                TriggerTarget(revisedCrossedTarget);
-            }
-            else if (previousScheduledTarget <= now)
-            {
-                // 刷新或校时可能恰好抢在到期回调前执行，此时补上已跨过但已从预报中移除的旧边界。
-                TriggerTarget(previousScheduledTarget.Value);
-            }
+            TriggerTarget(crossedTarget);
         }
 
-        if (!_isLoaded ||
-            !_sunriseSunsetService.HasFreshForecast ||
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        _lastScheduleObservationTime = now;
+        if (!_sunriseSunsetService.HasFreshForecast ||
             !_sunriseSunsetService.TryGetNextTransition(
                 _transition,
                 now,
@@ -128,6 +116,59 @@ internal sealed class SunriseSunsetTriggerScheduler
         _delayCancellationTokenSource = new CancellationTokenSource();
         _scheduledTarget = target;
         _ = WaitAndTriggerAsync(delay, _delayCancellationTokenSource.Token);
+    }
+
+    private bool TryGetCrossedTarget(
+        DateTimeOffset now,
+        DateTimeOffset? previousScheduledTarget,
+        out DateTimeOffset crossedTarget)
+    {
+        crossedTarget = default;
+        if (!_isLoaded)
+        {
+            return false;
+        }
+
+        DateTimeOffset? candidate = null;
+        if (_sunriseSunsetService.HasFreshForecast && _lastScheduleObservationTime != null &&
+            _sunriseSunsetService.TryGetLatestTransitionBetween(
+                _transition,
+                _lastScheduleObservationTime.Value,
+                now,
+                _triggeredForecastDates,
+                out var observedCrossedTarget))
+        {
+            // 观察窗口允许此前缺失或损坏的较早预报日期在恢复后补触发。
+            candidate = observedCrossedTarget;
+        }
+
+        if (_sunriseSunsetService.HasFreshForecast && previousScheduledTarget != null &&
+            _sunriseSunsetService.TryGetLatestTransitionAtOrBefore(
+                _transition,
+                DateOnly.FromDateTime(previousScheduledTarget.Value.Date),
+                now,
+                _triggeredForecastDates,
+                out var revisedCrossedTarget) &&
+            (candidate == null || revisedCrossedTarget > candidate.Value))
+        {
+            // 旧目标日期补充覆盖边界被修订到观察窗口之前的情况。
+            candidate = revisedCrossedTarget;
+        }
+
+        if (candidate != null)
+        {
+            crossedTarget = candidate.Value;
+            return true;
+        }
+
+        if (previousScheduledTarget == null || previousScheduledTarget > now)
+        {
+            return false;
+        }
+
+        // 刷新或校时可能恰好抢在到期回调前执行，此时补上已跨过但已从预报中移除的旧边界。
+        crossedTarget = previousScheduledTarget.Value;
+        return true;
     }
 
     private async Task WaitAndTriggerAsync(TimeSpan delay, CancellationToken cancellationToken)

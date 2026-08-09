@@ -106,6 +106,47 @@ internal static class SunriseSunsetSchedule
         IReadOnlySet<DateOnly>? excludedForecastDates,
         out DateTimeOffset latestTransition)
     {
+        return TryGetLatestTransition(
+            schedule,
+            transition,
+            parsed => parsed <= atOrBefore &&
+                      DateOnly.FromDateTime(parsed.Date) >= earliestForecastDate,
+            excludedForecastDates,
+            out latestTransition);
+    }
+
+    public static bool TryGetLatestTransitionBetween(
+        IReadOnlyList<RangedValue>? schedule,
+        SunTransition transition,
+        DateTimeOffset afterExclusive,
+        DateTimeOffset atOrBefore,
+        IReadOnlySet<DateOnly>? excludedForecastDates,
+        out DateTimeOffset latestTransition)
+    {
+        return TryGetLatestTransition(
+            schedule,
+            transition,
+            parsed => parsed > afterExclusive && parsed <= atOrBefore,
+            excludedForecastDates,
+            out latestTransition);
+    }
+
+    private static bool TryParseTransition(string value, out DateTimeOffset transition)
+    {
+        return DateTimeOffset.TryParse(
+            value,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out transition);
+    }
+
+    private static bool TryGetLatestTransition(
+        IReadOnlyList<RangedValue>? schedule,
+        SunTransition transition,
+        Func<DateTimeOffset, bool> isInRange,
+        IReadOnlySet<DateOnly>? excludedForecastDates,
+        out DateTimeOffset latestTransition)
+    {
         latestTransition = default;
         DateTimeOffset? candidate = null;
         if (schedule == null)
@@ -142,8 +183,7 @@ internal static class SunriseSunsetSchedule
             }
 
             var forecastDate = DateOnly.FromDateTime(parsed.Date);
-            if (parsed > atOrBefore ||
-                forecastDate < earliestForecastDate ||
+            if (!isInRange(parsed) ||
                 excludedForecastDates?.Contains(forecastDate) == true ||
                 (candidate != null && parsed <= candidate.Value))
             {
@@ -152,14 +192,5 @@ internal static class SunriseSunsetSchedule
 
             candidate = parsed;
         }
-    }
-
-    private static bool TryParseTransition(string value, out DateTimeOffset transition)
-    {
-        return DateTimeOffset.TryParse(
-            value,
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.None,
-            out transition);
     }
 }

@@ -107,6 +107,22 @@ public sealed class SunriseSunsetService
             out latestTransition);
     }
 
+    internal bool TryGetLatestTransitionBetween(
+        SunTransition transition,
+        DateTimeOffset afterExclusive,
+        DateTimeOffset atOrBefore,
+        IReadOnlySet<DateOnly> excludedForecastDates,
+        out DateTimeOffset latestTransition)
+    {
+        return SunriseSunsetSchedule.TryGetLatestTransitionBetween(
+            _settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value,
+            transition,
+            afterExclusive,
+            atOrBefore,
+            excludedForecastDates,
+            out latestTransition);
+    }
+
     private void OnScheduleSourceChanged(object? sender, EventArgs e)
     {
         RaiseScheduleChanged();
