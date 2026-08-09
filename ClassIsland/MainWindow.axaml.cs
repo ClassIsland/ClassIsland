@@ -35,6 +35,7 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Models.Tutorial;
+using ClassIsland.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Platforms.Abstraction;
@@ -99,10 +100,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         get;
     }
 
-    private IWeatherService WeatherService
-    {
-        get;
-    }
+    private SunriseSunsetService SunriseSunsetService { get; }
 
     public INotificationHostService NotificationHostService
     {
@@ -144,6 +142,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     };
 
     private DispatcherTimer TouchInFadingTimer { get; set; } = new();
+
+    private DispatcherTimer SunriseSunsetThemeTimer { get; } = new();
 
     private Stopwatch RawInputUpdateStopWatch { get; } = new();
 
@@ -206,7 +206,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ILogger<MainWindow> logger, 
         ISpeechService speechService,
         IExactTimeService exactTimeService,
-        IWeatherService weatherService,
+        SunriseSunsetService sunriseSunsetService,
         IComponentsService componentsService,
         ILessonsService lessonsService,
         IUriNavigationService uriNavigationService,
@@ -223,8 +223,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TaskBarIconService = taskBarIconService;
         NotificationHostService = notificationHostService;
         ThemeService = themeService;
-        WeatherService = weatherService;
-        WeatherService.PropertyChanged += OnWeatherUpdatedForTheme;
+        SunriseSunsetService = sunriseSunsetService;
+        SunriseSunsetThemeTimer.Tick += SunriseSunsetThemeTimerOnTick;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         ComponentsService = componentsService;
@@ -240,6 +240,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
+        SunriseSunsetService.ScheduleChanged += OnSunriseSunsetScheduleChanged;
+        AppBase.Current.AppStopping += OnAppStoppingForSunriseSunsetTheme;
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
@@ -769,12 +771,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 }
                 break;
         }
-        var effectiveTheme = ViewModel.Settings.Theme;
-        if (effectiveTheme == 3) // 跟随日出日落
+        var effectiveTheme = (AppThemeMode)ViewModel.Settings.Theme;
+        if (effectiveTheme == AppThemeMode.FollowSunriseSunset)
         {
-            effectiveTheme = IsInDaylight() ? 1 : 2;
+            effectiveTheme = SunriseSunsetService.IsDaylight()
+                ? AppThemeMode.Light
+                : AppThemeMode.Dark;
+            ScheduleNextSunriseSunsetThemeUpdate();
         }
-        ThemeService.SetTheme(effectiveTheme, primary);
+        else
+        {
+            SunriseSunsetThemeTimer.Stop();
+        }
+        ThemeService.SetTheme((int)effectiveTheme, primary);
 
         if (ResourceLoaderBorder != null)
         {
@@ -1663,37 +1672,47 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     }
     #endregion
 
-    private bool IsInDaylight()
+    private void ScheduleNextSunriseSunsetThemeUpdate()
     {
-        var info = SettingsService.Settings.LastWeatherInfo;
-        if (info == null) return false; // 默认夜间
-        var list = info.ForecastDaily.SunRiseSet.Value;
-        if (list == null || list.Count == 0) return false;
+        SunriseSunsetThemeTimer.Stop();
 
-        var now = DateTimeOffset.Now;
-        foreach (var item in list)
+        if (!SunriseSunsetService.TryGetNextTransition(SunTransition.Either, out var nextTransition))
         {
-            if (!DateTimeOffset.TryParse(item.From, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var sr))
-                continue;
-            if (!DateTimeOffset.TryParse(item.To, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var ss))
-                continue;
-            if (sr.Date == now.Date || ss.Date == now.Date)
-            {
-                return now >= sr && now < ss;
-            }
+            return;
         }
-        return false;
+
+        var delay = nextTransition - SunriseSunsetService.GetCurrentTime();
+        if (delay <= TimeSpan.Zero)
+        {
+            _ = Dispatcher.UIThread.InvokeAsync(UpdateTheme);
+            return;
+        }
+
+        SunriseSunsetThemeTimer.Interval = delay;
+        SunriseSunsetThemeTimer.Start();
     }
 
-    private void OnWeatherUpdatedForTheme(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void SunriseSunsetThemeTimerOnTick(object? sender, EventArgs e)
     {
-        if (ViewModel.Settings.Theme == 3) // 跟随日出日落
+        SunriseSunsetThemeTimer.Stop();
+        UpdateTheme();
+    }
+
+    private void OnSunriseSunsetScheduleChanged(object? sender, EventArgs e)
+    {
+        if (ViewModel.Settings.Theme != (int)AppThemeMode.FollowSunriseSunset)
         {
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                var effectiveTheme = IsInDaylight() ? 1 : 2;
-                ThemeService.SetTheme(effectiveTheme, null);
-            });
+            return;
         }
+
+        _ = Dispatcher.UIThread.InvokeAsync(UpdateTheme);
+    }
+
+    private void OnAppStoppingForSunriseSunsetTheme(object? sender, EventArgs e)
+    {
+        SunriseSunsetThemeTimer.Stop();
+        SunriseSunsetThemeTimer.Tick -= SunriseSunsetThemeTimerOnTick;
+        SunriseSunsetService.ScheduleChanged -= OnSunriseSunsetScheduleChanged;
+        AppBase.Current.AppStopping -= OnAppStoppingForSunriseSunsetTheme;
     }
 }

@@ -11,6 +11,7 @@ using Avalonia.Styling;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
+using ClassIsland.Enums;
 using FluentAvalonia.Styling;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -50,17 +51,18 @@ public class ThemeService : IHostedService, IThemeService
             return;
         }
         
-        AppBase.Current.RequestedThemeVariant = themeMode switch
+        var appThemeMode = (AppThemeMode)themeMode;
+        AppBase.Current.RequestedThemeVariant = appThemeMode switch
         {
-            0 => ThemeVariant.Default,
-            1 => ThemeVariant.Light,
-            2 => ThemeVariant.Dark,
+            AppThemeMode.FollowSystem => ThemeVariant.Default,
+            AppThemeMode.Light => ThemeVariant.Light,
+            AppThemeMode.Dark => ThemeVariant.Dark,
             _ => ThemeVariant.Default
         };
 
         faTheme.CustomAccentColor = primary;
         faTheme.PreferUserAccentColor = primary == null;
-        faTheme.PreferSystemTheme = themeMode == 0;
+        faTheme.PreferSystemTheme = appThemeMode == AppThemeMode.FollowSystem;
         
         // 计算应用画刷
         var brush = AppBase.Current.TryFindResource("AccentFillColorSelectedTextBackgroundBrush",

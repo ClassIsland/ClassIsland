@@ -29,6 +29,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 {
     private IDataTemplate? _selectedWeatherIconTemplate;
     private SettingsService SettingsService { get; }
+    private IExactTimeService ExactTimeService { get; }
 
     private Settings Settings => SettingsService.Settings;
     private string Schema =>  Settings.NoTLSWeatherRequests ? "http" : "https";
@@ -51,13 +52,21 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         set => SetProperty(ref _isWeatherRefreshed, value);
     }
 
+    internal event EventHandler? WeatherRefreshed;
+
     public bool IsPosUpdated { get; set; } = false;
 
-    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService, ILocationService locationService)
+    public WeatherService(
+        SettingsService settingsService,
+        ILogger<WeatherService> logger,
+        IRulesetService rulesetService,
+        ILocationService locationService,
+        IExactTimeService exactTimeService)
     {
         Logger = logger;
         RulesetService = rulesetService;
         LocationService = locationService;
+        ExactTimeService = exactTimeService;
         SettingsService = settingsService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         LoadData();
@@ -110,34 +119,16 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         if (!IsWeatherRefreshed)
             return false;
 
-        var now = DateTimeOffset.Now;
-        if (!TryGetSunTimes(now, out var sunrise, out var sunset))
-            return false;
-
-        return settings.IsSunset
-            ? (now >= sunset || now < sunrise)
-            : (now >= sunrise && now < sunset);
-    }
-
-    private bool TryGetSunTimes(DateTimeOffset now, out DateTimeOffset sunrise, out DateTimeOffset sunset)
-    {
-        sunrise = default;
-        sunset = default;
-        var list = Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value;
-        foreach (var item in list)
+        var now = new DateTimeOffset(ExactTimeService.GetCurrentLocalDateTime());
+        if (!SunriseSunsetSchedule.TryGetDaylightStatus(
+                Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value,
+                now,
+                out var isDaylight))
         {
-            if (!DateTimeOffset.TryParse(item.From, CultureInfo.InvariantCulture, DateTimeStyles.None, out var sr))
-                continue;
-            if (!DateTimeOffset.TryParse(item.To, CultureInfo.InvariantCulture, DateTimeStyles.None, out var ss))
-                continue;
-            if (sr.Date == now.Date || ss.Date == now.Date)
-            {
-                sunrise = sr;
-                sunset = ss;
-                return true;
-            }
+            return false;
         }
-        return false;
+
+        return settings.IsSunset ? !isDaylight : isDaylight;
     }
 
     private bool HasAlertRuleHandler(object? o)
@@ -387,6 +378,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
+            WeatherRefreshed?.Invoke(this, EventArgs.Empty);
             result.IsSuccess = true;
         }
         catch (Exception ex)

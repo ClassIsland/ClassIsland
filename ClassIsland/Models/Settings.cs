@@ -8,6 +8,7 @@ using Avalonia.Media;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
+using ClassIsland.Enums;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
@@ -29,7 +30,7 @@ namespace ClassIsland.Models;
 
 public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings, IGlobalSpeechSettings
 {
-    private int _theme = 2;
+    private int _theme = (int)AppThemeMode.Dark;
     private bool _iscustomBackgroundColorEnabled = false;
     private Color _backgroundColor = Colors.Black;
     private Color _primaryColor = Colors.DeepSkyBlue;
@@ -985,7 +986,15 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             if (value == _theme) return;
             _theme = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(ThemeMode));
         }
+    }
+
+    [JsonIgnore]
+    public AppThemeMode ThemeMode
+    {
+        get => (AppThemeMode)Theme;
+        set => Theme = (int)value;
     }
 
     [SettingsInfo("强调色", "\uEC54", order: 1)]

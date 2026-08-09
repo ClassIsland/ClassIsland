@@ -10,6 +10,7 @@
       xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
       xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
       xmlns:settingsPages="clr-namespace:ClassIsland.ViewModels.SettingsPages"
+      xmlns:enums="clr-namespace:ClassIsland.Enums"
       xmlns:classIsland="clr-namespace:ClassIsland"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
       xmlns:ci="http://classisland.tech/schemas/xaml/core"
@@ -125,12 +126,13 @@
                                         Description="控制应用的明暗主题。">
                 <controls2:SettingsExpander.Footer>
                     <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}"
+                              SelectedValue="{Binding ViewModel.SettingsService.Settings.ThemeMode}"
+                              SelectedValueBinding="{Binding Tag}"
                               HorizontalContentAlignment="Left">
-                        <controls1:IconText Glyph="&#xE5CB;" Text="跟随系统" />
-                        <controls1:IconText Glyph="&#xF465;" Text="明亮" />
-                        <controls1:IconText Glyph="&#xF44B;" Text="黑暗" />
-                        <controls1:IconText Glyph="&#xEC45;" Text="跟随日出日落" />
+                        <controls1:IconText Tag="{x:Static enums:AppThemeMode.FollowSystem}" Glyph="&#xE5CB;" Text="跟随系统" />
+                        <controls1:IconText Tag="{x:Static enums:AppThemeMode.Light}" Glyph="&#xF465;" Text="明亮" />
+                        <controls1:IconText Tag="{x:Static enums:AppThemeMode.Dark}" Glyph="&#xF44B;" Text="黑暗" />
+                        <controls1:IconText Tag="{x:Static enums:AppThemeMode.FollowSunriseSunset}" Glyph="&#xEC45;" Text="跟随日出日落" />
                     </ComboBox>
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>

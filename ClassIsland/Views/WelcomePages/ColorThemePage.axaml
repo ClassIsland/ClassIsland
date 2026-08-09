@@ -7,6 +7,7 @@
              xmlns:views="clr-namespace:ClassIsland.Views"
              xmlns:welcomePages="clr-namespace:ClassIsland.Views.WelcomePages"
              xmlns:demo="clr-namespace:ClassIsland.Controls.Demo"
+             xmlns:enums="clr-namespace:ClassIsland.Enums"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.WelcomePages.ColorThemePage">
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -19,13 +20,15 @@
         <TextBlock Text="设置 ClassIsland 的主题外观。" HorizontalAlignment="Center"
                    Margin="0 0 0 8"/>
         
-        <ListBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}" HorizontalAlignment="Center">
+        <ListBox SelectedValue="{Binding ViewModel.SettingsService.Settings.ThemeMode}"
+                 SelectedValueBinding="{Binding Tag}"
+                 HorizontalAlignment="Center">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
-            <ListBoxItem>
+            <ListBoxItem Tag="{x:Static enums:AppThemeMode.FollowSystem}">
                 <StackPanel Margin="0 8 0 4">
                     <Panel Width="120" Height="75">
                         <ThemeVariantScope RequestedThemeVariant="Dark">
@@ -44,7 +47,7 @@
                     <RadioButton Content="跟随系统" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
                 </StackPanel>
             </ListBoxItem>
-            <ListBoxItem>
+            <ListBoxItem Tag="{x:Static enums:AppThemeMode.Light}">
                 <StackPanel Margin="0 8 0 4">
                     <ThemeVariantScope RequestedThemeVariant="Light">
                         <demo:ThemeDemo Width="120" />
@@ -52,7 +55,7 @@
                     <RadioButton Content="明亮" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
                 </StackPanel>
             </ListBoxItem>
-            <ListBoxItem>
+            <ListBoxItem Tag="{x:Static enums:AppThemeMode.Dark}">
                 <StackPanel Margin="0 8 0 4">
                     <ThemeVariantScope RequestedThemeVariant="Dark">
                         <demo:ThemeDemo Width="120" />
@@ -60,7 +63,7 @@
                     <RadioButton Content="黑暗" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
                 </StackPanel>
             </ListBoxItem>
-                    <ListBoxItem>
+            <ListBoxItem Tag="{x:Static enums:AppThemeMode.FollowSunriseSunset}">
                 <StackPanel Margin="0 8 0 4">
                     <Panel Width="120" Height="75">
                         <ThemeVariantScope RequestedThemeVariant="Dark">

@@ -64,7 +64,9 @@ public partial class App
         services.AddSingleton<INotificationWorkerService, NotificationWorkerService>();
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<MiniInfoProviderHostService>();
-        services.AddSingleton<IWeatherService, WeatherService>();
+        services.AddSingleton<WeatherService>();
+        services.AddSingleton<IWeatherService>(provider => provider.GetRequiredService<WeatherService>());
+        services.AddSingleton<SunriseSunsetService>();
         services.AddSingleton<FileFolderService>();
         services.AddSingleton<IAttachedSettingsHostService, AttachedSettingsHostService>();
         services.AddSingleton<IProfileService, ProfileService>();
@@ -251,7 +253,7 @@ public partial class App
         services.AddTrigger<PreTimePointTrigger, PreTimePointTriggerSettingsControl>();
         services.AddTrigger<SunriseTrigger>();
         services.AddTrigger<SunsetTrigger>();
-        
+
         // 规则
         services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
         services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
