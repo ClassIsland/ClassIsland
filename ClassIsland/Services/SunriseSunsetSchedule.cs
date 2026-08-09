@@ -56,7 +56,7 @@ internal static class SunriseSunsetSchedule
         {
             if (!TryParseTransition(value, out var parsed) || parsed <= now ||
                 excludedForecastDates?.Contains(DateOnly.FromDateTime(parsed.Date)) == true ||
-                candidate != null && parsed >= candidate.Value)
+                (candidate != null && parsed >= candidate.Value))
             {
                 return;
             }
@@ -145,7 +145,7 @@ internal static class SunriseSunsetSchedule
             if (parsed > atOrBefore ||
                 forecastDate < earliestForecastDate ||
                 excludedForecastDates?.Contains(forecastDate) == true ||
-                candidate != null && parsed <= candidate.Value)
+                (candidate != null && parsed <= candidate.Value))
             {
                 return;
             }
