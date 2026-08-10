@@ -20,6 +20,11 @@ public interface IWeatherService : INotifyPropertyChanged
     /// 天气是否已经刷新
     /// </summary>
     bool IsWeatherRefreshed { get; set; }
+
+    /// <summary>
+    /// 最近一次获取到的天气信息。如果尚未获取到天气信息，则为 <see langword="null"/>。
+    /// </summary>
+    WeatherInfo? LastWeatherInfo { get; }
     /// <summary>
     /// 立刻查询天气
     /// </summary>
