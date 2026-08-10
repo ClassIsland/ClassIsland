@@ -24,7 +24,11 @@ public interface IWeatherService : INotifyPropertyChanged
     /// <summary>
     /// 最近一次获取到的天气信息。如果尚未获取到天气信息，则为 <see langword="null"/>。
     /// </summary>
-    WeatherInfo? LastWeatherInfo { get; }
+    /// <remarks>
+    /// 提供默认实现以保持源代码兼容性：使用旧版 SDK 编译、未实现此成员的现有实现
+    /// （如第三方插件或测试替身）仍可正常加载，调用时将回退为 <see langword="null"/>。
+    /// </remarks>
+    WeatherInfo? LastWeatherInfo => null;
     /// <summary>
     /// 立刻查询天气
     /// </summary>
