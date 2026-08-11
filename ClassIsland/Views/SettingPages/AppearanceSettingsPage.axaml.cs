@@ -1,10 +1,12 @@
 using ClassIsland.Core.Abstractions.Controls;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -54,4 +56,15 @@ public partial class AppearanceSettingsPage : SettingsPageBase
         // }
         // GC.Collect();
     }
+
+    public override IReadOnlyList<string> GetSettingsResetTargetProperties() =>
+    [
+        nameof(Settings.Scale), nameof(Settings.BackgroundColor), nameof(Settings.IsCustomBackgroundColorEnabled),
+        nameof(Settings.Opacity), nameof(Settings.RadiusX), nameof(Settings.MainWindowLineVerticalMargin),
+        nameof(Settings.IsIslandSeperated), nameof(Settings.Theme), nameof(Settings.ColorSource),
+        nameof(Settings.PrimaryColor), nameof(Settings.MainWindowFont), nameof(Settings.MainWindowFontWeight2),
+        nameof(Settings.MainWindowSecondaryFontSize), nameof(Settings.MainWindowBodyFontSize),
+        nameof(Settings.MainWindowEmphasizedFontSize), nameof(Settings.MainWindowLargeFontSize),
+        nameof(Settings.CustomForegroundColor), nameof(Settings.IsCustomForegroundColorEnabled)
+    ];
 }

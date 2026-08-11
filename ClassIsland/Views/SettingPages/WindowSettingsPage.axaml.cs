@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -11,6 +12,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
@@ -76,4 +78,13 @@ public partial class WindowSettingsPage : SettingsPageBase
     {
         ViewModel.SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
     }
+
+    public override IReadOnlyList<string> GetSettingsResetTargetProperties() =>
+    [
+        nameof(Settings.WindowDockingLocation), nameof(Settings.WindowDockingOffsetX), nameof(Settings.WindowDockingOffsetY),
+        nameof(Settings.WindowDockingMonitorIndex), nameof(Settings.WindowLayer), nameof(Settings.WindowTopmostRecheckMode),
+        nameof(Settings.IsMouseInFadingEnabled), nameof(Settings.TouchInFadingDurationMs), nameof(Settings.IsMouseInFadingReversed),
+        nameof(Settings.IsIgnoreWorkAreaEnabled), nameof(Settings.IsScreenRecordingModeEnabled),
+        nameof(Settings.IsWindowCaptureBlockingEnabled), nameof(Settings.UseRawInput)
+    ];
 }

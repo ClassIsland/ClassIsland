@@ -76,4 +76,27 @@ public abstract class SettingsPageBase : UserControl
     /// 导航到本设置页面时使用的 Uri（如有）
     /// </summary>
     public Uri? NavigationUri { get; internal set; }
+
+    /// <summary>
+    /// 恢复默认设置时需要重置的设置属性名列表。
+    /// 返回空列表表示本页面不提供"恢复默认设置"按钮。
+    /// 支持子对象属性名，恢复时会将整个子对象替换为默认值。
+    /// </summary>
+    public virtual IReadOnlyList<string> GetSettingsResetTargetProperties() => [];
+
+    /// <summary>
+    /// 将当前设置恢复为默认值。
+    /// </summary>
+    /// <param name="currentSettings">当前设置对象</param>
+    /// <param name="defaultSettings">默认值来源（新创建的默认实例）</param>
+    public virtual void ResetSettingsToDefault(object currentSettings, object defaultSettings)
+    {
+        var type = currentSettings.GetType();
+        foreach (var name in GetSettingsResetTargetProperties())
+        {
+            var prop = type.GetProperty(name);
+            if (prop is not { CanWrite: true } || prop.GetIndexParameters().Length > 0) continue;
+            prop.SetValue(currentSettings, prop.GetValue(defaultSettings));
+        }
+    }
 }

@@ -98,9 +98,19 @@
                                     <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}"/>
                                 </Style>
                             </Grid.Styles>
-                            <TextBlock FontWeight="Normal"
-                                       Text="{Binding ViewModel.SelectedPageInfo.Name}"
-                                       Theme="{StaticResource TitleTextBlockStyle}"/>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock FontWeight="Normal"
+                                           Text="{Binding ViewModel.SelectedPageInfo.Name}"
+                                           Theme="{StaticResource TitleTextBlockStyle}"/>
+                                <Button Grid.Column="1"
+                                        Classes="accent"
+                                        x:Name="ButtonResetCurrentPageDefaults"
+                                        VerticalAlignment="Center"
+                                        IsVisible="False"
+                                        Click="ButtonResetCurrentPageDefaults_OnClick">
+                                    <commands:IconText Glyph="&#xE72C;" Text="恢复默认"/>
+                                </Button>
+                            </Grid>
                         </Grid>
                         <controls3:Frame Grid.Row="1" Content="{Binding ViewModel.FrameContent}"
                                          Navigated="NavigationServiceOnLoadCompleted"

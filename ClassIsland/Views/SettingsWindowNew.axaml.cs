@@ -28,6 +28,7 @@ using System.Web;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.SettingsWindow;
 using ClassIsland.Helpers;
+using ClassIsland.Models;
 using System.Transactions;
 using Avalonia;
 using Avalonia.Controls;
@@ -326,6 +327,27 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         }
         ViewModel.IsNavigating = false;
         ViewModel.CanGoBack = NavigationFrame.CanGoBack;
+        UpdateResetButtonVisibility();
+    }
+
+    private void UpdateResetButtonVisibility()
+    {
+        ButtonResetCurrentPageDefaults.IsVisible =
+            NavigationFrame.Content is SettingsPageBase page &&
+            page.GetSettingsResetTargetProperties().Count > 0;
+    }
+
+    private async void ButtonResetCurrentPageDefaults_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (NavigationFrame.Content is not SettingsPageBase page) return;
+        if (page.GetSettingsResetTargetProperties().Count <= 0) return;
+        var pageName = ViewModel.SelectedPageInfo?.Name ?? "当前页面";
+        if (!await ContentDialogHelper.ShowConfirmationDialog(
+                "恢复默认设置",
+                $"即将把「{pageName}」页面的所有设置恢复为默认值，此操作无法撤销。",
+                root: this)) return;
+        page.ResetSettingsToDefault(SettingsService.Settings, new Settings());
+        this.ShowSuccessToast($"已将「{pageName}」页面的设置恢复为默认值。");
     }
 
 

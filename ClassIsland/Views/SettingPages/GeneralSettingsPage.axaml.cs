@@ -10,6 +10,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
@@ -96,5 +97,16 @@ public partial class GeneralSettingsPage : SettingsPageBase
             ViewModel.IsSplashPreviewing = false;
         }
     }
+
+    public override IReadOnlyList<string> GetSettingsResetTargetProperties() =>
+    [
+        nameof(Settings.HideRules), nameof(Settings.ShowSellingAnnouncement), nameof(Settings.SingleWeekStartTime),
+        nameof(Settings.MultiWeekRotationMaxCycle), nameof(Settings.TaskBarIconClickBehavior), nameof(Settings.IsCriticalSafeMode),
+        nameof(Settings.CriticalSafeModeMethod), nameof(Settings.IsSplashEnabled), nameof(Settings.SplashCustomLogoSource),
+        nameof(Settings.SplashCustomText), nameof(Settings.ShowDetailedStatusOnSplash), nameof(Settings.HideMode),
+        nameof(Settings.HideOnClass), nameof(Settings.HideOnMaxWindow), nameof(Settings.HideOnFullscreen),
+        nameof(Settings.AnimationLevel), nameof(Settings.IsWaitForTransientDisabled), nameof(Settings.ReduceProgressAccuracy),
+        nameof(Settings.ShowComponentsMigrateTip)
+    ];
 }
 
