@@ -100,8 +100,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     public override IReadOnlyList<string> GetSettingsResetTargetProperties() =>
     [
-        nameof(Settings.HideRules), nameof(Settings.ShowSellingAnnouncement), nameof(Settings.SingleWeekStartTime),
-        nameof(Settings.MultiWeekRotationMaxCycle), nameof(Settings.TaskBarIconClickBehavior), nameof(Settings.IsCriticalSafeMode),
+        nameof(Settings.HideRules), nameof(Settings.ShowSellingAnnouncement), nameof(Settings.TaskBarIconClickBehavior), nameof(Settings.IsCriticalSafeMode),
         nameof(Settings.CriticalSafeModeMethod), nameof(Settings.IsSplashEnabled), nameof(Settings.SplashCustomLogoSource),
         nameof(Settings.SplashCustomText), nameof(Settings.ShowDetailedStatusOnSplash), nameof(Settings.HideMode),
         nameof(Settings.HideOnClass), nameof(Settings.HideOnMaxWindow), nameof(Settings.HideOnFullscreen),
