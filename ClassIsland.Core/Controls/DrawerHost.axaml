@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:ClassIsland.Core.Controls">
+        xmlns:controls="using:ClassIsland.Core.Controls"
+        xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
         <controls:DrawerHost />
     </Design.PreviewWith>
@@ -33,8 +34,24 @@
                                 IsHitTestVisible="False"
                                 Opacity="0"
                                 BoxShadow="0 0 8 #33000000">
-                            <ContentPresenter x:Name="PART_DrawerContentPresenter"
-                                              ContentTemplate="{TemplateBinding DrawerContentTemplate}"/>
+                            <Grid>
+                                <ContentPresenter x:Name="PART_DrawerContentPresenter"
+                                                  ContentTemplate="{TemplateBinding DrawerContentTemplate}"/>
+                                <Grid x:Name="PART_DrawerLoadingIndicatorHost"
+                                      Width="48"
+                                      Height="48"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsHitTestVisible="False"
+                                      IsVisible="False"
+                                      Opacity="0">
+                                    <fa:FAProgressRing x:Name="PART_DrawerLoadingIndicator"
+                                                       Width="48"
+                                                       Height="48"
+                                                       IsActive="True"
+                                                       IsIndeterminate="True"/>
+                                </Grid>
+                            </Grid>
                         </Border>    
                     </Canvas>
                 </Panel>
