@@ -1,21 +1,30 @@
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Metadata;
+using Avalonia.Rendering.Composition;
+using Avalonia.Rendering.Composition.Animations;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Core.Controls;
 
-[PseudoClasses(":drawer-left", ":drawer-right", ":open", ":animated")]
+[PseudoClasses(":drawer-left", ":drawer-right", ":open", ":composition-ready")]
+[TemplatePart("PART_ContentPresenter", typeof(ContentPresenter))]
 [TemplatePart("PART_IgnoreLayer", typeof(Border))]
 [TemplatePart("PART_DrawerContentBorder", typeof(Border))]
 public class DrawerHost : ContentControl
 {
+    private static readonly TimeSpan AnimationDuration = TimeSpan.FromMilliseconds(250);
+    private static readonly TimeSpan DrawerContentLoadDelay = TimeSpan.FromMilliseconds(16);
+    private static readonly Easing AnimationEasing = Easing.Parse("0,0 0,1");
 
     public static readonly StyledProperty<object?> DrawerContentProperty = AvaloniaProperty.Register<DrawerHost, object?>(
         nameof(DrawerContent));
@@ -62,16 +71,58 @@ public class DrawerHost : ContentControl
         set => SetValue(ActualDrawerWidthProperty, value);
     }
 
+    private ContentPresenter? _contentPresenter;
+    private ContentPresenter? _drawerContentPresenter;
     private Border? _ignoreLayer;
     private Border? _drawerContentBorder;
+    private CompositionVisual? _contentPresenterVisual;
+    private CompositionVisual? _drawerContentPresenterVisual;
+    private CompositionVisual? _ignoreLayerVisual;
+    private CompositionVisual? _drawerContentVisual;
+    private int _drawerOpenOperationId;
+    private bool _isDrawerOpeningPending;
+    private bool _isDrawerWidthPlaceholderActive;
+    private double _drawerContentBorderMinWidth;
 
     public DrawerHost()
     {
-        if (IThemeService.AnimationLevel >= 1)
+        this.GetObservable(DrawerPlacementProperty).Subscribe(_ =>
         {
-            PseudoClasses.Set(":animated", true);
-        }
-        this.GetObservable(DrawerPlacementProperty).Subscribe(_ => UpdateDrawerPlacement());
+            UpdateDrawerPlacement();
+            if (!IsDrawerOpen)
+            {
+                UpdateDrawerOffset(animate: false);
+            }
+            if (!_isDrawerOpeningPending)
+            {
+                UpdateDrawerContentOffset();
+            }
+        });
+        this.GetObservable(IsDrawerOpenProperty).Subscribe(_ =>
+        {
+            if (IsDrawerOpen)
+            {
+                ScheduleDrawerOpening();
+            }
+            else
+            {
+                CancelPendingDrawerOpening();
+                UpdateDrawerOffset(animate: true);
+                UpdateDrawerContentOffset();
+            }
+        });
+        this.GetObservable(DrawerContentProperty).Subscribe(_ => OnDrawerContentChanged());
+        this.GetObservable(ActualDrawerWidthProperty).Subscribe(_ =>
+        {
+            if (!IsDrawerOpen)
+            {
+                UpdateDrawerOffset(animate: false);
+            }
+            if (!_isDrawerOpeningPending)
+            {
+                UpdateDrawerContentOffset();
+            }
+        });
         KeyDown += OnKeyDown;
     }
 
@@ -96,13 +147,20 @@ public class DrawerHost : ContentControl
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
+        ClearCompositionAnimations();
+        ClearDrawerWidthPlaceholder();
         if (_drawerContentBorder != null) 
             _drawerContentBorder.SizeChanged -= DrawerContentBorderOnSizeChanged;
         if (_ignoreLayer != null) 
             _ignoreLayer.PointerPressed -= IgnoreLayerOnPointerPressed;
 
-        _ignoreLayer = this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == "PART_IgnoreLayer");
-        _drawerContentBorder = this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == "PART_DrawerContentBorder");
+        _contentPresenter = e.NameScope.Find<ContentPresenter>("PART_ContentPresenter");
+        _drawerContentPresenter = e.NameScope.Find<ContentPresenter>("PART_DrawerContentPresenter");
+        _ignoreLayer = e.NameScope.Find<Border>("PART_IgnoreLayer");
+        _drawerContentBorder = e.NameScope.Find<Border>("PART_DrawerContentBorder");
+
+        UpdateDeferredDrawerWidth();
+        UpdateDrawerContentPresentation();
 
         if (_drawerContentBorder != null) 
             _drawerContentBorder.SizeChanged += DrawerContentBorderOnSizeChanged;
@@ -110,6 +168,48 @@ public class DrawerHost : ContentControl
             _ignoreLayer.PointerPressed += IgnoreLayerOnPointerPressed;
 
         base.OnApplyTemplate(e);
+        if (IsLoaded)
+        {
+            ScheduleCompositionAnimationSetup();
+        }
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        Loaded -= OnDrawerHostLoaded;
+        Loaded += OnDrawerHostLoaded;
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        Loaded -= OnDrawerHostLoaded;
+        LayoutUpdated -= OnInitialLayoutUpdated;
+        CancelPendingDrawerOpening();
+        if (_drawerContentPresenter?.Content == null)
+        {
+            ApplyDrawerWidthPlaceholder(ActualDrawerWidth);
+        }
+        ClearCompositionAnimations();
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void OnDrawerHostLoaded(object? sender, RoutedEventArgs e)
+    {
+        Loaded -= OnDrawerHostLoaded;
+        SetupCompositionAnimations();
+    }
+
+    private void ScheduleCompositionAnimationSetup()
+    {
+        LayoutUpdated -= OnInitialLayoutUpdated;
+        LayoutUpdated += OnInitialLayoutUpdated;
+    }
+
+    private void OnInitialLayoutUpdated(object? sender, EventArgs e)
+    {
+        LayoutUpdated -= OnInitialLayoutUpdated;
+        SetupCompositionAnimations();
     }
 
     private void IgnoreLayerOnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -119,11 +219,393 @@ public class DrawerHost : ContentControl
 
     private void DrawerContentBorderOnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        ActualDrawerWidth = e.NewSize.Width;
+        if (e.NewSize.Width > 0)
+        {
+            ActualDrawerWidth = e.NewSize.Width;
+        }
+    }
+
+    private void OnDrawerContentChanged()
+    {
+        if (_drawerContentPresenter == null)
+        {
+            UpdateDeferredDrawerWidth();
+            return;
+        }
+
+        if (!IsDrawerOpen)
+        {
+            _drawerContentPresenter.Content = null;
+            UpdateDeferredDrawerWidth();
+            return;
+        }
+
+        UpdateDeferredDrawerWidth();
+        if (!_isDrawerOpeningPending)
+        {
+            ScheduleDrawerContentLoad(_drawerOpenOperationId);
+        }
+    }
+
+    private void ScheduleDrawerOpening()
+    {
+        var operationId = ++_drawerOpenOperationId;
+        _isDrawerOpeningPending = true;
+        if (_drawerContentPresenter != null)
+        {
+            _drawerContentPresenter.Content = null;
+        }
+        UpdateDeferredDrawerWidth();
+        Dispatcher.UIThread.Post(() => BeginDrawerOpening(operationId), DispatcherPriority.Render);
+    }
+
+    private void BeginDrawerOpening(int operationId)
+    {
+        if (operationId != _drawerOpenOperationId || !IsDrawerOpen)
+        {
+            return;
+        }
+
+        _isDrawerOpeningPending = false;
+        if (_drawerContentVisual == null)
+        {
+            return;
+        }
+
+        UpdateDrawerOffset(animate: true);
+        UpdateDrawerContentOffset();
+        ScheduleDrawerContentLoad(operationId);
+    }
+
+    private void ScheduleDrawerContentLoad(int operationId)
+    {
+        ApplyDrawerWidthPlaceholder(ActualDrawerWidth);
+        DispatcherTimer.RunOnce(() =>
+        {
+            if (operationId != _drawerOpenOperationId || !IsDrawerOpen || _drawerContentPresenter == null)
+            {
+                return;
+            }
+
+            _drawerContentPresenter.Content = DrawerContent;
+            ClearDrawerWidthPlaceholder();
+            PlayDrawerContentFadeInAnimation();
+        }, DrawerContentLoadDelay);
+    }
+
+    private void UpdateDrawerContentPresentation()
+    {
+        if (_drawerContentPresenter == null)
+        {
+            return;
+        }
+
+        if (!IsDrawerOpen)
+        {
+            _drawerContentPresenter.Content = null;
+        }
+        else if (!_isDrawerOpeningPending && !Equals(_drawerContentPresenter.Content, DrawerContent))
+        {
+            ScheduleDrawerContentLoad(_drawerOpenOperationId);
+        }
+    }
+
+    private void CancelPendingDrawerOpening()
+    {
+        ++_drawerOpenOperationId;
+        _isDrawerOpeningPending = false;
+    }
+
+    private void UpdateDeferredDrawerWidth()
+    {
+        var width = GetDeferredDrawerWidth();
+        if (width is not > 0)
+        {
+            return;
+        }
+
+        ActualDrawerWidth = width.Value;
+        if (_drawerContentPresenter?.Content == null)
+        {
+            ApplyDrawerWidthPlaceholder(width.Value);
+        }
+        if (_isDrawerOpeningPending && _drawerContentVisual is { } visual &&
+            Math.Abs(visual.Translation.X) < 0.01)
+        {
+            SetDrawerOffset(GetClosedDrawerOffset(), animate: false);
+        }
+    }
+
+    private double? GetDeferredDrawerWidth()
+    {
+        if (DrawerContent is not Control control)
+        {
+            return null;
+        }
+
+        if (!double.IsNaN(control.Width) && !double.IsInfinity(control.Width) && control.Width > 0)
+        {
+            return control.Width + control.Margin.Left + control.Margin.Right;
+        }
+
+        return control.DesiredSize.Width > 0 ? control.DesiredSize.Width : null;
+    }
+
+    private void ApplyDrawerWidthPlaceholder(double width)
+    {
+        if (_drawerContentBorder == null || width <= 0)
+        {
+            return;
+        }
+
+        if (!_isDrawerWidthPlaceholderActive)
+        {
+            _drawerContentBorderMinWidth = _drawerContentBorder.MinWidth;
+            _isDrawerWidthPlaceholderActive = true;
+        }
+
+        _drawerContentBorder.SetCurrentValue(
+            MinWidthProperty,
+            Math.Max(_drawerContentBorderMinWidth, width));
+    }
+
+    private void ClearDrawerWidthPlaceholder()
+    {
+        if (!_isDrawerWidthPlaceholderActive || _drawerContentBorder == null)
+        {
+            return;
+        }
+
+        _drawerContentBorder.SetCurrentValue(MinWidthProperty, _drawerContentBorderMinWidth);
+        _isDrawerWidthPlaceholderActive = false;
+    }
+
+    private void PlayDrawerContentFadeInAnimation()
+    {
+        if (IThemeService.AnimationLevel < 1 || _drawerContentPresenterVisual == null || DrawerContent == null)
+        {
+            return;
+        }
+
+        var visual = _drawerContentPresenterVisual;
+        visual.StopAnimation(nameof(visual.Opacity));
+        var animation = visual.Compositor.CreateScalarKeyFrameAnimation();
+        animation.Target = nameof(visual.Opacity);
+        animation.Duration = AnimationDuration;
+        animation.StopBehavior = AnimationStopBehavior.SetToFinalValue;
+        animation.InsertKeyFrame(0f, 0f);
+        animation.InsertKeyFrame(1f, 1f, AnimationEasing);
+        visual.StartAnimation(nameof(visual.Opacity), animation);
     }
 
     public static readonly FuncValueConverter<double, double> NegativeDoubleConverter =
         new FuncValueConverter<double, double>(x => -x);
+
+    private void SetupCompositionAnimations()
+    {
+        LayoutUpdated -= OnInitialLayoutUpdated;
+        ClearCompositionAnimations();
+        if (_contentPresenter == null || _ignoreLayer == null || _drawerContentBorder == null)
+        {
+            return;
+        }
+
+        _contentPresenterVisual = ElementComposition.GetElementVisual(_contentPresenter);
+        _drawerContentPresenterVisual = _drawerContentPresenter == null
+            ? null
+            : ElementComposition.GetElementVisual(_drawerContentPresenter);
+        _ignoreLayerVisual = ElementComposition.GetElementVisual(_ignoreLayer);
+        _drawerContentVisual = ElementComposition.GetElementVisual(_drawerContentBorder);
+        if (_contentPresenterVisual == null || _ignoreLayerVisual == null || _drawerContentVisual == null)
+        {
+            ClearCompositionAnimations();
+            return;
+        }
+
+        if (_drawerContentBorder.Bounds.Width > 0)
+        {
+            ActualDrawerWidth = _drawerContentBorder.Bounds.Width;
+        }
+        else
+        {
+            UpdateDeferredDrawerWidth();
+        }
+        UpdateDrawerOffset(animate: false);
+        UpdateDrawerContentOffset();
+        PseudoClasses.Set(":composition-ready", true);
+        if (IThemeService.AnimationLevel < 1)
+        {
+            UpdateDrawerContentPresentation();
+            return;
+        }
+
+        _drawerContentVisual.ImplicitAnimations = CreateImplicitAnimations(
+            _drawerContentVisual,
+            animateOffset: false,
+            animateTranslation: true,
+            animateOpacity: false);
+        _ignoreLayerVisual.ImplicitAnimations = CreateImplicitAnimations(
+            _ignoreLayerVisual, animateOffset: false, animateOpacity: true);
+        if (IThemeService.AnimationLevel >= 2)
+        {
+            _contentPresenterVisual.ImplicitAnimations = CreateImplicitAnimations(
+                _contentPresenterVisual,
+                animateOffset: false,
+                animateTranslation: true,
+                animateOpacity: false);
+        }
+
+        UpdateDrawerContentPresentation();
+    }
+
+    private static ImplicitAnimationCollection CreateImplicitAnimations(
+        CompositionVisual visual,
+        bool animateOffset,
+        bool animateOpacity,
+        bool animateTranslation = false)
+    {
+        var animations = visual.Compositor.CreateImplicitAnimationCollection();
+        if (animateOffset)
+        {
+            var offsetAnimation = visual.Compositor.CreateVector3DKeyFrameAnimation();
+            offsetAnimation.Target = nameof(visual.Offset);
+            offsetAnimation.Duration = AnimationDuration;
+            offsetAnimation.StopBehavior = AnimationStopBehavior.SetToFinalValue;
+            offsetAnimation.InsertExpressionKeyFrame(1f, "this.FinalValue", AnimationEasing);
+            animations[nameof(visual.Offset)] = offsetAnimation;
+        }
+
+        if (animateTranslation)
+        {
+            var translationAnimation = visual.Compositor.CreateVector3DKeyFrameAnimation();
+            translationAnimation.Target = nameof(visual.Translation);
+            translationAnimation.Duration = AnimationDuration;
+            translationAnimation.StopBehavior = AnimationStopBehavior.SetToFinalValue;
+            translationAnimation.InsertExpressionKeyFrame(1f, "this.FinalValue", AnimationEasing);
+            animations[nameof(visual.Translation)] = translationAnimation;
+        }
+
+        if (animateOpacity)
+        {
+            var opacityAnimation = visual.Compositor.CreateScalarKeyFrameAnimation();
+            opacityAnimation.Target = nameof(visual.Opacity);
+            opacityAnimation.Duration = AnimationDuration;
+            opacityAnimation.StopBehavior = AnimationStopBehavior.SetToFinalValue;
+            opacityAnimation.InsertExpressionKeyFrame(1f, "this.FinalValue", AnimationEasing);
+            animations[nameof(visual.Opacity)] = opacityAnimation;
+        }
+
+        return animations;
+    }
+
+    private void ClearCompositionAnimations()
+    {
+        PseudoClasses.Set(":composition-ready", false);
+        ClearCompositionAnimations(
+            _contentPresenterVisual,
+            animateOffset: false,
+            animateTranslation: true,
+            animateOpacity: false);
+        ClearCompositionAnimations(
+            _drawerContentPresenterVisual,
+            animateOffset: false,
+            animateOpacity: true);
+        ClearCompositionAnimations(_ignoreLayerVisual, animateOffset: false, animateOpacity: true);
+        ClearCompositionAnimations(
+            _drawerContentVisual,
+            animateOffset: false,
+            animateTranslation: true,
+            animateOpacity: false);
+        _contentPresenterVisual = null;
+        _drawerContentPresenterVisual = null;
+        _ignoreLayerVisual = null;
+        _drawerContentVisual = null;
+    }
+
+    private static void ClearCompositionAnimations(
+        CompositionVisual? visual,
+        bool animateOffset,
+        bool animateOpacity,
+        bool animateTranslation = false)
+    {
+        if (visual == null)
+        {
+            return;
+        }
+
+        if (animateOffset)
+        {
+            visual.StopAnimation(nameof(visual.Offset));
+        }
+        if (animateTranslation)
+        {
+            visual.StopAnimation(nameof(visual.Translation));
+        }
+        if (animateOpacity)
+        {
+            visual.StopAnimation(nameof(visual.Opacity));
+        }
+        visual.ImplicitAnimations?.Clear();
+    }
+
+    private void UpdateDrawerContentOffset()
+    {
+        if (_contentPresenterVisual == null)
+        {
+            return;
+        }
+
+        _contentPresenterVisual.Translation = _contentPresenterVisual.Translation with
+        {
+            X = GetDrawerContentOffset()
+        };
+    }
+
+    private void UpdateDrawerOffset(bool animate)
+    {
+        if (_drawerContentVisual == null)
+        {
+            return;
+        }
+
+        var targetOffset = IsDrawerOpen
+            ? 0
+            : GetClosedDrawerOffset();
+        SetDrawerOffset(targetOffset, animate);
+    }
+
+    private double GetClosedDrawerOffset()
+    {
+        return ActualDrawerWidth * (DrawerPlacement == DrawerPlacementEnum.Left ? -1 : 1);
+    }
+
+    private void SetDrawerOffset(double targetOffset, bool animate)
+    {
+        if (_drawerContentVisual == null)
+        {
+            return;
+        }
+
+        if (animate || IThemeService.AnimationLevel < 1)
+        {
+            _drawerContentVisual.Translation = _drawerContentVisual.Translation with { X = targetOffset };
+            return;
+        }
+
+        var implicitAnimations = _drawerContentVisual.ImplicitAnimations;
+        _drawerContentVisual.StopAnimation(nameof(_drawerContentVisual.Translation));
+        _drawerContentVisual.ImplicitAnimations =
+            _drawerContentVisual.Compositor.CreateImplicitAnimationCollection();
+        _drawerContentVisual.Translation = _drawerContentVisual.Translation with { X = targetOffset };
+        _drawerContentVisual.ImplicitAnimations = implicitAnimations;
+    }
+
+    private double GetDrawerContentOffset()
+    {
+        return IThemeService.AnimationLevel >= 2 && IsDrawerOpen
+            ? ActualDrawerWidth * (DrawerPlacement == DrawerPlacementEnum.Left ? 0.07325 : -0.07325)
+            : 0;
+    }
 
     public enum DrawerPlacementEnum
     {
