@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using Avalonia;
-using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.UriNavigation;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.IPC.Abstractions.Services;
@@ -71,14 +70,34 @@ public class UriNavigationService : IUriNavigationService
             }
             else
             {
-                PlatformServices.LauncherService.LaunchUrl(uri.ToString());
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    _ = OpenExternalUriAsync(uri);
+                }
+                else
+                {
+                    PlatformServices.LauncherService.LaunchUrl(uri.ToString());
+                }
             }
         });
     }
 
-    public void NavigateWrapped(Uri uri, out Exception? exception)
+    private async Task OpenExternalUriAsync(Uri uri)
     {
-        Exception? exc = null;
+        try
+        {
+            await PlatformServices.LauncherService.LaunchUrl(uri.AbsoluteUri).ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "无法导航到 {}", uri);
+            Dispatcher.UIThread.Post(() =>
+                _ = CommonTaskDialogs.ShowDialog("导航失败", $"无法导航到 {uri}：{exception.Message}"));
+        }
+    }
+
+    public void NavigateWrapped(Uri uri)
+    {
         Dispatcher.UIThread.Invoke(() =>
         {
             try
@@ -87,16 +106,9 @@ public class UriNavigationService : IUriNavigationService
             }
             catch (Exception ex)
             {
-                exc = ex;
                 Logger.LogError(ex, "无法导航到 {}", uri);
                 _ = CommonTaskDialogs.ShowDialog("导航失败", $"无法导航到 {uri}：{ex.Message}");
             }
         });
-        exception = exc;
-    }
-
-    public void NavigateWrapped(Uri uri)
-    {
-        NavigateWrapped(uri, out var _);
     }
 }

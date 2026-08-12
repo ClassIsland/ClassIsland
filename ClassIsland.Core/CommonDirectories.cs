@@ -22,6 +22,18 @@ public static class CommonDirectories
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
 
     /// <summary>
+    /// 可由系统文档管理器访问的应用共享目录。
+    /// </summary>
+    public static string AppSharedDocumentsFolderPath =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "ClassIsland");
+
+    /// <summary>
+    /// 文件选择器持久化导入内容的目录。
+    /// </summary>
+    public static string AppImportedFilesFolderPath =>
+        Path.Combine(AppSharedDocumentsFolderPath, "ImportedFiles");
+
+    /// <summary>
     /// 应用日志目录
     /// </summary>
     public static string AppLogFolderPath => Path.Combine(AppRootFolderPath, "Logs");

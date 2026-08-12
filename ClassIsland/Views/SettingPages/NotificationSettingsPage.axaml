@@ -356,6 +356,7 @@
                                                     FileTypes="{x:Static local:NotificationSettingsPage.AudioFileTypes}"
                                                     Theme="{StaticResource TransparentButton}" Content="{ci:FluentIcon &#xE88D;}"
                                                     CurrentPath="{Binding ViewModel.SettingsService.Settings.NotificationSoundPath, Mode=TwoWay}"
+                                                    PersistSelection="True"
                                                     VerticalAlignment="Center">
                                                 </controls1:FileBrowserButton>
                                             </StackPanel>
@@ -483,6 +484,7 @@
                                                             Theme="{StaticResource TransparentButton}"
                                                             Content="{ci:FluentIcon &#xE88D;}"
                                                             CurrentPath="{Binding ProviderSettings.NotificationSoundPath, Mode=TwoWay}"
+                                                            PersistSelection="True"
                                                             VerticalAlignment="Center" />
                                                     </StackPanel>
                                                 </controls3:FASettingsExpanderItem.Footer>

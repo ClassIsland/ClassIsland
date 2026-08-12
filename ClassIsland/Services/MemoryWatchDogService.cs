@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
+using ClassIsland.Core.Helpers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -48,7 +49,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
 
     private void CheckMemoryAndRestartIfNeeded()
     {
-        if (OperatingSystem.IsAndroid())
+        if (PlatformHelper.IsMobile)
         {
             return;
         }

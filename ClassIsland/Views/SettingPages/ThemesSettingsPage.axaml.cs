@@ -19,8 +19,10 @@ using ClassIsland.ViewModels.SettingsPages;
 using CommunityToolkit.Mvvm.Input;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Data;
@@ -125,37 +127,69 @@ public partial class ThemesSettingsPage : SettingsPageBase
         {
             return;
         }
-        PopupHelper.DisableAllPopups();
-        var file = await PlatformServices.FilePickerService
-            .SaveFilePickerAsync(new FilePickerSaveOptions()
-            {
-                SuggestedFileName = info.Manifest.Id + ".zip",
-                Title = "打包主题",
-                FileTypeChoices = [
-                    new FilePickerFileType("ClassIsland 主题包")
-                    {
-                        Patterns = ["*.zip"]
-                    }
-                ]
-            }, topLevel);
-        PopupHelper.RestoreAllPopups();
-        if (file == null)
-            return;
         try
         {
-            using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
-                                    ?? throw new FileNotFoundException("无法打开所选主题包文件。", file);
-            await using var outputStream = await storageFile.OpenWriteAsync();
-            if (outputStream.CanSeek)
+            PopupHelper.DisableAllPopups();
+            string? file;
+            try
             {
-                outputStream.SetLength(0);
-                outputStream.Position = 0;
+                var options = new FilePickerSaveOptions
+                {
+                    SuggestedFileName = info.Manifest.Id + ".zip",
+                    Title = "打包主题",
+                    FileTypeChoices =
+                    [
+                        new FilePickerFileType("ClassIsland 主题包")
+                        {
+                            Patterns = ["*.zip"]
+                        }
+                    ]
+                };
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    file = await PlatformServices.FilePickerService.SaveFileAsync(
+                        options,
+                        topLevel,
+                        output => StreamExportHelper.WritePathBasedExportAsync(
+                            output,
+                            ".zip",
+                            path => ViewModel.XamlThemeService.PackageThemeAsync(
+                                info.Manifest.Id,
+                                path)));
+                }
+                else
+                {
+                    file = await PlatformServices.FilePickerService.SaveFilePickerAsync(options, topLevel);
+                    if (file != null)
+                    {
+                        using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                                ?? throw new FileNotFoundException("无法打开所选主题包文件。", file);
+                        await using var outputStream = await storageFile.OpenWriteAsync();
+                        if (outputStream.CanSeek)
+                        {
+                            outputStream.SetLength(0);
+                            outputStream.Position = 0;
+                        }
+                        await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, outputStream);
+                    }
+                }
             }
-            await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, outputStream);
-            var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
-                ? file
-                : Path.GetDirectoryName(file) ?? file;
-            await PlatformServices.LauncherService.LaunchPath(launchPath);
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
+
+            if (file == null)
+                return;
+
+            this.ShowSuccessToast($"已将主题 {info.Manifest.Id} 打包到 {file}。");
+            if (!PlatformHelper.IsAppleMobile)
+            {
+                var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
+                    ? file
+                    : Path.GetDirectoryName(file) ?? file;
+                await PlatformServices.LauncherService.LaunchPath(launchPath);
+            }
         }
         catch (Exception ex)
         {

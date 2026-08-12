@@ -10,7 +10,6 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Services;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.ViewModels.SettingsPages;
-using System.Diagnostics;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
@@ -89,11 +88,6 @@ public partial class NotificationSettingsPage : SettingsPageBase
     {
         ViewModel.SpeechService.ClearSpeechQueue();
         ViewModel.SpeechService.EnqueueSpeechQueue(ViewModel.TestSpeechText);
-    }
-
-    private void ButtonOpenSpeechSettings_OnClick(object sender, RoutedEventArgs e)
-    {
-        Process.Start(@"C:\WINDOWS\system32\rundll32.exe", @"shell32.dll,Control_RunDLL C:\WINDOWS\system32\Speech\SpeechUX\sapi.cpl");
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)

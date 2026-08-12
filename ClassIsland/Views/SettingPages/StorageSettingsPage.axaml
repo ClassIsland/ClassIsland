@@ -76,7 +76,7 @@
             <!-- 备份 -->
             <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE07D;}"
                                        Header="手动备份"
-                                       Description="进行手动备份。备份的内容包括 Config/ 文件夹内的配置文件、 Profiles/ 文件夹内的档案文件和 Settings.json 设置文件。手动备份产生的备份文件不会被自动清除。"
+                                       Description="进行手动备份。备份包含设置、档案、Config/ 配置以及持久导入的自定义资源。手动备份产生的备份文件不会被自动清除。"
                                        IsExpanded="True">
                 <controls:FASettingsExpander.Footer>
                     <Panel>
@@ -105,6 +105,25 @@
                 <controls:FASettingsExpanderItem Content="备份文件占用大小"
                                                Footer="{Binding ViewModel.SettingsService.Settings.BackupFilesSize}"/>
             </controls:FASettingsExpander>
+
+            <StackPanel x:Name="IosImportedFilesSettings" IsVisible="False">
+                <Separator Margin="0 16 0 8" />
+                <ci:IconText Glyph="&#xE8B7;" Text="iOS 导入文件" Margin="0 0 0 4" />
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE8B7;}"
+                                             Header="导入文件副本"
+                                             Description="从“文件”App 选择的内容会复制到 ClassIsland 沙盒，以便导入流程和自定义资源在授权结束后继续读取。"
+                                             IsExpanded="True">
+                    <controls:FASettingsExpanderItem Content="在“文件”App 中查看…"
+                                                     Click="ButtonViewImportedFiles_OnClick"
+                                                     IsClickEnabled="True"
+                                                     ActionIconSource="{ci:FluentIconSource &#xEC2D;}" />
+                    <controls:FASettingsExpanderItem Content="清理未使用的导入文件…"
+                                                     Description="逐项检查保存的引用，只删除已不再被配置使用的副本。"
+                                                     Click="ButtonCleanupImportedFiles_OnClick"
+                                                     IsClickEnabled="True"
+                                                     ActionIconSource="{ci:FluentIconSource &#xE107;}" />
+                </controls:FASettingsExpander>
+            </StackPanel>
             
         </StackPanel>
     </ScrollViewer>

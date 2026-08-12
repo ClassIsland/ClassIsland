@@ -52,4 +52,9 @@ public static class PlatformServices
     /// 启动器服务
     /// </summary>
     public static ILauncherService LauncherService { get; internal set; } = new LauncherServiceStub();
+
+    /// <summary>
+    /// 系统实时活动服务。非 Apple 平台和不受支持的系统会安全返回 Unsupported。
+    /// </summary>
+    public static ILiveActivityService LiveActivityService { get; internal set; } = new LiveActivityServiceStub();
 }

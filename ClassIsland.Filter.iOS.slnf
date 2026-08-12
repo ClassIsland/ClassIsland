@@ -1,0 +1,16 @@
+{
+  "solution": {
+    "path": "ClassIsland.sln",
+    "projects": [
+      "ClassIsland.Core\\ClassIsland.Core.csproj",
+      "ClassIsland.iOS\\ClassIsland.iOS.csproj",
+      "ClassIsland.Platforms.Abstractions\\ClassIsland.Platforms.Abstractions.csproj",
+      "ClassIsland.Shared.IPC\\ClassIsland.Shared.IPC.csproj",
+      "ClassIsland.Shared\\ClassIsland.Shared.csproj",
+      "ClassIsland\\ClassIsland.csproj",
+      "roslyn\\IconsMappingGenerator\\IconsMappingGenerator.csproj",
+      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj",
+      "vendors\\PhainonDistributionCenter.Shared\\PhainonDistributionCenter.Shared.csproj"
+    ]
+  }
+}
