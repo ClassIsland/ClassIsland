@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:ClassIsland.Core.Controls">
+        xmlns:controls="using:ClassIsland.Core.Controls"
+        xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
         <controls:DrawerHost />
     </Design.PreviewWith>
@@ -10,7 +11,8 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel ClipToBounds="True">
-                    <ContentPresenter Content="{TemplateBinding Content}"
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Content}"
                                       ContentTemplate="{TemplateBinding ContentTemplate}"
                                       Focusable="{Binding !IsDrawerOpen, RelativeSource={RelativeSource TemplatedParent}}"/>
                     <Border x:Name="PART_IgnoreLayer"
@@ -29,35 +31,32 @@
                                 Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                 Height="{Binding Bounds.Height, RelativeSource={RelativeSource TemplatedParent}}"
                                 x:Name="PART_DrawerContentBorder"
+                                IsHitTestVisible="False"
                                 Opacity="0"
                                 BoxShadow="0 0 8 #33000000">
-                            <ContentPresenter Content="{TemplateBinding DrawerContent}"
-                                              ContentTemplate="{TemplateBinding DrawerContentTemplate}"/>
+                            <Grid>
+                                <ContentPresenter x:Name="PART_DrawerContentPresenter"
+                                                  ContentTemplate="{TemplateBinding DrawerContentTemplate}"/>
+                                <Grid x:Name="PART_DrawerLoadingIndicatorHost"
+                                      Width="48"
+                                      Height="48"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsHitTestVisible="False"
+                                      IsVisible="False"
+                                      Opacity="0">
+                                    <fa:FAProgressRing x:Name="PART_DrawerLoadingIndicator"
+                                                       Width="48"
+                                                       Height="48"
+                                                       IsActive="True"
+                                                       IsIndeterminate="True"/>
+                                </Grid>
+                            </Grid>
                         </Border>    
                     </Canvas>
                 </Panel>
             </ControlTemplate>
         </Setter>
-        
-        <Style Selector="^:animated">
-            <Style Selector="^ /template/ Border#PART_DrawerContentBorder">
-                <Setter Property="Transitions">
-                    <Transitions>
-                        <DoubleTransition Property="Canvas.Left" Duration="0:0:0.25" Easing="0,0 0,1"/>
-                        <DoubleTransition Property="Canvas.Right" Duration="0:0:0.25" Easing="0,0 0,1"/>
-                        <DoubleTransition Property="Opacity" Duration="0:0:0.25" Easing="0,0 0,1"/>
-                    </Transitions>
-                </Setter>
-            </Style>
-            <Style Selector="^ /template/ Border#PART_IgnoreLayer">
-                <Setter Property="Transitions">
-                    <Transitions>
-                        <DoubleTransition Property="Opacity" Duration="0:0:0.25" Easing="0,0 0,1"/>
-                    </Transitions>
-                </Setter>
-            </Style>
-        </Style>
-        
         <Style Selector="^:drawer-left /template/ Canvas#DrawerCanvas">
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
@@ -68,20 +67,9 @@
         <Style Selector="^[IsDrawerOpen=True] /template/ Border#PART_IgnoreLayer">
             <Setter Property="Opacity" Value="1"/>
         </Style>
-        <Style Selector="^[IsDrawerOpen=True] /template/ Border#PART_DrawerContentBorder">
+        <Style Selector="^:composition-ready /template/ Border#PART_DrawerContentBorder">
+            <Setter Property="IsHitTestVisible" Value="True"/>
             <Setter Property="Opacity" Value="1"/>
-        </Style>
-        <Style Selector="^:drawer-left[IsDrawerOpen=False] /template/ Border#PART_DrawerContentBorder">
-            <Setter Property="Canvas.Left" Value="{Binding ActualDrawerWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:DrawerHost.NegativeDoubleConverter}}"/>
-        </Style>
-        <Style Selector="^:drawer-left[IsDrawerOpen=True] /template/ Border#PART_DrawerContentBorder">
-            <Setter Property="Canvas.Left" Value="0"/>
-        </Style>
-        <Style Selector="^:drawer-right[IsDrawerOpen=False] /template/ Border#PART_DrawerContentBorder">
-            <Setter Property="Canvas.Right" Value="{Binding ActualDrawerWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:DrawerHost.NegativeDoubleConverter}}"/>
-        </Style>
-        <Style Selector="^:drawer-right[IsDrawerOpen=True] /template/ Border#PART_DrawerContentBorder">
-            <Setter Property="Canvas.Right" Value="0"/>
         </Style>
     </Style>
 </Styles>

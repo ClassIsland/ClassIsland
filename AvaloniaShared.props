@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <AvaloniaVersion>12.1.0</AvaloniaVersion>
+        <AvaloniaVersion>12.1.1</AvaloniaVersion>
         <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
 
 
