@@ -73,7 +73,11 @@ public class EnumToIntConverter : IValueConverter
         try
         {
             var intValue = System.Convert.ToInt32(value, culture);
-            return Enum.ToObject(enumType, intValue);
+            var enumValue = Enum.ToObject(enumType, intValue);
+            // 选择控件在初始化选项时可能短暂产生 -1，不能将未定义值写回枚举。
+            return Enum.IsDefined(enumType, enumValue)
+                ? enumValue
+                : BindingOperations.DoNothing;
         }
         catch (Exception exception) when (
             exception is InvalidCastException or

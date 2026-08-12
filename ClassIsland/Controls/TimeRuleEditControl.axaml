@@ -45,11 +45,18 @@
             </TabStripItem>
         </TabStrip>
         
-        <ci:ReusableTabControl 
+        <ci:ReusableTabControl
             Padding="0"
             Margin="0 4 0 0"
-            SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.Type, Converter={x:Static ci:EnumToIntConverter.Instance}}">
-            <TabItem IsVisible="False">
+            SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.Type, Mode=OneWay, Converter={x:Static ci:EnumToIntConverter.Instance}}">
+            <ci:ReusableTabControl.Styles>
+                <Style Selector="TabControl /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="Height" Value="0"/>
+                    <Setter Property="IsHitTestVisible" Value="False"/>
+                    <Setter Property="ClipToBounds" Value="True"/>
+                </Style>
+            </ci:ReusableTabControl.Styles>
+            <TabItem>
                 <StackPanel Spacing="6">
                     <StackPanel Orientation="Horizontal" Classes="items-valign-center"
                                 x:Name="StackPanelWeekDivSettings"
@@ -83,7 +90,7 @@
                     </ListBox>
                 </StackPanel>
             </TabItem>
-            <TabItem IsVisible="False">
+            <TabItem>
                 <StackPanel Spacing="2" >
                     <TextBlock Text="当今天是以下任意日期："/>
                     <ListBox ItemsSource="{Binding $parent[controls:TimeRuleEditControl].TimeRule.EnableDates}">
@@ -140,7 +147,7 @@
                     </Button>
                 </StackPanel>
             </TabItem>
-            <TabItem IsVisible="False">
+            <TabItem>
                 <StackPanel Spacing="6">
                     <WrapPanel Classes="items-valign-center" ItemSpacing="4">
                         <TextBlock Text="从开学起，每"/>
