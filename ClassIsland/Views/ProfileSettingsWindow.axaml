@@ -1249,23 +1249,8 @@
                                                                        Label="时间表信息" />
                                             <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE61D;}"
                                                                        ToolTip.Tip="删除该时间表。"
-                                                                       Label="删除时间表">
-                                                <controls:CommandBarButton.Flyout>
-                                                    <Flyout>
-                                                        <StackPanel Spacing="8">
-                                                            <TextBlock FontWeight="Bold">
-                                                                <Run Text="要删除时间表" />
-                                                                <Run
-                                                                    Text="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout.Name}" />
-                                                                <Run Text="吗？" />
-                                                            </TextBlock>
-                                                            <TextBlock Text="此操作无法撤销。" />
-                                                            <Button Content="删除" Classes="accent"
-                                                                    Click="ButtonDeleteTimeLayout_OnClick" />
-                                                        </StackPanel>
-                                                    </Flyout>
-                                                </controls:CommandBarButton.Flyout>
-                                            </controls:CommandBarButton>
+                                                                       Label="删除时间表"
+                                                                       Click="ButtonDeleteTimeLayout_OnClick" />
                                         </controls:CommandBar.PrimaryCommands>
                                     </controls:CommandBar>
                                 </ci:TutorialBarrier>

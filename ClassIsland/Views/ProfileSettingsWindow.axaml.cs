@@ -862,13 +862,26 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
 
+        var result = await new ContentDialog()
+        {
+            Title = "删除时间表",
+            Content = $"要删除时间表“{ViewModel.SelectedTimeLayout.Name}”吗？此操作无法撤销。",
+            DefaultButton = ContentDialogButton.Primary,
+            PrimaryButtonText = "删除",
+            CloseButtonText = "取消"
+        }.ShowAsync();
+
+        if (result != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
         SentrySdk.Metrics.EmitCounter(eventName, 1,
         [
             new KeyValuePair<string, object>("IsSuccess", "true")
         ]
         );
         ViewModel.ProfileService.Profile.TimeLayouts.Remove(key);
-        FlyoutHelper.CloseAncestorFlyout(sender);
     }
     
     private void PushAddUndo(TimeLayoutItem item, TimeLayout layout)
