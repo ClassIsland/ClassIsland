@@ -584,7 +584,7 @@ public partial class ProfileSettingsWindow : ViewBase
         await details.ShowModal(this);
     }
     
-    private void UpdateClassPlanInfoEditorTimeLayoutComboBox()
+    private void UpdateClassPlanInfoEditorComboBoxes()
     {
         if (ViewModel.SelectedClassPlan?.TimeLayout == null)
         {
@@ -595,6 +595,12 @@ public partial class ProfileSettingsWindow : ViewBase
             var kvp = ViewModel.TimeLayouts.List.FirstOrDefault(x => x.Key == ViewModel.SelectedClassPlan.TimeLayoutId);
             ViewModel.ClassPlanInfoSelectedTimeLayoutKvp = kvp;
         }
+
+        var selectedClassPlanGroupKvp = ViewModel.ClassPlanGroups.List
+            .FirstOrDefault(x => x.Key == ViewModel.SelectedClassPlan?.AssociatedGroup);
+        ViewModel.ClassPlanInfoSelectedClassPlanGroupKvp = selectedClassPlanGroupKvp.Value is null
+            ? null
+            : selectedClassPlanGroupKvp;
     }
     
     private void TreeViewClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -613,7 +619,7 @@ public partial class ProfileSettingsWindow : ViewBase
         if (id is { } guid)
         {
             ViewModel.SelectClassPlanByGuid(guid);
-            UpdateClassPlanInfoEditorTimeLayoutComboBox();
+            UpdateClassPlanInfoEditorComboBoxes();
             OpenDrawer("ClassPlansInfoEditor");
             FlyoutHelper.CloseAncestorFlyout(sender);
         }
@@ -630,7 +636,7 @@ public partial class ProfileSettingsWindow : ViewBase
 
     private void ButtonOpenClassPlanDetails_OnClick(object? sender, RoutedEventArgs e)
     {
-        UpdateClassPlanInfoEditorTimeLayoutComboBox();
+        UpdateClassPlanInfoEditorComboBoxes();
         OpenDrawer("ClassPlansInfoEditor");
     }
 
@@ -660,7 +666,7 @@ public partial class ProfileSettingsWindow : ViewBase
         var newClassPlanGuid = Guid.NewGuid();
         ViewModel.ProfileService.Profile.ClassPlans.Add(newClassPlanGuid, newClassPlan);
         ViewModel.SelectClassPlanByGuid(newClassPlanGuid);
-        UpdateClassPlanInfoEditorTimeLayoutComboBox();
+        UpdateClassPlanInfoEditorComboBoxes();
         OpenDrawer("ClassPlansInfoEditor");
     }
 
@@ -698,7 +704,7 @@ public partial class ProfileSettingsWindow : ViewBase
         var newClassPlanGuid = Guid.NewGuid();
         ViewModel.ProfileService.Profile.ClassPlans.Add(newClassPlanGuid, s);
         ViewModel.SelectClassPlanByGuid(newClassPlanGuid);
-        UpdateClassPlanInfoEditorTimeLayoutComboBox();
+        UpdateClassPlanInfoEditorComboBoxes();
         OpenDrawer("ClassPlansInfoEditor");
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.classPlan.duplicate", 1);
     }
@@ -795,7 +801,7 @@ public partial class ProfileSettingsWindow : ViewBase
     {
         ViewModel.SelectClassPlanByInstance(e.ClassPlan);
         // ViewModel.ScheduleCalendarSelectedDate = e.Date;
-        UpdateClassPlanInfoEditorTimeLayoutComboBox();
+        UpdateClassPlanInfoEditorComboBoxes();
         OpenDrawer("ClassPlansInfoEditor");
     }
 

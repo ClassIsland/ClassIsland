@@ -93,6 +93,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private ToastMessage? _currentTimePointDeleteRevertToast;
     [ObservableProperty] private ToastMessage? _currentClassPlanEditDoneToast = null;
     [ObservableProperty] private KeyValuePair<Guid, TimeLayout>? _classPlanInfoSelectedTimeLayoutKvp;
+    [ObservableProperty] private KeyValuePair<Guid, ClassPlanGroup>? _classPlanInfoSelectedClassPlanGroupKvp;
     [ObservableProperty] private HashSet<string> _currentProfileBreakNames = [];
     [ObservableProperty] private ProfileTransferProviderControlBase? _transferProviderContent;
     [ObservableProperty] private bool _isProfileTransferInvoked;

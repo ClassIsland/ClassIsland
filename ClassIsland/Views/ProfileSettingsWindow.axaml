@@ -77,7 +77,8 @@
                 <ci:Field Label="课表群">
                     <ComboBox SelectedValue="{Binding AssociatedGroup, Mode=TwoWay}"
                               SelectedValueBinding="{Binding Key}"
-                              ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ClassPlanGroups.List}">
+                              ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ClassPlanGroups.List}"
+                              SelectedItem="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ClassPlanInfoSelectedClassPlanGroupKvp}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Value.Name}"
