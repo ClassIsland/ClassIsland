@@ -591,6 +591,12 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
+        if (plan.TimeRule.RestrictsEnableRange
+            && (plan.TimeRule.RangeStart > DateOnly.FromDateTime(time) || plan.TimeRule.RangeEnd < DateOnly.FromDateTime(time)))
+        {
+            return false;
+        }
+
         switch (plan.TimeRule.Type)
         {
             case TimeRule.TimeRuleType.Weekly:

@@ -168,6 +168,22 @@
             </TabItem>
         </ci:ReusableTabControl>
        
-        
+        <CheckBox Content="并且今天处于以下日期范围" IsChecked="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RestrictsEnableRange}"
+                  Margin="0 4 0 0"/>
+        <Grid IsVisible="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RestrictsEnableRange}"
+              ColumnDefinitions="Auto * Auto * Auto"
+              Classes="items-valign-center">
+            <TextBlock Text="[" Grid.Column="0" Margin="0 0 4 0"/>
+            <CalendarDatePicker Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                DisplayDateEnd="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeEnd, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"
+                                SelectedDate="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeStart, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"/>
+            <TextBlock Text="~" Grid.Column="2" Margin="8 0"/>
+            <CalendarDatePicker Grid.Column="3"
+                                HorizontalAlignment="Stretch"
+                                DisplayDateStart="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeStart, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"
+                                SelectedDate="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeEnd, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"/>
+            <TextBlock Text="]" Grid.Column="4" Margin="4 0 0 0"/>
+        </Grid>
     </StackPanel>
 </UserControl>

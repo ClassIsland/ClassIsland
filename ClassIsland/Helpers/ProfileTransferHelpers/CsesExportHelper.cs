@@ -34,6 +34,10 @@ public class CsesExportHelper
             {
                 warnings.Add($"课程表 {i.Value.Name}：无法导出包含 2 周以上轮换的课表。");
             }
+            if (i.Value.TimeRule.RestrictsEnableRange)
+            {
+                warnings.Add($"课程表 {i.Value.Name}：无法导出限制启用日期范围的课表。");
+            }
             if (i.Value.TimeLayout == null)
             {
                 warnings.Add($"课程表 {i.Value.Name}：无法导出使用无效时间表的课表。");
