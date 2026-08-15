@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
-using Windows.Win32.UI.Controls;
-using ClassIsland.Launcher.Helpers;
 
 #if Platforms_Windows
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using ClassIsland.Launcher.Helpers;
 #endif
 
 #if Platforms_Linux
