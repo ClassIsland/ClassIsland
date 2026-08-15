@@ -38,11 +38,14 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls.IconSources;
@@ -202,7 +205,7 @@ public partial class App : AppBase, IAppHost
 
     private void ActivateAppDirectories()
     {
-        PackagingType = PackagingType.Replace(Environment.NewLine, "");
+        PackagingType = PackagingType.Replace(Environment.NewLine, "").Trim();
 
         ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
         CommonDirectories.AppRootFolderPath = PackagingType switch
@@ -268,7 +271,30 @@ public partial class App : AppBase, IAppHost
             s.SetTag("subChannel.buildType", BuildType);
             s.SetTag("subChannel.packagingType", PackagingType);
         });
+        Popup.IsOpenProperty.Changed.AddClassHandler<Popup>(PopupIsOpenChanged);
         base.Initialize();
+    }
+
+    private static void PopupIsOpenChanged(Popup popup, AvaloniaPropertyChangedEventArgs args)
+    {
+        // HACK: 由于未知原因，在 Linux 等平台上空的 Popup 会变成一个 300x200 的空白窗口。（#1676 In ClassIsland/ClassIsland）
+        // 这导致教学浮窗出现时，屏幕左上角也会出现一个空白浮窗。此处通过将这个窗口移走，缓解了这个问题
+        if (popup.IsOpen)
+        {
+            InitPopup(popup);
+        }
+    }
+
+    private static void InitPopup(Popup popup)
+    {
+        if (popup.Child is not { Width: 0, Height: 0 } || popup.Child.GetVisualRoot() is not WindowBase topLevel)
+        {
+            return;
+        }
+
+        PlatformServices.WindowPlatformService.SetWindowFeature(topLevel, WindowFeatures.Transparent, true);
+        topLevel.TransparencyLevelHint = [WindowTransparencyLevel.Transparent];
+        topLevel.Background = Brushes.Transparent;
     }
 
     private static void CurrentDomainOnProcessExit(object? sender, EventArgs e)
@@ -610,8 +636,9 @@ public partial class App : AppBase, IAppHost
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
         if (App.ApplicationCommand.Diagnostic)
         {
+            var diagService = GetService<DiagnosticService>();
             Logger.LogInformation("诊断模式已启用!");
-            Logger.LogDebug(GetService<DiagnosticService>().GetDiagnosticInfo());
+            Logger.LogDebug("{DiagnosticMessage}", diagService.GetDiagnosticInfo());
         }
         foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Error))
         {
@@ -640,7 +667,7 @@ public partial class App : AppBase, IAppHost
 #endif
         spanHostBuilding.Finish();
         spanPreInit.Finish();
-        if (!string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))
+        if (!string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) || !string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {
             var dtWindow = new DataTransferWindow()
             {
@@ -648,7 +675,14 @@ public partial class App : AppBase, IAppHost
             };
             dtWindow.Show();
             var entries = int.TryParse(ApplicationCommand.ImportEntries, out var r) ? r : 0;
-            await dtWindow.PerformClassIslandImport(ApplicationCommand.ImportV1, (ImportEntries)entries);
+            if (!string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))
+            {
+                await dtWindow.PerformClassIslandImport(ApplicationCommand.ImportV1, (ImportEntries)entries);
+            }
+            else
+            {
+                await dtWindow.PerformClassIsland2Import(ApplicationCommand.ImportV2, (ImportEntries)entries);
+            }
             return;
         }
         var spanLaunching = transaction.StartChild("startup-launching");
@@ -720,7 +754,13 @@ public partial class App : AppBase, IAppHost
         GetService<IWeatherService>();
         GetService<IExactTimeService>();
         await GetService<IComponentsService>().LoadManagementConfig();
+        
+        if (ApplicationCommand.Diagnostic)
+        {
+            await GetService<DiagnosticService>().ExportDiagnosticData(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"ClassIsland_DiagnosticData_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip"), false);
+        }
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
+        
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
         
@@ -874,7 +914,7 @@ public partial class App : AppBase, IAppHost
         GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
         if (!Design.IsDesignMode)
         {
-            GetService<MainWindow>().Show();
+            mw.Show();
         }
         GetService<IWindowRuleService>();
         GetService<SignalTriggerHandlerService>();

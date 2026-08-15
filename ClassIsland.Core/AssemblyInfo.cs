@@ -23,3 +23,4 @@ using Avalonia.Metadata;
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Behaviors")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Assists")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.IconSources")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.MarkupExtensions")]

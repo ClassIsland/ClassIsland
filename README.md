@@ -16,14 +16,17 @@
 ![GitHub Repo size](https://img.shields.io/github/repo-size/ClassIsland/ClassIsland?style=flat-square&color=3cb371)
 [![GitHub Repo Languages](https://img.shields.io/github/languages/top/ClassIsland/ClassIsland?style=flat-square)](https://github.com/ClassIsland/ClassIsland/search?l=c%23)
 
-<a href="https://hellogithub.com/repository/ClassIsland/ClassIsland" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=fb844b7286244bf8a1d67bfd228a95c7&claim_uid=kZp2qRKGVYrXoTS" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+<a href="https://trendshift.io/repositories/14441" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14441" alt="ClassIsland%2FClassIsland | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
+<a href="https://hellogithub.com/repository/ClassIsland/ClassIsland" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=fb844b7286244bf8a1d67bfd228a95c7&claim_uid=kZp2qRKGVYrXoTS" alt="Featured | HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 
 ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显示工具，可以在 Windows PC、Mac 及 Linux 设备屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
-#### 💬[Classlsland QQ 频道](https://pd.qq.com/s/grr6qwqwj) | [Classlsland QQ 群组 1 群](https://qm.qq.com/q/4NsDQKiAuQ) | [2 群](https://qm.qq.com/q/MhWCvrk7mu)
+#### 💬[ClassIsland QQ 频道](https://pd.qq.com/s/grr6qwqwj) | [ClassIsland QQ 群组 1 群](https://qm.qq.com/q/4NsDQKiAuQ) | [2 群](https://qm.qq.com/q/MhWCvrk7mu)
 
-#### [🌐 官方网站](https://classisland.tech/) | [🚀 软件下载](https://classisland.tech/download)｜[📚 项目文档](https://docs.classisland.tech)｜[🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop)
+#### [🌐 官方网站](https://classisland.tech/) | [🚀 软件下载](https://classisland.tech/download) | [📚 项目文档](https://docs.classisland.tech) | [🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop)
 
 ###### [观看介绍视频，快速了解突破创新 →](https://www.bilibili.com/video/BV12fFoefEGn/)
 
@@ -59,7 +62,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 ### 其它功能
 
 - [x] 通过[自动化](https://docs.classisland.tech/app/automation.html)在特定事件发生时/特定时间自动执行某些操作（如显示提醒、打开应用/文件/网页等），提高教学效率
-- [x] 显示当前的[天气](https://docs.classisland.tech/app/advanced#天气)信息、降水提示、6 小时/3 天天气预报和极端天气预警等信息，支持根据定位获取天气信息
+- [x] 显示当前的[天气](https://docs.classisland.tech/app/advanced#天气)信息、降水提示、6 小时 / 3 天天气预报和极端天气预警等信息，支持根据定位获取天气信息
 - [x] 自动同步软件时间、手动对齐铃声
 - [x] 使用密码等认证方式保护应用设置和课表配置
 - [x] 丝滑、流畅的过渡动画
@@ -166,11 +169,11 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 本项目目前开发状态：
 
-| 分支                                                                 | 开发状态                                                                                   | 状态                                                                                                                                                                                                                                                                                                                                                                                                         |
-|--------------------------------------------------------------------|----------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) | 正在此分支上开发版本 [2.1 - Liliya](https://github.com/ClassIsland/ClassIsland/milestone/10)。    | [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master)[![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) |
-| [`2.0`](https://github.com/ClassIsland/ClassIsland/tree/1.7)       | 正在此分支上维护版本 [2.0 - Khaslana](https://github.com/ClassIsland/ClassIsland/milestone/9)。   | [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=2.0&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)                                                                                                                                                                                          |
-| [`1.7`](https://github.com/ClassIsland/ClassIsland/tree/1.7)       | 正在此分支上维护版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。 | [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=1.7&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)                                                                                                                                                                                          |
+| 分支                                                                                      | 开发状态                                                                                   | 状态                                                                                                                                                                                                                                                                                                                                                                                                         |
+|-----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`master`](https://github.com/ClassIsland/ClassIsland/tree/master)                      | 正在此分支上维护版本 [2.1 - Liliya](https://github.com/ClassIsland/ClassIsland/milestone/10)。    | [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master)[![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) |
+| [`misha-alpha`](https://github.com/ClassIsland/ClassIsland/tree/develop/v2/misha-alpha) | 正在此分支上早期开发版本 [2.2 - Misha](https://github.com/ClassIsland/ClassIsland/milestone/11)。   | [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=develop%2Fv2%2Fmisha-alpha)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)                                                                                                                                                                   |
+| [`1.7`](https://github.com/ClassIsland/ClassIsland/tree/1.7)                            | 正在此分支上维护版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。 | [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=1.7&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)                                                                                                                                                                                          |
 
 要在本地编译应用，请参考文档[配置 ClassIsland 本体开发环境](https://docs.classisland.tech/dev/get-started/development.html)。
 
@@ -181,12 +184,12 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-44-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-52-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
 
-感谢以下同学为本项目为本项目的开发提供支持（[✨](https://allcontributors.org/docs/zh-cn/emoji-key)）：
+感谢以下同学为本项目的开发提供支持（[✨](https://allcontributors.org/docs/zh-cn/emoji-key)）：
 
 <!-- autocorrect-disable -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -251,6 +254,16 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hongbro886"><img src="https://avatars.githubusercontent.com/u/185684679?v=4?s=100" width="100px;" alt="Hongbro886"/><br /><sub><b>Hongbro886</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Hongbro886" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://xfyweb.cn/home"><img src="https://avatars.githubusercontent.com/u/194925706?v=4?s=100" width="100px;" alt="xfy2412"/><br /><sub><b>xfy2412</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=xfy2412" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Chineseshuaji"><img src="https://avatars.githubusercontent.com/u/173371838?v=4?s=100" width="100px;" alt="SyntaxError"/><br /><sub><b>SyntaxError</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Chineseshuaji" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/OutHimic"><img src="https://avatars.githubusercontent.com/u/136602369?v=4?s=100" width="100px;" alt="OutHimic"/><br /><sub><b>OutHimic</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=OutHimic" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/wan-an-zz"><img src="https://avatars.githubusercontent.com/u/158546327?v=4?s=100" width="100px;" alt="晚安"/><br /><sub><b>晚安</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=wan-an-zz" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Akiyama-Mizuki-44"><img src="https://avatars.githubusercontent.com/u/63501294?v=4?s=100" width="100px;" alt="Lewis Hamilton"/><br /><sub><b>Lewis Hamilton</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Akiyama-Mizuki-44" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://jbyc.cc"><img src="https://avatars.githubusercontent.com/u/177214309?v=4?s=100" width="100px;" alt="Jbyccc"/><br /><sub><b>Jbyccc</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Braydenccc" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Victory-Aogu"><img src="https://avatars.githubusercontent.com/u/294148985?v=4?s=100" width="100px;" alt="TZ^"/><br /><sub><b>TZ^</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Victory-Aogu" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://winddrift.top"><img src="https://avatars.githubusercontent.com/u/115442729?v=4?s=100" width="100px;" alt="浮笙-WindDrift"/><br /><sub><b>浮笙-WindDrift</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=WindDrift" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/HickoryTrail"><img src="https://avatars.githubusercontent.com/u/80823417?v=4?s=100" width="100px;" alt="HickoryTrail"/><br /><sub><b>HickoryTrail</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=HickoryTrail" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
@@ -278,7 +291,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <img alt="SignPath" src="https://signpath.org/assets/favicon-50x50.png" />
     </td>
     <td>
-    Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certficate by <a href="https://signpath.org/">SignPath Foundation</a>
+    Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certificate by <a href="https://signpath.org/">SignPath Foundation</a>
     </td>
   </tr> 
   <tr>

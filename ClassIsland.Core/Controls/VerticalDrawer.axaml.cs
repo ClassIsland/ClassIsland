@@ -7,6 +7,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Core.Controls;
@@ -27,6 +28,42 @@ public class VerticalDrawer : ContentControl
     
     public static readonly StyledProperty<object?> TitleProperty = AvaloniaProperty.Register<VerticalDrawer, object?>(
         nameof(Title));
+
+    public static readonly StyledProperty<object?> DrawerContentProperty = AvaloniaProperty.Register<VerticalDrawer, object?>(
+        nameof(DrawerContent));
+
+    public object? DrawerContent
+    {
+        get => GetValue(DrawerContentProperty);
+        set => SetValue(DrawerContentProperty, value);
+    }
+
+    public static readonly StyledProperty<IDataTemplate?> DrawerTemplateProperty = AvaloniaProperty.Register<VerticalDrawer, IDataTemplate?>(
+        nameof(DrawerTemplate));
+
+    public IDataTemplate? DrawerTemplate
+    {
+        get => GetValue(DrawerTemplateProperty);
+        set => SetValue(DrawerTemplateProperty, value);
+    }
+
+    public static readonly StyledProperty<HorizontalAlignment> DrawerHorizontalContentAlignmentProperty = AvaloniaProperty.Register<VerticalDrawer, HorizontalAlignment>(
+        nameof(DrawerHorizontalContentAlignment));
+
+    public HorizontalAlignment DrawerHorizontalContentAlignment
+    {
+        get => GetValue(DrawerHorizontalContentAlignmentProperty);
+        set => SetValue(DrawerHorizontalContentAlignmentProperty, value);
+    }
+
+    public static readonly StyledProperty<VerticalAlignment> DrawerVerticalContentAlignmentProperty = AvaloniaProperty.Register<VerticalDrawer, VerticalAlignment>(
+        nameof(DrawerVerticalContentAlignment));
+
+    public VerticalAlignment DrawerVerticalContentAlignment
+    {
+        get => GetValue(DrawerVerticalContentAlignmentProperty);
+        set => SetValue(DrawerVerticalContentAlignmentProperty, value);
+    }
 
     public object? Title
     {

@@ -48,6 +48,16 @@ public interface ITutorialService : INotifyPropertyChanged
     public TopLevel? AttachedToplevel { get; }
 
     /// <summary>
+    /// 在宿主窗口重建 XamlRoot 前，临时分离当前教程的装饰层控件。
+    /// </summary>
+    void DetachCurrentAdornersForHostChange(TopLevel topLevel);
+
+    /// <summary>
+    /// 在宿主窗口重建 XamlRoot 后，重新附加当前教程的装饰层控件。
+    /// </summary>
+    void ReattachCurrentAdornersAfterHostChange(TopLevel topLevel);
+
+    /// <summary>
     /// 开始指定的教学。
     /// </summary>
     /// <remarks>

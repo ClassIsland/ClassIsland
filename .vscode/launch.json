@@ -21,6 +21,23 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
+        },
+        {
+            "name": "Run ClassIsland.Desktop (Debug)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build ClassIsland.Desktop (Debug)",
+            "program": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/ClassIsland.Desktop/ClassIsland.Desktop.csproj",
+                "-c",
+                "Debug"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
         }
     ]
 }

@@ -14,6 +14,22 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build ClassIsland.Desktop (Debug)",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/ClassIsland.Desktop/ClassIsland.Desktop.csproj",
+                "-c",
+                "Debug"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "publish",
             "command": "dotnet",
             "type": "process",

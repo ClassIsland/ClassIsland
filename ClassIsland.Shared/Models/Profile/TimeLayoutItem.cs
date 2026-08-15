@@ -220,11 +220,23 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         if (o.StartTime < StartTime)
         {
             return -1;
-        }
+        } 
+        
         if (o.StartTime > StartTime)
         {
             return 1;
         }
+        
+        if (o.EndTime < EndTime)
+        {
+            return -1;
+        }
+        
+        if (o.EndTime > EndTime)
+        {
+            return 1;
+        }
+        
         return 0;
     }
 

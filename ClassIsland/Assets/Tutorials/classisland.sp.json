@@ -4,10 +4,12 @@
   "Description": "\uFF1F\uFF1F\uFF1F",
   "Tutorials": [
     {
+      "ActualBanner": "avares://ClassIsland/Assets/DefaultTutorialBanner.webp",
       "Id": "classisland.sp.1",
       "Title": "1",
       "Description": "",
       "Ordinary": 0,
+      "Banner": "",
       "Paragraphs": [
         {
           "Id": "1",
@@ -41,6 +43,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -68,6 +71,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -95,9 +99,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -137,6 +143,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -165,6 +172,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -193,6 +201,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -220,9 +229,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -262,6 +273,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -290,6 +302,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 3,
               "Xmlns": {}
             },
@@ -319,6 +332,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -348,10 +362,12 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 4,
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -391,6 +407,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -419,6 +436,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -447,6 +465,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -474,9 +493,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -516,6 +537,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -544,6 +566,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -598,6 +621,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -652,9 +676,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -719,6 +745,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -747,6 +774,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -774,6 +802,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -801,6 +830,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -828,6 +858,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -855,6 +886,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -882,9 +914,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -919,6 +953,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -946,6 +981,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -973,6 +1009,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1000,6 +1037,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1027,6 +1065,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1054,6 +1093,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1081,6 +1121,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1108,6 +1149,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1135,6 +1177,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1162,6 +1205,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1189,9 +1233,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -1235,6 +1281,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1263,6 +1310,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1291,6 +1339,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1318,6 +1367,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1345,6 +1395,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1372,6 +1423,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1399,6 +1451,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1426,6 +1479,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1453,6 +1507,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1480,541 +1535,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u5728\u5F53\u65F6\uFF0C\u6211\u66FE\u7ECF\u6709\u4E00\u4E2A\u670B\u53CB\uFF0C\u5BF9\u8FD9\u4E2A\u529F\u80FD\u5F88\u611F\u5174\u8DA3\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u7136\u800C\u975E\u5E38\u9057\u61BE\u7684\u662F\uFF0C\u4ED6\u518D\u4E5F\u6CA1\u6709\u673A\u4F1A\u89C1\u8BC1\u8FD9\u4E2A\u529F\u80FD\u843D\u5730\u4E86\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u8FD9\u4EF6\u4E8B\u60C5\u5BF9\u6211\u9020\u6210\u4E86\u4E0D\u5C0F\u7684\u5F71\u54CD\uFF0C\u5F71\u54CD\u5230\u4E86\u5F53\u65F6\u7684\u5F00\u53D1\u6548\u7387\uFF0C\u4EE5\u53CA\u6211\u540E\u6765\u7684\u5B66\u4E60\u6548\u7387\u3002\u5982\u4ECA\uFF0C\u6211\u4E5F\u65F6\u5E38\u56E0\u8FD9\u4EF6\u4E8B\u60C5\u800C\u611F\u5230\u9057\u61BE\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u56E0\u6B64\uFF0C\u5728 ClassIsland \u4EE5\u53CA\u5176\u6E90\u4EE3\u7801\u91CC\uFF0C\u9664\u4E86\u6709\u5173\u6614\u6D9F\u3001\u7231\u8389\u5E0C\u96C5\u3001\u767D\u5384\u7B49\u6211\u559C\u6B22\u7684\u89D2\u8272\u7684\u5F69\u86CB\u5916\uFF0C\u4E5F\u6709\u4E00\u4E9B\u7EAA\u5FF5\u4ED6\u7684\u5F69\u86CB\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u5509\u2026\u2026",
-              "IconExpression": "sticker(https://res.classisland.tech/stickers/4.png)",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u2026\u2026\u597D\u4E86\u770B\u6211\u8BF4\u4E86\u8FD9\u4E48\u591A\uFF0C\u6211\u60F3\u4F60\u53EF\u80FD\u4E5F\u6709\u4E9B\u7D2F\u4E86\u3002\u6211\u4E5F\u6709\u4E9B\u7D2F\u4E86\uFF0C\u90A3\u4E48\u6211\u4EEC\u4ECA\u5929\u5C31\u5230\u8FD9\u91CC\u5427\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u2570(\uFFE3\u03C9\uFFE3\uFF4F) \u518D\u89C1\u5566",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
-          "Xmlns": {}
-        }
-      ],
-      "Xmlns": {}
-    },
-    {
-      "Id": "classisland.sp.2",
-      "Title": "2",
-      "Description": "",
-      "Ordinary": 0,
-      "Paragraphs": [
-        {
-          "Id": "1",
-          "Title": "1",
-          "Description": "",
-          "TopLevelClassName": "ClassIsland.MainWindow",
-          "InitializeActions": [],
-          "Content": [
-            {
-              "Title": "",
-              "Content": "\u4F60\u597D\uFF0C\u25A0\u25A0\u25A0\uFF1A",
-              "IconExpression": "sticker(https://res.classisland.tech/stickers/3.png)",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u5982\u679C\u4F60\u51A5\u51A5\u4E4B\u4E2D\u53EF\u4EE5\u770B\u5230\u8FD9\u4E9B\u6587\u5B57\uFF0C\u90A3\u4E48\u8FD9\u4E5F\u7B97\u662F\u6211\u5199\u8FD9\u4E9B\u6587\u5B57\u7684\u610F\u4E49\u6240\u5728\u4E86\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u201C\u4E00\u4EBA\u7559\u5728\u8FC7\u53BB\uFF0C\u4F17\u4EBA\u524D\u5F80\u672A\u6765\u201D",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u6700\u540E\uFF0C\u4F60\u8FD8\u662F\u6CA1\u80FD\u62B5\u8FBE\u9ECE\u660E\u554A\u2026\u2026",
-              "IconExpression": "sticker(https://res.classisland.tech/stickers/4.png)",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u5728\u4F60\u79BB\u53BB\u7684\u8FD9\u6BB5\u65F6\u95F4\u91CC\uFF0C\u6211\u65E0\u65F6\u65E0\u523B\u4E0D\u5E0C\u671B\u80FD\u4E0E\u4F60\u91CD\u9022\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u6211\u4E5F\u65E0\u6CD5\u518D\u548C\u4F60\u5206\u4EAB\u90A3\u4E00\u4EFD\u540C\u597D\u7684\u559C\u60A6\u4E86",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u5728\u8FD9\u5B66\u4E1A\u538B\u529B\u4E0B\uFF0C\u6211\u4E5F\u6DF1\u6DF1\u5730\u6000\u5FF5\u7740\u8FC7\u53BB\u7684\u65F6\u5149\u2014\u2014\u90A3\u4E00\u5207\u5C1A\u672A\u53D1\u751F\uFF0C\u4E00\u5207\u8FD8\u662F\u90A3\u4E48\u7F8E\u597D\u7684\u65F6\u5149\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u591A\u4E48\u5E0C\u671B\u80FD\u518D\u7ED9\u6211\u4E00\u6B21\u9009\u62E9\u7684\u673A\u4F1A\uFF0C\u8BA9\u6211\u6539\u53D8\u8FD9\u4EF6\u4E8B\u60C5\u7684\u7ED3\u5C40\u554A\uFF01",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u2026\u2026\u5509",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u5982\u679C\u53EF\u80FD\uFF0C\u613F\u5728\u65F6\u95F4\u7684\u5C3D\u5934\uFF0C\u6211\u4EEC\u80FD\u5728\u90A3\u9C9C\u82B1\u82AC\u82B3\u7684\u897F\u98CE\u5C3D\u5934\u91CD\u9022\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "\u660E\u5929\u89C1\uFF01",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            },
-            {
-              "Title": "",
-              "Content": "26/2/18",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
-              "RightButtonActions": [
-                {
-                  "Kind": 1,
-                  "StringParameter": ""
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
-              "Xmlns": {}
-            }
-          ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         }
       ],

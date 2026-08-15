@@ -26,6 +26,14 @@ namespace ClassIsland.Controls.ScheduleDataGrid;
 [PseudoClasses(":loaded")]
 public partial class ScheduleDataGrid : TemplatedControl
 {
+    private static readonly DateTime MinSelectableDateValue = DateTime.MinValue.Date.AddDays(
+        ((int)DayOfWeek.Sunday - (int)DateTime.MinValue.DayOfWeek + 7) % 7);
+    private static readonly DateTime MaxSelectableDateValue = DateTime.MaxValue.Date.AddDays(
+        -(((int)DateTime.MaxValue.DayOfWeek - (int)DayOfWeek.Saturday + 7) % 7));
+
+    public DateTime MinSelectableDate => MinSelectableDateValue;
+    public DateTime MaxSelectableDate => MaxSelectableDateValue;
+
     public static readonly ClassPlan EmptyClassPlan = new()
     {
         Name = ""
@@ -185,11 +193,23 @@ public partial class ScheduleDataGrid : TemplatedControl
             new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid));
         SetValue(ClassPlansProperty,
             new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid));
-        this.GetObservable(SelectedDateProperty).Skip(1).Subscribe(_ => RefreshWeekScheduleRows(true));
+        this.GetObservable(SelectedDateProperty).Skip(1).Subscribe(_ => OnSelectedDateChanged());
         this.GetObservable(SelectedClassInfoIndexProperty).Skip(1).Subscribe(_ => UpdateSelectedClassInfoByIndex());
         Loaded += Control_OnLoaded;
         Unloaded += OnUnloaded;
         
+    }
+
+    private void OnSelectedDateChanged()
+    {
+        var clampedDate = CoerceSelectedDate(SelectedDate);
+        if (clampedDate != SelectedDate)
+        {
+            SelectedDate = clampedDate;
+            return;
+        }
+
+        RefreshWeekScheduleRows(true);
     }
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
@@ -229,14 +249,14 @@ public partial class ScheduleDataGrid : TemplatedControl
 
     private void ButtonNextWeek_OnClick(object? sender, RoutedEventArgs e)
     {
-        SelectedDate += TimeSpan.FromDays(7);
+        SelectedDate = AddDaysWithinSelectableRange(SelectedDate, 7);
         RefreshWeekScheduleRows(true);
         Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.weekSwitcher.next"));
     }
 
     private void ButtonPreviousWeek_OnClick(object? sender, RoutedEventArgs e)
     {
-        SelectedDate -= TimeSpan.FromDays(7);
+        SelectedDate = AddDaysWithinSelectableRange(SelectedDate, -7);
         RefreshWeekScheduleRows(true);
         Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.weekSwitcher.previous"));
     }
@@ -263,7 +283,13 @@ public partial class ScheduleDataGrid : TemplatedControl
 
     public void RefreshWeekScheduleRows(bool changeFromDate = false)
     {
-        var selectedDate = SelectedDate.Date;
+        var selectedDate = CoerceSelectedDate(SelectedDate).Date;
+        if (selectedDate != SelectedDate.Date)
+        {
+            SelectedDate = selectedDate;
+            return;
+        }
+
         var baseDate = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
         var rowIndex = SelectedClassInfoIndex;
         if (!changeFromDate || baseDate != ScheduleWeekViewBaseDate)
@@ -462,11 +488,39 @@ public partial class ScheduleDataGrid : TemplatedControl
 
     public void CreateClassPlanByDate(DateTime date)
     {
-        SelectedDate = date;
+        var selectedDate = CoerceSelectedDate(date);
+        SelectedDate = selectedDate;
         SelectedClassInfoIndex = 0;
         CreateClassPlanEvent?.Invoke(this, new CreateClassPlanEventArgs()
         {
-            Date = date
+            Date = selectedDate
         });
+    }
+
+    private static DateTime AddDaysWithinSelectableRange(DateTime date, int days)
+    {
+        var dateOnly = date.Date;
+        if (days > 0 && MaxSelectableDateValue - dateOnly < TimeSpan.FromDays(days))
+        {
+            return MaxSelectableDateValue;
+        }
+
+        if (days < 0 && dateOnly - MinSelectableDateValue < TimeSpan.FromDays(-days))
+        {
+            return MinSelectableDateValue;
+        }
+
+        return CoerceSelectedDate(date.AddDays(days));
+    }
+
+    private static DateTime CoerceSelectedDate(DateTime date)
+    {
+        var dateOnly = date.Date;
+        if (dateOnly < MinSelectableDateValue)
+        {
+            return MinSelectableDateValue;
+        }
+
+        return dateOnly > MaxSelectableDateValue ? MaxSelectableDateValue : date;
     }
 }

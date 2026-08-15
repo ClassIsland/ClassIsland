@@ -18,6 +18,7 @@
         <OutputType>Library</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>disable</ImplicitUsings>
+        <MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>true</MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX'">
     </PropertyGroup>
@@ -44,10 +45,6 @@
     <PropertyGroup Condition="'$(IsMsix)'!='true'">
     </PropertyGroup>
     <ItemGroup>
-        <None Remove="assets\documents\ChangeLog.md" />
-        <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
-        <None Remove="assets\Tellings.txt" />
-        <None Remove="Assets\TrustedPublicKeys\ClassIsland.MetadataPublisher.asc" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
         <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.11" />
@@ -59,7 +56,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-        <PackageReference Include="Downloader" Version="4.0.3" />
+        <PackageReference Include="Downloader" Version="5.9.0" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
         <PackageReference Include="Grpc.Tools" Version="2.62.0">
             <PrivateAssets>all</PrivateAssets>
@@ -112,14 +109,31 @@
         <None Include="..\..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
+<!--        <AvaloniaResource Include="Assets\**" />-->
+<!--        <AvaloniaResource Remove="Assets\Fonts\*.ttf" />-->
         <AvaloniaResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx" />
         <AvaloniaResource Remove="Assets\Localization\SettingsPage\Localization.SettingsPage.resx" />
         <AvaloniaResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
-        <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+        <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" PublishFolderType="Resource" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX'">
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' != 'Debug' And '$(Configuration)' != 'Debug_MSIX'">
+        <None Update="Assets\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+            <PublishFolderType>Resource</PublishFolderType>
+        </None>
+        <None Remove="Assets\AppLogo.ico" />
+        <None Remove="Assets\Tutorials\**" />
+        <None Remove="Assets\TrustedPublicKeys\**" />
+        <AvaloniaResource Include="Assets\Tutorials\**" />
+        <AvaloniaResource Include="Assets\TrustedPublicKeys\**" />
+        <AvaloniaResource Include="Assets\AppLogo.ico" />
     </ItemGroup>
     <ItemGroup>
-        <None Include="Assets\AppLogo_Monochrome.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+        <None Include="Assets\AppLogo_Monochrome.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" PublishFolderType="Resource" />
         <None Include="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx" />
         <None Include="Assets\Localization\SettingsPage\Localization.SettingsPage.resx" />
         <None Include="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
@@ -183,6 +197,11 @@
 	    <DependentUpon>TimeLineListItemSeparatorAdornerControl.axaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <AvaloniaXaml Update="Assets\Fonts\Fonts.axaml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </AvaloniaXaml>
 	</ItemGroup>
 
     <Target Name="PrintConstants" AfterTargets="Build">

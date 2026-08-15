@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Models;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -17,6 +18,7 @@ public class AboutSettingsViewModel(IManagementService managementService, Settin
     private string _license = "";
     private string _sayings = "点击此处可以查看 ClassIsland 用户群里沙雕群友们的发言";
     private ObservableCollection<string> _sayingsCollection = [];
+    private ObservableCollection<NuGetLicenseInfo> _thirdPartyLibs = [];
     private bool _isSayingBusy = false;
     private int _clickCount = 0;
     private int _appInfoClickCount = 0;
@@ -83,6 +85,17 @@ public class AboutSettingsViewModel(IManagementService managementService, Settin
         {
             if (Equals(value, _sayingsCollection)) return;
             _sayingsCollection = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<NuGetLicenseInfo> ThirdPartyLibs
+    {
+        get => _thirdPartyLibs;
+        set
+        {
+            if (Equals(value, _thirdPartyLibs)) return;
+            _thirdPartyLibs = value;
             OnPropertyChanged();
         }
     }

@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine"
+             xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine;assembly=ClassIsland"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Styles>
@@ -19,13 +20,14 @@
         </ControlTemplate>
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-          Margin="-60 0 0 0" ColumnDefinitions="60,*">
-        <Border Grid.Column="1" Margin="-1" BorderThickness="1" 
+          Margin="-60 40 0 -20" ColumnDefinitions="60,*" RowDefinitions="* 60">
+        <Border Grid.Column="1" Margin="-1" BorderThickness="1" Grid.Row="0"
                 BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"/>
-        <Border Grid.Column="1" Margin="-3" BorderThickness="2" 
+        <Border Grid.Column="1" Margin="-3" BorderThickness="2" Grid.Row="0"
                 CornerRadius="1"
                 BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"/>
-        <Grid Grid.Column="1" Margin="0 -8" IsVisible="{Binding IsReadonly, RelativeSource={RelativeSource FindAncestor, AncestorType=timeLine:TimeLineListItemExpandingAdornerControl}, Converter={StaticResource InvertBooleanConverter}}">
+        <Grid Grid.Row="0" Grid.Column="1" Margin="0 -8" 
+              IsVisible="{Binding IsReadonly, RelativeSource={RelativeSource FindAncestor, AncestorType=timeLine:TimeLineListItemExpandingAdornerControl}, Converter={StaticResource InvertBooleanConverter}}">
             <Thumb VerticalAlignment="Stretch"
                    HorizontalAlignment="Stretch"
                    Cursor="SizeAll"
@@ -49,5 +51,70 @@
                DragDelta="ThumbBottom_OnDragDelta"
                x:Name="ThumbBottom"/>
         </Grid>
+        <Panel Grid.Row="1" Grid.Column="1" 
+               Margin="0 16 0 0"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Top">
+            <Panel.IsVisible>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="!$parent[timeLine:TimeLineListItemExpandingAdornerControl].IsReadonly"/>
+                    <Binding Path="$parent[timeLine:TimeLineListItemExpandingAdornerControl].IsAddTimePointPopupVisible"/>
+                </MultiBinding>
+            </Panel.IsVisible>
+            <Border 
+                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Opacity="0.5"/>
+            <Border 
+                BorderThickness="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Padding="2"
+                CornerRadius="4">
+                <ci:TutorialBarrier>
+                    <StackPanel Orientation="Horizontal" Classes="items-valign-center" Margin="4 0"
+                                Spacing="4">
+                        <ci:IconText Glyph="&#xE448;" Text="添加" Classes="l-instructive" FontSize="13"
+                                     Margin="0 -1.5 0 1.5"/>
+                        <Button
+                            Theme="{StaticResource TransparentButton}"
+                            ToolTip.Tip="添加上课时间点。"
+                            Click="ButtonAddOnClass_OnClick">
+                            <Classes.foreground-accent>
+                                <Binding Path="$parent[timeLine:TimeLineListItemExpandingAdornerControl].TimePoint.TimeType"
+                                         Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <x:Int32>1</x:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.foreground-accent>
+                            <ci:IconText Glyph="&#xE47A;" Text="上课"/>
+                        </Button>
+                        <Button
+                            Theme="{StaticResource TransparentButton}"
+                            ToolTip.Tip="添加上课间休息时间点。"
+                            Click="ButtonAddOnBreaking_OnClick">
+                            <Classes.foreground-accent>
+                                <Binding Path="$parent[timeLine:TimeLineListItemExpandingAdornerControl].TimePoint.TimeType"
+                                         Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <x:Int32>0</x:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.foreground-accent>
+                            <ci:IconText Glyph="&#xE4C4;" Text="课间"/>
+                        </Button>
+                        <Button
+                            Theme="{StaticResource TransparentButton}"
+                            ToolTip.Tip="隐藏"
+                            Click="ButtonDismiss_OnClick">
+                            <ci:FluentIcon Glyph="&#xE671;"/>
+                        </Button>
+                    </StackPanel>
+                </ci:TutorialBarrier>
+            </Border>
+        </Panel>
     </Grid>
 </UserControl>

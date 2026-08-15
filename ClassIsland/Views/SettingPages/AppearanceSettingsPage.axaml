@@ -102,6 +102,7 @@
                         <NumericUpDown
                             Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={x:Static ci:NotNaNConverter.Instance}}"
                             Margin="6,0,0,0"
+                            Minimum="0"
                             Width="125"/>
                     </StackPanel>
                 </controls2:SettingsExpander.Footer>
@@ -409,7 +410,7 @@
                               ItemsSource="{Binding ViewModel.FontFamilies}"
                               Foreground="{DynamicResource MaterialDesignBody}"
                               MaxDropDownHeight="360"
-                              SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}"
+                              SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}, ConverterParameter=UseSharedDefault}"
                               HorizontalAlignment="Left">
                         <ComboBox.Styles>
                             <Style Selector="ComboBoxItem">

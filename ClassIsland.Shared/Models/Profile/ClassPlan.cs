@@ -102,7 +102,6 @@ public class ClassPlan : AttachableSettingsObject
     /// </summary>
     public event EventHandler? ClassesChanged;
 
-
     private void NotifyClassesChanged()
     {
         ClassesChanged?.Invoke(this, EventArgs.Empty);
@@ -218,6 +217,7 @@ public class ClassPlan : AttachableSettingsObject
     {
         if (TimeLayout != null)
         {
+            TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
             TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
         }
         RefreshClassesList(true);
@@ -290,6 +290,21 @@ public class ClassPlan : AttachableSettingsObject
                 }
                 break;
             case NotifyCollectionChangedAction.Replace:
+                if (e.RemoveIndexClasses >= 0 && e.RemoveIndexClasses < Classes.Count)
+                {
+                    Classes.RemoveAt(e.RemoveIndexClasses);
+                }
+
+                if (e.AddIndexClasses >= 0 && e.AddIndexClasses <= Classes.Count)
+                {
+                    var classInfo = new ClassInfo();
+                    if (TimeLayout != null)
+                    {
+                        classInfo.CurrentTimeLayout = TimeLayout;
+                        classInfo.Index = e.AddIndexClasses;
+                    }
+                    Classes.Insert(e.AddIndexClasses, classInfo);
+                }
                 break;
             case NotifyCollectionChangedAction.Move:
                 break;
@@ -298,6 +313,9 @@ public class ClassPlan : AttachableSettingsObject
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        RefreshClassesList();
+        NotifyClassesChanged();
     }
 
     private void LayoutsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

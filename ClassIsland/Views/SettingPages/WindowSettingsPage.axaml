@@ -253,6 +253,19 @@
                 </controls1:SettingsExpander.Footer>
             </controls1:SettingsExpander>
 
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF4A4;}"
+                                        Header="阻止截图"
+                                        Description="开启后，其他应用无法截取 ClassIsland 主界面窗口内容，录制时也不会录制到主页面。">
+                <controls1:SettingsExpander.IsVisible>
+                    <OnPlatform Default="False">
+                        <On Options="Windows" Content="True"/>
+                    </OnPlatform>
+                </controls1:SettingsExpander.IsVisible>
+                <controls1:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsWindowCaptureBlockingEnabled, Mode=TwoWay}"/>
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+
             <!-- 指针穿透 --><!--
             <ci:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
                                    Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
