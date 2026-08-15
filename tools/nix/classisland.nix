@@ -29,7 +29,7 @@ let
 in
 buildDotnetModule {
   pname = "classisland";
-  version = "2.0.2.0";
+  version = "2.1.1.0";
   projectFile = "./ClassIsland.Desktop/ClassIsland.Desktop.csproj";
   dotnet-sdk =
     with dotnetCorePackages;
