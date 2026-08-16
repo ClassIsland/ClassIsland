@@ -5,6 +5,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Helpers;
 using ClassIsland.Shared.Models.Profile;
 
@@ -14,8 +16,13 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
 {
     private static readonly TimeSpan MinTime = TimeSpan.Zero;
     private static readonly TimeSpan MaxTime = new TimeSpan(23, 59, 59);
-    
-    public TimeLineListItemExpandingAdornerControl() => InitializeComponent();
+
+    public TimeLineListItemExpandingAdornerControl()
+    {
+        InitializeComponent();
+        // AddHandler(PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
+        AddHandler(Control.RequestBringIntoViewEvent, OnRequestBringIntoView, RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+    }
 
     public static readonly StyledProperty<TimeLayoutItem> TimePointProperty = AvaloniaProperty.Register<TimeLineListItemExpandingAdornerControl, TimeLayoutItem>(
         nameof(TimePoint));
@@ -283,5 +290,10 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
     private void ButtonDismiss_OnClick(object? sender, RoutedEventArgs e)
     {
         IsAddTimePointPopupVisible = false;
+    }
+
+    private void OnRequestBringIntoView(object? sender, RequestBringIntoViewEventArgs e)
+    {
+        e.Handled = true;
     }
 }
