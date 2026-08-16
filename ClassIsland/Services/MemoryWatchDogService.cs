@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
@@ -37,9 +38,32 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     /// <summary>
     /// 获取主应用程序所使用的内存占用大小
     /// </summary>
-    /// <remarks>由于<see href="https://github.com/dotnet/runtime/issues/105665">此问题</see>，macOS平台上会返回<see cref="Process.WorkingSet64"/>字段，其他平台会返回<see cref="Process.PrivateMemorySize64"/>字段</remarks>
+    /// <remarks>
+    /// iOS/iPadOS 不支持通过 <see cref="Process"/> 获取进程内存信息；当平台不支持该 API 时，
+    /// 返回托管堆内存用量。
+    /// 由于<see href="https://github.com/dotnet/runtime/issues/105665">此问题</see>，macOS 平台上会返回
+    /// <see cref="Process.WorkingSet64"/> 字段，其他平台会返回 <see cref="Process.PrivateMemorySize64"/> 字段。
+    /// </remarks>
     /// <returns>主应用程序所使用的内存占用大小(Bytes)</returns>
     public static long GetMemoryUsage()
+    {
+        if (OperatingSystem.IsIOS())
+        {
+            return GC.GetTotalMemory(false);
+        }
+
+        try
+        {
+            return GetProcessMemoryUsage();
+        }
+        catch (PlatformNotSupportedException)
+        {
+            return GC.GetTotalMemory(false);
+        }
+    }
+
+    [UnsupportedOSPlatform("ios")]
+    private static long GetProcessMemoryUsage()
     {
         var process = Process.GetCurrentProcess();
         return OperatingSystem.IsMacOS()
