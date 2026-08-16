@@ -36,7 +36,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 
 > [!TIP]
 >
-> 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech) 了解更多。
+> 您可以点击查看 [ClassIsland 文档](https://docs.classisland.tech) 了解更多。
 
 ### 课表信息显示
 
