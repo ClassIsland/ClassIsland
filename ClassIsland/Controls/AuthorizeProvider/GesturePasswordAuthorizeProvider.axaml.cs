@@ -176,13 +176,18 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
         return a.Length == b.Length && a.SequenceEqual(b);
     }
 
+    private const int HashIterations = 600_000;
+
     private void SaveGesture(int[] path)
     {
         var pathString = string.Join(",", path);
         var saltBytes = RandomNumberGenerator.GetBytes(16);
-        var pathBytes = Encoding.UTF8.GetBytes(pathString).ToList();
-        pathBytes.AddRange(saltBytes);
-        var hash = SHA256.HashData(pathBytes.ToArray());
+        var hash = Rfc2898DeriveBytes.Pbkdf2(
+            Encoding.UTF8.GetBytes(pathString),
+            saltBytes,
+            HashIterations,
+            HashAlgorithmName.SHA256,
+            32);
         Settings.GestureSalt = saltBytes;
         Settings.GestureHash = Convert.ToBase64String(hash);
     }
@@ -191,11 +196,12 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     {
         if (string.IsNullOrEmpty(Settings.GestureHash)) return false;
 
-        var pathString = string.Join(",", path);
-        var saltBytes = Settings.GestureSalt;
-        var pathBytes = Encoding.UTF8.GetBytes(pathString).ToList();
-        pathBytes.AddRange(saltBytes);
-        var hash = SHA256.HashData(pathBytes.ToArray());
+        var hash = Rfc2898DeriveBytes.Pbkdf2(
+            Encoding.UTF8.GetBytes(string.Join(",", path)),
+            Settings.GestureSalt,
+            HashIterations,
+            HashAlgorithmName.SHA256,
+            32);
         var expectedHash = Convert.FromBase64String(Settings.GestureHash);
         return CryptographicOperations.FixedTimeEquals(hash, expectedHash);
     }
