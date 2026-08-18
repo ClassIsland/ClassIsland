@@ -13,6 +13,8 @@
                   xmlns:editMode="clr-namespace:ClassIsland.Controls.EditMode"
                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                   x:Class="ClassIsland.Views.SettingPages.ComponentsSettingsPage"
+                   Loaded="ComponentsSettingsPage_OnLoaded"
+                   Unloaded="ComponentsSettingsPage_OnUnloaded"
                   d:DataContext="{d:DesignInstance settingPages:ComponentsSettingsPage}">
     <ci:SettingsPageBase.Styles>
         <Style Selector="ListBox.drag-source ListBoxItem">

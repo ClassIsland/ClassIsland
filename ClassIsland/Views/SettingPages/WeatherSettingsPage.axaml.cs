@@ -92,6 +92,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
 
     private void WeatherSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
+        ViewModel.Activate();
         SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
         _ = ViewModel.InitializeAsync();
     }
@@ -99,5 +100,6 @@ public partial class WeatherSettingsPage : SettingsPageBase
     private void WeatherSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
     {
         SettingsService.Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
+        ViewModel.Deactivate();
     }
 }

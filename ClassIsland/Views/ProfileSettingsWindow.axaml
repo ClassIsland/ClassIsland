@@ -26,6 +26,7 @@
         MinWidth="750"
         HostWidth="1100" HostHeight="600"
         Closing="Window_OnClosing"
+        Closed="Window_OnClosed"
         Loaded="Control_OnLoaded">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
@@ -114,7 +115,8 @@
 
                 <StackPanel IsEnabled="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}" 
                             IsVisible="{Binding IsEnabled}">
-                    <controls1:TimeRuleEditControl TimeRule="{Binding TimeRule, Mode=OneWay}"/>
+                    <controls1:TimeRuleEditControl x:Name="ClassPlanTimeRuleEditControl"
+                                                   TimeRule="{Binding TimeRule, Mode=OneWay}"/>
                 </StackPanel>
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>

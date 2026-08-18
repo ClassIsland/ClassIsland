@@ -87,6 +87,8 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
     private bool _isFirstNavigated = false;
 
     private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
+    private IDisposable? _debugOptionsSubscription;
+    private bool _resourcesReleased;
     
     public static readonly FuncValueConverter<object?, double> ControlToWidthConverter = new(x =>
     {
@@ -125,13 +127,18 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         }
 
         BuildNavigationMenuItems();
-        SettingsService.Settings
+        _debugOptionsSubscription = SettingsService.Settings
             .ObservableForProperty(x => x.IsDebugOptionsEnabled)
             .Subscribe(_ => BuildNavigationMenuItems());
     }
 
     private void BuildNavigationMenuItems()
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         NavigationView.MenuItems.Clear();
         ViewModel.FlattenNavigationItemsCache.Clear();
 
@@ -216,6 +223,11 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     private async void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         if (e.PropertyName != nameof(ViewModel.SelectedPageInfo)) return;
         if (!IsLoaded || !ViewModel.IsRendered)
             return;
@@ -230,13 +242,18 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
     protected async override void OnLoaded(RoutedEventArgs e)
     {
         base.OnLoaded(e);
-        if (_isFirstNavigated)
+        if (_resourcesReleased || _isFirstNavigated)
         {
             return;
         }
         var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
         ViewModel.IsRendered = true;
         await CoreNavigate(page);
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         ViewModel.IsCoverVisible = false;
         _isFirstNavigated = true;
         // await CoreNavigate(ViewModel.SelectedPageInfo);
@@ -244,16 +261,31 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     private async void NavigationServiceOnNavigating(object sender, FANavigatingCancelEventArgs e)
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         ViewModel.IsNavigating = true;
     }
 
     private async Task UpdateEchoCaveAsync()
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         if (ViewModel.EchoCaveTextsAll.Count <= 0)
         {
             var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
 
             var sayings = await new StreamReader(stream).ReadToEndAsync();
+            if (_resourcesReleased)
+            {
+                return;
+            }
+
             ViewModel.EchoCaveTextsAll = [..sayings.Split(Environment.NewLine)];
         }
         if (ViewModel.EchoCaveTexts.Count <= 0)
@@ -277,6 +309,11 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     private async void NavigationServiceOnLoadCompleted(object sender, FANavigationEventArgs e)
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         if (e.Parameter is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)
         {
             var transaction = data.Transaction as ITransactionTracer;
@@ -324,15 +361,11 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
     private async Task CoreNavigate(SettingsPageInfo? info, Uri? uri = null)
     {
         Logger.LogTrace("pre-开始导航");
-        if (info == null || Equals(info, ViewModel.SelectedPageInfo))
+        if (_resourcesReleased || info == null || Equals(info, ViewModel.SelectedPageInfo))
         {
             return;
         }
 
-        var transaction = SentrySdk.StartTransaction("Navigate SettingsPage", "settings.navigate");
-        transaction.SetTag("navigationPage", info.Name);
-        transaction.SetTag("navigationPage.id", info.Id);
-        var spanLoadPhase1 = transaction.StartChild("setupPage");
         switch (info.Category)
         {
             // 判断是否可以导航
@@ -347,6 +380,11 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         {
             return;
         }
+
+        var transaction = SentrySdk.StartTransaction("Navigate SettingsPage", "settings.navigate");
+        transaction.SetTag("navigationPage", info.Name);
+        transaction.SetTag("navigationPage.id", info.Id);
+        var spanLoadPhase1 = transaction.StartChild("setupPage");
         Logger.LogTrace("开始导航");
         ViewModel.FrameContent = null;
         ViewModel.IsPopupOpen = false;
@@ -362,6 +400,13 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
             if (SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading)
             {
                 await UpdateEchoCaveAsync();
+            }
+
+            if (_resourcesReleased)
+            {
+                spanLoadPhase1.Finish();
+                transaction.Finish();
+                return;
             }
             
             HangService.AssumeHang();
@@ -388,6 +433,11 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
             Logger.LogError(ex, "无法完成设置页面导航 {}", info.Id);
             spanLoadPhase1.Finish(ex, SpanStatus.InternalError);
             transaction.Finish(SpanStatus.InternalError);
+            if (_resourcesReleased)
+            {
+                return;
+            }
+
             ViewModel.IsNavigating = false;
             if (info.Id != ErrorPageId)
             {
@@ -404,6 +454,11 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
     private SettingsPageBase? GetPage(string? id, out bool cached)
     {
         cached = false;
+        if (_resourcesReleased)
+        {
+            return null;
+        }
+
         if (_cachedPages.TryGetValue(id ?? "", out var page))
         {
             cached = true;
@@ -443,24 +498,50 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     public override async void Open(ViewBase? owner = null)
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
         {
             return;
         }
+
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         TutorialService.PushToNextSentenceByTag("classisland.settingsWindow.open");
         base.Open(owner);
     }
 
     public async void Open(string key, Uri? uri = null)
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key) ?? ViewModel.SelectedPageInfo;
         LaunchSettingsPage = key;
         await CoreNavigate(page, uri);
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         Open();
     }
 
     public void OpenUri(Uri uri)
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         if (uri.Segments.Length > 2)
         {
             var uriSegment = uri.Segments[2].EndsWith('/') ? uri.Segments[2][..^1] : uri.Segments[2];
@@ -742,12 +823,17 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     public Control? GetPage(Type srcType)
     {
+        if (_resourcesReleased)
+        {
+            return null;
+        }
+
         return Activator.CreateInstance(srcType) as Control;
     }
 
     public Control? GetPageFromObject(object target)
     {
-        if (target is not SettingsWindowNavigationData data)
+        if (_resourcesReleased || target is not SettingsWindowNavigationData data)
         {
             return null;
         }
@@ -821,6 +907,11 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
             var isFirstNavigated = _isFirstNavigated;
             Dispatcher.UIThread.Post(() =>
             {
+                if (_resourcesReleased)
+                {
+                    return;
+                }
+
                 if (!isFirstNavigated)
                 {
                     parent.IsExpanded = true;
@@ -842,13 +933,57 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     private void ViewBase_OnClosed(object? sender, RoutedEventArgs e)
     {
-        SettingsService.SaveSettings("关闭应用设置窗口");
-        ComponentsService.SaveConfig();
-        App.GetService<IAutomationService>().SaveConfig("关闭应用设置窗口");
-        if (SettingsService.Settings.SettingsPagesCachePolicy <= 1)
+        if (_resourcesReleased)
         {
-            _cachedPages.Clear();
+            return;
         }
-        GC.Collect();
+
+        try
+        {
+            SettingsService.SaveSettings("关闭应用设置窗口");
+            ComponentsService.SaveConfig();
+            App.GetService<IAutomationService>().SaveConfig("关闭应用设置窗口");
+        }
+        finally
+        {
+            ReleaseResources();
+            GC.Collect();
+        }
+    }
+
+    private void ReleaseResources()
+    {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
+        _resourcesReleased = true;
+
+        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        _debugOptionsSubscription?.Dispose();
+        _debugOptionsSubscription = null;
+        ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
+        Closed -= ViewBase_OnClosed;
+
+        NavigationFrame.NavigationPageFactory = null;
+        NavigationFrame.BackStack.Clear();
+        NavigationFrame.Content = null;
+        NavigationView.SelectedItem = null;
+        NavigationView.MenuItems.Clear();
+
+        ViewModel.FrameContent = null;
+        ViewModel.SelectedPageInfo = null;
+        ViewModel.DrawerContent = null;
+        ViewModel.IsDrawerOpen = false;
+        ViewModel.IsNavigating = false;
+        ViewModel.IsRendered = false;
+        ViewModel.FlattenNavigationItemsCache.Clear();
+        ViewModel.NavigationViewItems.Clear();
+        _cachedPages.Clear();
+
+        DataContext = null;
+        Content = null;
+        Resources.Clear();
     }
 }

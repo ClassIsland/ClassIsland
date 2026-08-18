@@ -10,6 +10,8 @@ namespace ClassIsland.Core.Attributes;
 [AttributeUsage(AttributeTargets.Class)]
 public class ComponentInfo : Attribute
 {
+    private readonly string? _iconExpression;
+
     /// <summary>
     /// 组件GUID
     /// </summary>
@@ -21,9 +23,12 @@ public class ComponentInfo : Attribute
     public string Name { get; }
 
     /// <summary>
-    /// 组件图标
+    /// 组件图标。组件注册信息由静态集合长期保存，因此每次读取都返回独立图标源，
+    /// 避免图标源通过其生成的图标元素保留组件控件所在的视觉树。
     /// </summary>
-    public FAIconSource? IconSource { get; }
+    public FAIconSource? IconSource => string.IsNullOrEmpty(_iconExpression)
+        ? null
+        : IconExpressionHelper.TryParseOrNull(_iconExpression);
 
     /// <summary>
     /// 组件位图图标uri
@@ -66,7 +71,7 @@ public class ComponentInfo : Attribute
     public ComponentInfo(string guid, string name, string iconSource, string description = "") : this(guid, name,
         description)
     {
-        IconSource = IconExpressionHelper.TryParseOrNull(iconSource);
+        _iconExpression = iconSource;
     }
 
     /// <inheritdoc />

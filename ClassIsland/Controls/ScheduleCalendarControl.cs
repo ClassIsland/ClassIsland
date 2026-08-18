@@ -23,6 +23,7 @@ public class ScheduleCalendarControl : Calendar
     public static SyncDictionaryList<Guid, ClassPlan> GetClassPlanList(Control obj) => obj.GetValue(ClassPlanListProperty);
     
     private List<IDisposable> _updateObservers = [];
+    private bool _resourcesReleased;
     
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>(); 
 
@@ -40,6 +41,11 @@ public class ScheduleCalendarControl : Calendar
     
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         UpdateObservers();
         UpdateSchedule();
     }
@@ -74,6 +80,21 @@ public class ScheduleCalendarControl : Calendar
             observer.Dispose();
         }
         _updateObservers.Clear();
+    }
+
+    public void ReleaseResources()
+    {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
+        _resourcesReleased = true;
+        Loaded -= OnLoaded;
+        Unloaded -= OnUnloaded;
+        UnsubscribeAllObservers();
+        GetClassPlanList(this).Dispose();
+        ScheduleUpdated = null;
     }
     
 }

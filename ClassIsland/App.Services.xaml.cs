@@ -136,8 +136,8 @@ public partial class App
         // services.AddTransient<FeatureDebugWindow>();
         services.AddSingleton<TopmostEffectWindow>();
         services.AddSingleton<AppLogsWindow>();
-        services.AddSingleton<SettingsWindowNew>();
-        services.AddSingleton<ProfileSettingsWindow>();
+        services.AddTransientView<SettingsWindowNew>();
+        services.AddTransientView<ProfileSettingsWindow>();
         services.AddTransient<ClassPlanDetailsWindow>();
         services.AddTransient<WindowRuleDebugWindow>();
         // services.AddTransient<ConfigErrorsWindow>();

@@ -10,12 +10,13 @@ namespace ClassIsland.Core.ComponentModels;
 /// <summary>
 /// 可同步字典与列表的数据类型，用于将字典绑定到前端数据上。
 /// </summary>
-public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKey : notnull
+public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged, IDisposable where TKey : notnull
 {
     private readonly IDictionary<TKey, TValue> _dictionary;
     private readonly ObservableOrderedDictionary<TKey, TValue>? _orderedDictionary;
     private readonly Func<TKey> _newKey;
     private bool _isProcessing = false;
+    private bool _isDisposed;
 
     /// <summary>
     /// 公开的用于进行绑定的列表。
@@ -194,5 +195,21 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
         field = value;
         OnPropertyChanged(propertyName);
         return true;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        _isDisposed = true;
+        List.CollectionChanged -= ListOnCollectionChanged;
+        if (_dictionary is INotifyCollectionChanged notifyCollectionChanged)
+        {
+            notifyCollectionChanged.CollectionChanged -= DictionaryOnCollectionChanged;
+        }
     }
 }

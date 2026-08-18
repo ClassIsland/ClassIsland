@@ -24,21 +24,21 @@ namespace ClassIsland.Views.SettingPages;
 [SettingsPageInfo("window", "窗口", "\uf485", "\uf484", SettingsPageCategory.Internal)]
 public partial class WindowSettingsPage : SettingsPageBase
 {
+    private readonly DispatcherTimer _taskbarTimer;
+
     public WindowSettingsViewModel ViewModel { get; } = IAppHost.GetService<WindowSettingsViewModel>();
 
     public WindowSettingsPage()
     {
         InitializeComponent();
         DataContext = this;
-        
-        var taskbarTimer = new DispatcherTimer
+
+        _taskbarTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
         };
-        taskbarTimer.Tick += TaskbarTimer_Tick;
-        taskbarTimer.Start();
+        _taskbarTimer.Tick += TaskbarTimer_Tick;
         TaskbarTimer_Tick();
-        ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         ViewModel.Screens = new ObservableCollection<Screen>(AppBase.Current.MainWindow!.Screens.All);
     }   
 
@@ -69,11 +69,13 @@ public partial class WindowSettingsPage : SettingsPageBase
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        
+        _taskbarTimer.Start();
+        ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
     private void Control_OnUnloaded(object? sender, RoutedEventArgs e)
     {
+        _taskbarTimer.Stop();
         ViewModel.SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
     }
 }

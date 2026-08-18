@@ -15,6 +15,8 @@ public class AttachedSettingsControlInfo(
     string iconExpression = "\uef27",
     bool hasEnabledState = true) : Attribute
 {
+    private readonly string _iconExpression = iconExpression;
+
     /// <summary>
     /// 附加设置 GUID
     /// </summary>
@@ -26,9 +28,10 @@ public class AttachedSettingsControlInfo(
     public string Name { get; } = name;
 
     /// <summary>
-    /// 附加设置图标
+    /// 附加设置图标。注册信息由静态集合长期保存，因此每次读取都返回独立图标源，
+    /// 避免图标源通过其生成的图标元素保留设置控件所在的视觉树。
     /// </summary>
-    public FAIconSource? IconSource { get; } = IconExpressionHelper.TryParseOrNull(iconExpression);
+    public FAIconSource? IconSource => IconExpressionHelper.TryParseOrNull(_iconExpression);
 
     /// <summary>
     /// 是否具有开关状态

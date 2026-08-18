@@ -1,7 +1,8 @@
 {
   "profiles": {
     "ClassIsland": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "debugEngines": "managed,native"
     },
     "ClassIsland (Mobile)": {
       "commandName": "Project",

@@ -1131,8 +1131,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     
     private void MenuItemTemporaryClassPlan_OnClick(object sender, EventArgs e)
     {
-        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
-        OpenProfileSettingsWindow();
+        var window = App.GetService<ProfileSettingsWindow>();
+        window.OpenDrawer("TemporaryClassPlan");
+        window.Open();
     }
     
     private void MenuItemAbout_OnClick(object sender, EventArgs e)
@@ -1284,8 +1285,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
         if (LessonsService.CurrentClassPlan == null) // 如果今天没有课程，则选择临时课表
         {
-            App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
-            OpenProfileSettingsWindow();
+            var window = App.GetService<ProfileSettingsWindow>();
+            window.OpenDrawer("TemporaryClassPlan");
+            window.Open();
             return;
         }
 

@@ -40,14 +40,26 @@ namespace ClassIsland.Views.SettingPages;
 public partial class ComponentsSettingsPage : SettingsPageBase
 {
     public ComponentsSettingsViewModel ViewModel { get; } = IAppHost.GetService<ComponentsSettingsViewModel>();
+
+    private IDisposable? _currentComponentConfigSubscription;
     
     public ComponentsSettingsPage()
     {
         InitializeComponent();
         DataContext = this;
-        ViewModel.SettingsService.Settings
+    }
+
+    private void ComponentsSettingsPage_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        _currentComponentConfigSubscription ??= ViewModel.SettingsService.Settings
             .ObservableForProperty(x => x.CurrentComponentConfig)
             .Subscribe(_ => ClearSelectedComponents());
+    }
+
+    private void ComponentsSettingsPage_OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        _currentComponentConfigSubscription?.Dispose();
+        _currentComponentConfigSubscription = null;
     }
     
     private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)

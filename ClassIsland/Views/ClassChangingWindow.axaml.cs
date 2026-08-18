@@ -168,8 +168,9 @@ public partial class ClassChangingWindow : ViewBase
 
     private void ButtonTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
-        App.GetService<ProfileSettingsWindow>().Open();
+        var window = App.GetService<ProfileSettingsWindow>();
+        window.OpenDrawer("TemporaryClassPlan");
+        window.Open();
         Close();
     }
 

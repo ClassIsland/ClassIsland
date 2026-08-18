@@ -174,6 +174,9 @@ public partial class ScheduleDataGrid : TemplatedControl
     public ObservableCollection<ClassPlan> ClassPlansCache { get; } = [EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan];
 
     private List<IDisposable> _updateObservers = [];
+    private readonly IDisposable _selectedDateObserver;
+    private readonly IDisposable _selectedClassInfoIndexObserver;
+    private bool _resourcesReleased;
     
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>(); 
     public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>(); 
@@ -181,6 +184,8 @@ public partial class ScheduleDataGrid : TemplatedControl
     public ITutorialService TutorialService { get; } = IAppHost.GetService<ITutorialService>();
 
     private DataGrid? _mainDataGrid;
+    private Button? _previousWeekButton;
+    private Button? _nextWeekButton;
 
     private int _rowIndexPrev = -1;
     
@@ -193,8 +198,8 @@ public partial class ScheduleDataGrid : TemplatedControl
             new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid));
         SetValue(ClassPlansProperty,
             new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid));
-        this.GetObservable(SelectedDateProperty).Skip(1).Subscribe(_ => OnSelectedDateChanged());
-        this.GetObservable(SelectedClassInfoIndexProperty).Skip(1).Subscribe(_ => UpdateSelectedClassInfoByIndex());
+        _selectedDateObserver = this.GetObservable(SelectedDateProperty).Skip(1).Subscribe(_ => OnSelectedDateChanged());
+        _selectedClassInfoIndexObserver = this.GetObservable(SelectedClassInfoIndexProperty).Skip(1).Subscribe(_ => UpdateSelectedClassInfoByIndex());
         Loaded += Control_OnLoaded;
         Unloaded += OnUnloaded;
         
@@ -221,21 +226,46 @@ public partial class ScheduleDataGrid : TemplatedControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-        var prevBtn = e.NameScope.Find<Button>("PART_ButtonPreviousWeek");
-        if (prevBtn != null)
+        DetachTemplateHandlers();
+        if (_resourcesReleased)
         {
-            prevBtn.Click += ButtonPreviousWeek_OnClick;
+            return;
         }
-        var nextBtn = e.NameScope.Find<Button>("PART_ButtonNextWeek");
-        if (nextBtn != null)
+
+        _previousWeekButton = e.NameScope.Find<Button>("PART_ButtonPreviousWeek");
+        if (_previousWeekButton != null)
         {
-            nextBtn.Click += ButtonNextWeek_OnClick;
+            _previousWeekButton.Click += ButtonPreviousWeek_OnClick;
+        }
+        _nextWeekButton = e.NameScope.Find<Button>("PART_ButtonNextWeek");
+        if (_nextWeekButton != null)
+        {
+            _nextWeekButton.Click += ButtonNextWeek_OnClick;
         }
 
         _mainDataGrid = e.NameScope.Find<DataGrid>("PART_DataGridWeekSchedule");
         if (_mainDataGrid != null)
         {
             _mainDataGrid.SelectionChanged += MainDataGrid_OnSelectionChanged;
+        }
+    }
+
+    private void DetachTemplateHandlers()
+    {
+        if (_previousWeekButton != null)
+        {
+            _previousWeekButton.Click -= ButtonPreviousWeek_OnClick;
+            _previousWeekButton = null;
+        }
+        if (_nextWeekButton != null)
+        {
+            _nextWeekButton.Click -= ButtonNextWeek_OnClick;
+            _nextWeekButton = null;
+        }
+        if (_mainDataGrid != null)
+        {
+            _mainDataGrid.SelectionChanged -= MainDataGrid_OnSelectionChanged;
+            _mainDataGrid = null;
         }
     }
 
@@ -263,9 +293,20 @@ public partial class ScheduleDataGrid : TemplatedControl
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         PseudoClasses.Set(":loaded", true);
         RefreshWeekScheduleRows();
-        Dispatcher.UIThread.Post(() => IsLoading = false);
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (!_resourcesReleased)
+            {
+                IsLoading = false;
+            }
+        });
     }
     
     private (DataGridCell?, int) GetDataGridSelectedCell(DataGrid dataGrid)
@@ -475,6 +516,28 @@ public partial class ScheduleDataGrid : TemplatedControl
             observer.Dispose();
         }
         _updateObservers.Clear();
+    }
+
+    public void ReleaseResources()
+    {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
+        _resourcesReleased = true;
+        Loaded -= Control_OnLoaded;
+        Unloaded -= OnUnloaded;
+        RemoveHandler(ScheduleDataGridCellControl.ScheduleDataGridSelectionChangedEvent,
+            DataGridWeekSchedule_OnScheduleDataGridSelectionChanged);
+        DetachTemplateHandlers();
+        UnsubscribeAllObservers();
+        _selectedDateObserver.Dispose();
+        _selectedClassInfoIndexObserver.Dispose();
+        ScheduleDataGridCellControl.GetSubjectsList(this).Dispose();
+        GetTimeLayouts(this).Dispose();
+        GetClassPlans(this).Dispose();
+        CreateClassPlanEvent = null;
     }
 
     public void ScrollIntoCurrentView()

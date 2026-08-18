@@ -37,12 +37,19 @@ public partial class ThemesSettingsPage : SettingsPageBase
 {
     public ThemesSettingsViewModel ViewModel { get; } = IAppHost.GetService<ThemesSettingsViewModel>();
 
+    private IDisposable? _pluginMarketExceptionSubscription;
+
     public ThemesSettingsPage()
     {
 
         InitializeComponent();
         DataContext = this;
-        ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
+
+    }
+
+    private void ThemesSettingsPage_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        _pluginMarketExceptionSubscription ??= ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
             .Subscribe(_ =>
             {
                 if (ViewModel.PluginMarketService.Exception == null)
@@ -52,7 +59,12 @@ public partial class ThemesSettingsPage : SettingsPageBase
 
                 this.ShowErrorToast("无法刷新市场", ViewModel.PluginMarketService.Exception);
             });
+    }
 
+    private void ThemesSettingsPage_OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        _pluginMarketExceptionSubscription?.Dispose();
+        _pluginMarketExceptionSubscription = null;
     }
 
     private void ButtonLoadThemes_OnClick(object sender, RoutedEventArgs e)
