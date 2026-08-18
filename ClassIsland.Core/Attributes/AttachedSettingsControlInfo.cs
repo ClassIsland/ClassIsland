@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using ClassIsland.Core.Enums;
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Attributes;
 
@@ -10,7 +12,7 @@ namespace ClassIsland.Core.Attributes;
 public class AttachedSettingsControlInfo(
     string guid,
     string name,
-    string iconGlyph = "\uef27",
+    string iconExpression = "\uef27",
     bool hasEnabledState = true) : Attribute
 {
     /// <summary>
@@ -24,9 +26,9 @@ public class AttachedSettingsControlInfo(
     public string Name { get; } = name;
 
     /// <summary>
-    /// 附加设置图标类型
+    /// 附加设置图标
     /// </summary>
-    public string IconGlyph { get; } = iconGlyph;
+    public FAIconSource? IconSource { get; } = IconExpressionHelper.TryParseOrNull(iconExpression);
 
     /// <summary>
     /// 是否具有开关状态

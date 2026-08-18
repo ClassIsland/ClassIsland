@@ -144,7 +144,7 @@
                         </Button.Flyout>
                     </Button>
                     <Grid>
-                        <controls:IconText Glyph="{Binding ControlInfo.IconGlyph, Mode=OneWay}"
+                        <controls:IconText IconSource="{Binding ControlInfo.IconSource, Mode=OneWay}"
                                            Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
                                            IsVisible="{Binding IsDependencyMode, Converter={StaticResource InvertBooleanConverter}}"/>
                         <controls:IconText Glyph="{Binding DependencyItemPackIconKind, Mode=OneWay}"

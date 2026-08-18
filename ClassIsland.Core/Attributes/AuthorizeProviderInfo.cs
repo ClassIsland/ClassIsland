@@ -1,14 +1,17 @@
 ﻿namespace ClassIsland.Core.Attributes;
 
 
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
+
 /// <summary>
 /// 代表认证提供方信息。
 /// </summary>
 /// <param name="id">此认证提供方的 ID</param>
 /// <param name="name">此认证提供方的名称</param>
-/// <param name="iconGlyph">此认证提供方的图标</param>
+/// <param name="iconExpression">此认证提供方的图标表达式</param>
 [AttributeUsage(AttributeTargets.Class)]
-public class AuthorizeProviderInfo(string id, string name, string iconGlyph) : Attribute
+public class AuthorizeProviderInfo(string id, string name, string iconExpression) : Attribute
 {
     /// <summary>
     /// 此认证提供方的 ID
@@ -23,7 +26,7 @@ public class AuthorizeProviderInfo(string id, string name, string iconGlyph) : A
     /// <summary>
     /// 此认证提供方的图标
     /// </summary>
-    public string IconGlyph { get; } = iconGlyph;
+    public FAIconSource? IconSource { get; } = IconExpressionHelper.TryParseOrNull(iconExpression);
 
     /// <summary>
     /// 认证提供方类型

@@ -16,13 +16,13 @@ public static class RulesetRegistryExtensions
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
     /// <param name="name">规则名称。/</param>
-    /// <param name="iconGlyph">规则图标。</param>
+    /// <param name="iconExpression">规则图标表达式。</param>
     /// <param name="onHandle">规则处理程序。</param>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule(this IServiceCollection services, string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
+        string iconExpression = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
-        Register(id, name, iconGlyph, onHandle);
+        Register(id, name, iconExpression, onHandle);
         return services;
     }
 
@@ -32,14 +32,14 @@ public static class RulesetRegistryExtensions
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
     /// <param name="name">规则名称。/</param>
-    /// <param name="iconGlyph">规则图标。</param>
+    /// <param name="iconExpression">规则图标表达式。</param>
     /// <param name="onHandle">规则处理程序。</param>
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings>(this IServiceCollection services, string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle=null)
+        string iconExpression = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle=null)
     {
-        var info = Register(id, name, iconGlyph, onHandle);
+        var info = Register(id, name, iconExpression, onHandle);
         info.SettingsType = typeof(TSettings);
         return services;
     }
@@ -50,15 +50,15 @@ public static class RulesetRegistryExtensions
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
     /// <param name="name">规则名称。/</param>
-    /// <param name="iconGlyph">规则图标。</param>
+    /// <param name="iconExpression">规则图标表达式。</param>
     /// <param name="onHandle">规则处理程序。</param>
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <typeparam name="TSettingsControl">规则设置控件类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings, TSettingsControl>(this IServiceCollection services, string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate ? onHandle = null) where TSettingsControl : RuleSettingsControlBase
+        string iconExpression = "\uef27", RuleRegistryInfo.HandleDelegate ? onHandle = null) where TSettingsControl : RuleSettingsControlBase
     {
-        var info = Register(id, name, iconGlyph, onHandle);
+        var info = Register(id, name, iconExpression, onHandle);
         services.AddKeyedTransient<RuleSettingsControlBase, TSettingsControl>(id);
         info.SettingsType = typeof(TSettings);
         info.SettingsControlType = typeof(TSettingsControl);
@@ -67,14 +67,14 @@ public static class RulesetRegistryExtensions
 
 
     private static RuleRegistryInfo Register(string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
+        string iconExpression = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
         if (IRulesetService.Rules.ContainsKey(id))
         {
             throw new InvalidOperationException($"已注册ID为 {id} 的规则。");
         }
 
-        var info = new RuleRegistryInfo(id, name, iconGlyph);
+        var info = new RuleRegistryInfo(id, name, iconExpression);
         info.Handle += onHandle;
         IRulesetService.Rules.Add(id, info);
         

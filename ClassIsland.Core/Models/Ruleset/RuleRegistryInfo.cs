@@ -1,3 +1,6 @@
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
+
 namespace ClassIsland.Core.Models.Ruleset;
 
 /// <summary>
@@ -5,8 +8,8 @@ namespace ClassIsland.Core.Models.Ruleset;
 /// </summary>
 /// <param name="id">规则集ID，例如“classisland.example”。</param>
 /// <param name="name">规则集显示名称。</param>
-/// <param name="iconGlyph">规则集图标。</param>
-public class RuleRegistryInfo(string id, string name = "", string iconGlyph = "\uef27")
+/// <param name="iconExpression">规则集图标表达式。</param>
+public class RuleRegistryInfo(string id, string name = "", string iconExpression = "\uef27")
 {
     /// <summary>
     /// 规则 ID。
@@ -14,9 +17,10 @@ public class RuleRegistryInfo(string id, string name = "", string iconGlyph = "\
     public string Id { get; internal set; } = id;
 
     /// <summary>
-    /// 规则显示图标类型。
+    /// 规则显示图标。
     /// </summary>
-    public string IconGlyph { get; internal set; } = iconGlyph;
+    public FAIconSource? IconSource { get; internal set; } =
+        IconExpressionHelper.TryParseOrNull(iconExpression);
 
 
     /// <summary>

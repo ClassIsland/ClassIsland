@@ -15,7 +15,7 @@
             <fa:FAMenuFlyoutSubItem Text="{Binding Name}"
                                   ItemsSource="{Binding Children}">
                 <fa:FAMenuFlyoutSubItem.IconSource>
-                    <ci:FluentIconSource Glyph="{Binding IconGlyph}" />
+                    <Binding Path="IconSource" />
                 </fa:FAMenuFlyoutSubItem.IconSource>
             </fa:FAMenuFlyoutSubItem>
         </DataTemplate>
@@ -64,7 +64,7 @@
                                        Command="{Binding $parent[local:ActionControl].AddActionCommand}"
                                        CommandParameter="{Binding}">
                         <fa:FAMenuFlyoutItem.IconSource>
-                            <ci:FluentIconSource Glyph="{Binding IconGlyph}" FontSize="18"/>
+                            <Binding Path="IconSource" />
                         </fa:FAMenuFlyoutItem.IconSource>
                     </fa:FAMenuFlyoutItem>
                 </DataTemplate>

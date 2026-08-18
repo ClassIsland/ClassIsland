@@ -6,6 +6,7 @@ using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Extensions.UI;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
 using FluentAvalonia.UI.Controls;
@@ -82,9 +83,12 @@ public abstract class ActionSettingsControlBase : UserControl
     protected void ChangeActionName(string newName) =>
         ActionNameChanged?.Invoke(this, newName);
 
-    /// 调用此方法，以更改行动项显示的图标时。
-    protected void ChangeActionIcon(string? newIconGlyph) =>
-        ActionIconChanged?.Invoke(this, newIconGlyph);
+    /// 调用此方法，以更改行动项显示的图标。
+    /// <param name="newIconExpression">新的图标表达式。传入 null 或空字符串可隐藏图标。</param>
+    protected void ChangeActionIcon(string? newIconExpression) =>
+        ActionIconChanged?.Invoke(this, string.IsNullOrEmpty(newIconExpression)
+            ? null
+            : IconExpressionHelper.TryParseOrNull(newIconExpression));
 
     /// 调用此方法，以打开抽屉并显示控件。
     /// <param name="control">要显示的 ContentControl 或 Control 控件。注意：此控件需设定宽度。</param>
@@ -130,7 +134,7 @@ public abstract class ActionSettingsControlBase : UserControl
     internal bool ShouldShowUndoDeleteButton() => IsUndoDeleteRequested();
     internal object? SettingsInternal { get; set; }
     internal event EventHandler<string>? ActionNameChanged;
-    internal event EventHandler<string?>? ActionIconChanged;
+    internal event EventHandler<FAIconSource?>? ActionIconChanged;
     internal bool IsNewAdded = false;
 
     /// <inheritdoc />

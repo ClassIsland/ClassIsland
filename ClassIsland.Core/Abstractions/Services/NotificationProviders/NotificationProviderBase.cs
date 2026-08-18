@@ -1,16 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
+using Avalonia.Controls.Documents;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using Microsoft.Extensions.Hosting;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 
@@ -87,27 +85,15 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
         Name = info.Name;
         Description = info.Description;
         ProviderGuid = info.Guid;
-        if (info.UseBitmapIcon)
+        var iconElement = new FAIconSourceElement
         {
-            var bitmapImage = new Bitmap(AssetLoader.Open(new Uri(info.BitmapIconUri, UriKind.RelativeOrAbsolute)));
-            IconElement = new Image()
-            {
-                Source = bitmapImage,
-                Width = 24,
-                Height = 24,
-                Stretch = Stretch.UniformToFill
-            };
-        }
-        else
-        {
-            IconElement = new FluentIcon()
-            {
-                Glyph = info.IconGlyph,
-                Width = 24,
-                Height = 24,
-                FontSize = 24
-            };
-        }
+            IconSource = info.IconSource,
+            Width = 24,
+            Height = 24,
+            Classes = { "repair-fontsize" }
+        };
+        TextElement.SetFontSize(iconElement, 24);
+        IconElement = iconElement;
 
         if (!autoRegister)
         {

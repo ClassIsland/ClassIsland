@@ -38,8 +38,10 @@ public partial class ActionItemControl : UserControl
     {
         var newControl = ActionSettingsControlBase.GetInstance(ActionItem);
 
-        ActionInfoIconText.Glyph =
-            IActionService.ActionInfos.TryGetValue(ActionItem.Id, out var actionInfo) ? actionInfo.IconGlyph : "\uee31";
+        ActionInfoIconText.IconSource =
+            IActionService.ActionInfos.TryGetValue(ActionItem.Id, out var actionInfo)
+                ? actionInfo.IconSource
+                : IconExpressionHelper.TryParseOrNull("\uee31");
         ActionInfoIconText.Text = actionInfo?.Name ?? $"{ActionItem.Id}（未知行动）";
 
         if (newControl != null)
@@ -59,7 +61,8 @@ public partial class ActionItemControl : UserControl
     }
 
     void ControlOnActionNameChanged(object? sender, string e) => ActionInfoIconText.Text = e;
-    void ControlOnActionIconChanged(object? sender, string? e) => ActionInfoIconText.Glyph = e;
+    void ControlOnActionIconChanged(object? sender, FluentAvalonia.UI.Controls.FAIconSource? e) =>
+        ActionInfoIconText.IconSource = e;
 
 
     void Unload()

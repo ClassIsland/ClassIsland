@@ -179,7 +179,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
                         [
                             ..groupItems.Select(x => new FANavigationViewItem()
                             {
-                                IconSource = new FluentIconSource(x.UnSelectedIconGlyph),
+                                IconSource = x.UnSelectedIconSource,
                                 Content = x.Name,
                                 Tag = x
                             })
@@ -194,7 +194,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
                 {
                     item = new FANavigationViewItem()
                     {
-                        IconSource = new FluentIconSource(i.UnSelectedIconGlyph),
+                        IconSource = i.UnSelectedIconSource,
                         Content = i.Name,
                         Tag = i
                     };

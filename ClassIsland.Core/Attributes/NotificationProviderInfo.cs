@@ -1,5 +1,8 @@
 ﻿namespace ClassIsland.Core.Attributes;
 
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
+
 /// <summary>
 /// 提醒提供方信息
 /// </summary>
@@ -19,7 +22,8 @@ public class NotificationProviderInfo : Attribute
     /// <summary>
     /// 提醒提供方图标
     /// </summary>
-    public string IconGlyph { get; } = "\ue02a";
+    public FAIconSource? IconSource { get; } =
+        IconExpressionHelper.TryParseOrNull("\ue02a");
 
     /// <summary>
     /// 提醒提供方位图图标uri
@@ -58,10 +62,10 @@ public class NotificationProviderInfo : Attribute
 
 
     /// <inheritdoc />
-    public NotificationProviderInfo(string guid, string name, string iconGlyph, string description = "") : this(guid, name,
+    public NotificationProviderInfo(string guid, string name, string iconExpression, string description = "") : this(guid, name,
         description)
     {
-        IconGlyph = iconGlyph;
+        IconSource = IconExpressionHelper.TryParseOrNull(iconExpression);
     }
 
     /// <inheritdoc />

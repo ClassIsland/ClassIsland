@@ -40,7 +40,7 @@
                                               MinWidth="100">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
-                                                <controls:IconText Glyph="{Binding IconGlyph}"
+                                                <controls:IconText IconSource="{Binding IconSource}"
                                                                    Text="{Binding Name}"/>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>

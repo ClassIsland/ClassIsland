@@ -85,7 +85,7 @@ public static class ActionRegistryExtensions
                     group = g.Children;
                 }
             }
-            group.Add(new ActionMenuTreeItem(info.Id, info.Name, info.IconGlyph));
+            group.Add(new ActionMenuTreeItem(info.Id, info.Name, info.IconExpression));
         }
     }
 
@@ -98,10 +98,10 @@ public static class ActionRegistryExtensions
         (this IServiceCollection services,
          string id,
          string name = "",
-         string iconGlyph = "\ue01f",
+         string iconExpression = "\ue01f",
          Action<object, string>? onHandle = null)
     {
-        var info = new ActionInfo(id, name, iconGlyph);
+        var info = new ActionInfo(id, name, iconExpression);
         info.IsRevertable = true;
         if (IActionService.ActionInfos.TryAdd(id, info))
         {
@@ -118,12 +118,12 @@ public static class ActionRegistryExtensions
         (this IServiceCollection services,
          string id,
          string name = "",
-         string iconGlyph = "\ue01f",
+         string iconExpression = "\ue01f",
          string defaultGroupToMenu = "",
          Action<object, string>? onHandle = null)
          where TSettingsControl : ActionSettingsControlBase
     {
-        var info = new ActionInfo(id, name, iconGlyph, defaultGroupToMenu: defaultGroupToMenu);
+        var info = new ActionInfo(id, name, iconExpression, defaultGroupToMenu: defaultGroupToMenu);
         info.IsRevertable = true;
         if (IActionService.ActionInfos.TryAdd(id, info))
         {
