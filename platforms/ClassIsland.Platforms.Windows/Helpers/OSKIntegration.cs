@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
@@ -14,8 +15,8 @@ namespace ClassIsland.Platform.Windows.Helpers;
 // https://gist.github.com/tobyfirth/65c5372be2e659141c1c4b7d99e3e268
 public static class OSKIntegration
 {
-    private static readonly Dictionary<IInputPane, TopLevel> tlMap = new();
-    private static readonly Subject<(TextBox t, bool state)> keyboard = new();
+    private static readonly ConditionalWeakTable<IInputPane, WeakReference<TopLevel>> tlMap = new();
+    private static readonly Subject<(WeakReference<TextBox> TextBox, bool State)> keyboard = new();
     private static bool _alreadyDone;
 
     public static void Integrate()
@@ -30,8 +31,15 @@ public static class OSKIntegration
             if (input == null)
                 return;
 
-            tlMap[input] = s;
-            input.StateChanged += InputPaneStateChanged;
+            if (tlMap.TryGetValue(input, out WeakReference<TopLevel>? topLevelReference))
+            {
+                topLevelReference.SetTarget(s);
+            }
+            else
+            {
+                tlMap.Add(input, new(s));
+                input.StateChanged += InputPaneStateChanged;
+            }
         }, handledEventsToo: true);
 
         Control.UnloadedEvent.AddClassHandler<TopLevel>((s, e) =>
@@ -47,14 +55,17 @@ public static class OSKIntegration
         InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
         {
             if (e.Pointer.Type == PointerType.Touch)
-                keyboard.OnNext((t, true));
+                keyboard.OnNext((new(t), true));
         }, handledEventsToo: true);
 
-        InputElement.LostFocusEvent.AddClassHandler<TextBox>((t, _) => keyboard.OnNext((t, false)), handledEventsToo: true);
+        InputElement.LostFocusEvent.AddClassHandler<TextBox>((t, _) => keyboard.OnNext((new(t), false)), handledEventsToo: true);
 
         keyboard.Throttle(TimeSpan.FromMilliseconds(100)).Subscribe(e =>
         {
-            TopLevel? tl = TopLevel.GetTopLevel(e.t);
+            if (!e.TextBox.TryGetTarget(out TextBox? textBox))
+                return;
+
+            TopLevel? tl = TopLevel.GetTopLevel(textBox);
             if (tl == null)
                 return;
 
@@ -66,7 +77,7 @@ public static class OSKIntegration
             if (input == null)
                 return;
 
-            if (e.state)
+            if (e.State)
             {
                 if (input.State == InputPaneState.Closed)
                 {
@@ -89,8 +100,10 @@ public static class OSKIntegration
     // say e.EndRect/inputPane.OccludedRect should be empty, but they are not.
     private static void InputPaneStateChanged(object? sender, InputPaneStateEventArgs e)
     {
-        IInputPane inputPane = (IInputPane)sender!;
-        TopLevel tl = tlMap[inputPane];
+        if (sender is not IInputPane inputPane ||
+            !tlMap.TryGetValue(inputPane, out WeakReference<TopLevel>? topLevelReference) ||
+            !topLevelReference.TryGetTarget(out TopLevel? tl))
+            return;
 
         if (tl.FocusManager?.GetFocusedElement() is not TextBox ctrl)
             return;

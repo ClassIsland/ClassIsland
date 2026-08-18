@@ -6,17 +6,21 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Controls.UI;
 
-[PseudoClasses(":mobile", ":inlineHeader")]
+[PseudoClasses(":mobile", ":inlineHeader", ":closed")]
 public partial class WindowViewHost : MyWindow, IViewHost
 {
     public bool IsMobileMode { get; init; }
@@ -28,6 +32,10 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private bool _isShowed = false;
 
     private bool _isClosed = false;
+
+    private bool _isHostContentPreparedForDetach = false;
+
+    private bool _isHostContentDetached = false;
 
     private bool _isSyncingHostSize = false;
 
@@ -52,7 +60,6 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private IDisposable? _currentViewHostFeaturesObserver;
 
     private AvaloniaList<WindowFeatures>? _observedHostFeatures;
-
     private WindowFeatures _appliedHostFeatures;
 
     private double _inlineHeaderHeight = 32.0;
@@ -82,11 +89,67 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private void OnClosed(object? sender, EventArgs e)
     {
+        if (_isClosed)
+        {
+            return;
+        }
+
         _isClosed = true;
+        PseudoClasses.Set(":closed", true);
+        DetachHostContent();
+        Content = null;
+        DataContext = null;
+        MyOwner = null;
+    }
+
+    private void DetachHostContent()
+    {
+        if (_isHostContentDetached)
+        {
+            return;
+        }
+
+        PrepareHostContentForDetach();
+        _isHostContentDetached = true;
+
+        foreach (var page in NavigationPage.NavigationStack.ToArray())
+        {
+            NavigationPage.RemovePage(page);
+        }
+
+        NavigationPage.Template = null;
+        NavigationPage.ApplyTemplate();
+    }
+
+    private void PrepareHostContentForDetach()
+    {
+        if (_isHostContentPreparedForDetach)
+        {
+            return;
+        }
+
+        _isHostContentPreparedForDetach = true;
         SetCurrentView(null);
-        NavigationPage.PopAllModalsAsync(null);
-        NavigationPage.PopToRootAsync(null);
-        NavigationPage.ReplaceAsync(new ContentPage(), null);
+        NavigationPage.Popped -= NavigationPage_OnPopped;
+
+        foreach (var icon in NavigationPage.GetVisualDescendants()
+                     .OfType<FASymbolIcon>()
+                     .Where(x => ReferenceEquals(x.TemplatedParent, NavigationPage)))
+        {
+            icon.ClearValue(FASymbolIcon.SymbolProperty);
+            icon.ClearValue(TextElement.FontSizeProperty);
+            icon.ClearValue(TextElement.ForegroundProperty);
+        }
+
+        Styles.Clear();
+    }
+
+    protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
+    {
+        // Keep the pages in the logical tree until Avalonia has invalidated their styles.
+        // Removing them here would skip the normal child detach traversal and break reuse.
+        PrepareHostContentForDetach();
+        base.OnDetachedFromLogicalTree(e);
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
