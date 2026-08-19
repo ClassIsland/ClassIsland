@@ -53,6 +53,7 @@ public abstract class AuthorizeProviderControlBase : UserControl
             return null;
         }
 
+        var previousSettings = control.SettingsInternal;
         var baseType = info.AuthorizeProviderType?.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
@@ -68,7 +69,17 @@ public abstract class AuthorizeProviderControlBase : UserControl
         }
 
         control.IsEditingMode = isEditngMode;
+        control.OnSettingsChanged(previousSettings);
         return control;
+    }
+
+    /// <summary>
+    /// 在设置对象附加到控件后调用。派生类应在此刷新与当前设置相关的显示态，
+    /// 若实例会被复用于多个设置，还应自行保管不应跨设置共享的编辑中草稿。
+    /// </summary>
+    /// <param name="previousSettings">切换前的设置对象，首次附加时为 null。</param>
+    protected virtual void OnSettingsChanged(object? previousSettings)
+    {
     }
 
     /// <summary>

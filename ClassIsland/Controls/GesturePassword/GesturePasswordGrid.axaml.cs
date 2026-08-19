@@ -11,7 +11,7 @@ namespace ClassIsland.Controls.GesturePassword;
 public class GesturePasswordGrid : Control, IDragBlockingTarget
 {
     private const int GridSize = 3;
-    private const double NodeRadius = 12;
+    private const double NodeRadius = 24;
     private const double HitRadius = 28;
     private const double LineThickness = 3;
 
@@ -105,6 +105,16 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        // 只允许鼠标左键起笔，触摸/触控笔不受左键状态影响。
+        if (e.Pointer.Type == PointerType.Mouse
+            && !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            return;
+        }
+        if (!EnsureNodePositions())
+        {
+            return;
+        }
         var pos = e.GetPosition(this);
         var nodeIndex = HitTestNode(pos);
         if (nodeIndex < 0) return;
@@ -157,6 +167,10 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
     private void ProcessHitTest(Point pos)
     {
         _currentPointer = pos;
+        if (_nodePositions[0] == default && !EnsureNodePositions())
+        {
+            return;
+        }
         var nodeIndex = HitTestNode(pos);
         if (nodeIndex >= 0 && nodeIndex != _lastNodeIndex && !_selectedNodes.Contains(nodeIndex))
         {
@@ -228,13 +242,13 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
                 ? (isLast ? s_nodeHighlightBrush : s_nodeSelectedBrush)
                 : s_nodeDefaultBrush;
 
-            var radius = isLast ? NodeRadius + 3 : NodeRadius;
+            var radius = isLast ? NodeRadius + 6 : NodeRadius;
 
-            context.DrawEllipse(brush, null, pos, radius * 2, radius * 2);
+            context.DrawEllipse(brush, null, pos, radius, radius);
 
             if (isSelected)
             {
-                context.DrawEllipse(null, s_innerRingPen, pos, (radius - 5) * 2, (radius - 5) * 2);
+                context.DrawEllipse(null, s_innerRingPen, pos, radius - 10, radius - 10);
             }
         }
     }
