@@ -166,6 +166,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
             {
                 IsEnabled = true;
                 _isCooldownActive = false;
+                AuthorizeFailed = false;
                 GestureGrid.Reset();
             }, TimeSpan.FromMilliseconds(RandomNumberGenerator.GetInt32(1000, 3000)));
         }
