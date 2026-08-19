@@ -184,16 +184,21 @@
         <input:CommandBinding Command="{x:Static controls1:SettingsPageBase.RequestRestartCommand}" Executed="CommandBindingRestartApp_OnExecuted"></input:CommandBinding>
     </input:CommandManager.CommandBindings>
     <Grid x:Name="RootGrid">
-        <Grid RowDefinitions="Auto,*">
+        <Grid RowDefinitions="Auto,*" Classes.invisible="{Binding ViewModel.IsCoverVisible}">
+            <Grid.Styles>
+                <Style Selector="Grid.invisible">
+                    <Setter Property="Opacity" Value="0"/>
+                </Style>
+            </Grid.Styles>
             <controls3:FANavigationView Grid.Row="1" 
-                  x:Name="NavigationView"
-                  PaneDisplayMode="Auto" 
-                  IsSettingsVisible="False"
-                  MenuItems="{Binding ViewModel.NavigationViewItems, Mode=OneWay}"
-                  ItemInvoked="NavigationView_OnItemInvoked"
-                  BackRequested="NavigationView_OnBackRequested"
-                  Loaded="Control_OnLoaded"
-                  OpenPaneLength="283">
+                                        x:Name="NavigationView"
+                                        PaneDisplayMode="Auto" 
+                                        IsSettingsVisible="False"
+                                        MenuItems="{Binding ViewModel.NavigationViewItems, Mode=OneWay}"
+                                        ItemInvoked="NavigationView_OnItemInvoked"
+                                        BackRequested="NavigationView_OnBackRequested"
+                                        Loaded="Control_OnLoaded"
+                                        OpenPaneLength="283">
                 <controls3:FANavigationView.Styles>
                     <Style Selector="controls3|FANavigationView#NavigationView:minimal">
                         <Setter Property="IsPaneToggleButtonVisible" Value="False"/>
@@ -251,11 +256,8 @@
         </Grid>
         
         <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                IsVisible="{Binding ViewModel.IsCoverVisible}"
-                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
-            <Image Source="/Assets/AppLogo@384w.png"
-                   Height="96" Width="96"
-                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                IsVisible="{Binding ViewModel.IsCoverVisible}">
+            <commands:ExpressiveLoadingIndicator IsActive="{Binding ViewModel.IsCoverVisible}"/>
         </Border>
     </Grid>
 </controls1:ViewBase>

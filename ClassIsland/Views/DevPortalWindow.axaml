@@ -83,6 +83,9 @@
                                 <ListBoxItem>真我</ListBoxItem>
                             </ListBox>
                         </ci:Field>
+                        
+                        <ci:ExpressiveLoadingIndicator
+                            IsActive="True"/>
                         <Separator />
                         <ci:Field Label="消息标题">
                             <TextBox Text="{Binding ViewModel.ToastTitle}" />

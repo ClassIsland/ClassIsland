@@ -178,6 +178,7 @@
 	    <DependentUpon>ScheduleDataGridCellControl.axaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
+	  <Compile Remove="secrets.g.cs" Condition="'$(PublishBuilding)' != 'true'" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.en.resx" />

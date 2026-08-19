@@ -108,7 +108,15 @@
             <Setter Property="Title" Value="ClassIsland Mobile"/>
         </Style>
     </ci:MyWindow.Styles>
-    <NavigationPage x:Name="NavigationPage"
-                    Popped="NavigationPage_OnPopped">
-    </NavigationPage>
+    <Grid>
+        <NavigationPage x:Name="NavigationPage"
+                        Popped="NavigationPage_OnPopped">
+        </NavigationPage>
+        <ci:ExpressiveLoadingIndicator x:Name="ContentLoadingProgressRing"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False"
+                                    IsActive="True"
+                                    IsVisible="False" />
+    </Grid>
 </ci:MyWindow>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
@@ -11,8 +12,12 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Avalonia.Rendering.Composition;
+using Avalonia.Rendering.Composition.Animations;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -30,6 +35,8 @@ public partial class WindowViewHost : MyWindow, IViewHost
     public IReadOnlyCollection<ViewBase> ActivatedViews => ActivatedViewSet;
 
     private bool _isShowed = false;
+
+    private bool _hasLoadedInitialContent = false;
 
     private bool _isClosed = false;
 
@@ -63,6 +70,8 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private WindowFeatures _appliedHostFeatures;
 
     private double _inlineHeaderHeight = 32.0;
+
+    private static readonly TimeSpan ContentLoadingProgressRingFadeOutDuration = TimeSpan.FromMilliseconds(200);
 
     public static readonly DirectProperty<WindowViewHost, double> InlineHeaderHeightProperty = AvaloniaProperty.RegisterDirect<WindowViewHost, double>(
         nameof(InlineHeaderHeight), o => o.InlineHeaderHeight, (o, v) => o.InlineHeaderHeight = v);
@@ -696,8 +705,37 @@ public partial class WindowViewHost : MyWindow, IViewHost
         }
         
         Activate();
-        await NavigationPage.PushAsync(view);
+        if (_hasLoadedInitialContent)
+        {
+            await NavigationPage.PushAsync(view);
+        }
+        else
+        {
+            // 仅在首次加载内容时显示加载动画，并等待动画显示后再加载内容，
+            // 避免耗时内容加载阻塞渲染导致动画无法显示。
+            ContentLoadingProgressRing.IsVisible = true;
+            try
+            {
+                if (!IThemeService.IsWaitForTransientDisabled)
+                {
+                    await WaitForContentLoadingIndicatorDisplayedAsync();
+                }
+                await NavigationPage.PushAsync(view);
+                _hasLoadedInitialContent = true;
+            }
+            finally
+            {
+                ContentLoadingProgressRing.IsVisible = false;
+            }
+        }
         SetCurrentView(view);
+    }
+
+    private static Task WaitForContentLoadingIndicatorDisplayedAsync()
+    {
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Dispatcher.UIThread.Post(() => completion.TrySetResult(), DispatcherPriority.Input);
+        return completion.Task;
     }
 
     public async Task ShowView(ViewBase view, ViewBase? owner = null)
