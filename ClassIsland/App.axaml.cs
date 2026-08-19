@@ -64,6 +64,7 @@ using ClassIsland.Services.UI;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using FluentAvalonia.UI.Controls;
+using FluentAvalonia.UI.Windowing;
 using HotAvalonia;
 using Empty = Google.Protobuf.WellKnownTypes.Empty;
 
@@ -497,6 +498,21 @@ public partial class App : AppBase, IAppHost
             IThemeService.UseNativeTitlebar = !System.OperatingSystem.IsWindows() 
                                               || AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode() 
                                                     != Win32CompositionMode.WinUIComposition;
+        }
+
+        if (IThemeService.UseNativeTitlebar)
+        {
+            var property = Window.ExtendClientAreaToDecorationsHintProperty;
+            var propertyType = typeof(AvaloniaProperty);
+            var metadataField = propertyType
+                .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                .First(x => x.Name == "_metadata");
+            var metadata = metadataField.GetValue(property) as Dictionary<Type, AvaloniaPropertyMetadata>;
+            var appWindowType = typeof(FAAppWindow);
+            if (metadata?.ContainsKey(appWindowType) ?? false)
+            {
+                metadata[appWindowType] = new StyledPropertyMetadata<bool>(false);
+            }
         }
     }
 
