@@ -155,6 +155,7 @@ public partial class App
         // 设置页面分组
         services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
+        services.AddSettingsPageGroup(SettingsWindowRegistryExtensions.PluginSettingsGroupId, "\ue071", "插件设置");
         // 设置页面
         services.AddSettingsPage<GeneralSettingsPage>();
         services.AddSettingsPage<ClockSettingsPage>();

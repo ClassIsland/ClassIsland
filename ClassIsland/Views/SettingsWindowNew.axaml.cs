@@ -14,6 +14,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Extensions.Registry;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
@@ -163,6 +164,36 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             .GroupBy(x => x.GroupId)
             .ToList();
         var addedGroups = new HashSet<string>();
+
+        NavigationViewItem CreateGroupItem(string groupId, SettingsPageGroupInfo group)
+        {
+            var groupItems = groups.FirstOrDefault(x => x.Key == groupId);
+            var item = new NavigationViewItem()
+            {
+                IconSource = group.IconSource,
+                Content = group.Name,
+                Tag = groupItems?.FirstOrDefault(),
+                // IsExpanded = true
+            };
+
+            if (groupItems is not null)
+            {
+                List<NavigationViewItem> children =
+                [
+                    ..groupItems.Select(x => new NavigationViewItem()
+                    {
+                        IconSource = new FluentIconSource(x.UnSelectedIconGlyph),
+                        Content = x.Name,
+                        Tag = x
+                    })
+                ];
+                ViewModel.FlattenNavigationItemsCache.AddRange(children);
+                item.MenuItems.AddRange(children);
+            }
+
+            return item;
+        }
+
         foreach (var info in infos)
         {
             foreach (var i in info)
@@ -176,30 +207,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
                 if (i.GroupId != null && SettingsWindowRegistryService.Groups.TryGetValue(i.GroupId, out var group))
                 {
-                    
-                    item = new NavigationViewItem()
-                    {
-                        IconSource = group.IconSource,
-                        Content = group.Name,
-                        Tag = i,
-                        // IsExpanded = true
-                    };
-
-                    if (groups.FirstOrDefault(x => x.Key == i.GroupId) is {} groupItems)
-                    {
-                        List<NavigationViewItem> children =
-                        [
-                            ..groupItems.Select(x => new NavigationViewItem()
-                            {
-                                IconSource = new FluentIconSource(x.UnSelectedIconGlyph),
-                                Content = x.Name,
-                                Tag = x
-                            })
-                        ];
-                        ViewModel.FlattenNavigationItemsCache.AddRange(children);
-                        item.MenuItems.AddRange(children);
-                    }
-
+                    item = CreateGroupItem(i.GroupId, group);
                     addedGroups.Add(i.GroupId);
                 }
                 else
@@ -214,7 +222,15 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 }
                 
                 NavigationView.MenuItems.Add(item);
-                
+
+                if (i.Id == SettingsWindowRegistryExtensions.PluginSettingsGroupId
+                    && !addedGroups.Contains(SettingsWindowRegistryExtensions.PluginSettingsGroupId)
+                    && SettingsWindowRegistryService.Groups.TryGetValue(SettingsWindowRegistryExtensions.PluginSettingsGroupId, out var pluginSettingsGroup)
+                    && groups.Any(x => x.Key == SettingsWindowRegistryExtensions.PluginSettingsGroupId))
+                {
+                    NavigationView.MenuItems.Add(CreateGroupItem(SettingsWindowRegistryExtensions.PluginSettingsGroupId, pluginSettingsGroup));
+                    addedGroups.Add(SettingsWindowRegistryExtensions.PluginSettingsGroupId);
+                }
             }
             
             if (info == infos.Last())
