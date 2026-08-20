@@ -458,6 +458,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Victory-Aogu",
+      "name": "TZ^",
+      "avatar_url": "https://avatars.githubusercontent.com/u/294148985?v=4",
+      "profile": "https://github.com/Victory-Aogu",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "WindDrift",
+      "name": "浮笙-WindDrift",
+      "avatar_url": "https://avatars.githubusercontent.com/u/115442729?v=4",
+      "profile": "http://winddrift.top",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "HickoryTrail",
+      "name": "HickoryTrail",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80823417?v=4",
+      "profile": "https://github.com/HickoryTrail",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

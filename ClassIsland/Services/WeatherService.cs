@@ -230,61 +230,126 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     public async Task QueryWeatherAsync()
     {
+        await QueryWeatherWithResultAsync();
+    }
+
+    public async Task<WeatherQueryResult> QueryWeatherWithResultAsync()
+    {
+        var result = new WeatherQueryResult();
         if (!IsPosUpdated && Settings.AutoRefreshWeatherLocation)
         {
             IsPosUpdated = true;
             try
             {
                 var pos = await LocationService.GetLocationAsync();
-                SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4);
-                SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
+                Settings.WeatherLongitude = Math.Round(pos.Longitude, 4);
+                Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
             }
             catch (Exception exception)
             {
                 Logger.LogError(exception, "无法获取当前位置");
             }
         }
-        
+
         var cityLatitude = string.Empty;
         var cityLongitude = string.Empty;
         
         // 获取城市信息
         try
         {
-            using var http = new HttpClient();
-            var uri = Settings.WeatherLocationSource switch
+            if (Settings.WeatherLocationSource == 1)
             {
-                0 => $"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn",
-                1 => $"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/location/city/geo?longitude={Settings.WeatherLongitude}&latitude={Settings.WeatherLatitude}&locale=zh_cn",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-            Logger.LogInformation("获取城市信息： {}", uri);
-            var cityInfoList = await WebRequestHelper.Default.GetJson<List<CityInfo>>(new Uri(uri));
-            // 取第一个城市信息
-            var cityInfo = cityInfoList.FirstOrDefault();
-            if (cityInfo != null && (Settings.WeatherLocationSource != 0 || cityInfo.LocationKey == Settings.CityId)
-                && !string.IsNullOrWhiteSpace(cityInfo.LocationKey))
-            {
-                cityLatitude = cityInfo.Latitude;
-                cityLongitude = cityInfo.Longitude;
-                if (Settings.WeatherLocationSource == 1)
+                var precisions = new[] { 4, 3, 2, 1, 0 };
+                bool found = false;
+                int usedPrecision = 4;
+                foreach (var precision in precisions)
                 {
-                    cityLatitude = Settings.WeatherLatitude.ToString(CultureInfo.InvariantCulture);
-                    cityLongitude = Settings.WeatherLongitude.ToString(CultureInfo.InvariantCulture);
-                    Settings.CityId = cityInfo.LocationKey;
-                    Settings.CityName = $"{cityInfo.Name} ({cityInfo.Affiliation})";
+                    var factor = Math.Pow(10, precision);
+                    List<(double lon, double lat)> candidates;
+                    if (precision == 0)
+                    {
+                        candidates = new List<(double, double)>
+                        {
+                            (Math.Round(Settings.WeatherLongitude, 0), Math.Round(Settings.WeatherLatitude, 0))
+                        };
+                    }
+                    else
+                    {
+                        candidates = new List<(double, double)>
+                        {
+                            (Math.Round(Settings.WeatherLongitude, precision), Math.Round(Settings.WeatherLatitude, precision)),
+                            (Math.Truncate(Settings.WeatherLongitude * factor) / factor, Math.Truncate(Settings.WeatherLatitude * factor) / factor)
+                        };
+                    }
+                    foreach (var (lon, lat) in candidates)
+                    {
+                        var uri = $"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/location/city/geo?longitude={lon}&latitude={lat}&locale=zh_cn";
+                        Logger.LogInformation("获取城市信息： {}", uri);
+                        var cityInfoList = await WebRequestHelper.Default.GetJson<List<CityInfo>>(new Uri(uri));
+                        var cityInfo = cityInfoList.FirstOrDefault();
+                        Logger.LogDebug("城市信息: Count={Count}, Status={Status}, FirstLocationKey={LocationKey}, FirstName={Name}, FirstAffiliation={Affiliation}, FirstLongitude={Longitude}, FirstLatitude={Latitude}",
+                            cityInfoList?.Count ?? 0, cityInfo?.Status, cityInfo?.LocationKey, cityInfo?.Name, cityInfo?.Affiliation, cityInfo?.Longitude,
+                            cityInfo?.Latitude);
+                        if (cityInfo != null && cityInfo.Status == 0 && !string.IsNullOrWhiteSpace(cityInfo.LocationKey))
+                        {
+                            cityLatitude = lat.ToString(CultureInfo.InvariantCulture);
+                            cityLongitude = lon.ToString(CultureInfo.InvariantCulture);
+                            Settings.CityId = cityInfo.LocationKey;
+                            Settings.CityName = $"{cityInfo.Name} ({cityInfo.Affiliation})";
+                            Logger.LogDebug("城市信息精度: {Precision}", precision);
+                            usedPrecision = precision;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) break;
+                }
+                if (!found)
+                {
+                    result.IsSuccess = false;
+                    result.ErrorMessage = "无法通过经纬度获取城市信息";
+                    throw new InvalidOperationException(result.ErrorMessage);
+                }
+                if (usedPrecision < 4)
+                {
+                    result.IsPrecisionDegraded = true;
+                    result.DegradedPrecision = usedPrecision;
+                }
+            }
+            else
+            {
+                // CityId
+                var uri = $"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn";
+                Logger.LogInformation("获取城市信息： {}", uri);
+                var cityInfoList = await WebRequestHelper.Default.GetJson<List<CityInfo>>(new Uri(uri));
+                var cityInfo = cityInfoList.FirstOrDefault();
+                Logger.LogTrace("城市信息: Count={Count}, FirstLocationKey={LocationKey}, FirstName={Name}, FirstAffiliation={Affiliation}",
+                    cityInfoList?.Count ?? 0, cityInfo?.LocationKey, cityInfo?.Name, cityInfo?.Affiliation);
+                if (cityInfo != null && cityInfo.LocationKey == Settings.CityId && !string.IsNullOrWhiteSpace(cityInfo.LocationKey))
+                {
+                    cityLatitude = cityInfo.Latitude;
+                    cityLongitude = cityInfo.Longitude;
+                }
+                else
+                {
+                    Logger.LogError("无法通过CityId获取城市信息");
+                    result.ErrorMessage = "无法通过CityId获取城市信息";
+                    return result;
                 }
             }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "获取城市信息失败。");
+            result.ErrorMessage = ex.Message;
+            return result;
         }
-        
+
         // 请求天气信息
         try
         {
-            using var http = new HttpClient();
+            Logger.LogTrace("天气请求信息: CityId={CityId}, Longitude={Longitude}, Latitude={Latitude}, LocationSource={LocationSource}",
+                Settings.CityId, cityLongitude, cityLatitude, Settings.WeatherLocationSource);
             var uri =
                 $"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
@@ -292,14 +357,16 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
             // 排除天气预警
             var validExclusions = Settings.ExcludedWeatherAlerts
-                .Where(x => !string.IsNullOrWhiteSpace(x));
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToArray();
 
-            info.Alerts.RemoveAll(alert =>
-                validExclusions
-                    .Any(exclusion =>
+            if (validExclusions.Length > 0)
+            {
+                info.Alerts.RemoveAll(alert =>
+                    validExclusions.Any(exclusion =>
                         alert.Title.Contains(exclusion) || alert.Detail.Contains(exclusion)
-                )
-            );
+                    ));
+            }
 
             // 去重天气预警
             var latest = info.Alerts
@@ -314,13 +381,20 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
+            result.IsSuccess = true;
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "获取天气信息失败。");
+            result.IsSuccess = false;
+            result.ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            RulesetService.NotifyStatusChanged();
         }
 
-        RulesetService.NotifyStatusChanged();
+        return result;
     }
 
     public string GetWeatherTextByCode(string code)

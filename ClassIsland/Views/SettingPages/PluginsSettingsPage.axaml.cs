@@ -191,11 +191,11 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         var raws = new List<PluginInstallPreviewRaw>();
 
-        var deserializer = new DeserializerBuilder()
-            .IgnoreUnmatchedProperties()
-            .WithTypeConverter(new OSPlatformTypeConverter())
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .Build();
+            var deserializer = new DeserializerBuilder()
+                .IgnoreUnmatchedProperties()
+                .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
 
         foreach (var fileName in fileNames)
         {

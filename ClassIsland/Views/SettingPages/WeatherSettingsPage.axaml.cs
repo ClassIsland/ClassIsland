@@ -82,6 +82,36 @@ public partial class WeatherSettingsPage : SettingsPageBase
         ViewModel.ShowLocationCoordinates();
     }
 
+    private async void ButtonRefreshWeather_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var result = await ViewModel.RefreshWeatherWithResultAsync();
+
+            if (result.IsSuccess)
+            {
+                if (result.IsPrecisionDegraded)
+                {
+                    this.ShowWarningToast($"此天气信息降级了坐标精度: {result.DegradedPrecision}位小数");
+                    this.ShowSuccessToast("天气刷新成功");
+                }
+                else
+                {
+                    this.ShowSuccessToast("天气刷新成功");
+                }
+            }
+            else
+            {
+                this.ShowErrorToast($"天气刷新失败: {result.ErrorMessage}");
+            }
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "天气刷新失败");
+            this.ShowErrorToast($"天气刷新失败: {exception.Message}");
+        }
+    }
+
     private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName == nameof(SettingsService.Settings.NoTLSWeatherRequests))

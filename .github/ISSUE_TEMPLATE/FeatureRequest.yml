@@ -7,7 +7,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        感谢您贡献您的想法。请在上面的文本框⬆️起一个能够清晰概括此功能的标题，便于开发者了解您的想法。
+        感谢您贡献您的想法。
+        请使用简洁明确的标题描述您希望增加或改进的功能。便于开发者了解您的想法。
         
         > [!important]
         > 重要：如果您想要提出 **多项功能**，请为每一个功能开一个单独的 issue。
@@ -23,13 +24,13 @@ body:
       options:
         - label: 我已将本应用更新到最新测试版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)，并看过 [最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/)，确认我想要的功能还没有实现。我也已在 [Issues](https://github.com/ClassIsland/ClassIsland/issues?q=-label%3ABug) 和 [ClassIsland 文档](https://docs.classisland.tech/app/) 中检索，确认我想要的功能未被提交过。
           required: true
-        - label: 我认为我想要的功能是用户广泛需要的，插件不能替代的，且没有超出 ClassIsland 作为**灵动课表**的开发目标，而非添加与课表及教学辅助无关的内容。（您可以学习 [编写插件](https://docs.classisland.tech/dev/plugins/create-project) 来实现特殊的需求）。
+        - label: 我已确认该需求与 ClassIsland 的核心功能相关且用户广泛需要的，而不是与课表、教学辅助无关的通用需求。若需求适合通过插件实现，请优先考虑 [编写插件](https://docs.classisland.tech/dev/plugins/create-project) 来实现特殊的需求。
           required: true
         - label: 我已经仔细阅读过选项里的内容，并且知道这个选项不用勾选。
         - label: 我已知晓由于开发者时间精力有限，加上已经积压了大量的功能请求，我提交的功能请求可能需要比较久的时间才能实现。
           required: true
   - type: markdown
-    attributes: 
+    attributes:
       value: |
         > [!note]
         > 上传附件时**请优先使用 GitHub 的附件系统上传附件**，将需要上传的附件粘贴或拖动到撰写区域即可上传。多个文件可打包为 zip 格式后上传。**尽量避免使用需要登陆或安装客户端才能接收附件的网盘（如\*度网盘、\*克网盘、1\*3网盘等）上传附件**，以避免开发者因不具有对应网盘客户端或账户而延误问题诊断。
@@ -37,14 +38,21 @@ body:
     id: back
     attributes:
       label: 背景与动机
-      description: 为什么你需要这个功能？这个功能对你和其他用户有多重要？
+      description: 为什么你认为需要此功能？这个功能对你和其他用户有多重要？
     validations:
       required: true
   - type: textarea
-    id: req
+    id: requested-feature
     attributes:
       label: 想要实现或优化的功能
-      description: 详细地描述一下你想要的功能，描述的越具体，采纳的可能性越高。
+      description: 详细地描述一下你想要的功能，联系到哪些已经存在的 BUG 或者功能(如有)，描述的越具体，采纳的可能性越高。
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 期望效果
+      placeholder: |
+        请详细描述这个功能实现的效果。(例如: 开启设置页面XX开关后，重启应用后会跳转到XX页面...)
     validations:
       required: true
   - type: checkboxes
