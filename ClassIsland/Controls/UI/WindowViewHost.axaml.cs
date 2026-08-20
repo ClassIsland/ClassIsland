@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation.Easings;
@@ -19,6 +21,7 @@ using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
 using FluentAvalonia.UI.Controls;
@@ -35,6 +38,10 @@ public partial class WindowViewHost : MyWindow, IViewHost
     public IReadOnlyCollection<ViewBase> ActivatedViews => ActivatedViewSet;
 
     private bool _isShowed = false;
+
+    private bool _isWindowLoaded = false;
+
+    private TaskCompletionSource? _windowLoadedCompletionSource;
 
     private bool _hasLoadedInitialContent = false;
 
@@ -88,7 +95,14 @@ public partial class WindowViewHost : MyWindow, IViewHost
         InitializeComponent();
         Closing += OnClosing;
         Closed += OnClosed;
+        Loaded += WindowViewHost_OnLoaded;
         PositionChanged += OnPositionChanged;
+    }
+
+    private void WindowViewHost_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        _isWindowLoaded = true;
+        _windowLoadedCompletionSource?.TrySetResult();
     }
 
     private void OnPositionChanged(object? sender, PixelPointEventArgs e)
@@ -711,30 +725,142 @@ public partial class WindowViewHost : MyWindow, IViewHost
         }
         else
         {
-            // 仅在首次加载内容时显示加载动画，并等待动画显示后再加载内容，
-            // 避免耗时内容加载阻塞渲染导致动画无法显示。
+#if DEBUG
+            var animationWaitStopwatch = new Stopwatch();
+            var viewLoadStopwatch = new Stopwatch();
+            var uiBlockingDuration = TimeSpan.Zero;
+#endif
+
             ContentLoadingProgressRing.IsVisible = true;
             try
             {
+#if DEBUG
+                animationWaitStopwatch.Start();
+#endif
                 if (!IThemeService.IsWaitForTransientDisabled)
                 {
+                    await WaitForWindowInitializedAsync();
                     await WaitForContentLoadingIndicatorDisplayedAsync();
                 }
+#if DEBUG
+                animationWaitStopwatch.Stop();
+
+                viewLoadStopwatch.Start();
+                uiBlockingDuration = await PushViewWithUiBlockingProbeAsync(view);
+                viewLoadStopwatch.Stop();
+#else
                 await NavigationPage.PushAsync(view);
+#endif
                 _hasLoadedInitialContent = true;
             }
             finally
             {
                 ContentLoadingProgressRing.IsVisible = false;
             }
+
+#if DEBUG
+            ShowInitialContentLoadTimingToast(animationWaitStopwatch.Elapsed, viewLoadStopwatch.Elapsed, uiBlockingDuration);
+#endif
         }
         SetCurrentView(view);
+    }
+
+#if DEBUG
+    private async Task<TimeSpan> PushViewWithUiBlockingProbeAsync(ViewBase view)
+    {
+        var uiBlockingProbe = new UiBlockingProbe();
+        try
+        {
+            await NavigationPage.PushAsync(view);
+        }
+        finally
+        {
+            uiBlockingProbe.Dispose();
+        }
+
+        return uiBlockingProbe.BlockingTime;
+    }
+
+    private void ShowInitialContentLoadTimingToast(TimeSpan animationWaitDuration, TimeSpan viewLoadDuration, TimeSpan uiBlockingDuration)
+    {
+        this.ShowToast($"(debug) 窗口加载完成：窗口加载时动画等待 {animationWaitDuration.TotalMilliseconds:F1} ms，视图实际加载 {viewLoadDuration.TotalMilliseconds:F1} ms，界面阻塞 {uiBlockingDuration.TotalMilliseconds:F1} ms。");
+    }
+
+    private sealed class UiBlockingProbe : IDisposable
+    {
+        private static readonly TimeSpan ProbeInterval = TimeSpan.FromMilliseconds(10);
+        private static readonly TimeSpan BlockingThreshold = TimeSpan.FromMilliseconds(20);
+
+        private readonly Timer _timer;
+        private long _lastProbeTimestamp = Stopwatch.GetTimestamp();
+        private TimeSpan _blockingTime;
+        private bool _isDisposed;
+
+        public UiBlockingProbe()
+        {
+            _timer = new Timer(
+                _ => Dispatcher.UIThread.Post(RecordProbe, DispatcherPriority.Send),
+                null,
+                ProbeInterval,
+                ProbeInterval);
+        }
+
+        public TimeSpan BlockingTime => _blockingTime;
+
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _timer.Dispose();
+            Record(Stopwatch.GetTimestamp());
+            _isDisposed = true;
+        }
+
+        private void RecordProbe()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            Record(Stopwatch.GetTimestamp());
+        }
+
+        private void Record(long timestamp)
+        {
+            var elapsed = Stopwatch.GetElapsedTime(_lastProbeTimestamp, timestamp);
+            _lastProbeTimestamp = timestamp;
+
+            if (elapsed <= BlockingThreshold)
+            {
+                return;
+            }
+
+            _blockingTime += elapsed - ProbeInterval;
+        }
+    }
+#endif
+
+    private Task WaitForWindowInitializedAsync()
+    {
+        if (_isWindowLoaded)
+        {
+            return Task.CompletedTask;
+        }
+
+        _windowLoadedCompletionSource ??= new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        return _windowLoadedCompletionSource.Task;
     }
 
     private static Task WaitForContentLoadingIndicatorDisplayedAsync()
     {
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        Dispatcher.UIThread.Post(() => completion.TrySetResult(), DispatcherPriority.Input);
+        // Loaded 优先级的任务会在布局与渲染完成后执行，
+        // 此时加载指示器已经实际显示。
+        Dispatcher.UIThread.Post(() => completion.TrySetResult(), DispatcherPriority.Loaded);
         return completion.Task;
     }
 
