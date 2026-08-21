@@ -633,7 +633,7 @@
             </ci:TutorialBarrier>
         </Border>
         
-        <ContentPresenter x:Name="EditModeViewCp" />
+        <ci:Lazy x:Name="EditModeViewCp" />
 
         <!-- debug -->
         <StackPanel IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}"
