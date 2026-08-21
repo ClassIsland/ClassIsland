@@ -2149,8 +2149,8 @@
                                                    Text="{Binding ViewModel.SelectedTransferInfo.Name, FallbackValue=''}"
                                                    Theme="{StaticResource TitleTextBlockStyle}"/>
                                     </Grid>
-                                    <ContentPresenter Grid.Row="1" 
-                                                      Content="{Binding ViewModel.TransferProviderContent}"/>
+                                    <ci:Lazy Grid.Row="1" 
+                                             Content="{Binding ViewModel.TransferProviderContent}"/>
                                     <Separator Grid.Row="2"/>
                                     <Border Grid.Row="3" Padding="12">
                                         <Grid>

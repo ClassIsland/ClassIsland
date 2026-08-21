@@ -10,7 +10,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel>
-                    <ContentPresenter x:Name="MainContentPresenter" 
+                    <controls:Lazy x:Name="MainContentPresenter" 
                                       Content="{TemplateBinding Content, Mode=OneWay}"
                                       ContentTemplate="{TemplateBinding ContentTemplate, Mode=OneWay}"/>
                     <ContentPresenter x:Name="EmptyContentPresenter" 
@@ -23,7 +23,7 @@
             </ControlTemplate>
         </Setter>
         
-        <Style Selector="^:empty /template/ ContentPresenter#MainContentPresenter">
+        <Style Selector="^:empty /template/ controls|Lazy#MainContentPresenter">
             <Setter Property="IsVisible" Value="False"/>
         </Style>
         <Style Selector="^:empty /template/ ContentPresenter#EmptyContentPresenter">

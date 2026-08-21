@@ -8,6 +8,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Rendering.Composition;
 using Avalonia.Threading;
+using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Core.Controls;
 
@@ -15,7 +16,7 @@ public class Lazy : ContentControl
 {
     private ContentPresenter? _contentPresenter;
     private ExpressiveLoadingIndicator? _loadingIndicator;
-    private bool _isContentChangesPending;
+    private bool _isContentChangesPending = true;
 
     public Lazy()
     {
@@ -42,8 +43,16 @@ public class Lazy : ContentControl
         }
 
         _isContentChangesPending = false;
+        if (IThemeService.IsWaitForTransientDisabled)
+        {
+            _contentPresenter?.Content = Content;
+            _contentPresenter?.ContentTemplate = ContentTemplate;
+            SetCompositionOpacity(_contentPresenter, 1f);
+            SetCompositionOpacity(_loadingIndicator, 0f);
+            return;
+        }
         SetCompositionOpacity(_contentPresenter, 0f);
-        SetCompositionOpacity(_loadingIndicator, 1f);
+        SetCompositionOpacity(_loadingIndicator, 1f, 100);
         _loadingIndicator?.IsActive = true;
         _loadingIndicator?.IsVisible = true;
         Dispatcher.Post(() =>
@@ -73,6 +82,8 @@ public class Lazy : ContentControl
         {
             SetupImplicitTransitionAnimation(_loadingIndicator);
         }
+        
+        UpdateContent();
         base.OnApplyTemplate(e);
     }
 
@@ -94,7 +105,7 @@ public class Lazy : ContentControl
         element.ImplicitAnimations = implicitAnimations;
     }
 
-    private void SetCompositionOpacity(Control? control, float opacity)
+    private void SetCompositionOpacity(Control? control, float opacity, double delayMs=0)
     {
         if (control == null) return;
         var element = ElementComposition.GetElementVisual(control);
@@ -108,6 +119,7 @@ public class Lazy : ContentControl
         opacityAnimation.Target = "Opacity";
         opacityAnimation.InsertKeyFrame(1.0f, opacity, Easing.Parse("0,0 0,1"));
         opacityAnimation.Duration = TimeSpan.FromMilliseconds(200);
+        opacityAnimation.DelayTime = TimeSpan.FromMilliseconds(delayMs);
         element.StartAnimation("Opacity", opacityAnimation);
     }
 }

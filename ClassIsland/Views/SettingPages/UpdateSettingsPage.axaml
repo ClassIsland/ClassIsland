@@ -290,21 +290,23 @@
                 </TabControl.IsEnabled>
                 <TabItem Header="更新日志">
                     <Grid >
-                        <mdxaml:MarkdownScrollViewer
-                            Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
-                            Markdown="{Binding ViewModel.NewVersionChangeLogDocument}">
-                            <mdxaml:MarkdownScrollViewer.IsVisible>
-                                <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
-                                         Converter="{x:Static ObjectConverters.NotEqual}">
-                                    <Binding.ConverterParameter>
-                                        <enums:UpdateStatus>UpToDate</enums:UpdateStatus>
-                                    </Binding.ConverterParameter>
-                                </Binding>
-                            </mdxaml:MarkdownScrollViewer.IsVisible>
-                            <mdxaml:MarkdownScrollViewer.Styles>
-                                <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml" />
-                            </mdxaml:MarkdownScrollViewer.Styles>
-                        </mdxaml:MarkdownScrollViewer>
+                        <ci:Lazy>
+                            <mdxaml:MarkdownScrollViewer
+                                Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
+                                Markdown="{Binding ViewModel.NewVersionChangeLogDocument}">
+                                <mdxaml:MarkdownScrollViewer.IsVisible>
+                                    <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
+                                             Converter="{x:Static ObjectConverters.NotEqual}">
+                                        <Binding.ConverterParameter>
+                                            <enums:UpdateStatus>UpToDate</enums:UpdateStatus>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </mdxaml:MarkdownScrollViewer.IsVisible>
+                                <mdxaml:MarkdownScrollViewer.Styles>
+                                    <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml" />
+                                </mdxaml:MarkdownScrollViewer.Styles>
+                            </mdxaml:MarkdownScrollViewer>
+                        </ci:Lazy>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                                     Spacing="8"
                                     Classes="items-halign-center"
