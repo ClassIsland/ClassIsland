@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation.Easings;
@@ -22,6 +21,7 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
 using FluentAvalonia.UI.Controls;
@@ -726,32 +726,33 @@ public partial class WindowViewHost : MyWindow, IViewHost
         else
         {
 #if DEBUG
-            var animationWaitStopwatch = new Stopwatch();
-            var viewLoadStopwatch = new Stopwatch();
+            var animationWaitStartedAt = Stopwatch.GetTimestamp();
+            var viewLoadStartedAt = 0L;
+            var uiBlockingStartedAt = 0L;
+            var animationWaitDuration = TimeSpan.Zero;
+            var viewLoadDuration = TimeSpan.Zero;
             var uiBlockingDuration = TimeSpan.Zero;
 #endif
 
             ContentLoadingProgressRing.IsVisible = true;
             try
             {
-#if DEBUG
-                animationWaitStopwatch.Start();
-#endif
                 if (!IThemeService.IsWaitForTransientDisabled)
                 {
                     await WaitForWindowInitializedAsync();
-                    await WaitForContentLoadingIndicatorDisplayedAsync();
+                    await WaitForNextRenderedFrameAsync();
                 }
 #if DEBUG
-                animationWaitStopwatch.Stop();
-
-                viewLoadStopwatch.Start();
-                uiBlockingDuration = await PushViewWithUiBlockingProbeAsync(view);
-                viewLoadStopwatch.Stop();
+                animationWaitDuration = Stopwatch.GetElapsedTime(animationWaitStartedAt);
+                viewLoadStartedAt = Stopwatch.GetTimestamp();
+                uiBlockingStartedAt = viewLoadStartedAt;
+                await NavigationPage.PushAsync(view);
+                viewLoadDuration = Stopwatch.GetElapsedTime(viewLoadStartedAt);
 #else
                 await NavigationPage.PushAsync(view);
 #endif
                 _hasLoadedInitialContent = true;
+                SetCurrentView(view);
             }
             finally
             {
@@ -759,88 +760,23 @@ public partial class WindowViewHost : MyWindow, IViewHost
             }
 
 #if DEBUG
-            ShowInitialContentLoadTimingToast(animationWaitStopwatch.Elapsed, viewLoadStopwatch.Elapsed, uiBlockingDuration);
+            await WaitForWindowInitializedAsync();
+            await WaitForNextRenderedFrameAsync();
+            uiBlockingDuration = Stopwatch.GetElapsedTime(uiBlockingStartedAt);
+            ShowInitialContentLoadTimingToast(animationWaitDuration, viewLoadDuration, uiBlockingDuration);
 #endif
+            return;
         }
         SetCurrentView(view);
     }
 
 #if DEBUG
-    private async Task<TimeSpan> PushViewWithUiBlockingProbeAsync(ViewBase view)
-    {
-        var uiBlockingProbe = new UiBlockingProbe();
-        try
-        {
-            await NavigationPage.PushAsync(view);
-        }
-        finally
-        {
-            uiBlockingProbe.Dispose();
-        }
-
-        return uiBlockingProbe.BlockingTime;
-    }
-
     private void ShowInitialContentLoadTimingToast(TimeSpan animationWaitDuration, TimeSpan viewLoadDuration, TimeSpan uiBlockingDuration)
     {
-        this.ShowToast($"(debug) 窗口加载完成：窗口加载时动画等待 {animationWaitDuration.TotalMilliseconds:F1} ms，视图实际加载 {viewLoadDuration.TotalMilliseconds:F1} ms，界面阻塞 {uiBlockingDuration.TotalMilliseconds:F1} ms。");
-    }
-
-    private sealed class UiBlockingProbe : IDisposable
-    {
-        private static readonly TimeSpan ProbeInterval = TimeSpan.FromMilliseconds(10);
-        private static readonly TimeSpan BlockingThreshold = TimeSpan.FromMilliseconds(20);
-
-        private readonly Timer _timer;
-        private long _lastProbeTimestamp = Stopwatch.GetTimestamp();
-        private TimeSpan _blockingTime;
-        private bool _isDisposed;
-
-        public UiBlockingProbe()
+        this.ShowToast(new ToastMessage($"(debug) \n窗口加载时动画等待 {animationWaitDuration.TotalMilliseconds:F1} ms\n视图实际加载 {viewLoadDuration.TotalMilliseconds:F1} ms\n界面阻塞 {uiBlockingDuration.TotalMilliseconds:F1} ms。")
         {
-            _timer = new Timer(
-                _ => Dispatcher.UIThread.Post(RecordProbe, DispatcherPriority.Send),
-                null,
-                ProbeInterval,
-                ProbeInterval);
-        }
-
-        public TimeSpan BlockingTime => _blockingTime;
-
-        public void Dispose()
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            _timer.Dispose();
-            Record(Stopwatch.GetTimestamp());
-            _isDisposed = true;
-        }
-
-        private void RecordProbe()
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            Record(Stopwatch.GetTimestamp());
-        }
-
-        private void Record(long timestamp)
-        {
-            var elapsed = Stopwatch.GetElapsedTime(_lastProbeTimestamp, timestamp);
-            _lastProbeTimestamp = timestamp;
-
-            if (elapsed <= BlockingThreshold)
-            {
-                return;
-            }
-
-            _blockingTime += elapsed - ProbeInterval;
-        }
+            Duration = TimeSpan.FromSeconds(10)
+        });
     }
 #endif
 
@@ -855,13 +791,34 @@ public partial class WindowViewHost : MyWindow, IViewHost
         return _windowLoadedCompletionSource.Task;
     }
 
-    private static Task WaitForContentLoadingIndicatorDisplayedAsync()
+    private Task WaitForNextRenderedFrameAsync()
     {
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        // Loaded 优先级的任务会在布局与渲染完成后执行，
-        // 此时加载指示器已经实际显示。
-        Dispatcher.UIThread.Post(() => completion.TrySetResult(), DispatcherPriority.Loaded);
+        var compositor = ElementComposition.GetElementVisual(this)?.Compositor
+                         ?? throw new InvalidOperationException("窗口必须连接到可视树后才能等待渲染完成。");
+
+        // The composition update runs after binding and layout, immediately before
+        // the batch is committed. Its Rendered task is the first reliable signal
+        // that the frame containing the current visibility state was drawn.
+        compositor.RequestCompositionUpdate(() =>
+        {
+            var batch = compositor.RequestCompositionBatchCommitAsync();
+            _ = CompleteWhenRenderedAsync(batch.Rendered, completion);
+        });
         return completion.Task;
+    }
+
+    private static async Task CompleteWhenRenderedAsync(Task renderedTask, TaskCompletionSource completion)
+    {
+        try
+        {
+            await renderedTask.ConfigureAwait(false);
+            completion.TrySetResult();
+        }
+        catch (Exception ex)
+        {
+            completion.TrySetException(ex);
+        }
     }
 
     public async Task ShowView(ViewBase view, ViewBase? owner = null)
