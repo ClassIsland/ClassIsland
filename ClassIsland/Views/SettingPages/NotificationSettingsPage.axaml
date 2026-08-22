@@ -392,8 +392,8 @@
                         <TabControl Classes="compact" Padding="0">
                             <TabItem Header="基本设置">
                                 <Grid RowDefinitions="Auto,*">
-                                    <ContentPresenter Grid.Row="1" ClipToBounds="True"
-                                                      Content="{Binding ProviderInstance.SettingsElement, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}" />
+                                    <controls1:ReattachableContentPresenter Grid.Row="1" ClipToBounds="True"
+                                                                                  ContentSource="{Binding ProviderInstance.SettingsElement, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}" />
                                     <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
                                                 IsVisible="{Binding ProviderInstance.SettingsElement, Converter={x:Static ObjectConverters.IsNull}}">
                                         <ci:FluentIcon Glyph="&#xEF26;" Width="72" Height="72"
