@@ -25,11 +25,12 @@ namespace ClassIsland.Core.Controls;
 /// late-applied animation would otherwise stay attached to the presenter visual
 /// forever and shadow every explicit property assignment (TabControl reuses the
 /// same two presenters for all tab switches). Cleanup therefore assigns the rest
-/// values first (which recalls animations that were not committed yet), stops
-/// live animations immediately, and queues an extra generation-guarded pass once
-/// the render thread confirms the batch, so animations applied late are stopped
-/// as well. The generation guard also prevents a cancelled transition from
-/// stopping a newer transition's animations on the same presenters.
+/// values through a distinct temporary value first (which recalls animations
+/// that were not committed yet), stops live animations immediately, and queues
+/// an extra generation-guarded pass once the render thread confirms the batch,
+/// so animations applied late are stopped as well. The generation guard also
+/// prevents a cancelled transition from stopping a newer transition's
+/// animations on the same presenters.
 /// </remarks>
 public class CompositionPageTransition : IPageTransition
 {
@@ -265,12 +266,22 @@ public class CompositionPageTransition : IPageTransition
             return;
         }
 
-        // Assigning first recalls animations that were registered but not
-        // committed yet (the property setter drops pending animations), then
-        // stopping detaches animations that are already live on the compositor
-        // and reveals the assigned rest values.
+        // CompositionVisual ignores assignments equal to its local base value,
+        // which would leave an uncommitted animation in PendingAnimations. Force
+        // each property through a different value so the final assignment is
+        // serialized as a direct value and reliably replaces the pending start.
+        // Only the final values are serialized, so the temporary values never
+        // reach the render thread.
+        visual.Translation = new Vector3D(
+            translation.X == 0 ? 1 : 0,
+            translation.Y,
+            translation.Z);
         visual.Translation = translation;
+        visual.Opacity = opacity == 0 ? 1 : 0;
         visual.Opacity = opacity;
+
+        // Direct assignments recall starts that haven't been committed yet;
+        // StopAnimation handles animations already attached to the compositor.
         visual.StopAnimation(nameof(CompositionVisual.Translation));
         visual.StopAnimation(nameof(CompositionVisual.Opacity));
     }
