@@ -32,6 +32,10 @@ public class Lazy : ContentControl
         {
             UpdateContent();
         }
+        else
+        {
+            ShowContentImmediately();
+        }
     }
 
     private void UpdateContent()
@@ -45,10 +49,7 @@ public class Lazy : ContentControl
         _isContentChangesPending = false;
         if (IThemeService.IsWaitForTransientDisabled)
         {
-            _contentPresenter?.Content = Content;
-            _contentPresenter?.ContentTemplate = ContentTemplate;
-            SetCompositionOpacity(_contentPresenter, 1f);
-            SetCompositionOpacity(_loadingIndicator, 0f);
+            ShowContentImmediately();
             return;
         }
         SetCompositionOpacity(_contentPresenter, 0f);
@@ -62,7 +63,7 @@ public class Lazy : ContentControl
             Dispatcher.Post(() =>
             {
                 SetCompositionOpacity(_contentPresenter, 1f);
-                SetCompositionOpacity(_loadingIndicator, 0f);
+                SetCompositionOpacityImmediately(_loadingIndicator, 0f);
                 _loadingIndicator?.IsVisible = false;
                 _loadingIndicator?.IsActive = false;
             }, DispatcherPriority.Loaded);
@@ -82,9 +83,19 @@ public class Lazy : ContentControl
         {
             SetupImplicitTransitionAnimation(_loadingIndicator);
         }
-        
+
         UpdateContent();
         base.OnApplyTemplate(e);
+    }
+
+    private void ShowContentImmediately()
+    {
+        _contentPresenter?.Content = Content;
+        _contentPresenter?.ContentTemplate = ContentTemplate;
+        SetCompositionOpacityImmediately(_contentPresenter, 1f);
+        SetCompositionOpacityImmediately(_loadingIndicator, 0f);
+        _loadingIndicator?.IsVisible = false;
+        _loadingIndicator?.IsActive = false;
     }
 
     private void SetupImplicitTransitionAnimation(Control control)
@@ -121,5 +132,19 @@ public class Lazy : ContentControl
         opacityAnimation.Duration = TimeSpan.FromMilliseconds(200);
         opacityAnimation.DelayTime = TimeSpan.FromMilliseconds(delayMs);
         element.StartAnimation("Opacity", opacityAnimation);
+    }
+
+    private void SetCompositionOpacityImmediately(Control? control, float opacity)
+    {
+        if (control == null) return;
+        control.Opacity = opacity;
+        var element = ElementComposition.GetElementVisual(control);
+        if (element == null)
+        {
+            return;
+        }
+
+        element.StopAnimation("Opacity");
+        element.Opacity = opacity;
     }
 }
