@@ -47,8 +47,10 @@
                     Padding="0"
                     Classes="navigation">
             <TabControl.Styles>
-                <Style Selector="TabItem">
-                    <Setter Property="IsVisible" Value="False"/>
+                <Style Selector="TabControl /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="Height" Value="0"/>
+                    <Setter Property="IsHitTestVisible" Value="False"/>
+                    <Setter Property="ClipToBounds" Value="True"/>
                 </Style>
             </TabControl.Styles>
             <TabControl.ContentTemplate>
