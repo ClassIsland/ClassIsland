@@ -16,8 +16,9 @@
       in
       {
         packages.classisland = pkgs.callPackage ./tools/nix/classisland.nix { };
-        packages.classisland-bin = pkgs.callPackage ./tools/nix/classisland-bin.nix { };
-        packages.default = pkgs.callPackage ./tools/nix/classisland-bin.nix { };
+        packages.classisland-stable-bin = pkgs.callPackage ./tools/nix/classisland-stable-bin.nix { };
+        packages.classisland-preview-bin = pkgs.callPackage ./tools/nix/classisland-preview-bin.nix { };
+        packages.default = pkgs.callPackage ./tools/nix/classisland-stable-bin.nix { };
       }
     );
 }
