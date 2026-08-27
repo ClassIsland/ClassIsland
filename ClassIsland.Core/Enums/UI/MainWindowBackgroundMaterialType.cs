@@ -13,5 +13,10 @@ public enum MainWindowBackgroundMaterialType
     /// <summary>
     /// 液态玻璃。
     /// </summary>
-    LiquidGlass = 1
+    LiquidGlass = 1,
+
+    /// <summary>
+    /// 云母。
+    /// </summary>
+    Mica = 2
 }

@@ -18,6 +18,7 @@ public class MainWindowBackgroundMaterialControl : CompositionMaterialControl
 
     private readonly AcrylicMaterial _acrylicMaterial = new();
     private readonly LiquidGlassMaterial _liquidGlassMaterial = new();
+    private readonly MicaMaterial _micaMaterial = new();
     private double _effectiveBackgroundOpacity = 0.5;
 
     public double EffectiveBackgroundOpacity => _effectiveBackgroundOpacity;
@@ -49,11 +50,13 @@ public class MainWindowBackgroundMaterialControl : CompositionMaterialControl
         var backgroundOpacity = Math.Clamp(MainWindowStylesAssist.GetBackgroundOpacity(this), 0, 1);
         _acrylicMaterial.TintOpacity = backgroundOpacity;
         _liquidGlassMaterial.SurfaceOpacity = backgroundOpacity;
+        _micaMaterial.TintOpacity = backgroundOpacity;
 
         if (FallbackBrush is ISolidColorBrush solidColorBrush)
         {
             _acrylicMaterial.TintColor = solidColorBrush.Color;
             _liquidGlassMaterial.TintColor = solidColorBrush.Color;
+            _micaMaterial.TintColor = solidColorBrush.Color;
         }
 
         if (!MainWindowStylesAssist.GetIsBackgroundMaterialEnabled(this))
@@ -66,6 +69,7 @@ public class MainWindowBackgroundMaterialControl : CompositionMaterialControl
         Material = MainWindowStylesAssist.GetBackgroundMaterialType(this) switch
         {
             MainWindowBackgroundMaterialType.LiquidGlass => _liquidGlassMaterial,
+            MainWindowBackgroundMaterialType.Mica => _micaMaterial,
             _ => _acrylicMaterial
         };
         UpdateEffectiveBackgroundOpacity();

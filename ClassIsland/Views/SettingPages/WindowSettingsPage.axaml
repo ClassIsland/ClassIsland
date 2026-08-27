@@ -208,6 +208,7 @@
                                   Foreground="{DynamicResource MaterialDesignBody}">
                             <ComboBoxItem>亚克力</ComboBoxItem>
                             <ComboBoxItem>类液态玻璃</ComboBoxItem>
+                            <ComboBoxItem>云母</ComboBoxItem>
                         </ComboBox>
                     </controls1:FASettingsExpanderItem.Footer>
                 </controls1:FASettingsExpanderItem>
