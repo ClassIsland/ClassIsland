@@ -6,6 +6,7 @@
          xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
          xmlns:converters="clr-namespace:ClassIsland.Converters"
          xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
+         xmlns:cstyling="clr-namespace:ClassIsland.Styling"
          xmlns:enums="clr-namespace:ClassIsland.Core.Enums;assembly=ClassIsland.Core"
          Name="ClassIsland">
     <NativeMenu.Menu>
@@ -14,21 +15,23 @@
         </NativeMenu>
     </NativeMenu.Menu>
     <ci:AppBase.Styles>
-        <styling:FluentAvaloniaTheme CustomAccentColor="DodgerBlue"
-                                     TextVerticalAlignmentOverrideBehavior="AlwaysEnabled"/>
-        
-        <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
-        <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGridCellControl.axaml"/>
-        <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGridColHeaderControl.axaml"/>
-        <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGrid.axaml"/>
-        <StyleInclude Source="/Controls/MainWindowLine.axaml"/>
-        <StyleInclude Source="/Controls/WorkflowProgressIndicatorControl.axaml"/>
-        <StyleInclude Source="/Controls/WorkflowProgressIndicatorItemControl.axaml"/>
-        <StyleInclude Source="/Controls/EditMode/EditableComponentsListBox.axaml"/>
-        
-        <Style Selector=":is(ci|MyWindow)">
-            <Setter Property="Icon" Value="/Assets/AppLogo.png"/>
-        </Style>
+        <cstyling:ResourceLookupCachingStyles>
+            <styling:FluentAvaloniaTheme CustomAccentColor="DodgerBlue"
+                                         TextVerticalAlignmentOverrideBehavior="AlwaysEnabled"/>
+
+            <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
+            <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGridCellControl.axaml"/>
+            <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGridColHeaderControl.axaml"/>
+            <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGrid.axaml"/>
+            <StyleInclude Source="/Controls/MainWindowLine.axaml"/>
+            <StyleInclude Source="/Controls/WorkflowProgressIndicatorControl.axaml"/>
+            <StyleInclude Source="/Controls/WorkflowProgressIndicatorItemControl.axaml"/>
+            <StyleInclude Source="/Controls/EditMode/EditableComponentsListBox.axaml"/>
+
+            <Style Selector=":is(ci|MyWindow)">
+                <Setter Property="Icon" Value="/Assets/AppLogo.png"/>
+            </Style>
+        </cstyling:ResourceLookupCachingStyles>
     </ci:AppBase.Styles>
     <Application.Resources>
         <ResourceDictionary>

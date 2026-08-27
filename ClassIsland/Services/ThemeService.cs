@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,9 +41,7 @@ public class ThemeService : IHostedService, IThemeService
 
     public void SetTheme(int themeMode, Color? primary)
     {
-        var faTheme = Application.Current!.Styles
-            .OfType<FluentAvaloniaTheme>()
-            .FirstOrDefault();
+        var faTheme = FindFluentAvaloniaTheme(Application.Current!.Styles);
         if (faTheme == null)
         {
             return;
@@ -79,5 +76,26 @@ public class ThemeService : IHostedService, IThemeService
         {
             AppBase.Current.Resources["CustomizedAccentBarBackground1Brush"] = newBrush;
         }
+    }
+
+    private static FluentAvaloniaTheme? FindFluentAvaloniaTheme(IStyle root)
+    {
+        // 全局样式外包了一层 ResourceLookupCachingStyles 缓存容器，FluentAvaloniaTheme 嵌套在容器内，
+        // 顶层 OfType 无法找到，需按 IStyle.Children 递归查找（保持先序遍历以维持原顺序语义）。
+        if (root is FluentAvaloniaTheme theme)
+        {
+            return theme;
+        }
+
+        foreach (var child in root.Children)
+        {
+            var found = FindFluentAvaloniaTheme(child);
+            if (found != null)
+            {
+                return found;
+            }
+        }
+
+        return null;
     }
 }
