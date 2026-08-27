@@ -1,0 +1,9 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Command;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Command";
+
+message PluginCommand {
+  string Operation = 1;
+  string PluginId = 2;
+  int64 RequestId = 3;
+}

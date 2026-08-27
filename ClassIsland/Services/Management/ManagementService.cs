@@ -46,7 +46,6 @@ public class ManagementService : IManagementService
     public static readonly string ManagementPersistConfigPath =
         Path.Combine(ManagementConfigureFolderPath, "Persist.json");
 
-
     public static readonly string ManagementManifestPath = Path.Combine(ManagementConfigureFolderPath, "Manifest.json");
     public static readonly string ManagementVersionsPath = Path.Combine(ManagementConfigureFolderPath, "Versions.json");
     public static readonly string ManagementSettingsPath = Path.Combine(ManagementConfigureFolderPath, "Settings.json");
@@ -104,7 +103,8 @@ public class ManagementService : IManagementService
                     Connection = new ServerlessConnection(Persist.ClientUniqueId, Settings.ClassIdentity ?? "", Settings.ManifestUrlTemplate);
                     break;
                 case ManagementServerKind.ManagementServer:
-                    Connection = new ManagementServerConnection(Settings, Persist.ClientUniqueId, false);
+                    var mscConnection = new ManagementServerConnection(Settings, Persist.ClientUniqueId, false);
+                    Connection = mscConnection;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("", "无效的集控服务器类型。");
@@ -127,7 +127,7 @@ public class ManagementService : IManagementService
                 break;
             }
             case CommandTypes.DataUpdated:
-                Logger.LogInformation("Received DataUpdated command.");
+                Logger.LogInformation("Received DataUpdated command via gRPC stream.");
                 _ = ReloadManagementAsync();
             break;
         }
@@ -304,6 +304,20 @@ public class ManagementService : IManagementService
         var result = await dialog.ShowAsync();
         if (result?.Equals(true) != true)
             return;
+
+        // 通知服务端注销实例
+        if (Connection is ManagementServerConnection msc)
+        {
+            try
+            {
+                await msc.UnregisterAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "注销实例失败，继续退出集控");
+            }
+        }
+
         Settings.IsManagementEnabled = false;
         SaveConfig(ManagementSettingsPath, Settings);
 

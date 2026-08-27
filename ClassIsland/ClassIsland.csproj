@@ -48,6 +48,7 @@
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
         <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.11" />
+        <PackageReference Include="System.Net.Http.WinHttpHandler" Version="10.0.8" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug_MSIX'">
       <PackageReference Include="JetBrains.Profiler.Api">
