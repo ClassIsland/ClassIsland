@@ -72,10 +72,15 @@ public partial class RollingTextTemplate : UserControl
         AnimationDurationStopwatch.Reset();
     }
 
+    private DateTime _lastAnimationSetup = DateTime.MinValue;
+
     private void Description_OnLayoutUpdated(object? sender, EventArgs e)
     {
         // 在上级元素大小更变后 CompositionAnimation 位移动画会失效，需要重新设置。
-        // DispatcherTimer.RunOnce(SetupAnimation, TimeSpan.FromSeconds(1));
+        var now = DateTime.UtcNow;
+        if ((now - _lastAnimationSetup).TotalMilliseconds < 500) // 防抖
+            return;
+        _lastAnimationSetup = now;
         SetupAnimation();
     }
 }

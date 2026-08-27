@@ -147,6 +147,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _timeAutoAdjustSeconds = 0.0;
     private DateTime _lastTimeAdjustDateTime = DateTime.Now;
     private bool _isNotificationTopmostEnabled = true;
+    private bool _allowSpeechContinueAfterEnd = false;
+    private bool _allowSoundContinueAfterEnd = false;
     private double _notificationEffectRenderingScale = 1.0;
     private bool _isNotificationEffectRenderingScaleAutoSet = false;
     private AllContributorsRc _contributorsCache = new();
@@ -1511,6 +1513,34 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isNotificationTopmostEnabled) return;
             _isNotificationTopmostEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否允许语音在通知结束后继续完成播放而非直接截断
+    /// </summary>
+    public bool AllowSpeechContinueAfterEnd
+    {
+        get => _allowSpeechContinueAfterEnd;
+        set
+        {
+            if (value == _allowSpeechContinueAfterEnd) return;
+            _allowSpeechContinueAfterEnd = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否允许提醒音效在通知结束后继续完成播放而非直接截断
+    /// </summary>
+    public bool AllowSoundContinueAfterEnd
+    {
+        get => _allowSoundContinueAfterEnd;
+        set
+        {
+            if (value == _allowSoundContinueAfterEnd) return;
+            _allowSoundContinueAfterEnd = value;
             OnPropertyChanged();
         }
     }

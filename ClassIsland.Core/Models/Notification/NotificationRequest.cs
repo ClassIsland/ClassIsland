@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Shared.Models.Notification;
@@ -11,26 +11,39 @@ namespace ClassIsland.Core.Models.Notification;
 /// </summary>
 public class NotificationRequest : ObservableRecipient
 {
-    private CancellationTokenSource _cancellationTokenSource = new();
     private NotificationSettings _requestNotificationSettings = new();
-    private CancellationTokenSource _completedTokenSource = new();
     private NotificationContent? _overlayContent;
     private NotificationContent _maskContent = NotificationContent.Empty;
-    private double _leftProgress = 1.0;
+    private int? _targetLineNumber;
 
     /// <summary>
     /// 初始化一个 <see cref="NotificationRequest"/> 实例。
     /// </summary>
     public NotificationRequest()
     {
-        CancellationTokenSource.Token.Register(() =>
+        Lifecycle = new NotificationLifecycle(this);
+        // 兼容性处理
+        Lifecycle.RaisePropertyChangedAction = OnPropertyChanged;
+    }
+
+    /// <summary>
+    /// 通知生命周期管理
+    /// </summary>
+    public NotificationLifecycle Lifecycle { get; }
+
+    /// <summary>
+    /// 指定通知路由到目标行
+    /// 若为 <see langword="null"/>, 则由系统自动路由
+    /// </summary>
+    public int? TargetLineNumber
+    {
+        get => _targetLineNumber;
+        set
         {
-            Canceled?.Invoke(this, EventArgs.Empty);
-        });
-        CompletedTokenSource.Token.Register(() =>
-        {
-            Completed?.Invoke(this, EventArgs.Empty);
-        });
+            if (value == _targetLineNumber) return;
+            _targetLineNumber = value;
+            OnPropertyChanged();
+        }
     }
 
     /// <summary>
@@ -49,7 +62,8 @@ public class NotificationRequest : ObservableRecipient
     }
 
     /// <summary>
-    /// 提醒正文内容。如果为 null，则不显示正文。
+    /// 提醒正文内容
+    /// 若为 <see langword="null"/>, 则不显示正文
     /// </summary>
     public NotificationContent? OverlayContent
     {
@@ -63,23 +77,8 @@ public class NotificationRequest : ObservableRecipient
     }
 
     /// <summary>
-    /// 代表提醒取消的取消令牌源。
-    /// </summary>
-    internal CancellationTokenSource CancellationTokenSource
-    {
-        get => _cancellationTokenSource;
-        set
-        {
-            if (Equals(value, _cancellationTokenSource)) return;
-            _cancellationTokenSource = value;
-            OnPropertyChanged();
-        }
-    }
-
-
-
-    /// <summary>
-    /// 针对此次提醒的特殊设置。如果要使此设置生效，还要将<see cref="NotificationSettings.IsSettingsEnabled"/>设置为true。
+    /// 针对此次提醒的特殊设置
+    /// 若要使此设置生效, 还要将<see cref="NotificationSettings.IsSettingsEnabled"/>设置为 true
     /// </summary>
     public NotificationSettings RequestNotificationSettings
     {
@@ -93,58 +92,38 @@ public class NotificationRequest : ObservableRecipient
     }
 
     /// <summary>
-    /// 代表提醒显示完毕的取消令牌源。
-    /// </summary>
-    internal CancellationTokenSource CompletedTokenSource
-    {
-        get => _completedTokenSource;
-        set
-        {
-            if (Equals(value, _completedTokenSource)) return;
-            _completedTokenSource = value;
-            OnPropertyChanged();
-        }
-    }
-
-    /// <summary>
-    /// 代表提醒被取消的取消令牌。
-    /// </summary>
-    public CancellationToken CancellationToken => CancellationTokenSource.Token;
-
-    /// <summary>
-    /// 代表提醒显示完成的取消令牌。
-    /// </summary>
-    public CancellationToken CompletedToken => CompletedTokenSource.Token;
-
-    /// <summary>
     /// 发送提醒的提醒渠道 ID
     /// </summary>
     public Guid ChannelId { get; set; }
 
     /// <summary>
-    /// 提醒播放状态
+    /// 通知有效分配时间
+    /// 若为 <see langword="null"/>, 则无时效限制
     /// </summary>
-    public NotificationState State { get; internal set; } = NotificationState.None;
-    
-    /// <summary>
-    /// 提醒播放剩余进度
-    /// </summary>
-    public double LeftProgress
-    {
-        get => _leftProgress;
-        internal set
-        {
-            if (value.Equals(_leftProgress)) return;
-            _leftProgress = value;
-            OnPropertyChanged();
-        }
-    }
+    public TimeSpan? ValidityDuration { get; set; }
 
     internal NotificationRequest? ChainedNextRequest { get; set; }
 
-    internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
+    internal NotificationRequest? ChainedHeadRequest { get; set; }
+
+    /// <summary>
+    /// 此请求所属的通知组
+    /// </summary>
+    internal NotificationGroup? Group { get; set; }
+
+    /// <summary>
+    /// 提醒遮罩播放会话
+    /// </summary>
+    public NotificationPlayingSessionInfo MaskSession { get; } = new();
+
+    /// <summary>
+    /// 提醒正文播放会话
+    /// </summary>
+    public NotificationPlayingSessionInfo OverlaySession { get; } = new();
 
     internal Guid NotificationSourceGuid { get; set; } = Guid.Empty;
+
+    internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
 
     internal NotificationSettings ProviderSettings { get; set; } = new NotificationSettings();
 
@@ -154,31 +133,95 @@ public class NotificationRequest : ObservableRecipient
 
     internal int PriorityOverride { get; set; } = -1;
 
-    internal CancellationTokenSource? RootCancellationTokenSource { get; set; }
-    internal CancellationTokenSource? RootCompletedTokenSource { get; set; }
-    
     internal bool NotificationSetupCompleted { get; set; }
-
-    internal NotificationRequest? ChainedHeadRequest { get; set; }
 
     internal int InitialQueueIndex { get; set; } = -1;
 
-    /// <summary>
-    /// 提醒遮罩播放会话
-    /// </summary>
-    public NotificationPlayingSessionInfo MaskSession { get; } = new();
-    
-    /// <summary>
-    /// 提醒正文播放会话
-    /// </summary>
-    public NotificationPlayingSessionInfo OverlaySession { get; } = new();
+    internal CancellationTokenSource? RootCancellationTokenSource { get; set; }
+    internal CancellationTokenSource? RootCompletedTokenSource { get; set; }
 
-    /// <summary>
-    /// 取消当前提醒。
-    /// </summary>
+    // 一堆[Obsolete]
+
+    /// <inheritdoc cref="NotificationLifecycle.State"/>
+    [Obsolete("请改用 Lifecycle.State")]
+    public NotificationState State
+    {
+        get => Lifecycle.State;
+        internal set => Lifecycle.State = value;
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.CancellationTokenSource"/>
+    [Obsolete("请改用 Lifecycle.CancellationTokenSource")]
+    internal CancellationTokenSource CancellationTokenSource
+    {
+        get => Lifecycle.CancellationTokenSource;
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.CompletedTokenSource"/>
+    [Obsolete("请改用 Lifecycle.CompletedTokenSource")]
+    internal CancellationTokenSource CompletedTokenSource
+    {
+        get => Lifecycle.CompletedTokenSource;
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.CancellationToken"/>
+    [Obsolete("请改用 Lifecycle.CancellationToken")]
+    public CancellationToken CancellationToken => Lifecycle.CancellationToken;
+
+    /// <inheritdoc cref="NotificationLifecycle.CompletedToken"/>
+    [Obsolete("请改用 Lifecycle.CompletedToken")]
+    public CancellationToken CompletedToken => Lifecycle.CompletedToken;
+
+    /// <inheritdoc cref="NotificationLifecycle.LeftProgress"/>
+    [Obsolete("请改用 Lifecycle.LeftProgress")]
+    public double LeftProgress
+    {
+        get => Lifecycle.LeftProgress;
+        internal set => Lifecycle.LeftProgress = value;
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.Canceled"/>
+    [Obsolete("请改用 Lifecycle.Canceled")]
+    public event EventHandler? Canceled
+    {
+        add => Lifecycle.Canceled += value;
+        remove => Lifecycle.Canceled -= value;
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.Completed"/>
+    [Obsolete("请改用 Lifecycle.Completed")]
+    public event EventHandler? Completed
+    {
+        add => Lifecycle.Completed += value;
+        remove => Lifecycle.Completed -= value;
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.Cancel"/>
+    [Obsolete("请改用 Lifecycle.Cancel()")]
     public void Cancel()
     {
-        CancellationTokenSource.Cancel();
+        Lifecycle.Cancel();
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.Pause"/>
+    [Obsolete("请改用 Lifecycle.Pause()")]
+    public void Pause()
+    {
+        Lifecycle.Pause();
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.Resume"/>
+    [Obsolete("请改用 Lifecycle.Resume()")]
+    public void Resume()
+    {
+        Lifecycle.Resume();
+    }
+
+    /// <inheritdoc cref="NotificationLifecycle.ResetCancellationTokensForTransfer"/>
+    [Obsolete("请改用 Lifecycle.ResetCancellationTokensForTransfer()")]
+    internal void ResetCancellationTokensForTransfer()
+    {
+        Lifecycle.ResetCancellationTokensForTransfer();
     }
 
     /// <inheritdoc />
@@ -186,15 +229,4 @@ public class NotificationRequest : ObservableRecipient
     {
         return $"NotificationRequest{{ Mask = {MaskContent}, Overlay = {OverlayContent} }}(#{GetHashCode()})";
     }
-
-    /// <summary>
-    /// 当当前提醒被取消时触发。
-    /// </summary>
-    public event EventHandler? Canceled;
-
-    /// <summary>
-    /// 当当前提醒显示完成时触发。
-    /// </summary>
-    public event EventHandler? Completed;
-
 }

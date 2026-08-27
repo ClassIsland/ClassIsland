@@ -105,7 +105,7 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         animationOpacity.Duration = TimeSpan.FromMilliseconds(600);
         visual.StartAnimation(nameof(visual.Opacity), animationOpacity);
         
-        await Task.Delay(750);
+        await Task.Delay(650); // 600ms 动画 + 50ms 缓冲
         EffectCompleted?.Invoke(this, EventArgs.Empty);
     }
 

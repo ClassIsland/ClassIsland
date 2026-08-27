@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
     private ILessonsService LessonsService { get; }
     public IActionService ActionService { get; }
 
-    private List<string> ShownAlerts { get; } = new();
+    private HashSet<string> ShownAlerts { get; } = new();
 
     public WeatherNotificationProvider(INotificationHostService notificationHostService,
         IAttachedSettingsHostService attachedSettingsHostService,
@@ -56,6 +57,15 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
 
         LessonsService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
         LessonsService.OnClass += NotificationHostServiceOnOnClass;
+        WeatherService.PropertyChanged += WeatherServiceOnPropertyChanged;
+    }
+
+    private void WeatherServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IWeatherService.IsWeatherRefreshed) && WeatherService.IsWeatherRefreshed)
+        {
+            ShownAlerts.Clear();
+        }
     }
 
     private void NotificationHostServiceOnOnClass(object? sender, EventArgs e)
