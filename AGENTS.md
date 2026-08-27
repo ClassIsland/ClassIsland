@@ -3,21 +3,26 @@
 ## Repo Shape
 - Main solution: `ClassIsland.sln`; platform-filtered solutions: `ClassIsland.Filter.Linux.slnf`, `ClassIsland.Filter.MacOs.slnf`.
 - Runtime app entrypoint: `ClassIsland.Desktop/Program.cs`; Avalonia app/library: `ClassIsland/`; shared UI/services: `ClassIsland.Core/`.
+- Android entry project: `ClassIsland.Android/`; it targets `net10.0-android` and shares the Avalonia application code from `ClassIsland/`.
 - Platform services: `platforms/ClassIsland.Platforms.{Windows,Linux,MacOs}`, wired by `CrossPlatformProps.props`.
-- `ClassIsland.Shared` and `ClassIsland.Shared.IPC` multi-target `net8.0;net472`; avoid APIs unavailable on `net472`.
-- `ClassIsland.Launcher` targets `net9.0`; most app projects target `net8.0`.
+- `ClassIsland.Shared` and `ClassIsland.Shared.IPC` target `net10.0;net472` on Windows and `net10.0` elsewhere; avoid APIs unavailable on `net472` in shared code.
+- Most app projects target `net10.0`; `ClassIsland.Launcher` intentionally remains on `net9.0`.
 
 ## SDK And Restore
-- `global.json` requests .NET SDK `9.0.100` with `rollForward: latestFeature`; launcher/native-AOT work needs .NET 9 SDK, not just .NET 8.
+- `global.json` requests the .NET 10 SDK with `rollForward: latestFeature` and prerelease SDKs allowed. Use a .NET 10 SDK for repository builds, including the `net9.0` launcher.
+- The UI stack currently uses Avalonia `12.1.1` and FluentAvalonia `3.0.0`; check `AvaloniaShared.props` and project package references before documenting or using version-specific APIs.
+- Android builds require the .NET Android workload; macOS builds require the matching macOS workload and Xcode toolchain.
 - Repo depends on `vendors/EdgeTtsSharp` (`classisland-v2` branch). If missing, run `git submodule update --init --recursive`.
 - CI uses GitHub Package Registry: `https://nuget.pkg.github.com/ClassIsland/index.json`.
 
 ## Build Commands
 - Desktop app: `dotnet build ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Debug`
+- Android app: `dotnet build ClassIsland.Android/ClassIsland.Android.csproj -c Debug` after installing the Android workload.
 - Single library: `dotnet build ClassIsland.Core/ClassIsland.Core.csproj -c Debug`
 - Use NUKE only for release/publish builds, not verification.
 - Release packaging: `./build.ps1 PublishApp` (Windows) or `./build.sh PublishApp` (Unix) with required metadata.
 - `PublishApp` requires metadata: `--OsName windows|linux|macos`, `--Arch x64|x86|arm64`, `--Package folder|deb|pkg`, `--BuildType full|selfContained`, `--BuildName appBase|app`, `--AppVersion <version>`.
+- Android release packaging uses `./build.sh PublishAndroidApp --OsName android --Arch arm64 --Package apk --BuildType monoaot --BuildName app --AppVersion <version>`; production branding additionally passes `--IsProductionBuild true`.
 - Launcher packaging: `PublishLauncher` (native AOT self-contained).
 - Plugin dev environment target `InitPluginDevEnv` writes user environment variables/profile blocks pointing at `out/ClassIsland_Dev`; do not run it casually during verification.
 
@@ -94,9 +99,21 @@ Red flags — STOP and follow process:
 
 ## Avalonia Development Rules
 1. Search first for existing patterns.
-2. Follow MVVM, ReactiveUI, DynamicData.
+2. Follow MVVM and the existing CommunityToolkit.Mvvm (`ObservableObject`/`ObservableRecipient`) and DynamicData patterns.
 3. Composition over inheritance.
 4. Keep ViewModels platform-independent.
+
+## User-Facing Diagnostic UI
+- Write troubleshooting, recovery, configuration-error, and diagnostic UI that is accessible to ordinary users from the user's perspective, with clear outcomes and actionable next steps.
+- Keep primary copy focused on what happened, how it affects the user, and what the user can do. Do not expose exception types, stack traces, internal identifiers, protocols, implementation names, or other technical details that the user does not need.
+- If technical data is genuinely useful for support, place it behind a copy, export, or advanced-details action instead of making it the primary message.
+- Explicitly developer-only surfaces such as DevPortal and internal diagnostic tools may use developer-oriented terminology.
+
+## Icons
+- For new or modified in-app `FontIcon`-style icons, prefer Fluent System Icons.
+- Search the generated `ClassIsland.Core.Icons.FluentIcons` constant pool and choose the icon whose name most closely matches the intended action or concept. Do not guess glyphs or introduce raw Unicode/code-point literals such as `&#x...;`.
+- Use the named `FluentIcons` constant from C# or XAML rather than duplicating its glyph value.
+- Fall back to an existing alternative icon system only when Fluent System Icons has no suitable semantic icon or a platform convention explicitly requires another icon family.
 
 ## Anti-Patterns
 Do NOT:
