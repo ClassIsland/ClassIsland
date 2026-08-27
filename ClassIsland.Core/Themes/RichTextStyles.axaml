@@ -131,7 +131,7 @@
         <!-- <Setter Property="Command" Value="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"/> -->
     </Style>
     
-    <Style Selector="mdxaml|MarkdownScrollViewer /template/ ScrollViewer">
+    <Style Selector="mdxaml|MarkdownScrollViewer ScrollViewer">
         <Setter Property="Padding" Value="8"/>
     </Style>
 </Styles>
