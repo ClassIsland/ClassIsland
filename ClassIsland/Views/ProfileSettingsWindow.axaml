@@ -489,6 +489,26 @@
                         Click="ButtonDeleteSelectedClassPlan_OnClick" />
             </StackPanel>
         </Flyout>
+        
+        <Flyout x:Key="DeleteTimeLayoutConfirmFlyout"
+                ShowMode="Transient">
+            <StackPanel Spacing="8">
+                <TextBlock FontWeight="Bold">
+                    <Run Text="要删除时间表" />
+                    <Run
+                        Text="{Binding ViewModel.SelectedTimeLayout.Name}" />
+                    <Run Text="吗？" />
+                </TextBlock>
+                <TextBlock Text="此操作无法撤销。" />
+                <Button Content="删除" Classes="accent"
+                        Click="ButtonDeleteTimeLayout_OnClick" />
+            </StackPanel>
+        </Flyout>
+
+        <!-- 打开溢出菜单时保持透明背景，避免盖住窗口的 MICA 效果 -->
+        <SolidColorBrush x:Key="CommandBarBackgroundOpen" Color="Transparent" />
+        <!-- 打开溢出菜单时去掉 CommandBar 的描边边框 -->
+        <SolidColorBrush x:Key="CommandBarBorderBrushOpen" Color="Transparent" />
     </ci:MyWindow.Resources>
     <ci:DrawerHost DrawerPlacement="Right"
                IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
@@ -1162,7 +1182,8 @@
 
                                 <ci:TutorialBarrier Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
                                                     ExcludedTags="classisland.profileSettingsWindow.timeLayouts.timePoints.add">
-                                    <controls:CommandBar DefaultLabelPosition="Right"
+                                    <controls:CommandBar x:Name="CommandBarTimeLayout"
+                                                         DefaultLabelPosition="Right"
                                                          IsEnabled="{Binding !$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing}"
                                                          Classes="hide-popup-indicator">
                                         <controls:CommandBar.PrimaryCommands>
@@ -1247,25 +1268,10 @@
                                                                        IconSource="{ci:FluentIconSource &#xE9E4;}"
                                                                        ToolTip.Tip="查看并编辑时间表的基本信息。"
                                                                        Label="时间表信息" />
-                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE61D;}"
+                                            <controls:CommandBarButton Click="ButtonDeleteTimeLayoutMenu_OnClick"
+                                                                       IconSource="{ci:FluentIconSource &#xE61D;}"
                                                                        ToolTip.Tip="删除该时间表。"
-                                                                       Label="删除时间表">
-                                                <controls:CommandBarButton.Flyout>
-                                                    <Flyout>
-                                                        <StackPanel Spacing="8">
-                                                            <TextBlock FontWeight="Bold">
-                                                                <Run Text="要删除时间表" />
-                                                                <Run
-                                                                    Text="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout.Name}" />
-                                                                <Run Text="吗？" />
-                                                            </TextBlock>
-                                                            <TextBlock Text="此操作无法撤销。" />
-                                                            <Button Content="删除" Classes="accent"
-                                                                    Click="ButtonDeleteTimeLayout_OnClick" />
-                                                        </StackPanel>
-                                                    </Flyout>
-                                                </controls:CommandBarButton.Flyout>
-                                            </controls:CommandBarButton>
+                                                                       Label="删除时间表" />
                                         </controls:CommandBar.PrimaryCommands>
                                     </controls:CommandBar>
                                 </ci:TutorialBarrier>
