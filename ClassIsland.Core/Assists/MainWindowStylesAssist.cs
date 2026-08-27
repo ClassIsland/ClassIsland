@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using ClassIsland.Core.Enums.UI;
 
 namespace ClassIsland.Core.Assists;
 
@@ -51,6 +52,19 @@ public class MainWindowStylesAssist
 
     public static void SetIsCustomBackgroundColorEnabled(Control obj, bool value) => obj.SetValue(IsCustomBackgroundColorEnabledProperty, value);
     public static bool GetIsCustomBackgroundColorEnabled(Control obj) => obj.GetValue(IsCustomBackgroundColorEnabledProperty);
+
+    public static readonly AttachedProperty<bool> IsBackgroundMaterialEnabledProperty =
+        AvaloniaProperty.RegisterAttached<MainWindowStylesAssist, Control, bool>("IsBackgroundMaterialEnabled", inherits: true);
+
+    public static void SetIsBackgroundMaterialEnabled(Control obj, bool value) => obj.SetValue(IsBackgroundMaterialEnabledProperty, value);
+    public static bool GetIsBackgroundMaterialEnabled(Control obj) => obj.GetValue(IsBackgroundMaterialEnabledProperty);
+
+    public static readonly AttachedProperty<MainWindowBackgroundMaterialType> BackgroundMaterialTypeProperty =
+        AvaloniaProperty.RegisterAttached<MainWindowStylesAssist, Control, MainWindowBackgroundMaterialType>(
+            "BackgroundMaterialType", MainWindowBackgroundMaterialType.Acrylic, inherits: true);
+
+    public static void SetBackgroundMaterialType(Control obj, MainWindowBackgroundMaterialType value) => obj.SetValue(BackgroundMaterialTypeProperty, value);
+    public static MainWindowBackgroundMaterialType GetBackgroundMaterialType(Control obj) => obj.GetValue(BackgroundMaterialTypeProperty);
 
     public static readonly AttachedProperty<bool> MainWindowInEditModeProperty =
         AvaloniaProperty.RegisterAttached<MainWindowStylesAssist, Control, bool>("MainWindowInEditMode", inherits: true);

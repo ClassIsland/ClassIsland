@@ -13,6 +13,7 @@
         <ci:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
 
         <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
+        <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter"/>
         <system:Double x:Key="IslandContainerHeight">40</system:Double>
         
     </Styles.Resources>
@@ -23,6 +24,15 @@
     </Design.PreviewWith>
     
     <StyleInclude Source="/Controls/MainWindowLine.axaml"/>
+
+    <Style Selector="ci|MainWindowBackgroundMaterialControl.background">
+        <Setter Property="Opacity" Value="{Binding $self.EffectiveBackgroundOpacity, Mode=OneWay}"/>
+        <Setter Property="FallbackBrush" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
+        <Setter Property="CornerRadius" Value="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}"/>
+    </Style>
+    <Style Selector="ci|MainWindowBackgroundMaterialControl[(ci|MainWindowStylesAssist.IsCustomBackgroundColorEnabled)=True].background">
+        <Setter Property="FallbackBrush" Value="{Binding $self.(ci:MainWindowStylesAssist.BackgroundColor), Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+    </Style>
 
     <Style Selector="controls|MainWindowLine">
         <Style.Resources>
@@ -58,17 +68,15 @@
                         </MultiBinding>
                     </Grid.Clip>
                     <!-- Background -->
-                    <Border x:Name="BackgroundBorder"
-                            Classes="docking background"
-                            Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                            Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
-                            Height="{DynamicResource IslandContainerHeight}" />
-                    <Border x:Name="BackgroundBorderOverlay"
-                            Classes="docking background"
-                            Width="{Binding Bounds.Width, ElementName=BackgroundBorder, Mode=OneWay}"
-                            Opacity="0"
-                            Height="{DynamicResource IslandContainerHeight}">
-                    </Border>
+                    <ci:MainWindowBackgroundMaterialControl x:Name="BackgroundBorder"
+                                                                  Classes="docking background"
+                                                                  Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                                                                  Height="{DynamicResource IslandContainerHeight}" />
+                    <ci:MainWindowBackgroundMaterialControl x:Name="BackgroundBorderOverlay"
+                                                                  Classes="docking background"
+                                                                  Width="{Binding Bounds.Width, ElementName=BackgroundBorder, Mode=OneWay}"
+                                                                  Opacity="0"
+                                                                  Height="{DynamicResource IslandContainerHeight}" />
                     <Grid
                         Classes="docking"
                         IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
@@ -174,11 +182,10 @@
                         </MultiBinding>
                     </Grid.Clip>
                     <!-- Background -->
-                    <Border x:Name="BackgroundBorder"
-                            Classes="docking background"
-                            Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                            Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
-                            Height="{DynamicResource IslandContainerHeight}" />
+                    <ci:MainWindowBackgroundMaterialControl x:Name="BackgroundBorder"
+                                                                  Classes="docking background"
+                                                                  Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                                                                  Height="{DynamicResource IslandContainerHeight}" />
 
 
                     <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
@@ -210,12 +217,6 @@
             </Setter>
         </Style>
         
-        <Style Selector="^ /template/ Border#BackgroundBorder">
-            <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
-        </Style>
-        <Style Selector="^[(ci|MainWindowStylesAssist.IsCustomBackgroundColorEnabled)=True] /template/ Border.background">
-            <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>
-        </Style>
         <Style Selector="^[IsNotificationEnabled=False]">
             <Setter Property="Template" Value="{StaticResource MainWindowLineMinControlTemplate}"/>
             <!-- <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/> -->

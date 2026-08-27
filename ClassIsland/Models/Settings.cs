@@ -19,6 +19,7 @@ using Octokit;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums.UI;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.ComponentModels;
 using System.Runtime.InteropServices;
@@ -32,6 +33,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _theme = 2;
     private bool _iscustomBackgroundColorEnabled = false;
     private Color _backgroundColor = Colors.Black;
+    private bool _isMainWindowBackgroundMaterialEnabled;
+    private MainWindowBackgroundMaterialType _mainWindowBackgroundMaterialType = MainWindowBackgroundMaterialType.Acrylic;
     private Color _primaryColor = Colors.DeepSkyBlue;
     private Color _secondaryColor = Colors.Aquamarine;
     private DateTime _singleWeekStartTime =
@@ -1133,6 +1136,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_backgroundColor)) return;
             _backgroundColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMainWindowBackgroundMaterialEnabled
+    {
+        get => _isMainWindowBackgroundMaterialEnabled;
+        set
+        {
+            if (value == _isMainWindowBackgroundMaterialEnabled) return;
+            _isMainWindowBackgroundMaterialEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public MainWindowBackgroundMaterialType MainWindowBackgroundMaterialType
+    {
+        get => _mainWindowBackgroundMaterialType;
+        set
+        {
+            if (value == _mainWindowBackgroundMaterialType) return;
+            _mainWindowBackgroundMaterialType = value;
             OnPropertyChanged();
         }
     }
