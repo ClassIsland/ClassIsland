@@ -20,7 +20,6 @@
         MinHeight="175"
         Icon="/Assets/AppLogo.png"
         EnableMicaWindow="True"
-        SizeToContent="WidthAndHeight"
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
         WindowStartupLocation="CenterScreen"
         Unloaded="Control_OnUnloaded">
