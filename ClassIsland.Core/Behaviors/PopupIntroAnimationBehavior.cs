@@ -2,8 +2,9 @@ using Avalonia;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Interactivity;
+using Avalonia.Controls.Primitives.PopupPositioning;
 using Avalonia.Rendering.Composition;
+using Avalonia.Rendering.Composition.Animations;
 using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Core.Behaviors;
@@ -13,6 +14,13 @@ namespace ClassIsland.Core.Behaviors;
 /// </summary>
 public class PopupIntroAnimationBehavior
 {
+    private const double TranslationDistance = 16;
+
+    private static readonly TimeSpan TranslationDuration = TimeSpan.FromMilliseconds(167);
+    private static readonly TimeSpan OpacityDuration = TimeSpan.FromMilliseconds(83);
+    private static readonly Easing TranslationEasing = Easing.Parse("0,0 0,1");
+    private static readonly Easing OpacityEasing = new LinearEasing();
+
     public static readonly AttachedProperty<bool> IsIntroAnimationEnabledProperty =
         AvaloniaProperty.RegisterAttached<PopupIntroAnimationBehavior, Control, bool>("IsIntroAnimationEnabled");
 
@@ -68,46 +76,75 @@ public class PopupIntroAnimationBehavior
         {
             return;
         }
+
         var compositor = visual.Compositor;
         var popup = control.Parent as Popup;
+        var finalOpacity = visual.Opacity;
+        var finalTranslation = visual.Translation;
+
+        visual.StopAnimation(nameof(visual.Opacity));
+        visual.StopAnimation(nameof(visual.Translation));
+
         var animationOpacity = compositor.CreateScalarKeyFrameAnimation();
         animationOpacity.Target = nameof(visual.Opacity);
-        animationOpacity.Duration = TimeSpan.FromSeconds(0.15);
+        animationOpacity.Duration = OpacityDuration;
+        animationOpacity.StopBehavior = AnimationStopBehavior.SetToFinalValue;
         animationOpacity.InsertKeyFrame(0f, 0f);
-        animationOpacity.InsertKeyFrame(1f, 1f, Easing.Parse("0.22, 1, 0.36, 1"));
+        animationOpacity.InsertKeyFrame(1f, finalOpacity, OpacityEasing);
         visual.StartAnimation(nameof(visual.Opacity), animationOpacity);
-        
-        var origin = GetOriginFromPlacement(popup?.Placement ?? PlacementMode.Pointer, control.Bounds, visual.CenterPoint);
-        visual.CenterPoint = origin;
-        var animationScale = compositor.CreateVector3DKeyFrameAnimation();
-        animationScale.Target = nameof(visual.Scale);
-        animationScale.Duration = TimeSpan.FromSeconds(0.15);
-        animationScale.InsertKeyFrame(0f, visual.Scale with { X = 0.925, Y = 0.925 });
-        animationScale.InsertKeyFrame(1f, visual.Scale with { X = 1, Y = 1 }, Easing.Parse("0.22, 1, 0.36, 1"));
-        visual.StartAnimation(nameof(visual.Scale), animationScale);
+
+        var translationOffset = GetTranslationOffset(popup);
+        var animationTranslation = compositor.CreateVector3DKeyFrameAnimation();
+        animationTranslation.Target = nameof(visual.Translation);
+        animationTranslation.Duration = TranslationDuration;
+        animationTranslation.StopBehavior = AnimationStopBehavior.SetToFinalValue;
+        animationTranslation.InsertKeyFrame(0f, new Vector3D(
+            finalTranslation.X + translationOffset.X,
+            finalTranslation.Y + translationOffset.Y,
+            finalTranslation.Z + translationOffset.Z));
+        animationTranslation.InsertKeyFrame(1f, finalTranslation, TranslationEasing);
+        visual.StartAnimation(nameof(visual.Translation), animationTranslation);
     }
 
-    private static Vector3D GetOriginFromPlacement(PlacementMode p, Rect size, Vector3D vectorRaw)
+    private static Vector3D GetTranslationOffset(Popup? popup)
     {
-        var relative = p switch
+        return popup?.Placement switch
         {
-            PlacementMode.Bottom => new RelativePoint(0.5, 0.0, RelativeUnit.Relative),
-            PlacementMode.Left => new RelativePoint(1.0, 0.5, RelativeUnit.Relative),
-            PlacementMode.Right => new RelativePoint(0.0, 0.5, RelativeUnit.Relative),
-            PlacementMode.Top => new RelativePoint(0.5, 1.0, RelativeUnit.Relative),
-            PlacementMode.Pointer => new RelativePoint(0.0, 0.0, RelativeUnit.Relative),
-            PlacementMode.Center or PlacementMode.AnchorAndGravity =>
-                new RelativePoint(0.5, 0.5, RelativeUnit.Relative),
-            PlacementMode.BottomEdgeAlignedLeft => new RelativePoint(0.0, 0.0, RelativeUnit.Relative),
-            PlacementMode.BottomEdgeAlignedRight => new RelativePoint(1.0, 0.0, RelativeUnit.Relative),
-            PlacementMode.LeftEdgeAlignedTop => new RelativePoint(1.0, 1.0, RelativeUnit.Relative),
-            PlacementMode.LeftEdgeAlignedBottom => new RelativePoint(1.0, 0.0, RelativeUnit.Relative),
-            PlacementMode.RightEdgeAlignedTop => new RelativePoint(0.0, 1.0, RelativeUnit.Relative),
-            PlacementMode.RightEdgeAlignedBottom => new RelativePoint(0.0, 0.0, RelativeUnit.Relative),
-            PlacementMode.TopEdgeAlignedLeft => new RelativePoint(0.0, 1.0, RelativeUnit.Relative),
-            PlacementMode.TopEdgeAlignedRight => new RelativePoint(1.0, 1.0, RelativeUnit.Relative),
-            _ => new RelativePoint(0.5, 0.5, RelativeUnit.Relative)
+            PlacementMode.Bottom or PlacementMode.BottomEdgeAlignedLeft or PlacementMode.BottomEdgeAlignedRight =>
+                new Vector3D(0, -TranslationDistance, 0),
+            PlacementMode.Top or PlacementMode.TopEdgeAlignedLeft or PlacementMode.TopEdgeAlignedRight =>
+                new Vector3D(0, TranslationDistance, 0),
+            PlacementMode.Left or PlacementMode.LeftEdgeAlignedTop or PlacementMode.LeftEdgeAlignedBottom =>
+                new Vector3D(TranslationDistance, 0, 0),
+            PlacementMode.Right or PlacementMode.RightEdgeAlignedTop or PlacementMode.RightEdgeAlignedBottom =>
+                new Vector3D(-TranslationDistance, 0, 0),
+            PlacementMode.AnchorAndGravity => GetTranslationOffset(popup.PlacementGravity),
+            _ => new Vector3D(0, TranslationDistance, 0)
         };
-        return vectorRaw with { X = size.Width * relative.Point.X, Y = size.Height * relative.Point.Y };
+    }
+
+    private static Vector3D GetTranslationOffset(PopupGravity gravity)
+    {
+        if ((gravity & PopupGravity.Top) == PopupGravity.Top)
+        {
+            return new Vector3D(0, TranslationDistance, 0);
+        }
+
+        if ((gravity & PopupGravity.Bottom) == PopupGravity.Bottom)
+        {
+            return new Vector3D(0, -TranslationDistance, 0);
+        }
+
+        if ((gravity & PopupGravity.Left) == PopupGravity.Left)
+        {
+            return new Vector3D(TranslationDistance, 0, 0);
+        }
+
+        if ((gravity & PopupGravity.Right) == PopupGravity.Right)
+        {
+            return new Vector3D(-TranslationDistance, 0, 0);
+        }
+
+        return new Vector3D(0, TranslationDistance, 0);
     }
 }

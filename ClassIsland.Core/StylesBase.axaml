@@ -50,6 +50,7 @@
     <StyleInclude Source="/Themes/MyTeachingTipStyles.axaml"/>
     <StyleInclude Source="/Themes/PlatformFeedbackStyles.axaml"/>
     <StyleInclude Source="/Themes/MyNavigationPageStyles.axaml"/>
+    <StyleInclude Source="/Themes/PopupBaseStyles.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
     <StyleInclude Source="/Controls/DrawerHost.axaml"/>
     <StyleInclude Source="/Controls/TouchDragThumb.axaml"/>
@@ -298,11 +299,14 @@
     </Style>
     
     <Style Selector="Border.popup-bg">
-        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="12"/>
         <Setter Property="CornerRadius" Value="6"/>
+        
+        <Style Selector="^:not(.no-bg)">
+            <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"/>
+        </Style>
     </Style>
     
     <Style Selector="controls|FATeachingTip /template/ ContentPresenter#IconPresenter">

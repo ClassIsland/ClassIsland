@@ -1,0 +1,412 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="FlyoutPresenter">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ci:PopupAcrylicMaterialControl
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    FallbackBrush="{TemplateBinding Background}">
+                    <Border Background="{x:Null}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{DynamicResource FlyoutBorderThemePadding}"
+                            BackgroundSizing="{TemplateBinding BackgroundSizing}">
+                        <ScrollViewer Name="ScrollViewer"
+                                      HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                      VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </ScrollViewer>
+                    </Border>
+                </ci:PopupAcrylicMaterialControl>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="MenuFlyoutPresenter">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ci:PopupAcrylicMaterialControl
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    FallbackBrush="{TemplateBinding Background}">
+                    <Border Name="LayoutRoot"
+                            Background="{x:Null}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BackgroundSizing="{TemplateBinding BackgroundSizing}"
+                            Padding="{DynamicResource FlyoutBorderThemePadding}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                      VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                      Margin="{TemplateBinding Padding}">
+                            <ItemsPresenter Name="PART_ItemsPresenter"
+                                            ItemsPanel="{TemplateBinding ItemsPanel}"
+                                            KeyboardNavigation.TabNavigation="Continue"
+                                            Grid.IsSharedSizeScope="True" />
+                        </ScrollViewer>
+                    </Border>
+                </ci:PopupAcrylicMaterialControl>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="MenuItem">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border Name="PART_LayoutRoot"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Margin="{StaticResource MenuFlyoutItemMargin}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleIcon" />
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIcon" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIGT" />
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemChevron" />
+                            </Grid.ColumnDefinitions>
+
+                            <ContentControl Grid.Column="0"
+                                            Name="PART_ToggleIconPresenter"
+                                            IsVisible="False"
+                                            Theme="{StaticResource FluentMenuItemIconTheme}"
+                                            Margin="{DynamicResource MenuIconPresenterMargin}" />
+
+                            <Viewbox Name="PART_IconPresenter"
+                                     Margin="{DynamicResource MenuIconPresenterMargin}"
+                                     Theme="{StaticResource FluentMenuItemIconTheme}"
+                                     StretchDirection="DownOnly"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     IsVisible="False"
+                                     Width="16"
+                                     Height="16"
+                                     Grid.Column="1">
+                                <ContentPresenter Content="{TemplateBinding Icon}" />
+                            </Viewbox>
+
+                            <ContentPresenter Name="PART_HeaderPresenter"
+                                              Content="{TemplateBinding Header}"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Stretch"
+                                              Grid.Column="2"
+                                              RecognizesAccessKey="True" />
+
+                            <TextBlock Name="PART_InputGestureText"
+                                       Grid.Column="3"
+                                       Classes="CaptionTextBlockStyle"
+                                       Margin="{DynamicResource MenuInputGestureTextMargin}"
+                                       Text="{TemplateBinding InputGesture, Converter={StaticResource KeyGestureConverter}}"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+
+                            <controls:FASymbolIcon Name="PART_ChevronPath"
+                                                   Height="16"
+                                                   Symbol="ChevronRight"
+                                                   Margin="{DynamicResource MenuFlyoutItemChevronMargin}"
+                                                   VerticalAlignment="Center"
+                                                   Grid.Column="4"
+                                                   FontSize="18"
+                                                   Foreground="{DynamicResource MenuFlyoutSubItemChevron}" />
+                        </Grid>
+                    </Border>
+
+                    <Popup Name="PART_Popup"
+                           WindowManagerAddShadowHint="False"
+                           Placement="RightEdgeAlignedTop"
+                           HorizontalOffset="{DynamicResource MenuFlyoutSubItemPopupHorizontalOffset}"
+                           IsLightDismissEnabled="False"
+                           IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}">
+                        <ci:PopupAcrylicMaterialControl
+                            CornerRadius="{DynamicResource OverlayCornerRadius}"
+                            FallbackBrush="{DynamicResource MenuFlyoutPresenterBackground}">
+                            <Border Background="{x:Null}"
+                                    BorderBrush="{DynamicResource MenuFlyoutPresenterBorderBrush}"
+                                    BorderThickness="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"
+                                    MaxWidth="{DynamicResource FlyoutThemeMaxWidth}"
+                                    MinHeight="{DynamicResource MenuFlyoutThemeMinHeight}"
+                                    HorizontalAlignment="Stretch"
+                                    CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                    BackgroundSizing="InnerBorderEdge">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Auto">
+                                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                                    ItemsPanel="{TemplateBinding ItemsPanel}"
+                                                    Margin="{DynamicResource MenuFlyoutPresenterThemePadding}"
+                                                    Grid.IsSharedSizeScope="True" />
+                                </ScrollViewer>
+                            </Border>
+                        </ci:PopupAcrylicMaterialControl>
+                    </Popup>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|FAMenuFlyoutPresenter">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ci:PopupAcrylicMaterialControl
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    FallbackBrush="{TemplateBinding Background}">
+                    <Border Name="LayoutRoot"
+                            Background="{x:Null}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BackgroundSizing="InnerBorderEdge"
+                            Padding="{DynamicResource FlyoutBorderThemePadding}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                      VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                      Margin="{TemplateBinding Padding}">
+                            <ItemsPresenter Name="PART_ItemsPresenter"
+                                            ItemsPanel="{TemplateBinding ItemsPanel}"
+                                            KeyboardNavigation.TabNavigation="Continue"
+                                            Grid.IsSharedSizeScope="True" />
+                        </ScrollViewer>
+                    </Border>
+                </ci:PopupAcrylicMaterialControl>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|FACommandBarFlyoutCommandBar">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ci:PopupAcrylicMaterialControl
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    FallbackBrush="{TemplateBinding Background}">
+                    <Border Name="LayoutRoot"
+                            Background="{x:Null}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <Border.Styles>
+                            <Style Selector="controls|FACommandBarButton">
+                                <Setter Property="Theme" Value="{StaticResource CommandBarFlyoutButtonStyle}" />
+                            </Style>
+                            <Style Selector="controls|FACommandBarToggleButton">
+                                <Setter Property="Theme" Value="{StaticResource CommandBarFlyoutToggleButtonStyle}" />
+                            </Style>
+                        </Border.Styles>
+                        <StackPanel>
+                            <Grid Name="ContentRoot" KeyboardNavigation.TabNavigation="Once">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" MinWidth="3" />
+                                </Grid.ColumnDefinitions>
+
+                                <ItemsControl Name="PrimaryItemsControl"
+                                              Height="40"
+                                              Margin="3 3 0 3"
+                                              HorizontalAlignment="Left">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+
+                                <Button Name="MoreButton"
+                                        Foreground="{TemplateBinding Foreground}"
+                                        Grid.Column="1"
+                                        Theme="{StaticResource CBFlyoutEllipsisButton}">
+                                    <controls:FASymbolIcon Symbol="More"
+                                                           FontSize="24"
+                                                           Height="{StaticResource AppBarExpandButtonCircleDiameter}"
+                                                           Name="EllipsisIcon" />
+                                </Button>
+
+                                <Border Name="OpenBorder"
+                                        Grid.ColumnSpan="2"
+                                        VerticalAlignment="Stretch"
+                                        IsHitTestVisible="False"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}" />
+                            </Grid>
+
+                            <Border Name="OverflowLayoutRoot"
+                                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                                    IsVisible="False">
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                                    <controls:FACommandBarOverflowPresenter
+                                        Name="SecondaryItemsControl"
+                                        CornerRadius="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=CornerRadius, Converter={StaticResource BottomCornerRadiusFilterConverter}}"
+                                        BorderBrush="Transparent"
+                                        BorderThickness="1 0 1 1"
+                                        Theme="{StaticResource CBFlyoutPresenterStyle}"
+                                        KeyboardNavigation.TabNavigation="Once" />
+                                </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </ci:PopupAcrylicMaterialControl>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="ComboBox">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DataValidationErrors>
+                    <Grid ColumnDefinitions="*,32">
+                        <Border Name="Background"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                MinWidth="{DynamicResource ComboBoxThemeMinWidth}"
+                                CornerRadius="{TemplateBinding CornerRadius}" />
+
+                        <Border Name="HighlightBackground"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                BorderThickness="{DynamicResource ComboBoxBackgroundBorderThicknessFocused}"
+                                Opacity="0"
+                                Background="{DynamicResource ComboBoxBackgroundFocused}"
+                                BorderBrush="{DynamicResource ComboBoxBackgroundBorderBrushFocused}" />
+
+                        <Border Name="Pill"
+                                Classes="ComboBoxItemPill"
+                                Margin="1 0 0 0"
+                                Opacity="0" />
+
+                        <TextBlock Name="PlaceholderTextBlock"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   Margin="{TemplateBinding Padding}"
+                                   Text="{TemplateBinding PlaceholderText}"
+                                   Foreground="{TemplateBinding PlaceholderForeground}">
+                            <TextBlock.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="SelectionBoxItem"
+                                             RelativeSource="{RelativeSource TemplatedParent}"
+                                             Converter="{x:Static ObjectConverters.IsNull}" />
+                                    <Binding Path="!IsEditable" RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </TextBlock.IsVisible>
+                        </TextBlock>
+
+                        <ContentPresenter Name="ContentPresenter"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentTemplate="{TemplateBinding ItemTemplate}"
+                                          Grid.Column="0"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+                        <TextBox Name="PART_EditableTextBox"
+                                 Grid.Column="0"
+                                 Padding="{TemplateBinding Padding}"
+                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                 Foreground="{TemplateBinding Foreground}"
+                                 Background="Transparent"
+                                 Text="{TemplateBinding Text, Mode=TwoWay}"
+                                 PlaceholderText="{TemplateBinding PlaceholderText}"
+                                 BorderThickness="0"
+                                 IsVisible="{TemplateBinding IsEditable}">
+                            <TextBox.Resources>
+                                <SolidColorBrush x:Key="TextControlBackgroundFocused">Transparent</SolidColorBrush>
+                                <SolidColorBrush x:Key="TextControlBackgroundPointerOver">Transparent</SolidColorBrush>
+                                <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+                            </TextBox.Resources>
+                        </TextBox>
+
+                        <Border Name="DropDownOverlay"
+                                Grid.Column="1"
+                                Background="Transparent"
+                                Margin="-4,4,4,4"
+                                Width="30"
+                                IsVisible="False"
+                                HorizontalAlignment="Right" />
+
+                        <controls:FAFontIcon Name="DropDownGlyph"
+                                             Foreground="{DynamicResource ComboBoxDropDownGlyphForeground}"
+                                             MinHeight="{DynamicResource ComboBoxMinHeight}"
+                                             Grid.Row="1"
+                                             Grid.Column="1"
+                                             IsHitTestVisible="False"
+                                             Margin="0 0 14 0"
+                                             FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                             FontSize="12"
+                                             Glyph="&#xE70D;"
+                                             HorizontalAlignment="Right"
+                                             VerticalAlignment="Center" />
+
+                        <Popup Name="PART_Popup"
+                               WindowManagerAddShadowHint="False"
+                               IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
+                               MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
+                               MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                               PlacementTarget="Background"
+                               IsLightDismissEnabled="True"
+                               InheritsTransform="True">
+                            <ci:PopupAcrylicMaterialControl
+                                CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                FallbackBrush="{DynamicResource ComboBoxDropDownBackground}">
+                                <Border Name="PopupBorder"
+                                        Background="{x:Null}"
+                                        BorderBrush="{DynamicResource ComboBoxDropDownBorderBrush}"
+                                        BorderThickness="{DynamicResource ComboBoxDropdownBorderThickness}"
+                                        Padding="{DynamicResource ComboBoxDropdownBorderPadding}"
+                                        HorizontalAlignment="Stretch"
+                                        CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                        BackgroundSizing="InnerBorderEdge">
+                                    <ScrollViewer
+                                        HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                        VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                        IsDeferredScrollingEnabled="{TemplateBinding (ScrollViewer.IsDeferredScrollingEnabled)}">
+                                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                                        Margin="{DynamicResource ComboBoxDropdownContentMargin}"
+                                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
+                                    </ScrollViewer>
+                                </Border>
+                            </ci:PopupAcrylicMaterialControl>
+                        </Popup>
+                    </Grid>
+                </DataValidationErrors>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="ToolTip">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ci:PopupAcrylicMaterialControl
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    FallbackBrush="{TemplateBinding Background}">
+                    <Border Name="PART_LayoutRoot"
+                            Background="{x:Null}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          MaxWidth="{TemplateBinding MaxWidth}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          TextWrapping="Wrap" />
+                    </Border>
+                </ci:PopupAcrylicMaterialControl>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>
