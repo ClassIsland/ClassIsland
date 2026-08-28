@@ -200,7 +200,9 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
                     NotifyCollectionChangedAction.Reset => ListItemUpdateOperations.Update,
                     _ => throw new ArgumentOutOfRangeException()
                 },
-                ItemId = args.NewItems?[0] switch
+                ItemId = (args.Action == NotifyCollectionChangedAction.Remove
+                    ? args.OldItems?[0]
+                    : args.NewItems?[0]) switch
                 {
                     KeyValuePair<Guid, ClassPlan> cp => cp.Key.ToString(),
                     KeyValuePair<Guid, TimeLayout> tl => tl.Key.ToString(),

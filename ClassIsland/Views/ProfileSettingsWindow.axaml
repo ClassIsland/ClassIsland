@@ -45,8 +45,6 @@
         <ci:BindingProxy x:TypeArguments="profile:ClassPlanGroup"
                          x:Key="ClassPlanGroupBindingProxy"
                          Data="{Binding ViewModel.ProfileService.Profile.SelectedClassPlanGroupId, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}, Mode=OneWay}"/>
-        <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:Subject"
-                                                      x:Key="SubjectDictionaryKeyFinderMultiConverter" />
         <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:TimeLayout"
                                                       x:Key="TimeLayoutDictionaryKeyFinderMultiConverter" />
         <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:ClassPlan"
@@ -1778,10 +1776,10 @@
                                                                IconSource="{ci:FluentIconSource &#xE00D;}" Label="添加"/>
                                     <controls:FACommandBarSeparator/>
                                     <controls:FACommandBarButton Click="ButtonDuplicateSubject_OnClick" ToolTip.Tip="复制选中的科目。"
-                                                               IsEnabled="{Binding ViewModel.SelectedSubject, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                               IsEnabled="{Binding ViewModel.SelectedSubjectKvp, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                                IconSource="{ci:FluentIconSource &#xE58D;}" Label="复制"/>
                                     <controls:FACommandBarButton Click="ButtonDeleteSubject_OnClick" ToolTip.Tip="删除选中的科目。"
-                                                               IsEnabled="{Binding ViewModel.SelectedSubject, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                               IsEnabled="{Binding ViewModel.SelectedSubjectKvp, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                                IconSource="{ci:FluentIconSource &#xE61D;}" Label="删除"/>
                                 </controls:FACommandBar.PrimaryCommands>
                             </controls:FACommandBar>
@@ -1790,10 +1788,10 @@
                                 <!-- 科目 -->
                                 <DataGrid Grid.Row="0"
                                           x:Name="DataGridSubjects"
-                                          ItemsSource="{Binding ViewModel.ProfileService.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          ItemsSource="{Binding ViewModel.Subjects.List}"
                                           AutoGenerateColumns="False"
                                           IsReadOnly="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing}"
-                                          SelectedItem="{Binding ViewModel.SelectedSubject}"
+                                          SelectedItem="{Binding ViewModel.SelectedSubjectKvp}"
                                           GridLinesVisibility="All"
                                           CanUserSortColumns="False"
                                           FontSize="13">
@@ -1802,7 +1800,7 @@
                                             <ManagedContextDropBehavior
                                                 AcceptDataFormat="{x:Static views:SubjectDataGridDropHandler.DataFormat}"
                                                 AllowDrop="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}}"
-                                                Context="{Binding ViewModel.ProfileService.Profile.EditingSubjects}"
+                                                Context="{Binding ViewModel.Subjects.List}"
                                                 Handler="{StaticResource SubjectDataGridDropHandler}"/>
                                         </BehaviorCollection>
                                     </Interaction.Behaviors>
@@ -1842,10 +1840,10 @@
                                                         <ci:FluentIcon Classes="l-instructive"
                                                                        ToolTip.Tip="拖拽调整科目顺序">
                                                             <Interaction.Behaviors>
-                                                                <DataTriggerBehavior Binding="{Binding IsOutDoor}" Value="True">
+                                                                <DataTriggerBehavior Binding="{Binding Value.IsOutDoor}" Value="True">
                                                                     <AddClassAction ClassName="out-door"/>
                                                                 </DataTriggerBehavior>
-                                                                <DataTriggerBehavior Binding="{Binding IsOutDoor}" Value="False">
+                                                                <DataTriggerBehavior Binding="{Binding Value.IsOutDoor}" Value="False">
                                                                     <RemoveClassAction ClassName="out-door"/>
                                                                 </DataTriggerBehavior>
                                                             </Interaction.Behaviors>
@@ -1862,13 +1860,13 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
-                                        <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}"
+                                        <DataGridTextColumn Binding="{Binding Value.Name, Mode=TwoWay}"
                                                             Header="科目名"/>
-                                        <DataGridTextColumn Binding="{Binding Initial, Mode=TwoWay}"
+                                        <DataGridTextColumn Binding="{Binding Value.Initial, Mode=TwoWay}"
                                                                 Header="简称"/>
-                                        <DataGridCheckBoxColumn Binding="{Binding IsOutDoor, Mode=TwoWay}"
+                                        <DataGridCheckBoxColumn Binding="{Binding Value.IsOutDoor, Mode=TwoWay}"
                                                                     Header="户外课程？"/>
-                                        <DataGridTextColumn Binding="{Binding TeacherName, Mode=TwoWay}"
+                                        <DataGridTextColumn Binding="{Binding Value.TeacherName, Mode=TwoWay}"
                                                                 Header="科任老师"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -1922,15 +1920,8 @@
                                                         <ci:AttachedSettingsControlPresenter ControlInfo="{Binding}"
                                                             TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
                                                             <ci:AttachedSettingsControlPresenter.ContentId>
-                                                                <MultiBinding
-                                                                    Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}"
-                                                                    Mode="OneWay">
-                                                                    <Binding Path="SelectedItem"
-                                                                             ElementName="DataGridSubjects" />
-                                                                    <Binding
-                                                                        Path="ViewModel.ProfileService.Profile.Subjects"
-                                                                        RelativeSource="{RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}" />
-                                                                </MultiBinding>
+                                                                <Binding Path="ViewModel.SelectedSubjectKvp.Key"
+                                                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}" />
                                                             </ci:AttachedSettingsControlPresenter.ContentId>
                                                         </ci:AttachedSettingsControlPresenter>
                                                     </DataTemplate>

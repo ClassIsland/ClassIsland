@@ -62,6 +62,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isOfflineEditor = false;
     [ObservableProperty] private TimeLayoutItem? _selectedTimePoint;
     [ObservableProperty] private double _timeLineScale = 3.0;
+    [ObservableProperty] private KeyValuePair<Guid, Subject>? _selectedSubjectKvp;
     [ObservableProperty] private Subject? _selectedSubject;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
@@ -191,6 +192,36 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
     }
 
+    partial void OnSelectedSubjectKvpChanged(KeyValuePair<Guid, Subject>? value)
+    {
+        SelectedSubject = value?.Value;
+    }
+
+    partial void OnSelectedSubjectChanged(Subject? value)
+    {
+        if (value == null)
+        {
+            SelectedSubjectKvp = null;
+            return;
+        }
+
+        if (SelectedSubjectKvp is { } selected && ReferenceEquals(selected.Value, value))
+        {
+            return;
+        }
+
+        foreach (var subject in Subjects.List)
+        {
+            if (ReferenceEquals(subject.Value, value))
+            {
+                SelectedSubjectKvp = subject;
+                return;
+            }
+        }
+
+        SelectedSubjectKvp = null;
+    }
+
     public void ReleaseResources()
     {
         if (_resourcesReleased)
@@ -223,6 +254,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         SelectedTransferInfo = null;
         SelectedTimePoint = null;
         SelectedTimeLayout = null;
+        SelectedSubjectKvp = null;
         SelectedSubject = null;
         SelectedClassInfo = null;
         SelectedClassPlan = null;

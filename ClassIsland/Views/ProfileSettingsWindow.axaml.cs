@@ -1439,36 +1439,54 @@ public partial class ProfileSettingsWindow : ViewBase
 
     private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
     {
-        //DataGridSubjects.CancelEdit();
-        
-        var isCreating = DataGridSubjects.SelectedIndex == ViewModel.ProfileService.Profile.Subjects.Count;
-        
         DataGridSubjects.CancelEdit();
+        var wasReadOnly = DataGridSubjects.IsReadOnly;
         DataGridSubjects.IsReadOnly = true;
-        ViewModel.ProfileService.Profile.EditingSubjects.Add(new Subject());
-        DataGridSubjects.IsReadOnly = false;
-        DataGridSubjects.SelectedIndex = ViewModel.ProfileService.Profile.Subjects.Count - 1;
-        //TextBoxSubjectName.Focus();
+        var subject = new KeyValuePair<Guid, Subject>(Guid.NewGuid(), new Subject());
+        try
+        {
+            ViewModel.Subjects.List.Add(subject);
+            ViewModel.SelectedSubjectKvp = subject;
+        }
+        finally
+        {
+            DataGridSubjects.IsReadOnly = wasReadOnly;
+        }
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.create", 1);
     }
     
     private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
     {
         DataGridSubjects.CancelEdit();
+        var wasReadOnly = DataGridSubjects.IsReadOnly;
         DataGridSubjects.IsReadOnly = true;
-        foreach (var i in DataGridSubjects.SelectedItems)
+        KeyValuePair<Guid, Subject>? lastAddedSubject = null;
+        try
         {
-            var subject = i as Subject;
-            var o = ConfigureFileHelper.CopyObject(subject);
-            if (o == null)
+            foreach (var subject in DataGridSubjects.SelectedItems
+                         .OfType<KeyValuePair<Guid, Subject>>()
+                         .ToList())
             {
-                continue;
+                var copy = ConfigureFileHelper.CopyObject(subject.Value);
+                if (copy == null)
+                {
+                    continue;
+                }
+
+                var copyPair = new KeyValuePair<Guid, Subject>(Guid.NewGuid(), copy);
+                ViewModel.Subjects.List.Add(copyPair);
+                lastAddedSubject = copyPair;
             }
 
-            ViewModel.ProfileService.Profile.EditingSubjects.Add(o);
+            if (lastAddedSubject is { } selectedSubject)
+            {
+                ViewModel.SelectedSubjectKvp = selectedSubject;
+            }
         }
-        DataGridSubjects.SelectedItem = ViewModel.ProfileService.Profile.EditingSubjects.Last();
-        DataGridSubjects.IsReadOnly = false;
+        finally
+        {
+            DataGridSubjects.IsReadOnly = wasReadOnly;
+        }
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.duplicate", 1);
     }
 
@@ -1481,42 +1499,44 @@ public partial class ProfileSettingsWindow : ViewBase
         );
 
         DataGridSubjects.CancelEdit();
+        var wasReadOnly = DataGridSubjects.IsReadOnly;
         DataGridSubjects.IsReadOnly = true;
-        var rm = new List<Subject>();
-        foreach (var i in DataGridSubjects.SelectedItems)
+        var removedSubjects = DataGridSubjects.SelectedItems
+            .OfType<KeyValuePair<Guid, Subject>>()
+            .ToList();
+        if (removedSubjects.Count == 0)
         {
-            if (i is Subject o)
-            {
-                rm.Add(o);
-            }
+            DataGridSubjects.IsReadOnly = wasReadOnly;
+            return;
         }
-        var s = ViewModel.ProfileService.Profile.EditingSubjects;
-        foreach (var t in rm)
+
+        foreach (var subject in removedSubjects)
         {
-            s.Remove(t);
+            ViewModel.Subjects.List.Remove(subject);
         }
+        ViewModel.SelectedSubjectKvp = null;
 
         var revertButton = new Button()
         {
             Content = "撤销"
         };
-        var toastMessage = new ToastMessage($"已删除 {rm.Count} 个科目。")
+        var toastMessage = new ToastMessage($"已删除 {removedSubjects.Count} 个科目。")
         {
             ActionContent = revertButton,
             Duration = TimeSpan.FromSeconds(10)
         };
         EventHandler<RoutedEventArgs> revertButtonOnClick = (o, args) =>
         {
-            foreach (var subject in rm)
+            foreach (var subject in removedSubjects)
             {
-                ViewModel.ProfileService.Profile.EditingSubjects.Add(subject);
+                ViewModel.Subjects.List.Add(subject);
             }
             toastMessage.Close();
         };
         revertButton.Click += revertButtonOnClick;
         _eventUnhookActions.Add(() => revertButton.Click -= revertButtonOnClick);
         this.ShowToast(toastMessage);
-        DataGridSubjects.IsReadOnly = false;
+        DataGridSubjects.IsReadOnly = wasReadOnly;
     }
     #endregion
 
