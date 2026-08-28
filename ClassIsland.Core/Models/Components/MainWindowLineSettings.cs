@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Models.Components;
+using ClassIsland.Core.Enums.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Components;
@@ -40,6 +41,8 @@ public partial class MainWindowLineSettings : ObservableObject, IMainWindowCusto
     [ObservableProperty] private double _customCornerRadius;
     [ObservableProperty] private bool _isCustomCornerRadiusEnabled;
     [ObservableProperty] private double _opacity = 1.0;
+    [ObservableProperty] private int _backgroundMaterialOverrideMode = 0;
+    [ObservableProperty] private MainWindowBackgroundMaterialType _backgroundMaterialType = MainWindowBackgroundMaterialType.Acrylic;
     
     [ObservableProperty] private bool _isVisible = true;
     [ObservableProperty] private bool _hideOnRule = false;

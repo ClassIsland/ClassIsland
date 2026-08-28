@@ -8,6 +8,7 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
              xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
+             xmlns:icons="clr-namespace:ClassIsland.Core.Icons;assembly=ClassIsland.Core"
              xmlns:attributes="clr-namespace:ClassIsland.Core.Attributes;assembly=ClassIsland.Core"
              xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -345,6 +346,34 @@
                                     IsSnapToTickEnabled="True" />
                         </StackPanel>
                     </controls:FASettingsExpander.Footer>
+                </controls:FASettingsExpander>
+
+                <controls:FASettingsExpander Header="自定义背景效果"
+                                             Description="自定义主界面的背景效果，仅在较新版本的 Windows 上可用，可能会产生额外性能开销。">
+                    <controls:FASettingsExpander.IconSource>
+                        <ci:FluentIconSource Glyph="{x:Static icons:FluentIcons.BlurRegular}" />
+                    </controls:FASettingsExpander.IconSource>
+                    <controls:FASettingsExpander.IsVisible>
+                        <OnPlatform Default="False">
+                            <On Options="Windows" Content="True" />
+                        </OnPlatform>
+                    </controls:FASettingsExpander.IsVisible>
+                    <controls:FASettingsExpander.Footer>
+                        <ComboBox SelectedIndex="{Binding BackgroundMaterialOverrideMode}">
+                            <ComboBoxItem>继承</ComboBoxItem>
+                            <ComboBoxItem>禁用</ComboBoxItem>
+                            <ComboBoxItem>启用</ComboBoxItem>
+                        </ComboBox>
+                    </controls:FASettingsExpander.Footer>
+                    <controls:FASettingsExpanderItem Content="材质类型">
+                        <controls:FASettingsExpanderItem.Footer>
+                            <ComboBox SelectedIndex="{Binding BackgroundMaterialType, Mode=TwoWay, Converter={x:Static ci:EnumToIntConverter.Instance}}">
+                                <ComboBoxItem>亚克力</ComboBoxItem>
+                                <ComboBoxItem>类液态玻璃</ComboBoxItem>
+                                <ComboBoxItem>云母</ComboBoxItem>
+                            </ComboBox>
+                        </controls:FASettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem>
                 </controls:FASettingsExpander>
                 
                 <!--自定义背景颜色-->

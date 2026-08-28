@@ -187,7 +187,7 @@
                 </controls1:FASettingsExpanderItem>
             </controls1:FASettingsExpander>
 
-            <!-- 自定义背景画刷 -->
+            <!-- 自定义背景效果-->
             <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xE523;}"
                                         Header="自定义背景效果"
                                         Description="自定义主界面的背景效果，仅在较新版本的 Windows 上可用，可能会产生额外性能开销。"
