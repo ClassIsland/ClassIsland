@@ -34,8 +34,13 @@ namespace ClassIsland.Core.Controls;
 [PseudoClasses(":no-easter-eggs")]
 public partial class MyWindow : FAAppWindow
 {
+    private static readonly TimeSpan TouchToolTipAdditionalShowDelay = TimeSpan.FromMilliseconds(400);
+
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_PseudoClasses")]
     private static extern IPseudoClasses GetPseudoClasses(StyledElement element);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "set_IsPressed")]
+    private static extern void SetButtonIsPressed(Button button, bool value);
 
     /// <summary>
     /// 是否显示开源警告水印
@@ -84,11 +89,16 @@ public partial class MyWindow : FAAppWindow
     public static void SetupMyWindowExt(Control window)
     {
         var state = new MyWindowState();
+        WeakReference<Control>? touchToolTipTarget = null;
+        IDisposable? touchToolTipShowDelayTimer = null;
+        IPointer? pendingTouchPointer = null;
         SetState(window, state);
         window.Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(window, BitmapInterpolationMode.HighQuality);
         window.KeyDown += OnKeyDown;
         window.AddHandler(PointerPressedEvent, OnPointerUpdated, RoutingStrategies.Bubble | RoutingStrategies.Tunnel);
+        window.AddHandler(PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel, handledEventsToo: true);
+        window.AddHandler(HoldingEvent, OnHolding, RoutingStrategies.Bubble, handledEventsToo: true);
         window.Unloaded += WindowOnUnloaded;
 
         var managementService = IAppHost.Host?.Services.GetService(typeof(IManagementService)) as IManagementService;
@@ -101,15 +111,104 @@ public partial class MyWindow : FAAppWindow
 
         void WindowOnUnloaded(object? sender, EventArgs e)
         {
+            CancelTouchToolTipShowDelay();
+            CloseTouchToolTip();
             window.Loaded -= OnLoaded;
             window.KeyDown -= OnKeyDown;
             window.PointerPressed -= OnPointerUpdated;
+            window.RemoveHandler(PointerReleasedEvent, OnPointerReleased);
+            window.RemoveHandler(HoldingEvent, OnHolding);
             window.Unloaded -= WindowOnUnloaded;
         }
 
         void OnPointerUpdated(object? sender, PointerEventArgs e)
         {
+            if (e.Pointer.Type == PointerType.Touch)
+            {
+                CancelTouchToolTipShowDelay();
+                CloseTouchToolTip();
+                pendingTouchPointer = e.Pointer;
+            }
+
             PointerStateAssist.SetIsTouchMode(window, state.SuppressTouchMode || e.Pointer.Type == PointerType.Touch);
+        }
+
+        void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            if (e.Pointer.Type != PointerType.Touch)
+            {
+                return;
+            }
+
+            CancelTouchToolTipShowDelay();
+            if (ReferenceEquals(pendingTouchPointer, e.Pointer))
+            {
+                pendingTouchPointer = null;
+            }
+        }
+
+        void OnHolding(object? sender, HoldingRoutedEventArgs e)
+        {
+            if (e.PointerType != PointerType.Touch)
+            {
+                return;
+            }
+
+            if (e.HoldingState != HoldingState.Started)
+            {
+                CancelTouchToolTipShowDelay();
+                return;
+            }
+
+            var ancestors = (e.Source as Visual)?.GetSelfAndVisualAncestors().OfType<Control>().ToList();
+            var target = ancestors?
+                .FirstOrDefault(control => ToolTip.GetTip(control) is not null && ToolTip.GetServiceEnabled(control));
+            var pointer = pendingTouchPointer;
+            if (target is null || pointer is null)
+            {
+                return;
+            }
+
+            var button = ancestors?.OfType<Button>().FirstOrDefault();
+            CancelTouchToolTipShowDelay();
+            touchToolTipShowDelayTimer = DispatcherTimer.RunOnce(() =>
+            {
+                touchToolTipShowDelayTimer = null;
+                if (!ReferenceEquals(pendingTouchPointer, pointer) || !target.IsAttachedToVisualTree())
+                {
+                    return;
+                }
+
+                CloseTouchToolTip();
+                target.SetCurrentValue(ToolTip.IsOpenProperty, true);
+                if (!ToolTip.GetIsOpen(target))
+                {
+                    return;
+                }
+
+                touchToolTipTarget = new WeakReference<Control>(target);
+                if (button is not null)
+                {
+                    // Avalonia Button 在释放时根据此状态触发 Click；仅在 ToolTip 成功打开后清除。
+                    SetButtonIsPressed(button, false);
+                }
+            }, TouchToolTipAdditionalShowDelay);
+        }
+
+        void CancelTouchToolTipShowDelay()
+        {
+            touchToolTipShowDelayTimer?.Dispose();
+            touchToolTipShowDelayTimer = null;
+        }
+
+        void CloseTouchToolTip()
+        {
+            if (touchToolTipTarget?.TryGetTarget(out var target) == true)
+            {
+                target.SetCurrentValue(ToolTip.IsOpenProperty, false);
+            }
+
+            touchToolTipTarget = null;
         }
 
         void OnKeyDown(object? sender, KeyEventArgs e)
