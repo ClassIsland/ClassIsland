@@ -134,9 +134,20 @@ public class PluginService : IPluginService
             {
                 continue;
             }
+            string manifestYaml = string.Empty;
 
-            var manifestYaml = File.ReadAllText(manifestPath);
-            var manifest = deserializer.Deserialize<PluginManifest?>(manifestYaml);
+            PluginManifest? manifest = null;
+            try
+            {
+                manifestYaml = File.ReadAllText(manifestPath);
+                manifest = deserializer.Deserialize<PluginManifest?>(manifestYaml);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"尝试解析插件清单时出错:{0}", e);
+                continue;
+            }
+
             if (manifest == null)
             {
                 continue;
@@ -171,6 +182,11 @@ public class PluginService : IPluginService
                 info.Exception = new InvalidOperationException($"不兼容的 API 版本 {apiVersion}。插件的 API 版本需要至少为 2.0.0.0 才能被当前版本的 ClassIsland 加载。");
                 PluginLoadedStatus.Add(info);
             }
+        }
+        if (App.ApplicationCommand.Safe)
+        {
+            AppBase.Current.AppStarted += CurrentOnAppStarted;
+            return;
         }
         var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
         Console.WriteLine($"Resolved load order: {string.Join(", ", loadOrder)}");
