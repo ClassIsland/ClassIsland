@@ -40,6 +40,7 @@ public class OpenAiTtsService : ISpeechService
     private ILogger<OpenAiTtsService> Logger { get; }
     private SettingsService SettingsService { get; }
     private Queue<OpenAiTtsPlayInfo> PlayingQueue { get; } = new();
+    private Dictionary<string, InFlightSpeechGeneration> InFlightGenerations { get; } = new();
     private object QueueLock { get; } = new();
 
     private bool IsPlaying { get; set; }
@@ -80,13 +81,34 @@ public class OpenAiTtsService : ISpeechService
 
         lock (QueueLock)
         {
-            Task<bool>? generationTask = null;
+            InFlightSpeechGeneration? generation = null;
             if (!File.Exists(cache))
             {
-                generationTask = GenerateSpeechAsync(text, cache, settings, cancellationTokenSource.Token);
+                if (InFlightGenerations.TryGetValue(cache, out generation) && generation.Task.IsCompleted)
+                {
+                    InFlightGenerations.Remove(cache);
+                    generation = null;
+                }
+
+                if (generation == null && !File.Exists(cache))
+                {
+                    generation = new InFlightSpeechGeneration(new CancellationTokenSource())
+                    {
+                        ConsumerCount = 1
+                    };
+                    InFlightGenerations[cache] = generation;
+                    generation.Task = GenerateSpeechAsync(text, cache, settings,
+                        generation.CancellationTokenSource.Token);
+                    _ = generation.Task.ContinueWith(_ => OnGenerationCompleted(cache, generation),
+                        CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                }
+                else if (generation != null)
+                {
+                    generation.ConsumerCount++;
+                }
             }
 
-            PlayingQueue.Enqueue(new OpenAiTtsPlayInfo(cache, cancellationTokenSource, generationTask));
+            PlayingQueue.Enqueue(new OpenAiTtsPlayInfo(cache, cancellationTokenSource, generation));
         }
         _ = ProcessPlayerList();
     }
@@ -97,7 +119,11 @@ public class OpenAiTtsService : ISpeechService
         lock (QueueLock)
         {
             currentPlayInfo = _currentPlayInfo;
-            currentPlayInfo?.CancellationTokenSource.Cancel();
+            if (currentPlayInfo != null)
+            {
+                currentPlayInfo.CancellationTokenSource.Cancel();
+                ReleaseGenerationConsumer(currentPlayInfo);
+            }
             while (PlayingQueue.Count > 0)
             {
                 CancelQueuedPlayInfo(PlayingQueue.Dequeue());
@@ -105,17 +131,34 @@ public class OpenAiTtsService : ISpeechService
         }
     }
 
-    private static void CancelQueuedPlayInfo(OpenAiTtsPlayInfo playInfo)
+    private void CancelQueuedPlayInfo(OpenAiTtsPlayInfo playInfo)
     {
         playInfo.CancellationTokenSource.Cancel();
-        if (playInfo.GenerationTask == null)
+        playInfo.CancellationTokenSource.Dispose();
+        ReleaseGenerationConsumer(playInfo);
+    }
+
+    private static void ReleaseGenerationConsumer(OpenAiTtsPlayInfo playInfo)
+    {
+        if (playInfo.Generation == null || playInfo.IsGenerationConsumerReleased)
         {
-            playInfo.CancellationTokenSource.Dispose();
             return;
         }
 
-        _ = playInfo.GenerationTask.ContinueWith(_ => playInfo.CancellationTokenSource.Dispose(),
-            CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        playInfo.IsGenerationConsumerReleased = true;
+        playInfo.Generation.ConsumerCount--;
+    }
+
+    private void OnGenerationCompleted(string cache, InFlightSpeechGeneration generation)
+    {
+        lock (QueueLock)
+        {
+            if (InFlightGenerations.TryGetValue(cache, out var current) && ReferenceEquals(current, generation))
+            {
+                InFlightGenerations.Remove(cache);
+            }
+        }
+        generation.CancellationTokenSource.Dispose();
     }
 
     private string GetCachePath(string text, OpenAiTtsSpeechSettings settings)
@@ -328,10 +371,10 @@ public class OpenAiTtsService : ISpeechService
                         continue;
                     }
 
-                    if (playInfo.GenerationTask != null)
+                    if (playInfo.Generation != null)
                     {
                         Logger.LogDebug("等待 OpenAI TTS 语音生成完成。");
-                        if (!await playInfo.GenerationTask)
+                        if (!await playInfo.Generation.Task.WaitAsync(playInfo.CancellationTokenSource.Token))
                         {
                             Logger.LogError("OpenAI TTS 语音生成失败：{FilePath}", playInfo.FilePath);
                             continue;
@@ -357,6 +400,7 @@ public class OpenAiTtsService : ISpeechService
                     lock (QueueLock)
                     {
                         _currentPlayInfo = null;
+                        ReleaseGenerationConsumer(playInfo);
                     }
                     playInfo.CancellationTokenSource.Dispose();
                 }
