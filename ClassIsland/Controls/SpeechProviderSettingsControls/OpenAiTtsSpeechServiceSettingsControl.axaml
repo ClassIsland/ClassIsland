@@ -1,0 +1,64 @@
+﻿<ci:SpeechProviderControlBase x:Class="ClassIsland.Controls.SpeechProviderSettingsControls.OpenAiTtsSpeechServiceSettingsControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ClassIsland.Controls.SpeechProviderSettingsControls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:OpenAiTtsSpeechServiceSettingsControl}}"
+                Spacing="1">
+        <controls:SettingsExpanderItem Description="兼容 OpenAI TTS 接口的服务地址，会自动请求其 /v1/audio/speech 路径。">
+            <ci:Field Label="服务地址">
+                <TextBox Text="{Binding SettingsService.Settings.OpenAiTtsSpeechSettings.BaseUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Watermark="https://api.openai.com" />
+            </ci:Field>
+        </controls:SettingsExpanderItem>
+
+        <controls:SettingsExpanderItem Description="请求接口使用的 Bearer API Key。留空时不发送 Authorization 请求头。">
+            <ci:Field Label="API Key">
+                <TextBox Text="{Binding SettingsService.Settings.OpenAiTtsSpeechSettings.ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         PasswordChar="●"
+                         Watermark="sk-…" />
+            </ci:Field>
+        </controls:SettingsExpanderItem>
+
+        <controls:SettingsExpanderItem Content="模型">
+            <controls:SettingsExpanderItem.Footer>
+                <TextBox Width="180"
+                         Text="{Binding SettingsService.Settings.OpenAiTtsSpeechSettings.Model, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Watermark="tts-1" />
+            </controls:SettingsExpanderItem.Footer>
+        </controls:SettingsExpanderItem>
+
+        <controls:SettingsExpanderItem Content="声音">
+            <controls:SettingsExpanderItem.Footer>
+                <ComboBox Width="180"
+                          IsEditable="True"
+                          ItemsSource="{Binding Voices}"
+                          Text="{Binding SettingsService.Settings.OpenAiTtsSpeechSettings.Voice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </controls:SettingsExpanderItem.Footer>
+        </controls:SettingsExpanderItem>
+
+        <controls:SettingsExpanderItem Content="音频格式">
+            <controls:SettingsExpanderItem.Footer>
+                <ComboBox Width="180"
+                          ItemsSource="{Binding ResponseFormats}"
+                          SelectedItem="{Binding SettingsService.Settings.OpenAiTtsSpeechSettings.ResponseFormat, Mode=TwoWay}" />
+            </controls:SettingsExpanderItem.Footer>
+        </controls:SettingsExpanderItem>
+
+        <controls:SettingsExpanderItem Content="语速" Description="OpenAI TTS 支持 0.25 到 4 倍速。">
+            <controls:SettingsExpanderItem.Footer>
+                <NumericUpDown Width="180"
+                               Minimum="0.25"
+                               Maximum="4"
+                               Increment="0.05"
+                               FormatString="0.##"
+                               Value="{Binding SettingsService.Settings.OpenAiTtsSpeechSettings.Speed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static ci:NotNaNConverter.Instance}}" />
+            </controls:SettingsExpanderItem.Footer>
+        </controls:SettingsExpanderItem>
+    </StackPanel>
+</ci:SpeechProviderControlBase>

@@ -216,10 +216,21 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _selectedUpdateMirrorV2 = "main";
     private string _selectedUpdateChannelV2 = "stable";
     private GptSoVitsSpeechSettings _gptSoVitsSpeechSettings = new();
+    private OpenAiTtsSpeechSettings _openAiTtsSpeechSettings = new();
     private double _mainWindowLineVerticalMargin = 5;
     private ObservableCollection<Guid> _trustedProfileIds = [];
     private bool _isNonExactCountdownEnabled = false;
     private bool _showDetailedStatusOnSplash = false;
+
+    public Settings()
+    {
+        _openAiTtsSpeechSettings.PropertyChanged += OpenAiTtsSpeechSettingsOnPropertyChanged;
+    }
+
+    private void OpenAiTtsSpeechSettingsOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(OpenAiTtsSpeechSettings));
+    }
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1610,6 +1621,19 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _gptSoVitsSpeechSettings)) return;
             _gptSoVitsSpeechSettings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public OpenAiTtsSpeechSettings OpenAiTtsSpeechSettings
+    {
+        get => _openAiTtsSpeechSettings;
+        set
+        {
+            if (Equals(value, _openAiTtsSpeechSettings)) return;
+            _openAiTtsSpeechSettings.PropertyChanged -= OpenAiTtsSpeechSettingsOnPropertyChanged;
+            _openAiTtsSpeechSettings = value ?? new OpenAiTtsSpeechSettings();
+            _openAiTtsSpeechSettings.PropertyChanged += OpenAiTtsSpeechSettingsOnPropertyChanged;
             OnPropertyChanged();
         }
     }

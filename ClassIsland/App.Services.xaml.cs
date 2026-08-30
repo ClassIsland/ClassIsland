@@ -283,6 +283,7 @@ public partial class App
         }
         services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();
         services.AddSpeechProvider<GptSoVitsService, GptSovitsSpeechServiceSettingsControl>();
+        services.AddSpeechProvider<OpenAiTtsService, OpenAiTtsSpeechServiceSettingsControl>();
         // 天气图标模板
         services.AddWeatherIconTemplate("classisland.weatherIcons.lucide", "Lucide（默认）", (this.FindResource("LucideWeatherIconTemplate") as IDataTemplate)!);
         services.AddWeatherIconTemplate("classisland.weatherIcons.fluentDesign", "Fluent Design", (this.FindResource("FluentDesignWeatherIconTemplate") as IDataTemplate)!);
