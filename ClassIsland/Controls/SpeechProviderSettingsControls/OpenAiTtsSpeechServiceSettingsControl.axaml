@@ -36,8 +36,9 @@
         <controls:SettingsExpanderItem Content="声音">
             <controls:SettingsExpanderItem.Footer>
                 <ComboBox Width="180"
+                          IsEditable="True"
                           ItemsSource="{Binding Voices}"
-                          SelectedItem="{Binding SettingsService.Settings.OpenAiTtsSpeechSettings.Voice, Mode=TwoWay}" />
+                          Text="{Binding SettingsService.Settings.OpenAiTtsSpeechSettings.Voice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </controls:SettingsExpanderItem.Footer>
         </controls:SettingsExpanderItem>
 
