@@ -12,6 +12,7 @@ using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Threading;
+using Microsoft.Maui.Devices;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
@@ -21,6 +22,8 @@ using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
 using Sentry;
+using Sentry.Protocol;
+using OperatingSystem = System.OperatingSystem;
 
 namespace ClassIsland.Services;
 
@@ -205,6 +208,12 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 vendor = "Apple Inc.";
                 name = "Macintosh";
+            }
+
+            if (OperatingSystem.IsAndroid())
+            {
+                vendor = DeviceInfo.Manufacturer;
+                name = DeviceInfo.Model;
             }
         }
         catch
