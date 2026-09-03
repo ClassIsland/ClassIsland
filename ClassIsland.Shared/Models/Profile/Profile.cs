@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CsesSharp.Models;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -28,6 +29,8 @@ public class Profile : ObservableRecipient
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
     private Guid _id = Guid.NewGuid();
     private ObservableOrderedDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
+    private ObservableOrderedDictionary<Guid, ScheduleItem> _scheduleV2Items = new();
+    private ScheduleType _scheduleType = ScheduleType.Classic;
 
     /// <summary>
     /// 实例化对象
@@ -357,6 +360,34 @@ public class Profile : ObservableRecipient
         {
             if (Equals(value, _orderedSchedules)) return;
             _orderedSchedules = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 课程安排
+    /// </summary>
+    public ObservableOrderedDictionary<Guid, ScheduleItem> ScheduleItems
+    {
+        get => _scheduleV2Items;
+        set
+        {
+            if (Equals(value, _scheduleV2Items)) return;
+            _scheduleV2Items = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 课程模式
+    /// </summary>
+    public ScheduleType ScheduleType
+    {
+        get => _scheduleType;
+        set
+        {
+            if (value == _scheduleType) return;
+            _scheduleType = value;
             OnPropertyChanged();
         }
     }

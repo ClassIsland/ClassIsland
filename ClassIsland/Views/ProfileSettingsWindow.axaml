@@ -36,12 +36,15 @@
     </ci:ViewBase.DataTemplates>
     <ci:ViewBase.Resources>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
-                                              x:Key="SubjectIdToSubjectConverter"/>
+                                              x:Key="SubjectIdToSubjectConverter"
+                                              Dictionary="{Binding ViewModel.ProfileService.Profile.Subjects}"/>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:ClassPlanGroup"
                                               x:Key="ClassPlanGroupIdToClassPlanGroupConverter"
                                               Dictionary="{Binding ViewModel.ProfileService.Profile.ClassPlanGroups}"/>
         <views:ClassPlanTreeDropHandler x:Key="ClassPlanTreeDropHandler"/>
         <views:SubjectDataGridDropHandler x:Key="SubjectDataGridDropHandler"/>
+        <views:ScheduleItemDataGridDropHandler x:Key="ScheduleItemDataGridDropHandler"/>
+        <profile:Subject x:Key="UnspecifiedScheduleSubject" Name="未指定科目" Initial="未"/>
         <ci:BindingProxy x:TypeArguments="profile:ClassPlanGroup"
                          x:Key="ClassPlanGroupBindingProxy"
                          Data="{Binding ViewModel.ProfileService.Profile.SelectedClassPlanGroupId, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}, Mode=OneWay}"/>
@@ -49,7 +52,7 @@
                                                       x:Key="TimeLayoutDictionaryKeyFinderMultiConverter" />
         <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:ClassPlan"
                                                       x:Key="ClassPlanDictionaryKeyFinderMultiConverter" />
-        
+
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel DataContext="{Binding ViewModel.SelectedClassPlan}"
@@ -144,6 +147,12 @@
                 <TextBlock Text="管理档案" Theme="{StaticResource SubtitleTextBlockStyle}"/>
                 <TextBlock Text="管理与切换保存的档案。切换档案需要重新启动应用。" TextWrapping="Wrap"
                            Margin="0 6 0 0"/>
+                <ci:Field Label="(test) ScheduleType">
+                    <ComboBox SelectedIndex="{Binding ViewModel.ProfileService.Profile.ScheduleType, Converter={x:Static ci:EnumToIntConverter.Instance}}">
+                        <ComboBoxItem Content="经典"/>
+                        <ComboBoxItem Content="exp_日程"/>
+                    </ComboBox>
+                </ci:Field>
                 <!--<TextBlock Text="{Binding MainViewModel.Settings.SelectedProfile, Mode=OneWay}"/>-->
                 <WrapPanel Margin="0 6 0 0" Classes="animated-resize">
                     <Button ToolTip.Tip="新建档案。" Click="ButtonCreateProfile_OnClick"
@@ -1754,6 +1763,271 @@
                                     </ci:Emptiable >
                                 </Grid>
                                 
+                            </ci:Emptiable>
+                        </Grid>
+                    </ci:Lazy>
+                </TabItem>
+                <TabItem Header="课程" Classes="tag-Schedules"
+                         IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
+                    <ci:Lazy>
+                        <Grid RowDefinitions="Auto,Auto,*">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition Width="450" MaxWidth="500" MinWidth="200"/>
+                            </Grid.ColumnDefinitions>
+
+                            <controls:FAInfoBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+                                                Severity="Warning" Message="实验性功能，正在开发中，不保证数据完全向后兼容，请以最终版本为准。"
+                                                IsOpen="True"
+                                                IsClosable="False"/>
+
+                            <!-- 课程操作 -->
+                            <controls:FACommandBar Grid.Column="0" Grid.ColumnSpan="3"
+                                                   Grid.Row="1" DefaultLabelPosition="Right">
+                                <controls:FACommandBar.IsEnabled>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                        <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileEditing"/>
+                                        <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing"/>
+                                        <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing"/>
+                                        <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing"/>
+                                    </MultiBinding>
+                                </controls:FACommandBar.IsEnabled>
+                                <controls:FACommandBar.PrimaryCommands>
+                                    <controls:FACommandBarButton Click="ButtonAddScheduleItem_OnClick"
+                                                               ToolTip.Tip="新建一个课程。" Label="添加">
+                                        <controls:FACommandBarButton.IconSource>
+                                            <ci:FluentIconSource Glyph="{ci:FI AddRegular}"/>
+                                        </controls:FACommandBarButton.IconSource>
+                                    </controls:FACommandBarButton>
+                                    <controls:FACommandBarSeparator/>
+                                    <controls:FACommandBarButton Click="ButtonDuplicateScheduleItem_OnClick"
+                                                               ToolTip.Tip="复制选中的课程。"
+                                                               IsEnabled="{Binding ViewModel.SelectedScheduleItemKvp, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                               Label="复制">
+                                        <controls:FACommandBarButton.IconSource>
+                                            <ci:FluentIconSource Glyph="{ci:FI CopyRegular}"/>
+                                        </controls:FACommandBarButton.IconSource>
+                                    </controls:FACommandBarButton>
+                                    <controls:FACommandBarButton Click="ButtonDeleteScheduleItem_OnClick"
+                                                               ToolTip.Tip="删除选中的课程。"
+                                                               IsEnabled="{Binding ViewModel.SelectedScheduleItemKvp, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                               Label="删除">
+                                        <controls:FACommandBarButton.IconSource>
+                                            <ci:FluentIconSource Glyph="{ci:FI DeleteRegular}"/>
+                                        </controls:FACommandBarButton.IconSource>
+                                    </controls:FACommandBarButton>
+                                </controls:FACommandBar.PrimaryCommands>
+                            </controls:FACommandBar>
+                            <!-- 课程选择 -->
+                            <Grid Grid.Row="2" Grid.Column="0" Margin="0 0 3 0">
+                                <DataGrid Grid.Row="0"
+                                          x:Name="DataGridScheduleItems"
+                                          ItemsSource="{Binding ViewModel.ScheduleItems.List}"
+                                          AutoGenerateColumns="False"
+                                          SelectedItem="{Binding ViewModel.SelectedScheduleItemKvp}"
+                                          GridLinesVisibility="All"
+                                          CanUserSortColumns="False"
+                                          FontSize="13">
+                                    <DataGrid.IsReadOnly>
+                                        <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                            <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing"/>
+                                            <Binding Path="ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing"/>
+                                            <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing"/>
+                                            <Binding Path="ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing"/>
+                                        </MultiBinding>
+                                    </DataGrid.IsReadOnly>
+                                    <Interaction.Behaviors>
+                                        <BehaviorCollection>
+                                            <ManagedContextDropBehavior
+                                                AcceptDataFormat="{x:Static views:ScheduleItemDataGridDropHandler.DataFormat}"
+                                                Context="{Binding ViewModel.ScheduleItems.List}"
+                                                Handler="{StaticResource ScheduleItemDataGridDropHandler}">
+                                                <ManagedContextDropBehavior.AllowDrop>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileEditing"/>
+                                                        <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing"/>
+                                                        <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing"/>
+                                                        <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing"/>
+                                                    </MultiBinding>
+                                                </ManagedContextDropBehavior.AllowDrop>
+                                            </ManagedContextDropBehavior>
+                                        </BehaviorCollection>
+                                    </Interaction.Behaviors>
+                                    <DataGrid.Styles>
+                                        <Style Selector="DataGridRow TextBlock, DataGridRow TextBox">
+                                            <Setter Property="TextElement.FontSize" Value="13"/>
+                                        </Style>
+                                        <Style Selector="DataGridRow.DraggingUp">
+                                            <Setter Property="BorderBrush"
+                                                    Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                            <Setter Property="BorderThickness" Value="0 2 0 0"/>
+                                        </Style>
+                                        <Style Selector="DataGridRow.DraggingDown">
+                                            <Setter Property="BorderBrush"
+                                                    Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                            <Setter Property="BorderThickness" Value="0 0 0 2"/>
+                                        </Style>
+                                    </DataGrid.Styles>
+                                    <DataGrid.Columns>
+                                        <DataGridTemplateColumn Header="" IsReadOnly="True" Width="50">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                          Background="Transparent">
+                                                        <Interaction.Behaviors>
+                                                            <ci:AdvancedManagedContextDragBehavior
+                                                                Context="{Binding}"
+                                                                DataFormat="{x:Static views:ScheduleItemDataGridDropHandler.DataFormat}"
+                                                                HorizontalDragThreshold="33550336"
+                                                                VerticalDragThreshold="3"
+                                                                CanDragWithoutDragThumb="True"
+                                                                PreviewOpacity="0.5">
+                                                                <ci:AdvancedManagedContextDragBehavior.IsEnabled>
+                                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                                        <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileEditing"
+                                                                                 Converter="{StaticResource InvertBooleanConverter}"/>
+                                                                        <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing"
+                                                                                 Converter="{StaticResource InvertBooleanConverter}"/>
+                                                                        <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing"
+                                                                                 Converter="{StaticResource InvertBooleanConverter}"/>
+                                                                        <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing"
+                                                                                 Converter="{StaticResource InvertBooleanConverter}"/>
+                                                                    </MultiBinding>
+                                                                </ci:AdvancedManagedContextDragBehavior.IsEnabled>
+                                                            </ci:AdvancedManagedContextDragBehavior>
+                                                        </Interaction.Behaviors>
+                                                        <ci:TouchDragThumb HorizontalAlignment="Stretch"
+                                                                           VerticalAlignment="Stretch" Height="32" Opacity="0"/>
+                                                        <ci:FluentIcon Glyph="{ci:FI BookClockRegular}"
+                                                                       Classes="l-instructive"
+                                                                       ToolTip.Tip="拖拽调整课程顺序"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header="科目" Width="*" MinWidth="140">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ContentControl
+                                                        Content="{Binding Value.SubjectId, Converter={StaticResource SubjectIdToSubjectConverter}, TargetNullValue={StaticResource UnspecifiedScheduleSubject}, FallbackValue={StaticResource UnspecifiedScheduleSubject}}"
+                                                        VerticalAlignment="Center" Margin="6 0">
+                                                        <ContentControl.ContentTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Name}"/>
+                                                            </DataTemplate>
+                                                        </ContentControl.ContentTemplate>
+                                                    </ContentControl>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ScheduleItemSubjects.List}"
+                                                              SelectedValue="{Binding Value.SubjectId, Mode=TwoWay}"
+                                                              SelectedValueBinding="{Binding Key}"
+                                                              HorizontalAlignment="Stretch"
+                                                              Margin="0 -4">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Value.Name}"/>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header="开始时间" Width="180" MinWidth="180">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Value.StartTime, StringFormat='{}{0:hh\\:mm\\:ss}'}"
+                                                               VerticalAlignment="Center" Margin="6 0"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <TimePicker SelectedTime="{Binding Value.StartTime, Mode=TwoWay}"
+                                                                UseSeconds="True" Margin="0 -4"
+                                                                MinWidth="0" HorizontalAlignment="Stretch"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header="结束时间" Width="180" MinWidth="180">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Value.EndTime, StringFormat='{}{0:hh\\:mm\\:ss}'}"
+                                                               VerticalAlignment="Center" Margin="6 0"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <TimePicker SelectedTime="{Binding Value.EndTime, Mode=TwoWay}"
+                                                                UseSeconds="True" Margin="0 -4"
+                                                                MinWidth="0" HorizontalAlignment="Stretch"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+
+                            <!-- Gutter -->
+                            <GridSplitter Grid.Row="2"
+                                          Grid.Column="1"
+                                          MaxWidth="500"
+                                          Width="5" HorizontalAlignment="Stretch"/>
+
+                            <!-- 课程编辑 -->
+                            <ci:Emptiable Grid.Row="2" Grid.Column="2"
+                                          IsDirectContentMode="True"
+                                          Data="{Binding ViewModel.SelectedScheduleItem}">
+                                <Grid Margin="3 0 0 0"
+                                      DataContext="{Binding ViewModel.SelectedScheduleItem}" RowDefinitions="Auto,*">
+                                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel Spacing="6" Margin="8">
+                                            <StackPanel.IsEnabled>
+                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                    <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileEditing"
+                                                             Converter="{StaticResource InvertBooleanConverter}"/>
+                                                    <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing"
+                                                             Converter="{StaticResource InvertBooleanConverter}"/>
+                                                    <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing"
+                                                             Converter="{StaticResource InvertBooleanConverter}"/>
+                                                    <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing"
+                                                             Converter="{StaticResource InvertBooleanConverter}"/>
+                                                </MultiBinding>
+                                            </StackPanel.IsEnabled>
+                                            <TextBlock Text="编辑课程信息"
+                                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                                            <ci:Field Label="科目">
+                                                <ComboBox ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ScheduleItemSubjects.List}"
+                                                          SelectedValue="{Binding SubjectId, Mode=TwoWay}"
+                                                          SelectedValueBinding="{Binding Key}"
+                                                          HorizontalAlignment="Stretch">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Value.Name}"/>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </ci:Field>
+                                            <ci:Field Label="开始时间">
+                                                <TimePicker SelectedTime="{Binding StartTime, Mode=TwoWay}"
+                                                            UseSeconds="True" MinWidth="0"
+                                                            HorizontalAlignment="Stretch"/>
+                                            </ci:Field>
+                                            <ci:Field Label="结束时间">
+                                                <TimePicker SelectedTime="{Binding EndTime, Mode=TwoWay}"
+                                                            UseSeconds="True" MinWidth="0"
+                                                            HorizontalAlignment="Stretch"/>
+                                            </ci:Field>
+                                            <Separator Margin="0 16 0 8"/>
+                                            <ci:IconText Glyph="{ci:FI CalendarClockRegular}"
+                                                         Text="启用规则" Margin="0 0 0 8"/>
+                                            <controls1:TimeRuleEditControl x:Name="ScheduleItemTimeRuleEditControl"
+                                                                           TimeRule="{Binding EnableRule, Mode=OneWay}"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Grid>
                             </ci:Emptiable>
                         </Grid>
                     </ci:Lazy>

@@ -53,6 +53,14 @@ namespace ClassIsland.Views;
 
 public partial class ProfileSettingsWindow : ViewBase
 {
+    private const int ClassPlansTabIndex = 0;
+    private const int TimeLayoutsTabIndex = 1;
+    private const int SchedulesTabIndex = 2;
+    private const int SubjectsTabIndex = 3;
+    private const int ForbiddenTabIndex = 4;
+    private const int AdjustmentTabIndex = 5;
+    private const int TransferTabIndex = 6;
+
     private record UndoEntry(bool IsAdd, TimeLayoutItem Item, TimeLayout Layout, int Index, string Description);
     private readonly Stack<UndoEntry> _undoStack = new();
     private readonly Stack<UndoEntry> _redoStack = new();
@@ -78,7 +86,7 @@ public partial class ProfileSettingsWindow : ViewBase
         DataContext = this;
         if (ViewModel.ManagementService.Policy.DisableProfileEditing)
         {
-            ViewModel.MasterPageTabSelectIndex = 3;
+            ViewModel.MasterPageTabSelectIndex = ForbiddenTabIndex;
         }
         InitializeComponent();
         TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
@@ -300,18 +308,19 @@ public partial class ProfileSettingsWindow : ViewBase
         var page = uri.Segments[2];
         ViewModel.MasterPageTabSelectIndex = page.ToLower() switch 
         {
-            "classplans" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 0,
-            "timelayouts" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 1,
-            "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 2,
-            "forbidden" => 3,
-            "adjustment" => 4,
+            "classplans" when !ViewModel.ManagementService.Policy.DisableProfileEditing => ClassPlansTabIndex,
+            "timelayouts" when !ViewModel.ManagementService.Policy.DisableProfileEditing => TimeLayoutsTabIndex,
+            "schedules" when !ViewModel.ManagementService.Policy.DisableProfileEditing => SchedulesTabIndex,
+            "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => SubjectsTabIndex,
+            "forbidden" => ForbiddenTabIndex,
+            "adjustment" => AdjustmentTabIndex,
             "transfer" when ViewModel.ManagementService.Policy is
             {
                 DisableProfileEditing: false,
                 DisableProfileClassPlanEditing: false,
                 DisableProfileTimeLayoutEditing: false,
                 DisableProfileSubjectsEditing: false
-            } => 5,
+            } => TransferTabIndex,
             _ => ViewModel.MasterPageTabSelectIndex
         };
     }
@@ -362,6 +371,7 @@ public partial class ProfileSettingsWindow : ViewBase
         ScheduleCalendarControl.ReleaseResources();
         ScheduleCalendarControl2.ReleaseResources();
         ClassPlanTimeRuleEditControl.ReleaseResources();
+        ScheduleItemTimeRuleEditControl?.ReleaseResources();
 
         ViewModel.IsDrawerOpen = false;
         ViewModel.ReleaseResources();
@@ -382,8 +392,9 @@ public partial class ProfileSettingsWindow : ViewBase
                 return;
             }
 
-            if (ViewModel.MasterPageTabSelectIndex == 0 && ViewModel.ProfileService.Profile.TimeLayouts.Count > 0
-                                                        && ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
+            if (ViewModel.MasterPageTabSelectIndex == ClassPlansTabIndex
+                && ViewModel.ProfileService.Profile.TimeLayouts.Count > 0
+                && ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
             {
                 ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
             }
@@ -624,7 +635,7 @@ public partial class ProfileSettingsWindow : ViewBase
     
     private void ButtonOpenProfileImportPage_OnClick(object? sender, RoutedEventArgs e)
     {
-        ViewModel.MasterPageTabSelectIndex = 5;
+        ViewModel.MasterPageTabSelectIndex = TransferTabIndex;
     }
 
     #endregion
@@ -812,7 +823,7 @@ public partial class ProfileSettingsWindow : ViewBase
     
     private void ButtonGoToTimeLayoutsPage_OnClick(object? sender, RoutedEventArgs e)
     {
-        ViewModel.MasterPageTabSelectIndex = 1;
+        ViewModel.MasterPageTabSelectIndex = TimeLayoutsTabIndex;
     }
     
     private void InputElementSubjectItem_OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -1431,6 +1442,144 @@ public partial class ProfileSettingsWindow : ViewBase
         ViewModel.SelectedTimePoint = tpr;
         TimeLineListControl.ScrollIntoViewCentered(tpr);
         ListViewTimePoints.ScrollIntoView(tpr);
+    }
+
+    #endregion
+
+    #region ScheduleItems
+
+    private bool CanEditScheduleItems()
+    {
+        var policy = ViewModel.ManagementService.Policy;
+        return !policy.DisableProfileEditing
+               && !policy.DisableProfileClassPlanEditing
+               && !policy.DisableProfileTimeLayoutEditing
+               && !policy.DisableProfileSubjectsEditing;
+    }
+
+    private void ButtonAddScheduleItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!CanEditScheduleItems())
+        {
+            return;
+        }
+
+        DataGridScheduleItems.CancelEdit();
+        var wasReadOnly = DataGridScheduleItems.IsReadOnly;
+        DataGridScheduleItems.IsReadOnly = true;
+        var scheduleItem = new KeyValuePair<Guid, ScheduleItem>(Guid.NewGuid(), new ScheduleItem());
+        try
+        {
+            ViewModel.ScheduleItems.List.Add(scheduleItem);
+            ViewModel.SelectedScheduleItemKvp = scheduleItem;
+        }
+        finally
+        {
+            DataGridScheduleItems.IsReadOnly = wasReadOnly;
+        }
+
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.scheduleItem.create", 1);
+    }
+
+    private void ButtonDuplicateScheduleItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!CanEditScheduleItems())
+        {
+            return;
+        }
+
+        DataGridScheduleItems.CancelEdit();
+        var wasReadOnly = DataGridScheduleItems.IsReadOnly;
+        DataGridScheduleItems.IsReadOnly = true;
+        KeyValuePair<Guid, ScheduleItem>? lastAddedScheduleItem = null;
+        try
+        {
+            foreach (var scheduleItem in DataGridScheduleItems.SelectedItems
+                         .OfType<KeyValuePair<Guid, ScheduleItem>>()
+                         .ToList())
+            {
+                var copyPair = new KeyValuePair<Guid, ScheduleItem>(
+                    Guid.NewGuid(),
+                    ConfigureFileHelper.CopyObject(scheduleItem.Value));
+                ViewModel.ScheduleItems.List.Add(copyPair);
+                lastAddedScheduleItem = copyPair;
+            }
+
+            if (lastAddedScheduleItem is { } selectedScheduleItem)
+            {
+                ViewModel.SelectedScheduleItemKvp = selectedScheduleItem;
+            }
+        }
+        finally
+        {
+            DataGridScheduleItems.IsReadOnly = wasReadOnly;
+        }
+
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.scheduleItem.duplicate", 1);
+    }
+
+    private void ButtonDeleteScheduleItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!CanEditScheduleItems())
+        {
+            return;
+        }
+
+        DataGridScheduleItems.CancelEdit();
+        var wasReadOnly = DataGridScheduleItems.IsReadOnly;
+        DataGridScheduleItems.IsReadOnly = true;
+        try
+        {
+            var removedScheduleItems = DataGridScheduleItems.SelectedItems
+                .OfType<KeyValuePair<Guid, ScheduleItem>>()
+                .Select(item => (Item: item, Index: ViewModel.ScheduleItems.List.IndexOf(item)))
+                .Where(item => item.Index >= 0)
+                .OrderBy(item => item.Index)
+                .ToList();
+            if (removedScheduleItems.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var scheduleItem in removedScheduleItems)
+            {
+                ViewModel.ScheduleItems.List.Remove(scheduleItem.Item);
+            }
+            ViewModel.SelectedScheduleItemKvp = null;
+
+            var revertButton = new Button
+            {
+                Content = "撤销"
+            };
+            var toastMessage = new ToastMessage($"已删除 {removedScheduleItems.Count} 个课程。")
+            {
+                ActionContent = revertButton,
+                Duration = TimeSpan.FromSeconds(10)
+            };
+            EventHandler<RoutedEventArgs> revertButtonOnClick = (_, _) =>
+            {
+                foreach (var scheduleItem in removedScheduleItems)
+                {
+                    var insertIndex = Math.Min(scheduleItem.Index, ViewModel.ScheduleItems.List.Count);
+                    ViewModel.ScheduleItems.List.Insert(insertIndex, scheduleItem.Item);
+                }
+
+                ViewModel.SelectedScheduleItemKvp = removedScheduleItems[0].Item;
+                toastMessage.Close();
+            };
+            revertButton.Click += revertButtonOnClick;
+            _eventUnhookActions.Add(() => revertButton.Click -= revertButtonOnClick);
+            ToastsHelper.ShowToast(this, toastMessage);
+
+            SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.scheduleItem.remove", 1,
+            [
+                new KeyValuePair<string, object>("IsSuccess", "true")
+            ]);
+        }
+        finally
+        {
+            DataGridScheduleItems.IsReadOnly = wasReadOnly;
+        }
     }
 
     #endregion
