@@ -70,6 +70,23 @@ internal static class SunriseSunsetSchedule
         DateTimeOffset now,
         out bool isDaylight)
     {
+        return TryGetDaylightStatus(schedule, now, useSystemLocalDate: false, out isDaylight);
+    }
+
+    public static bool TryGetDaylightStatusForSystemLocalDate(
+        IReadOnlyList<RangedValue>? schedule,
+        DateTimeOffset now,
+        out bool isDaylight)
+    {
+        return TryGetDaylightStatus(schedule, now, useSystemLocalDate: true, out isDaylight);
+    }
+
+    private static bool TryGetDaylightStatus(
+        IReadOnlyList<RangedValue>? schedule,
+        DateTimeOffset now,
+        bool useSystemLocalDate,
+        out bool isDaylight)
+    {
         isDaylight = false;
         if (schedule == null)
         {
@@ -84,8 +101,10 @@ internal static class SunriseSunsetSchedule
                 continue;
             }
 
-            var isCurrentForecastDay = now.ToOffset(sunrise.Offset).Date == sunrise.Date ||
-                                       now.ToOffset(sunset.Offset).Date == sunset.Date;
+            var isCurrentForecastDay = useSystemLocalDate
+                ? now.Date == sunrise.Date || now.Date == sunset.Date
+                : now.ToOffset(sunrise.Offset).Date == sunrise.Date ||
+                  now.ToOffset(sunset.Offset).Date == sunset.Date;
             if (!isCurrentForecastDay)
             {
                 continue;

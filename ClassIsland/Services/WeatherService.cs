@@ -122,7 +122,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             return false;
 
         var now = DateTimeOffset.Now;
-        if (!SunriseSunsetSchedule.TryGetDaylightStatus(
+        if (!SunriseSunsetSchedule.TryGetDaylightStatusForSystemLocalDate(
                 Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value,
                 now,
                 out var isDaylight))
