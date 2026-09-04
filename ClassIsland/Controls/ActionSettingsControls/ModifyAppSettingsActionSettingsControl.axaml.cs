@@ -201,6 +201,8 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     List<SettingsInfo>? _settingsProperties;
     List<SettingsInfo> SettingsProperties => _settingsProperties ??= typeof(Settings)
         .GetProperties(SettingsService.SettingsPropertiesFlags)
+        // ThemeMode 仅供界面进行强类型绑定；行动应继续使用可正确存储整数枚举值的 Theme。
+        .Where(p => p.Name != nameof(ClassIsland.Models.Settings.ThemeMode))
         .Where(p => p.GetCustomAttribute<ObsoleteAttribute>() == null)
         .Select(PackSettingsInfo)
         .OrderBy(item => item.Order)
