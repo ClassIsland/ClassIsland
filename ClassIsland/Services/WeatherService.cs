@@ -43,7 +43,15 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         Interval = TimeSpan.FromMinutes(5)
     };
 
-    public bool IsWeatherRefreshed { get; set; } = false;
+    private bool _isWeatherRefreshed = false;
+
+    public bool IsWeatherRefreshed
+    {
+        get => _isWeatherRefreshed;
+        set => SetProperty(ref _isWeatherRefreshed, value);
+    }
+
+    internal event EventHandler? WeatherRefreshed;
 
     /// <summary>
     /// 最近一次获取到的天气信息。
@@ -52,7 +60,11 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     public bool IsPosUpdated { get; set; } = false;
 
-    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService, ILocationService locationService)
+    public WeatherService(
+        SettingsService settingsService,
+        ILogger<WeatherService> logger,
+        IRulesetService rulesetService,
+        ILocationService locationService)
     {
         Logger = logger;
         RulesetService = rulesetService;
@@ -110,33 +122,15 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             return false;
 
         var now = DateTimeOffset.Now;
-        if (!TryGetSunTimes(now, out var sunrise, out var sunset))
-            return false;
-
-        return settings.IsSunset
-            ? (now >= sunset || now < sunrise)
-            : (now >= sunrise && now < sunset);
-    }
-
-    private bool TryGetSunTimes(DateTimeOffset now, out DateTimeOffset sunrise, out DateTimeOffset sunset)
-    {
-        sunrise = default;
-        sunset = default;
-        var list = Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value;
-        foreach (var item in list)
+        if (!SunriseSunsetSchedule.TryGetDaylightStatusForSystemLocalDate(
+                Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value,
+                now,
+                out var isDaylight))
         {
-            if (!DateTimeOffset.TryParse(item.From, CultureInfo.InvariantCulture, DateTimeStyles.None, out var sr))
-                continue;
-            if (!DateTimeOffset.TryParse(item.To, CultureInfo.InvariantCulture, DateTimeStyles.None, out var ss))
-                continue;
-            if (sr.Date == now.Date || ss.Date == now.Date)
-            {
-                sunrise = sr;
-                sunset = ss;
-                return true;
-            }
+            return false;
         }
-        return false;
+
+        return settings.IsSunset ? !isDaylight : isDaylight;
     }
 
     private bool HasAlertRuleHandler(object? o)
@@ -386,6 +380,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
+            WeatherRefreshed?.Invoke(this, EventArgs.Empty);
             result.IsSuccess = true;
         }
         catch (Exception ex)

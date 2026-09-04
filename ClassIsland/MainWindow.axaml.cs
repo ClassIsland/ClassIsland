@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -35,6 +35,7 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Models.Tutorial;
+using ClassIsland.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Platforms.Abstraction;
@@ -99,6 +100,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         get;
     }
 
+    private SunriseSunsetService SunriseSunsetService { get; }
+
     public INotificationHostService NotificationHostService
     {
         get;
@@ -139,6 +142,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     };
 
     private DispatcherTimer TouchInFadingTimer { get; set; } = new();
+
+    private DispatcherTimer SunriseSunsetThemeTimer { get; } = new();
 
     private Stopwatch RawInputUpdateStopWatch { get; } = new();
 
@@ -201,6 +206,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ILogger<MainWindow> logger, 
         ISpeechService speechService,
         IExactTimeService exactTimeService,
+        SunriseSunsetService sunriseSunsetService,
         IComponentsService componentsService,
         ILessonsService lessonsService,
         IUriNavigationService uriNavigationService,
@@ -217,6 +223,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TaskBarIconService = taskBarIconService;
         NotificationHostService = notificationHostService;
         ThemeService = themeService;
+        SunriseSunsetService = sunriseSunsetService;
+        SunriseSunsetThemeTimer.Tick += SunriseSunsetThemeTimerOnTick;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         ComponentsService = componentsService;
@@ -232,6 +240,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
+        SunriseSunsetService.ScheduleChanged += OnSunriseSunsetScheduleChanged;
+        AppBase.Current.AppStopping += OnAppStoppingForSunriseSunsetTheme;
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
@@ -761,7 +771,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 }
                 break;
         }
-        ThemeService.SetTheme(ViewModel.Settings.Theme, primary);
+        var effectiveTheme = (AppThemeMode)ViewModel.Settings.Theme;
+        if (effectiveTheme == AppThemeMode.FollowSunriseSunset)
+        {
+            effectiveTheme = SunriseSunsetService.IsDaylight()
+                ? AppThemeMode.Light
+                : AppThemeMode.Dark;
+            ScheduleNextSunriseSunsetThemeUpdate();
+        }
+        else
+        {
+            SunriseSunsetThemeTimer.Stop();
+        }
+        ThemeService.SetTheme((int)effectiveTheme, primary);
 
         if (ResourceLoaderBorder != null)
         {
@@ -1649,4 +1671,48 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel.Settings.HasEditModeTutorialShown = true;
     }
     #endregion
+
+    private void ScheduleNextSunriseSunsetThemeUpdate()
+    {
+        SunriseSunsetThemeTimer.Stop();
+
+        if (!SunriseSunsetService.TryGetNextTransition(SunTransition.Either, out var nextTransition))
+        {
+            return;
+        }
+
+        var delay = nextTransition - SunriseSunsetService.GetCurrentTime();
+        if (delay <= TimeSpan.Zero)
+        {
+            _ = Dispatcher.UIThread.InvokeAsync(UpdateTheme);
+            return;
+        }
+
+        SunriseSunsetThemeTimer.Interval = delay;
+        SunriseSunsetThemeTimer.Start();
+    }
+
+    private void SunriseSunsetThemeTimerOnTick(object? sender, EventArgs e)
+    {
+        SunriseSunsetThemeTimer.Stop();
+        UpdateTheme();
+    }
+
+    private void OnSunriseSunsetScheduleChanged(object? sender, EventArgs e)
+    {
+        if (ViewModel.Settings.Theme != (int)AppThemeMode.FollowSunriseSunset)
+        {
+            return;
+        }
+
+        _ = Dispatcher.UIThread.InvokeAsync(UpdateTheme);
+    }
+
+    private void OnAppStoppingForSunriseSunsetTheme(object? sender, EventArgs e)
+    {
+        SunriseSunsetThemeTimer.Stop();
+        SunriseSunsetThemeTimer.Tick -= SunriseSunsetThemeTimerOnTick;
+        SunriseSunsetService.ScheduleChanged -= OnSunriseSunsetScheduleChanged;
+        AppBase.Current.AppStopping -= OnAppStoppingForSunriseSunsetTheme;
+    }
 }
