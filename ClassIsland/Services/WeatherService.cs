@@ -29,7 +29,6 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 {
     private IDataTemplate? _selectedWeatherIconTemplate;
     private SettingsService SettingsService { get; }
-    private IExactTimeService ExactTimeService { get; }
 
     private Settings Settings => SettingsService.Settings;
     private string Schema =>  Settings.NoTLSWeatherRequests ? "http" : "https";
@@ -60,13 +59,11 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         SettingsService settingsService,
         ILogger<WeatherService> logger,
         IRulesetService rulesetService,
-        ILocationService locationService,
-        IExactTimeService exactTimeService)
+        ILocationService locationService)
     {
         Logger = logger;
         RulesetService = rulesetService;
         LocationService = locationService;
-        ExactTimeService = exactTimeService;
         SettingsService = settingsService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         LoadData();
@@ -119,7 +116,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         if (!IsWeatherRefreshed)
             return false;
 
-        var now = new DateTimeOffset(ExactTimeService.GetCurrentLocalDateTime());
+        var now = DateTimeOffset.Now;
         if (!SunriseSunsetSchedule.TryGetDaylightStatus(
                 Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value,
                 now,
