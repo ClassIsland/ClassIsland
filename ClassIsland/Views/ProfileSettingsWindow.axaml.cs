@@ -59,7 +59,6 @@ public partial class ProfileSettingsWindow : ViewBase
     private const int SubjectsTabIndex = 3;
     private const int ForbiddenTabIndex = 4;
     private const int AdjustmentTabIndex = 5;
-    private const int TransferTabIndex = 6;
 
     private record UndoEntry(bool IsAdd, TimeLayoutItem Item, TimeLayout Layout, int Index, string Description);
     private readonly Stack<UndoEntry> _undoStack = new();
@@ -79,6 +78,7 @@ public partial class ProfileSettingsWindow : ViewBase
     public ProfileSettingsViewModel ViewModel { get; } = IAppHost.GetService<ProfileSettingsViewModel>();
 
     private ILogger<ProfileSettingsWindow> Logger => ViewModel.Logger;
+    private MenuFlyout ProfileTransferMenu => (MenuFlyout)ProfileTransferButton.Flyout!;
     public static ICommand RemoveSelectedTimeLayoutItemCommand { get; } = new RoutedCommand(nameof(RemoveSelectedTimeLayoutItemCommand));
 
     public ProfileSettingsWindow()
@@ -179,7 +179,7 @@ public partial class ProfileSettingsWindow : ViewBase
             return;
         }
 
-        BuildTransferNavigationItems();
+        BuildTransferMenuItems();
     }
 
     #region Misc
@@ -306,6 +306,19 @@ public partial class ProfileSettingsWindow : ViewBase
         }
 
         var page = uri.Segments[2];
+        if (page.Equals("transfer", StringComparison.OrdinalIgnoreCase) &&
+            ViewModel.ManagementService.Policy is
+            {
+                DisableProfileEditing: false,
+                DisableProfileClassPlanEditing: false,
+                DisableProfileTimeLayoutEditing: false,
+                DisableProfileSubjectsEditing: false
+            })
+        {
+            Dispatcher.UIThread.Post(OpenProfileTransferMenu, DispatcherPriority.Loaded);
+            return;
+        }
+
         ViewModel.MasterPageTabSelectIndex = page.ToLower() switch 
         {
             "classplans" when !ViewModel.ManagementService.Policy.DisableProfileEditing => ClassPlansTabIndex,
@@ -314,13 +327,6 @@ public partial class ProfileSettingsWindow : ViewBase
             "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => SubjectsTabIndex,
             "forbidden" => ForbiddenTabIndex,
             "adjustment" => AdjustmentTabIndex,
-            "transfer" when ViewModel.ManagementService.Policy is
-            {
-                DisableProfileEditing: false,
-                DisableProfileClassPlanEditing: false,
-                DisableProfileTimeLayoutEditing: false,
-                DisableProfileSubjectsEditing: false
-            } => TransferTabIndex,
             _ => ViewModel.MasterPageTabSelectIndex
         };
     }
@@ -633,11 +639,6 @@ public partial class ProfileSettingsWindow : ViewBase
         });
     }
     
-    private void ButtonOpenProfileImportPage_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ViewModel.MasterPageTabSelectIndex = TransferTabIndex;
-    }
-
     #endregion
 
     #region TempClassPlan
@@ -1842,45 +1843,57 @@ public partial class ProfileSettingsWindow : ViewBase
     #region ProfileTransfer
 
     [AvaloniaHotReload]
-    private void BuildTransferNavigationItems()
+    private void BuildTransferMenuItems()
     {
-        TransferNavigationView.MenuItems.Clear();
-        var infos = IProfileTransferService.Providers
+        ProfileTransferMenu.Items.Clear();
+        var groups = IProfileTransferService.Providers
             .OrderBy(x => x.Type)
             .GroupBy(x => x.Type)
             .ToList();
-        foreach (var info in infos)
+
+        for (var index = 0; index < groups.Count; index++)
         {
-            if (info != infos.FirstOrDefault())
+            if (index > 0)
             {
-                TransferNavigationView.MenuItems.Add(new FANavigationViewItemSeparator());
+                ProfileTransferMenu.Items.Add(new Separator());
             }
-            if (info.Key != ProfileTransferProviderType.None)
+
+            foreach (var info in groups[index])
             {
-                TransferNavigationView.MenuItems.Add(new FANavigationViewItemHeader()
+                var item = new MenuItem
                 {
-                    Content = info.Key switch
+                    Header = info.Name,
+                    Tag = info
+                };
+                if (info.Icon != null)
+                {
+                    item.Icon = new FAIconSourceElement
                     {
-                        ProfileTransferProviderType.Import => "导入",
-                        ProfileTransferProviderType.Export => "导出",
-                        _ => "？？？"
-                    }
-                });    
+                        IconSource = info.Icon,
+                        Classes = { "repair-fontsize" }
+                    };
+                }
+
+                item.Click += ProfileTransferMenuItem_OnClick;
+                ProfileTransferMenu.Items.Add(item);
             }
-            
-            TransferNavigationView.MenuItems.AddRange(info.Select(x => new FANavigationViewItem()
-            {
-                IconSource = x.Icon,
-                Content = x.Name,
-                Tag = x
-            }));
-            
         }
     }
-    
-    private void TransferNavigationView_OnItemInvoked(object? sender, FANavigationViewItemInvokedEventArgs e)
+
+    private void OpenProfileTransferMenu()
     {
-        if (e.InvokedItemContainer is not FANavigationViewItem { Tag: ProfileTransferProviderInfo info })
+        if (_resourcesReleased || !ProfileTransferButton.IsEffectivelyVisible)
+        {
+            return;
+        }
+
+        BuildTransferMenuItems();
+        ProfileTransferMenu.ShowAt(ProfileTransferButton);
+    }
+
+    private void ProfileTransferMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: ProfileTransferProviderInfo info })
         {
             return;
         }
@@ -1904,6 +1917,7 @@ public partial class ProfileSettingsWindow : ViewBase
         ViewModel.TransferProviderContent = control;
         ViewModel.SelectedTransferInfo = info;
         ViewModel.IsProfileTransferInvoked = false;
+        OpenDrawer("ProfileTransferDrawer");
     }
 
     private async void ButtonInvokeTransfer_OnClick(object? sender, RoutedEventArgs e)

@@ -500,6 +500,52 @@
                         Click="ButtonDeleteSelectedClassPlan_OnClick" />
             </StackPanel>
         </Flyout>
+
+        <Grid x:Key="ProfileTransferDrawer"
+              Width="600"
+              ClipToBounds="True"
+              RowDefinitions="Auto,*,Auto,Auto"
+              IsEnabled="{Binding !ViewModel.IsTransferring}">
+            <Grid Grid.Row="0"
+                  Margin="16 16 16 0"
+                  IsVisible="{Binding !ViewModel.SelectedTransferInfo.HidePageTitle}"
+                  Classes.FullWidth="{Binding ViewModel.SelectedTransferInfo.UseFullWidth, TargetNullValue={x:False}, FallbackValue={x:False}}"
+                  x:Name="ProfileTransferDrawerTitleContainer">
+                <Grid.Styles>
+                    <Style Selector="Grid#ProfileTransferDrawerTitleContainer:not(.FullWidth)">
+                        <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}" />
+                    </Style>
+                </Grid.Styles>
+                <TextBlock FontWeight="Normal"
+                           Text="{Binding ViewModel.SelectedTransferInfo.Name, FallbackValue=''}"
+                           Theme="{StaticResource TitleTextBlockStyle}" />
+            </Grid>
+            <ci:Lazy Grid.Row="1"
+                     Content="{Binding ViewModel.TransferProviderContent}" />
+            <Separator Grid.Row="2" Margin="12 0" />
+            <Border Grid.Row="3" Padding="12">
+                <Grid>
+                    <controls:FAProgressRing Width="32"
+                                             Height="32"
+                                             IsActive="{Binding ViewModel.IsTransferring}"
+                                             IsIndeterminate="True"
+                                             IsVisible="{Binding ViewModel.IsTransferring}" />
+                    <Button Classes="accent"
+                            Click="ButtonInvokeTransfer_OnClick"
+                            HorizontalAlignment="Right"
+                            Padding="32 6">
+                        <Button.Content>
+                            <Binding Path="ViewModel.SelectedTransferInfo.Type"
+                                     Converter="{x:Static views:ProfileSettingsWindow.ProfileTransferProviderTypeToImportButtonTextConverter}">
+                                <Binding.FallbackValue>
+                                    <profile1:ProfileTransferProviderType>None</profile1:ProfileTransferProviderType>
+                                </Binding.FallbackValue>
+                            </Binding>
+                        </Button.Content>
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
     </ci:ViewBase.Resources>
     <ci:DrawerHost DrawerPlacement="Right"
                IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
@@ -2385,64 +2431,6 @@
                         </Grid>
                     </ci:Lazy>
                 </TabItem>
-                <TabItem Header="导入/导出" IsVisible="False">
-                    <ci:Lazy>
-                        <controls:FANavigationView MenuItems="{Binding ViewModel.TransferNavigationViewItems, Mode=OneWay}"
-                                                   PaneDisplayMode="Left" 
-                                                   IsSettingsVisible="False"
-                                                   OpenPaneLength="280"
-                                                   x:Name="TransferNavigationView"
-                                                   ItemInvoked="TransferNavigationView_OnItemInvoked"
-                                                   IsEnabled="{Binding !ViewModel.IsTransferring}">
-                            <controls:FANavigationView.Resources>
-                                <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
-                                <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent"/>
-                            </controls:FANavigationView.Resources>
-                            <ci:Emptiable IsDirectContentMode="True"
-                                          Data="{Binding ViewModel.SelectedTransferInfo}">
-                                <Grid RowDefinitions="Auto, *, Auto, Auto">
-                                    <Grid Grid.Row="0" Margin="12 16 18 0" 
-                                          IsVisible="{Binding !ViewModel.SelectedTransferInfo.HidePageTitle}"
-                                          Classes.FullWidth="{Binding ViewModel.SelectedTransferInfo.UseFullWidth, TargetNullValue={x:False}, FallbackValue={x:False}}"
-                                          x:Name="TitleContainer">
-                                        <Grid.Styles>
-                                            <Style Selector="Grid#TitleContainer:not(.FullWidth)">
-                                                <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}"/>
-                                            </Style>
-                                        </Grid.Styles>
-                                        <TextBlock FontWeight="Normal"
-                                                   Text="{Binding ViewModel.SelectedTransferInfo.Name, FallbackValue=''}"
-                                                   Theme="{StaticResource TitleTextBlockStyle}"/>
-                                    </Grid>
-                                    <ci:Lazy Grid.Row="1" 
-                                             Content="{Binding ViewModel.TransferProviderContent}"/>
-                                    <Separator Grid.Row="2"/>
-                                    <Border Grid.Row="3" Padding="12">
-                                        <Grid>
-                                            <controls:FAProgressRing Width="32" Height="32"
-                                                                   IsActive="{Binding ViewModel.IsTransferring}"
-                                                                   IsIndeterminate="True"
-                                                                   IsVisible="{Binding ViewModel.IsTransferring}"/>  
-                                            <Button Classes="accent"
-                                                    Click="ButtonInvokeTransfer_OnClick"
-                                                    HorizontalAlignment="Right"
-                                                    Padding="32 6" >
-                                                <Button.Content>
-                                                    <Binding Path="ViewModel.SelectedTransferInfo.Type"
-                                                             Converter="{x:Static views:ProfileSettingsWindow.ProfileTransferProviderTypeToImportButtonTextConverter}">
-                                                        <Binding.FallbackValue>
-                                                            <profile1:ProfileTransferProviderType>None</profile1:ProfileTransferProviderType>
-                                                        </Binding.FallbackValue>
-                                                    </Binding>
-                                                </Button.Content>
-                                            </Button>
-                                        </Grid>
-                                    </Border>
-                                </Grid>
-                            </ci:Emptiable>
-                        </controls:FANavigationView>
-                    </ci:Lazy>
-                </TabItem>
             </ci:ReusableTabControl>
 
             <!-- 信息栏 -->
@@ -2475,9 +2463,9 @@
                                                    Label="保存"
                                                    Click="ButtonSaveProfile_OnClick"
                                                    ToolTip.Tip="保存当前档案文件。"/>
-                        <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe68f;}"
+                        <controls:FACommandBarButton x:Name="ProfileTransferButton"
+                                                   IconSource="{ci:FluentIconSource &#xe68f;}"
                                                    Label="导入/导出"
-                                                   Click="ButtonOpenProfileImportPage_OnClick"
                                                    ToolTip.Tip="导入外部的课程信息，或导出当前的档案信息。">
                             <controls:FACommandBarButton.IsVisible>
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -2487,6 +2475,9 @@
                                     <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing"/>
                                 </MultiBinding>
                             </controls:FACommandBarButton.IsVisible>
+                            <controls:FACommandBarButton.Flyout>
+                                <MenuFlyout />
+                            </controls:FACommandBarButton.Flyout>
                         </controls:FACommandBarButton>
                         <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xee2f;}"
                                                    Label="帮助"
