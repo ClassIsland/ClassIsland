@@ -195,6 +195,16 @@
                             </TextBox>
                         </controls:SettingsExpanderItem.Footer>
                     </controls:SettingsExpanderItem>
+                    <controls:SettingsExpanderItem Content="明日没有课程的占位符内容">
+                        <controls:SettingsExpanderItem.Footer>
+                            <TextBox MinWidth="100"
+                                     MaxWidth="300"
+                                     Grid.Column="1"
+                                     VerticalAlignment="Center"
+                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                     Text="{Binding Settings.PlaceholderTextTomorrowNoClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </controls:SettingsExpanderItem.Footer>
+                    </controls:SettingsExpanderItem>
                 </controls:SettingsExpander>
                 
                 <!-- 放学后显示明天课表 -->

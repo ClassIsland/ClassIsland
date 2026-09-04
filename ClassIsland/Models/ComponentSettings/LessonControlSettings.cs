@@ -16,6 +16,7 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private bool _showPlaceholderOnEmptyClassPlan = true;
     private string _placeholderTextNoClass = "今天没有课程。";
     private string _placeholderTextAllClassEnded = "今日课程已全部结束。";
+    private string _placeholderTextTomorrowNoClass = "明天没有课程。";
     private bool _showTomorrowSchedules = false;
     private int _tomorrowScheduleShowMode = 1;
     private bool _highlightChangedClass = false;
@@ -139,6 +140,17 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _placeholderTextAllClassEnded) return;
             _placeholderTextAllClassEnded = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string PlaceholderTextTomorrowNoClass
+    {
+        get => _placeholderTextTomorrowNoClass;
+        set
+        {
+            if (value == _placeholderTextTomorrowNoClass) return;
+            _placeholderTextTomorrowNoClass = value;
             OnPropertyChanged();
         }
     }
