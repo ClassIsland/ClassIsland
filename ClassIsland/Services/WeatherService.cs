@@ -53,6 +53,11 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     internal event EventHandler? WeatherRefreshed;
 
+    /// <summary>
+    /// 最近一次获取到的天气信息。
+    /// </summary>
+    public WeatherInfo LastWeatherInfo => Settings.LastWeatherInfo;
+
     public bool IsPosUpdated { get; set; } = false;
 
     public WeatherService(
