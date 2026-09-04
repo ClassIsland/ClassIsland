@@ -227,7 +227,11 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
             return;
         }
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-        var selectedItem = LessonsService.CurrentTimeLayoutItem;
+        TimeLayoutItem? selectedItem = LessonsService.CurrentTimeLayoutItem;
+        if (ReferenceEquals(selectedItem, TimeLayoutItem.Empty))
+        {
+            selectedItem = null;
+        }
         var classPlan = LessonsService.CurrentClassPlan;
         var hasDisplayable = HasDisplayableItems(classPlan, now, selectedItem);
         PseudoClasses.Set(":show-tomorrow-schedule-on-empty", !hasDisplayable);
