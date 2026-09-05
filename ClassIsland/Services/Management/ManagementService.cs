@@ -106,6 +106,9 @@ public class ManagementService : IManagementService
                 case ManagementServerKind.ManagementServer:
                     Connection = new ManagementServerConnection(Settings, Persist.ClientUniqueId, false);
                     break;
+                case ManagementServerKind.BashuPlatform:
+                    Connection = new BashuPlatformConnection(Settings, Persist.ClientUniqueId);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("", "无效的集控服务器类型。");
             }
@@ -225,6 +228,18 @@ public class ManagementService : IManagementService
             case ManagementServerKind.ManagementServer:
                 var connection = new ManagementServerConnection(settings, Persist.ClientUniqueId, true);
                 mf = await connection.RegisterAsync();
+                break;
+            case ManagementServerKind.BashuPlatform:
+                var bashuConn = new BashuPlatformConnection(settings, Persist.ClientUniqueId);
+                if (!string.IsNullOrWhiteSpace(settings.BashuPairingCode))
+                {
+                    var pairResult = await bashuConn.PairAsync(settings.BashuPairingCode, settings.BashuDeviceName);
+                    if (!pairResult.Success)
+                    {
+                        throw new InvalidOperationException(pairResult.ErrorMessage);
+                    }
+                }
+                mf = await bashuConn.GetManifest();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(settings.ManagementServerKind), "无效的服务器类型。");

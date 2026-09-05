@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Shared.Enums;
+namespace ClassIsland.Shared.Enums;
 
 /// <summary>
 /// 管理服务器类型
@@ -12,5 +12,9 @@ public enum ManagementServerKind
     /// <summary>
     /// ClassIsland集控服务器
     /// </summary>
-    ManagementServer
+    ManagementServer,
+    /// <summary>
+    /// 两江巴蜀智慧教研平台
+    /// </summary>
+    BashuPlatform
 }

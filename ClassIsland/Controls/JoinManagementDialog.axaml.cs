@@ -74,7 +74,15 @@ public partial class JoinManagementDialog : MyWindow
         ViewModel.IsWorking = true;
         try
         { 
+            if (ViewModel.IsBashuMode)
+            {
+                ViewModel.ManagementSettings.ManagementServerKind = ClassIsland.Shared.Enums.ManagementServerKind.BashuPlatform;
+                ViewModel.ManagementSettings.BashuServerUrl = ViewModel.BashuServerUrl;
+                ViewModel.ManagementSettings.BashuPairingCode = ViewModel.BashuPairingCode;
+                ViewModel.ManagementSettings.BashuDeviceName = ViewModel.BashuDeviceName;
+            }
             await ManagementService.JoinManagementAsync(ViewModel.ManagementSettings);
+            Close();
         }
         catch (Exception exception)
         {

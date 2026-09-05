@@ -79,6 +79,7 @@ public partial class App
         services.AddSingleton<ILessonsService, LessonsService>();
         services.AddSingleton<IUriNavigationService, UriNavigationService>();
         services.AddHostedService<MemoryWatchDogService>();
+        services.AddHostedService<BashuPlatformService>();
         services.AddSingleton<IPluginService, PluginService>();
         services.AddSingleton<IPluginMarketService, PluginMarketService>();
         services.AddSingleton<IRulesetService, RulesetService>();

@@ -1,4 +1,4 @@
-﻿using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Management;
@@ -82,6 +82,12 @@ public class ManagementSettings : ObservableRecipient
         }
     }
 
+    private string _bashuServerUrl = "https://bashu.cqaibase.cn";
+    private string _bashuPairingCode = "";
+    private string _bashuDeviceToken = "";
+    private string _bashuDeviceName = "班级多媒体大屏";
+    private string _bashuClassName = "";
+
     /// <summary>
     /// 班级标识符，可选。
     /// </summary>
@@ -92,6 +98,76 @@ public class ManagementSettings : ObservableRecipient
         {
             if (value == _classIdentity) return;
             _classIdentity = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 两江巴蜀平台服务器地址
+    /// </summary>
+    public string BashuServerUrl
+    {
+        get => _bashuServerUrl;
+        set
+        {
+            if (value == _bashuServerUrl) return;
+            _bashuServerUrl = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 两江巴蜀平台大屏配对码
+    /// </summary>
+    public string BashuPairingCode
+    {
+        get => _bashuPairingCode;
+        set
+        {
+            if (value == _bashuPairingCode) return;
+            _bashuPairingCode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 两江巴蜀平台设备绑定 Token
+    /// </summary>
+    public string BashuDeviceToken
+    {
+        get => _bashuDeviceToken;
+        set
+        {
+            if (value == _bashuDeviceToken) return;
+            _bashuDeviceToken = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 两江巴蜀平台设备名称
+    /// </summary>
+    public string BashuDeviceName
+    {
+        get => _bashuDeviceName;
+        set
+        {
+            if (value == _bashuDeviceName) return;
+            _bashuDeviceName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 两江巴蜀平台班级名称
+    /// </summary>
+    public string BashuClassName
+    {
+        get => _bashuClassName;
+        set
+        {
+            if (value == _bashuClassName) return;
+            _bashuClassName = value;
             OnPropertyChanged();
         }
     }

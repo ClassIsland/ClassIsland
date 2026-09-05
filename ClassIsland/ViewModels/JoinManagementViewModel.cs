@@ -1,4 +1,4 @@
-﻿using ClassIsland.Shared.Models.Management;
+using ClassIsland.Shared.Models.Management;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -78,4 +78,57 @@ public class JoinManagementViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    private bool _isBashuMode = true;
+    private string _bashuPairingCode = "";
+    private string _bashuServerUrl = "https://bashu.cqaibase.cn";
+    private string _bashuDeviceName = "班级多媒体大屏";
+
+    public bool IsBashuMode
+    {
+        get => _isBashuMode;
+        set
+        {
+            if (value == _isBashuMode) return;
+            _isBashuMode = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanConnect));
+        }
+    }
+
+    public string BashuPairingCode
+    {
+        get => _bashuPairingCode;
+        set
+        {
+            if (value == _bashuPairingCode) return;
+            _bashuPairingCode = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanConnect));
+        }
+    }
+
+    public string BashuServerUrl
+    {
+        get => _bashuServerUrl;
+        set
+        {
+            if (value == _bashuServerUrl) return;
+            _bashuServerUrl = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string BashuDeviceName
+    {
+        get => _bashuDeviceName;
+        set
+        {
+            if (value == _bashuDeviceName) return;
+            _bashuDeviceName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CanConnect => IsBashuMode ? !string.IsNullOrWhiteSpace(BashuPairingCode) : IsConfigLoaded;
 }
