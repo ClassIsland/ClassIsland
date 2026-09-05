@@ -12,7 +12,6 @@ using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Enums;
-using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

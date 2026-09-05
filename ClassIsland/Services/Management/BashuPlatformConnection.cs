@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared.Abstraction.Services;
+using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Management;
 using Microsoft.Extensions.Logging;
 
