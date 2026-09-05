@@ -232,6 +232,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
+        InitializeContentVisibilityAnimation();
         var span = SentrySdk.GetSpan()?.StartChild("startup-initialize-mainWindow");
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
         ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
@@ -494,6 +495,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
         UpdateTheme();
         UpdateStyleStates();
+        OnContentAnimationSettingsChanged(e.PropertyName);
         if (e.PropertyName is nameof(ViewModel.Settings.IsMouseInFadingReversed)
                            or nameof(ViewModel.Settings.IsMouseInFadingEnabled))
         {
@@ -510,6 +512,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
         if (e.PropertyName == nameof(ViewModel.IsEditMode))
         {
+            SynchronizeContentVisibility();
             PseudoClasses.Set(":edit-mode", ViewModel.IsEditMode);
             if (ViewModel.IsEditMode)
             {
@@ -592,7 +595,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        
+        StartInitialContentVisibilityAnimation();
     }
 
     private void LayoutContainerGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
