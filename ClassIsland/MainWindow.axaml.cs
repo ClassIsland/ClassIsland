@@ -1110,6 +1110,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         App.GetService<SettingsWindowNew>().Open();
     }
 
+    private async void MenuItemBindBashu_OnClick(object? sender, EventArgs e)
+    {
+        var dialog = new Controls.JoinManagementDialog();
+        await dialog.ShowDialog(this);
+    }
+
 
     private async void MenuItemExitApp_OnClick(object sender, EventArgs e)
     {

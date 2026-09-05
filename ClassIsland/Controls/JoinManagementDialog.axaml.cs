@@ -37,12 +37,36 @@ public partial class JoinManagementDialog : MyWindow
 
     protected override void OnInitialized()
     {
-        if (File.Exists(Services.Management.ManagementService.ManagementPresetPath))
+        if (ManagementService.Connection is Services.Management.BashuPlatformConnection bashuConn &&
+            !string.IsNullOrWhiteSpace(bashuConn.Settings.BashuDeviceToken))
+        {
+            ViewModel.IsAlreadyPaired = true;
+            ViewModel.ConnectedClassName = !string.IsNullOrWhiteSpace(bashuConn.Settings.BashuClassName)
+                ? bashuConn.Settings.BashuClassName
+                : bashuConn.Settings.ClassIdentity;
+            ViewModel.BashuServerUrl = string.IsNullOrWhiteSpace(bashuConn.Settings.BashuServerUrl)
+                ? "https://bashu.cqaibase.cn"
+                : bashuConn.Settings.BashuServerUrl;
+        }
+        else if (File.Exists(Services.Management.ManagementService.ManagementPresetPath))
         {
             ViewModel.ConfigFilePath = Services.Management.ManagementService.ManagementPresetPath;
             LoadManagementSettings();
         }
         base.OnInitialized();
+    }
+
+    private void ButtonUnpair_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ManagementService.Connection is Services.Management.BashuPlatformConnection bashuConn)
+        {
+            bashuConn.UpdateToken("");
+            bashuConn.Settings.BashuClassName = "";
+            bashuConn.Settings.ClassIdentity = "";
+        }
+        ViewModel.IsAlreadyPaired = false;
+        ViewModel.ConnectedClassName = "";
+        ViewModel.BashuPairingCode = "";
     }
 
     private void FileBrowserButton_OnFileSelected(object? sender, EventArgs e)

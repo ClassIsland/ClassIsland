@@ -206,6 +206,57 @@ public class BashuPlatformConnection : IManagementServerConnection
         }
     }
 
+    /// <summary>
+    /// 获取平台实时对讲音频片段数据
+    /// </summary>
+    public async Task<byte[]?> GetIntercomSegmentAudioAsync(long segmentId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(Settings.BashuDeviceToken) || segmentId <= 0)
+        {
+            return null;
+        }
+
+        try
+        {
+            var response = await HttpClient.GetAsync($"/api/display-client/intercom-segments/{segmentId}/audio", cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsByteArrayAsync(cancellationToken);
+            }
+            Logger.LogWarning("获取对讲音频片段失败：HTTP {}", response.StatusCode);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "获取对讲音频片段异常：{}", segmentId);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// 确认已接收对讲音频片段
+    /// </summary>
+    public async Task<bool> AcknowledgeIntercomSegmentAsync(long segmentId)
+    {
+        if (string.IsNullOrWhiteSpace(Settings.BashuDeviceToken) || segmentId <= 0)
+        {
+            return false;
+        }
+
+        try
+        {
+            var reqBody = JsonSerializer.Serialize(new { segmentId });
+            var content = new StringContent(reqBody, Encoding.UTF8, "application/json");
+            var response = await HttpClient.PostAsync("/api/display-client/intercom-ack", content);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "向平台确认对讲音频片段收到异常：{}", segmentId);
+            return false;
+        }
+    }
+
     public Task<ManagementManifest> GetManifest()
     {
         return Task.FromResult(new ManagementManifest

@@ -130,5 +130,29 @@ public class JoinManagementViewModel : ObservableRecipient
         }
     }
 
+    private bool _isAlreadyPaired = false;
+    public bool IsAlreadyPaired
+    {
+        get => _isAlreadyPaired;
+        set
+        {
+            if (value == _isAlreadyPaired) return;
+            _isAlreadyPaired = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private string _connectedClassName = "";
+    public string ConnectedClassName
+    {
+        get => _connectedClassName;
+        set
+        {
+            if (value == _connectedClassName) return;
+            _connectedClassName = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool CanConnect => IsBashuMode ? !string.IsNullOrWhiteSpace(BashuPairingCode) : IsConfigLoaded;
 }

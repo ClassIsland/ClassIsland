@@ -1,4 +1,4 @@
-﻿<Window x:Class="ClassIsland.MainWindow"
+<Window x:Class="ClassIsland.MainWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -107,6 +107,8 @@
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="编辑主界面…" Click="NativeMenuItemEnterEditMode_OnClick" 
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE7C9;}"/>
+            <NativeMenuItem Header="绑定班级大屏 (两江巴蜀平台)…" Click="MenuItemBindBashu_OnClick" 
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE7E7;}"/>
             <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" 
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEF27;}"/>
             <NativeMenuItemSeparator />

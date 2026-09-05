@@ -996,19 +996,33 @@ public partial class App : AppBase, IAppHost
     {
         try
         {
-            var service = IAppHost.Host?.Services.GetKeyedService<ISpeechService>(Settings.SelectedSpeechProvider);
-            if (service == null)
+            var providerId = Settings.SelectedSpeechProvider;
+            if (OperatingSystem.IsMacOS() && (string.IsNullOrWhiteSpace(providerId) || providerId == "classisland.speech.system"))
             {
-                throw new InvalidOperationException($"语音提供方 {Settings.SelectedSpeechProvider} 未注册");
+                providerId = "classisland.speech.mac";
             }
-            return service;
+            var service = IAppHost.Host?.Services.GetKeyedService<ISpeechService>(providerId);
+            if (service != null)
+            {
+                return service;
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                var macService = IAppHost.Host?.Services.GetKeyedService<ISpeechService>("classisland.speech.mac");
+                if (macService != null) return macService;
+            }
+            if (OperatingSystem.IsWindows())
+            {
+                var winService = IAppHost.Host?.Services.GetKeyedService<ISpeechService>("classisland.speech.system");
+                if (winService != null) return winService;
+            }
         }
         catch (Exception e)
         {
             Logger?.LogError(e, "无法初始化语音提供方 {}", Settings.SelectedSpeechProvider);
         }
         return new BlankSpeechService();
-
     }
 
     // private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)

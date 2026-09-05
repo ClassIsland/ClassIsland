@@ -282,6 +282,9 @@ public partial class App
         if (System.OperatingSystem.IsWindows()) {
             services.AddSpeechProvider<SystemSpeechService>();
         }
+        if (System.OperatingSystem.IsMacOS()) {
+            services.AddSpeechProvider<MacSpeechService>();
+        }
         services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();
         services.AddSpeechProvider<GptSoVitsService, GptSovitsSpeechServiceSettingsControl>();
         // 天气图标模板

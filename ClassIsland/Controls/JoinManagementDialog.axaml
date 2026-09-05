@@ -1,86 +1,94 @@
 <ci:MyWindow x:Class="ClassIsland.Controls.JoinManagementDialog"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClassIsland.Controls"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:ci="http://classisland.tech/schemas/xaml/core"
-             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             mc:Ignorable="d" 
-             d:DesignHeight="520" d:DesignWidth="420"
-             SizeToContent="Height"
-             Width="420"
-             Title="绑定平台 / 加入管理"
-             CanResize="False">
+              xmlns="https://github.com/avaloniaui"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              xmlns:local="clr-namespace:ClassIsland.Controls"
+              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+              xmlns:ci="http://classisland.tech/schemas/xaml/core"
+              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+              mc:Ignorable="d" 
+              d:DesignHeight="520" d:DesignWidth="440"
+              SizeToContent="Height"
+              Width="440"
+              Title="绑定班级大屏 - 两江巴蜀平台"
+              CanResize="False">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:JoinManagementDialog}}">
-        <StackPanel Margin="16" 
+        <StackPanel Margin="20" 
                     IsEnabled="{Binding ViewModel.IsWorking, Converter={StaticResource InvertBooleanConverter}}">
-            <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">
-                <Run Text="绑定两江巴蜀智慧教研平台"/>
-            </TextBlock>
-            <TextBlock Margin="0 8 0 0" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
-                <Run Text="连接两江巴蜀智慧教研平台后，大屏将自动同步班级课表、下发广播通知并支持语音提醒。"/>
+            <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}" Text="两江巴蜀智慧教研平台" />
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                <Run Text="绑定班级电脑后，自动同步课表、下发通知广播并支持语音对讲。"/>
             </TextBlock>
 
-            <TabControl Margin="0 12 0 0">
-                <TabItem Header="平台配对码绑定">
+            <!-- 状态 1：当前已绑定班级 -->
+            <Border Margin="0 16 0 0" Padding="16" CornerRadius="8"
+                    Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}"
+                    BorderBrush="{DynamicResource SystemFillColorSuccessBrush}"
+                    BorderThickness="1"
+                    IsVisible="{Binding ViewModel.IsAlreadyPaired}">
+                <StackPanel Spacing="8">
+                    <TextBlock FontSize="13" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Text="当前大屏运行状态" />
+                    <TextBlock FontSize="18" FontWeight="Bold">
+                        <Run Text="已绑定班级：" />
+                        <Run Text="{Binding ViewModel.ConnectedClassName}" Foreground="{DynamicResource SystemFillColorSuccessBrush}" />
+                    </TextBlock>
+                    <TextBlock FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                        <Run Text="服务器：" />
+                        <Run Text="{Binding ViewModel.BashuServerUrl}" />
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="0 6 0 0">
+                        <Button Content="解除绑定" Classes="danger" Click="ButtonUnpair_OnClick" />
+                        <Button Content="关闭" Classes="accent" Command="{Binding Close}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 状态 2：未绑定，输入6位配对码进行绑定 -->
+            <StackPanel Margin="0 14 0 0" IsVisible="{Binding ViewModel.IsAlreadyPaired, Converter={StaticResource InvertBooleanConverter}}" Spacing="12">
+                <ci:Field Label="大屏 6 位配对码 (在平台【班级频道】获取)">
+                    <TextBox Text="{Binding ViewModel.BashuPairingCode, Mode=TwoWay}"
+                             FontSize="20"
+                             FontWeight="SemiBold"
+                             HorizontalContentAlignment="Center"
+                             MaxLength="6"
+                             Watermark="输入 6 位配对码 (如：123456)" />
+                </ci:Field>
+
+                <Expander Header="高级设置 (平台地址与设备名)" IsExpanded="False" Margin="0 4 0 0">
                     <StackPanel Spacing="10" Margin="0 8 0 0">
                         <ci:Field Label="平台服务器地址">
                             <TextBox Text="{Binding ViewModel.BashuServerUrl, Mode=TwoWay}" Watermark="https://bashu.cqaibase.cn" />
                         </ci:Field>
-                        <ci:Field Label="大屏配对码 (在平台控制台获取)">
-                            <TextBox Text="{Binding ViewModel.BashuPairingCode, Mode=TwoWay}" Watermark="请输入6位配对码（如：982314）" />
-                        </ci:Field>
-                        <ci:Field Label="设备名称（可选）">
+                        <ci:Field Label="设备名称">
                             <TextBox Text="{Binding ViewModel.BashuDeviceName, Mode=TwoWay}" Watermark="班级多媒体大屏" />
                         </ci:Field>
                     </StackPanel>
-                </TabItem>
-                <TabItem Header="集控配置文件 (高级)">
-                    <StackPanel Spacing="10" Margin="0 8 0 0">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <TextBlock Grid.Column="0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
-                                <Run Text="配置文件："/>
-                                <Run Text="{Binding ViewModel.ConfigFilePath, Mode=OneWay}"/>
-                            </TextBlock>
-                            <local:FileBrowserButton Grid.Column="1"
-                                                     FileTypes="{x:Static local:JoinManagementDialog.ManagementConfigFileTypes}"
-                                                     FileSelected="FileBrowserButton_OnFileSelected"
-                                                     Content="{ci:FluentIcon &#xe88d;}"
-                                                     CurrentPath="{Binding ViewModel.ConfigFilePath, Mode=TwoWay}"/>
-                        </Grid>
-                        <ci:Field Label="ID（可选）">
-                            <TextBox Text="{Binding ViewModel.ManagementSettings.ClassIdentity}" />
-                        </ci:Field>
-                    </StackPanel>
-                </TabItem>
-            </TabControl>
+                </Expander>
 
-            <TextBlock Margin="0 8 0 0" Text="{Binding ViewModel.ErrorMessage}"
-                       IsVisible="{Binding ViewModel.IsErrorMessageOpen}"
-                       Foreground="IndianRed"
-                       TextWrapping="Wrap"/>
-            <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                         IsIndeterminate="True"
-                         IsVisible="{Binding ViewModel.IsWorking}"
-                         Margin="0 8 0 0"
-            />
-            <Grid Margin="0 16 0 0" HorizontalAlignment="Stretch">
-                <Grid ColumnDefinitions="* *"  HorizontalAlignment="Stretch">
+                <TextBlock Margin="0 4 0 0" Text="{Binding ViewModel.ErrorMessage}"
+                           IsVisible="{Binding ViewModel.IsErrorMessageOpen}"
+                           Foreground="IndianRed"
+                           TextWrapping="Wrap"/>
+                <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                             IsIndeterminate="True"
+                             IsVisible="{Binding ViewModel.IsWorking}"
+                             Margin="0 4 0 0" />
+
+                <Grid Margin="0 10 0 0" ColumnDefinitions="* *">
                     <Button Grid.Column="0" Content="取消" 
                             IsCancel="True"
                             HorizontalAlignment="Stretch"
-                            Margin="0 0 4 0"
+                            Margin="0 0 6 0"
                             Command="{Binding Close}"/>
-                    <Button Grid.Column="1" Content="配对并连接" IsDefault="True" 
+                    <Button Grid.Column="1" Content="立即绑定" IsDefault="True" 
                             IsEnabled="{Binding ViewModel.CanConnect}"
                             Classes="accent"
                             HorizontalAlignment="Stretch"
-                            Margin="4 0 0 0"
+                            Margin="6 0 0 0"
                             Click="ButtonOk_OnClick"/>
                 </Grid>
-            </Grid>
+            </StackPanel>
         </StackPanel>   
     </Grid>
 </ci:MyWindow>

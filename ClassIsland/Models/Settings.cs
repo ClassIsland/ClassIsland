@@ -150,9 +150,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _notificationEffectRenderingScale = 1.0;
     private bool _isNotificationEffectRenderingScaleAutoSet = false;
     private AllContributorsRc _contributorsCache = new();
-    private bool _allowNotificationSpeech = false;
+    private bool _allowNotificationSpeech = true;
     private bool _allowNotificationEffect = true;
-    private bool _allowNotificationSound = false;
+    private bool _allowNotificationSound = true;
     private bool _allowNotificationTopmost = true;
     private string _updateArtifactHash = "";
     private ObservableCollection<string> _excludedWeatherAlerts = new();
@@ -1844,7 +1844,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _autoDisableCorruptPlugins = true;
     private bool _corruptPluginsDisabledLastSession = false;
     private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
-    private string _selectedSpeechProvider = "classisland.speech.edgeTts";
+    private string _selectedSpeechProvider = OperatingSystem.IsMacOS() ? "classisland.speech.mac" : "classisland.speech.edgeTts";
     private bool _isThemeWarningVisible = true;
     private string _weatherIconId = "classisland.weatherIcons.lucide";
     private bool _isRollingComponentWarningVisible = true;
