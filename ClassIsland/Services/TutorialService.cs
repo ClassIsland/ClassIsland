@@ -79,6 +79,26 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     [ObservableProperty] private TopLevel? _attachedToplevel;
 
+    partial void OnAttachedToplevelChanged(TopLevel? oldValue, TopLevel? newValue)
+    {
+        if (oldValue is Window oldWindow)
+        {
+            oldWindow.Closing -= AttachedToplevelOnClosing;
+        }
+        if (newValue is Window newWindow)
+        {
+            newWindow.Closing += AttachedToplevelOnClosing;
+        }
+    }
+
+    /// <summary>
+    /// 当教学附加的窗口收到关闭请求时，自动退出当前教学。
+    /// </summary>
+    private void AttachedToplevelOnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        StopTutorial();
+    }
+
     public event EventHandler? TutorialStateChanged;
 
     /// <inheritdoc/>
@@ -127,9 +147,16 @@ public partial class TutorialService : ObservableObject, ITutorialService
         ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppConfigPath, "Tutorial.json"), Settings);
     }
 
-    private static TutorialControllerWindow BuildControllerWindow()
+    private TutorialControllerWindow BuildControllerWindow()
     {
         var win = IAppHost.GetService<TutorialControllerWindow>();
+        win.Closed += (_, _) =>
+        {
+            if (ControllerWindow == win)
+            {
+                StopTutorial();
+            }
+        };
         win.Show();
         return win;
     }
@@ -446,6 +473,11 @@ public partial class TutorialService : ObservableObject, ITutorialService
         (AttachedToplevel as Window)?.Activate();
         Dispatcher.UIThread.Post(() =>
         {
+            // 教学可能在这之前已被停止或切换到下一个语句，此时不应再打开已分离的气泡。
+            if (CurrentTeachingTip != teachingTip)
+            {
+                return;
+            }
             teachingTip.IsOpen = true;
             TryRunSentenceHook("onPostInitialized");
         });
@@ -564,13 +596,15 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     public void StopTutorial()
     {
-        ControllerWindow?.Close();
+        var window = ControllerWindow;
         ControllerWindow = null;
+        window?.Close();
         CleanupPrevSentence();
         TrySetCurrentParagraphCompleted();
         CurrentParagraph = null;
         CurrentTutorial = null;
         CurrentSentence = null;
+        AttachedToplevel = null;
         TutorialStateChanged?.Invoke(this, EventArgs.Empty);
     }
     
