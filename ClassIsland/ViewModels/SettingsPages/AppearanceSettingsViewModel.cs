@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Avalonia.Media;
 using ClassIsland.Core;
 using ClassIsland.Services;
@@ -12,7 +13,20 @@ public partial class AppearanceSettingsViewModel(SettingsService settingsService
     [ObservableProperty] private string _fontSizeTestText = "风带来故事的种子，时间使之发芽。The quick brown fox jumps over a lazy dog.";
     
     public ObservableCollection<FontFamily> FontFamilies { get; } =
-        new([..FontManager.Current.SystemFonts, MainWindow.DefaultFontFamily]);
+        new([..FontManager.Current.SystemFonts.Where(IsFontSupported), MainWindow.DefaultFontFamily]);
+
+    private static bool IsFontSupported(FontFamily fontFamily)
+    {
+        try
+        {
+            _ = new Typeface(fontFamily).GlyphTypeface;
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+    }
     
     public SettingsService SettingsService { get; } = settingsService;
 }
