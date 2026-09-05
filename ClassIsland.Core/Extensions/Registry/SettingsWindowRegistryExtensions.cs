@@ -13,6 +13,16 @@ namespace ClassIsland.Core.Extensions.Registry;
 public static class SettingsWindowRegistryExtensions
 {
     /// <summary>
+    /// "插件设置"分组 ID。第三方插件注册的设置页面默认归入此分组。
+    /// </summary>
+    public const string PluginSettingsGroupId = "classisland.plugins";
+
+    /// <summary>
+    /// 内置程序集。这些程序集中注册的设置页面不会被默认归入"插件设置"分组。
+    /// </summary>
+    private static readonly string[] BuiltInSettingPageAssemblies = ["ClassIsland", "ClassIsland.Core", "ClassIsland.Desktop"];
+
+    /// <summary>
     /// 注册设置页面
     /// </summary>
     /// <param name="services"></param>
@@ -43,6 +53,11 @@ public static class SettingsWindowRegistryExtensions
         if (type.GetCustomAttributes(false).OfType<GroupAttribute>().FirstOrDefault() is {} group)
         {
             info.GroupId = group.Id;
+        }
+        // 第三方插件注册的设置页面默认归入"插件设置"分组；插件可以通过 [Group] 特性显式指定其它分组。
+        if (info.GroupId == null && !BuiltInSettingPageAssemblies.Contains(type.Assembly.GetName().Name))
+        {
+            info.GroupId = PluginSettingsGroupId;
         }
         services.AddKeyedTransient<SettingsPageBase, T>(info.Id);
         SettingsWindowRegistryService.Registered.Add(info);
