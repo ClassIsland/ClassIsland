@@ -24,8 +24,14 @@ AppUpdatesURL={#AppURL}
 DefaultDirName={autopf}\{#AppName}
 UninstallDisplayIcon={app}\{#AppExeName}
 DisableProgramGroupPage=yes
-LicenseFile={#GetEnv("GITHUB_WORKSPACE") + "\\LICENSE.txt"}
-SetupIconFile={#GetEnv("GITHUB_WORKSPACE") + "\\ClassIsland\\Assets\\AppLogo.ico"}
+#ifndef WorkspaceDir
+#define WorkspaceDir GetEnv("GITHUB_WORKSPACE")
+#if WorkspaceDir == ""
+#define WorkspaceDir ".."
+#endif
+#endif
+LicenseFile={#WorkspaceDir + "\\LICENSE.txt"}
+SetupIconFile={#WorkspaceDir + "\\ClassIsland\\Assets\\AppLogo.ico"}
 SolidCompression=yes
 ; WizardStyle=modern dynamic windows11
 #if Arch == "x64"
@@ -40,12 +46,12 @@ SolidCompression=yes
 #endif
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "chinesesimplified"; MessagesFile: "languages\\ChineseSimplified.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "chinesetraditional"; MessagesFile: "languages\\ChineseTraditional.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"

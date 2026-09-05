@@ -11,6 +11,7 @@
         <SatelliteResourceLanguages>en;zh-cn</SatelliteResourceLanguages>
         <Title>ClassIsland</Title>
         <AssemblyTitle>ClassIsland</AssemblyTitle>
+        <AssemblyName>ClassIsland</AssemblyName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(PublishBuilding)'=='true' And '$(PublishPlatform)'=='macos'">
         <!-- Preserve PublishFolderType from referenced projects for macOS app bundle resources. -->

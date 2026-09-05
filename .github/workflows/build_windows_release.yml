@@ -1,0 +1,119 @@
+name: Build Windows 64-bit Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release Tag'
+        required: false
+        default: 'v2.1.0-bashu'
+        type: string
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Windows x64 Native Installer & Portable
+    runs-on: windows-2022
+    env:
+      TAG_NAME: ${{ github.event.inputs.release_tag || 'v2.1.0-bashu' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Setup .NET SDKs (8.0 and 9.0)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Generate Dummy Secrets File
+        shell: pwsh
+        run: |
+          ./tools/release-gen/generate-secrets.ps1
+
+      - name: Publish ClassIsland.Desktop for Windows x64
+        shell: pwsh
+        run: |
+          dotnet publish ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishBuilding=true -p:PublishPlatform=windows -p:Platforms_Windows=true -p:ClassIsland_PlatformTarget=x64 -p:SelfContained=true -p:ClassIsland_SelfContained=true -p:ApplicationVersion=2.1.0 -p:ApplicationDisplayVersion=2.1.0 -o ${{ github.workspace }}/out_publish
+
+      - name: Verify Published Files
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "${{ github.workspace }}/out_publish"
+          if (-not (Test-Path "${{ github.workspace }}/out_publish/ClassIsland.exe")) {
+            throw "ClassIsland.exe was not found in out_publish!"
+          }
+
+      - name: Prepare Installer Output Directory
+        shell: pwsh
+        run: |
+          Set-Content -Value "installer" -Path "${{ github.workspace }}/out_publish/PackageType" -Force -NoNewline
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/out_installer"
+
+      - name: Build Inno Setup Installer (.exe)
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
+        with:
+          path: ./installer/setup.iss
+          options: |
+            /DAppVersion=2.1.0
+            /FClassIsland-Teaching-Windows-x64-Setup
+            /O${{ github.workspace }}\out_installer
+            /DSourceDir=${{ github.workspace }}\out_publish
+            /DArch=x64
+
+      - name: Prepare Portable Zip
+        shell: pwsh
+        run: |
+          Set-Content -Value "folder" -Path "${{ github.workspace }}/out_publish/PackageType" -Force -NoNewline
+          Compress-Archive -Path "${{ github.workspace }}/out_publish/*" -DestinationPath "${{ github.workspace }}/out_installer/ClassIsland-Teaching-Windows-x64-Portable.zip" -Force
+
+      - name: Verify Installer and Zip
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "${{ github.workspace }}/out_installer"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClassIsland-Windows-x64-Binaries
+          path: |
+            ${{ github.workspace }}/out_installer/*.exe
+            ${{ github.workspace }}/out_installer/*.zip
+
+      - name: Release to GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: "ClassIsland 智慧教研版 ${{ env.TAG_NAME }}"
+          draft: false
+          prerelease: false
+          body: |
+            ## ClassIsland 智慧教研版（Windows 64位 原生发布）
+
+            本版本基于 ClassIsland 官方 Avalonia 原生客户端深度定制，专为两江巴蜀智慧校园环境打造。
+
+            ### 核心特性
+            - **原生 Avalonia 界面：** 纯正流畅的 C# / Avalonia 架构体验，保留所有原版精致动画与主题音效。
+            - **智慧教研平台深度融合：**
+              - 支持大屏配对码一键绑定与免密快速接入。
+              - 实时下发/同步班级专属课表、课程作息时间。
+              - 完美支持自习课、课间休息倒计时与语音播报提醒。
+              - 实时接收学校与教研组推送的通知公告，即时弹窗展示并同步语音提醒。
+            - **离线容灾：** 本地缓存最新排课数据，断网环境正常显示上课信息。
+
+            ### 下载说明
+            - **一键安装版：** `ClassIsland-Teaching-Windows-x64-Setup.exe`（推荐，内置安装向导、自动创建桌面快捷方式与开始菜单项）
+            - **绿色便携版：** `ClassIsland-Teaching-Windows-x64-Portable.zip`（解压即用，无需安装）
+          files: |
+            ${{ github.workspace }}/out_installer/*.exe
+            ${{ github.workspace }}/out_installer/*.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
