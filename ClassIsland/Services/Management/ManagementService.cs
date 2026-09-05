@@ -179,6 +179,14 @@ public class ManagementService : IManagementService
             CredentialConfig = LoadConfig<ManagementCredentialConfig>(ManagementCredentialsPath);
             Versions = LoadConfig<ManagementVersions>(ManagementVersionsPath);
             Manifest = await Connection.GetManifest();
+            if (Connection is BashuPlatformConnection)
+            {
+                // Managed classroom data has one source of truth; local appearance remains editable.
+                Policy.DisableProfileClassPlanEditing = true;
+                Policy.DisableProfileTimeLayoutEditing = true;
+                Policy.DisableProfileSubjectsEditing = true;
+                Policy.DisableProfileEditing = true;
+            }
             if (Manifest.CoreVersion.Major != IAppHost.CoreVersion.Major)
             {
                 await CommonTaskDialogs.ShowDialog("集控核心版本不兼容",

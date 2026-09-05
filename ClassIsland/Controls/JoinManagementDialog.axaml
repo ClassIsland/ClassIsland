@@ -37,6 +37,12 @@
                         <Run Text="服务器：" />
                         <Run Text="{Binding ViewModel.BashuServerUrl}" />
                     </TextBlock>
+                    <TextBlock Text="课表和任课教师请在平台维护，本机自动同步；外观与音量可在本机调整。" TextWrapping="Wrap" />
+                    <TextBlock x:Name="PlatformStatus" Text="点击立即同步检查连接；解除绑定需要确认并重启。" TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Content="立即同步" Click="ButtonSync_OnClick" />
+                        <Button Content="语音测试" Click="ButtonAudioTest_OnClick" />
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="0 6 0 0">
                         <Button Content="解除绑定" Classes="danger" Click="ButtonUnpair_OnClick" />
                         <Button Content="关闭" Classes="accent" Command="{Binding Close}" />

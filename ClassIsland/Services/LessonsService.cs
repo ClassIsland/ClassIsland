@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Services.Management;
 using ClassIsland.Core.Extensions;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
@@ -143,6 +145,17 @@ public class LessonsService : ObservableRecipient, ILessonsService
     public ClassPlan? GetClassPlanByDate(DateTime date, out Guid? guid)
     {
         guid = null;
+        // In platform-managed mode, a local default/temporary plan must not mask a cloud update.
+        if (App.GetService<IManagementService>().Connection is BashuPlatformConnection)
+        {
+            var day = (int)date.DayOfWeek;
+            var managedId = BashuScheduleMapper.PlanId(day == 0 ? 7 : day);
+            if (Profile.ClassPlans.TryGetValue(managedId, out var managed))
+            {
+                guid = managedId;
+                return managed;
+            }
+        }
         // 加载临时层（弃用）
         // 现在临时层使用预定临时课表的加载逻辑。
         //if (Profile is { IsOverlayClassPlanEnabled: true, OverlayClassPlanId: not null } &&
@@ -368,6 +381,12 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
         return CurrentState == s.State ||
                (CurrentState == TimeState.AfterSchool && s.State == TimeState.None);
+    }
+
+    internal void RefreshAfterPlatformSync()
+    {
+        // Recompute subject, time state and next lesson together, and notify island components.
+        MainTimerOnTick(this, EventArgs.Empty);
     }
 
     private void MainTimerOnTick(object? sender, EventArgs e)

@@ -56,17 +56,32 @@ public partial class JoinManagementDialog : MyWindow
         base.OnInitialized();
     }
 
-    private void ButtonUnpair_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonUnpair_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ManagementService.Connection is Services.Management.BashuPlatformConnection bashuConn)
+        try
         {
-            bashuConn.UpdateToken("");
-            bashuConn.Settings.BashuClassName = "";
-            bashuConn.Settings.ClassIdentity = "";
+            await ManagementService.ExitManagementAsync();
         }
-        ViewModel.IsAlreadyPaired = false;
-        ViewModel.ConnectedClassName = "";
-        ViewModel.BashuPairingCode = "";
+        catch (Exception ex) { PlatformStatus.Text = ex.Message; }
+    }
+
+    private async void ButtonSync_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsWorking = true;
+        try
+        {
+            var service = IAppHost.GetService<Services.Management.BashuPlatformService>();
+            await service.PollOnceAsync(true);
+            PlatformStatus.Text = $"{service.Status} · 课表同步：{service.LastSync}";
+        }
+        finally { ViewModel.IsWorking = false; }
+    }
+
+    private void ButtonAudioTest_OnClick(object sender, RoutedEventArgs e)
+    {
+        IAppHost.GetService<ClassIsland.Core.Abstractions.Services.SpeechService.ISpeechService>()
+            .EnqueueSpeechQueue("两江巴蜀平台，语音测试。请确认扬声器音量正常。");
+        PlatformStatus.Text = "已发起语音测试；未听到声音时请检查系统输出设备与语音音量。";
     }
 
     private void FileBrowserButton_OnFileSelected(object? sender, EventArgs e)

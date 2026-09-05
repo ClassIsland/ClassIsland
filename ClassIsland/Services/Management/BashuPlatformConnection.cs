@@ -31,8 +31,9 @@ public class BashuPlatformConnection : IManagementServerConnection
     private ILogger<BashuPlatformConnection> Logger { get; } = App.GetService<ILogger<BashuPlatformConnection>>();
     public ManagementSettings Settings { get; }
     public Guid ClientGuid { get; }
+    public string LastError { get; private set; } = "尚未连接";
 
-    private HttpClient HttpClient { get; } = new();
+    private HttpClient HttpClient { get; } = new() { Timeout = TimeSpan.FromSeconds(15) };
 
     public event EventHandler<ClientCommandEventArgs>? CommandReceived;
 
@@ -164,11 +165,13 @@ public class BashuPlatformConnection : IManagementServerConnection
             var response = await HttpClient.GetAsync("/api/display-client/poll", cancellationToken);
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
+                LastError = "设备配对已失效，请在平台重新生成配对码";
                 Logger.LogWarning("设备 Token 已失效或被解绑");
                 return null;
             }
             if (!response.IsSuccessStatusCode)
             {
+                LastError = $"平台连接失败（HTTP {(int)response.StatusCode}）";
                 Logger.LogDebug("轮询平台数据返回状态码：{}", response.StatusCode);
                 return null;
             }
@@ -177,6 +180,7 @@ public class BashuPlatformConnection : IManagementServerConnection
         }
         catch (Exception ex)
         {
+            LastError = "平台暂时无法连接，请检查网络；保留上次同步课表";
             Logger.LogDebug("轮询平台数据失败：{}", ex.Message);
             return null;
         }
