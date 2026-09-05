@@ -45,10 +45,13 @@ jobs:
         run: |
           dotnet publish ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishBuilding=true -p:PublishPlatform=windows -p:Platforms_Windows=true -p:ClassIsland_PlatformTarget=x64 -p:SelfContained=true -p:ClassIsland_SelfContained=true -p:ApplicationVersion=2.1.0 -p:ApplicationDisplayVersion=2.1.0 -o ${{ github.workspace }}/out_publish
 
-      - name: Verify Published Files
+      - name: Verify and Prepare Executables
         shell: pwsh
         run: |
           Get-ChildItem -Path "${{ github.workspace }}/out_publish"
+          if (Test-Path "${{ github.workspace }}/out_publish/ClassIsland.Desktop.exe") {
+            Copy-Item "${{ github.workspace }}/out_publish/ClassIsland.Desktop.exe" "${{ github.workspace }}/out_publish/ClassIsland.exe" -Force
+          }
           if (-not (Test-Path "${{ github.workspace }}/out_publish/ClassIsland.exe")) {
             throw "ClassIsland.exe was not found in out_publish!"
           }
