@@ -997,7 +997,7 @@ public partial class App : AppBase, IAppHost
         try
         {
             var providerId = Settings.SelectedSpeechProvider;
-            if (OperatingSystem.IsMacOS() && (string.IsNullOrWhiteSpace(providerId) || providerId == "classisland.speech.system"))
+            if (System.OperatingSystem.IsMacOS() && (string.IsNullOrWhiteSpace(providerId) || providerId == "classisland.speech.system"))
             {
                 providerId = "classisland.speech.mac";
             }
@@ -1007,12 +1007,12 @@ public partial class App : AppBase, IAppHost
                 return service;
             }
 
-            if (OperatingSystem.IsMacOS())
+            if (System.OperatingSystem.IsMacOS())
             {
                 var macService = IAppHost.Host?.Services.GetKeyedService<ISpeechService>("classisland.speech.mac");
                 if (macService != null) return macService;
             }
-            if (OperatingSystem.IsWindows())
+            if (System.OperatingSystem.IsWindows())
             {
                 var winService = IAppHost.Host?.Services.GetKeyedService<ISpeechService>("classisland.speech.system");
                 if (winService != null) return winService;
