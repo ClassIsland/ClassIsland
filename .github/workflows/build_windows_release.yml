@@ -1,4 +1,4 @@
-name: Build Windows & macOS Release
+name: Build Windows Release (x64 & ARM64)
 
 on:
   workflow_dispatch:
@@ -17,8 +17,12 @@ permissions:
 
 jobs:
   build_windows:
-    name: Build Windows x64 Native Installer & Portable
+    name: Build Windows ${{ matrix.arch }} Native Installer & Portable
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
     env:
       TAG_NAME: ${{ github.event.inputs.release_tag || 'v2.1.0-bashu' }}
     steps:
@@ -40,10 +44,10 @@ jobs:
         run: |
           ./tools/release-gen/generate-secrets.ps1
 
-      - name: Publish ClassIsland.Desktop for Windows x64
+      - name: Publish ClassIsland.Desktop for Windows ${{ matrix.arch }}
         shell: pwsh
         run: |
-          dotnet publish ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishBuilding=true -p:PublishPlatform=windows -p:Platforms_Windows=true -p:ClassIsland_PlatformTarget=x64 -p:SelfContained=true -p:ClassIsland_SelfContained=true -p:ApplicationVersion=2.1.0 -p:ApplicationDisplayVersion=2.1.0 -o ${{ github.workspace }}/out_publish
+          dotnet publish ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Release -r win-${{ matrix.arch }} --self-contained true -p:PublishBuilding=true -p:PublishPlatform=windows -p:Platforms_Windows=true -p:ClassIsland_PlatformTarget=${{ matrix.arch }} -p:SelfContained=true -p:ClassIsland_SelfContained=true -p:ApplicationVersion=2.1.0 -p:ApplicationDisplayVersion=2.1.0 -o ${{ github.workspace }}/out_publish
 
       - name: Verify and Prepare Executables
         shell: pwsh
@@ -68,24 +72,40 @@ jobs:
           path: ./installer/setup.iss
           options: |
             /DAppVersion=2.1.0
-            /FClassIsland-Teaching-Windows-x64-Setup
+            /FClassIsland-Teaching-Windows-${{ matrix.arch }}-Setup
             /O${{ github.workspace }}\out_installer
             /DSourceDir=${{ github.workspace }}\out_publish
-            /DArch=x64
+            /DArch=${{ matrix.arch }}
 
       - name: Prepare Portable Zip
         shell: pwsh
         run: |
           Set-Content -Value "folder" -Path "${{ github.workspace }}/out_publish/PackageType" -Force -NoNewline
-          Compress-Archive -Path "${{ github.workspace }}/out_publish/*" -DestinationPath "${{ github.workspace }}/out_installer/ClassIsland-Teaching-Windows-x64-Portable.zip" -Force
+          Compress-Archive -Path "${{ github.workspace }}/out_publish/*" -DestinationPath "${{ github.workspace }}/out_installer/ClassIsland-Teaching-Windows-${{ matrix.arch }}-Portable.zip" -Force
 
-      - name: Upload Windows Artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ClassIsland-Windows-x64-Binaries
+          name: ClassIsland-Windows-${{ matrix.arch }}-Binaries
           path: |
             ${{ github.workspace }}/out_installer/*.exe
             ${{ github.workspace }}/out_installer/*.zip
+
+  release:
+    name: Publish Release to GitHub
+    needs: [build_windows]
+    runs-on: ubuntu-latest
+    env:
+      TAG_NAME: ${{ github.event.inputs.release_tag || 'v2.1.0-bashu' }}
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ github.workspace }}/all_artifacts
+
+      - name: List Downloaded Files
+        run: |
+          find ${{ github.workspace }}/all_artifacts -type f
 
       - name: Release Windows Binaries to GitHub
         uses: softprops/action-gh-release@v2
@@ -95,83 +115,23 @@ jobs:
           draft: false
           prerelease: false
           body: |
-            ## ClassIsland 智慧教研版（Windows & macOS 双平台发布）
+            ## ClassIsland 智慧教研版（Windows x64 与 ARM64 双架构发布）
 
             本版本基于 ClassIsland 官方 Avalonia 原生客户端深度定制，专为两江巴蜀智慧校园环境打造。
 
             ### 核心更新与修复
-            - **课表日期与实时更新彻底修复：** 解决今日课表被误判为“明天”的问题，接入 UI 实时刷新机制，排课变更 5 秒内自动呈现在大屏。
-            - **广播通知与语音播报：** 默认启用通知朗读与 1.wav 提示音，确保通知正文全员清晰听清。
+            - **Windows 双架构原生支持：** 全面支持 Windows 64位（Intel/AMD）与 Windows ARM64（高通骁龙 X Elite / Surface Pro X 等设备）。
+            - **课表日期与实时更新修复：** 解决今日课表被误判为“明天”的问题，接入 UI 实时刷新机制，排课变更 5 秒内自动呈现在大屏。
+            - **广播通知与语音播报：** 默认启用通知朗读与提示音，确保通知正文全员清晰听清。
             - **实时对讲语音接入：** 完整支持两江巴蜀平台网页端“按住说话”实时对讲，大屏端低延迟拉取播放并弹出对讲卡片。
-            - **极简配对体验：** 主岛与托盘菜单新增“绑定班级大屏”一键直达，预填平台地址，仅需输入 6 位配对码即可 1 步完成绑定。
-            - **双平台支持：** 提供 Windows 64位安装包/便携版与 macOS（Apple Silicon 与 Intel）原生版本。
+            - **极简配对体验：** 主岛与托盘菜单新增“绑定班级大屏”一键直达，预填平台地址，仅需输入 6 位配对码即可一键完成绑定。
 
             ### 下载文件说明
-            - **Windows 一键安装版：** `ClassIsland-Teaching-Windows-x64-Setup.exe`
-            - **Windows 绿色便携版：** `ClassIsland-Teaching-Windows-x64-Portable.zip`
-            - **macOS (Apple Silicon M1/M2/M3/M4)：** `ClassIsland-Teaching-macOS-arm64.zip`
-            - **macOS (Intel)：** `ClassIsland-Teaching-macOS-x64.zip`
+            - **Windows x64 一键安装版：** `ClassIsland-Teaching-Windows-x64-Setup.exe`
+            - **Windows x64 绿色便携版：** `ClassIsland-Teaching-Windows-x64-Portable.zip`
+            - **Windows ARM64 一键安装版：** `ClassIsland-Teaching-Windows-arm64-Setup.exe`
+            - **Windows ARM64 绿色便携版：** `ClassIsland-Teaching-Windows-arm64-Portable.zip`
           files: |
-            ${{ github.workspace }}/out_installer/*.exe
-            ${{ github.workspace }}/out_installer/*.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  build_macos:
-    name: Build macOS (Apple Silicon & Intel) Release
-    runs-on: macos-15
-    env:
-      TAG_NAME: ${{ github.event.inputs.release_tag || 'v2.1.0-bashu' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Setup .NET SDKs (8.0 and 9.0)
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-
-      - name: Install macOS Workload
-        run: |
-          dotnet workload install macos --version 9.0.300
-
-      - name: Generate Dummy Secrets File
-        run: |
-          pwsh ./tools/release-gen/generate-secrets.ps1
-
-      - name: Publish ClassIsland for macOS Apple Silicon (arm64)
-        run: |
-          dotnet publish ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Release -r osx-arm64 --self-contained true -p:PublishBuilding=true -p:PublishPlatform=macos -p:Platforms_MacOs=true -p:ClassIsland_PlatformTarget=arm64 -p:SelfContained=true -p:ClassIsland_SelfContained=true -p:ApplicationVersion=2.1.0 -p:ApplicationDisplayVersion=2.1.0 -o ${{ github.workspace }}/out_mac_arm64
-
-      - name: Publish ClassIsland for macOS Intel (x64)
-        run: |
-          dotnet publish ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Release -r osx-x64 --self-contained true -p:PublishBuilding=true -p:PublishPlatform=macos -p:Platforms_MacOs=true -p:ClassIsland_PlatformTarget=x64 -p:SelfContained=true -p:ClassIsland_SelfContained=true -p:ApplicationVersion=2.1.0 -p:ApplicationDisplayVersion=2.1.0 -o ${{ github.workspace }}/out_mac_x64
-
-      - name: Package macOS Bundles
-        run: |
-          mkdir -p ${{ github.workspace }}/out_mac_packages
-          cd ${{ github.workspace }}/out_mac_arm64
-          zip -r -y ${{ github.workspace }}/out_mac_packages/ClassIsland-Teaching-macOS-arm64.zip .
-          cd ${{ github.workspace }}/out_mac_x64
-          zip -r -y ${{ github.workspace }}/out_mac_packages/ClassIsland-Teaching-macOS-x64.zip .
-
-      - name: Upload macOS Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ClassIsland-macOS-Binaries
-          path: |
-            ${{ github.workspace }}/out_mac_packages/*.zip
-
-      - name: Release macOS Binaries to GitHub
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.TAG_NAME }}
-          draft: false
-          prerelease: false
-          files: |
-            ${{ github.workspace }}/out_mac_packages/*.zip
+            ${{ github.workspace }}/all_artifacts/**/*.exe
+            ${{ github.workspace }}/all_artifacts/**/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
