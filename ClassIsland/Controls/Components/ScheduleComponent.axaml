@@ -55,8 +55,8 @@
                 <Setter Property="Text" Value="{Binding Settings.PlaceholderTextNoClass, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
             </Style>
         </Style>
-        <!-- 默认隐藏等原因造成的无展示课程不代表已经放学，此时使用明日无课占位符。 -->
-        <Style Selector="local|ScheduleComponent:show-tomorrow-schedule:show-tomorrow-schedule-always.TomorrowScheduleEmpty, local|ScheduleComponent:not(.TodayScheduleEmpty):not(.AfterSchool):show-tomorrow-schedule:show-tomorrow-schedule-on-empty.TomorrowScheduleEmpty">
+        <!-- 默认隐藏造成的无展示课程在放学后也需占位；隐藏已结束课程时，由后续样式改用当日课程结束提示。 -->
+        <Style Selector="local|ScheduleComponent:show-tomorrow-schedule:show-tomorrow-schedule-always.TomorrowScheduleEmpty, local|ScheduleComponent:not(.TodayScheduleEmpty):show-tomorrow-schedule:show-tomorrow-schedule-on-empty.TomorrowScheduleEmpty">
             <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
                 <Setter Property="IsVisible" Value="False"/>
             </Style>
