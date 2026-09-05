@@ -85,11 +85,11 @@ public class BashuPlatformConnection : IManagementServerConnection
 
             using var doc = JsonDocument.Parse(responseJson);
             var root = doc.RootElement;
-            var token = root.GetProperty("token").GetString() ?? "";
-            var device = root.GetProperty("device");
-            var className = device.TryGetProperty("className", out var cn) ? cn.GetString() ?? "" : "";
-            var classId = device.TryGetProperty("classId", out var cid) ? cid.GetInt32() : 0;
-            var deviceId = device.TryGetProperty("id", out var did) ? did.GetInt32() : 0;
+            var token = root.TryGetProperty("token", out var tEl) ? GetStringFlexible(tEl) : "";
+            var device = root.TryGetProperty("device", out var dEl) ? dEl : default;
+            var className = device.ValueKind != JsonValueKind.Undefined && device.TryGetProperty("className", out var cn) ? GetStringFlexible(cn) : "";
+            var classId = device.ValueKind != JsonValueKind.Undefined && device.TryGetProperty("classId", out var cid) ? GetInt32Flexible(cid) : 0;
+            var deviceId = device.ValueKind != JsonValueKind.Undefined && device.TryGetProperty("id", out var did) ? GetInt32Flexible(did) : 0;
 
             UpdateToken(token);
             Settings.BashuClassName = className;
@@ -111,6 +111,41 @@ public class BashuPlatformConnection : IManagementServerConnection
             Logger.LogError(ex, "配对过程发生异常");
             return new BashuPairResult { Success = false, ErrorMessage = ex.Message };
         }
+    }
+
+    public static int GetInt32Flexible(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Number && element.TryGetInt32(out var val))
+        {
+            return val;
+        }
+        if (element.ValueKind == JsonValueKind.String && int.TryParse(element.GetString(), out var sVal))
+        {
+            return sVal;
+        }
+        return 0;
+    }
+
+    public static long GetInt64Flexible(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Number && element.TryGetInt64(out var val))
+        {
+            return val;
+        }
+        if (element.ValueKind == JsonValueKind.String && long.TryParse(element.GetString(), out var sVal))
+        {
+            return sVal;
+        }
+        return 0;
+    }
+
+    public static string GetStringFlexible(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.String)
+        {
+            return element.GetString() ?? "";
+        }
+        return element.ToString();
     }
 
     /// <summary>
@@ -175,7 +210,8 @@ public class BashuPlatformConnection : IManagementServerConnection
         return Task.FromResult(new ManagementManifest
         {
             OrganizationName = "两江巴蜀智慧教研平台",
-            ServerKind = ManagementServerKind.BashuPlatform
+            ServerKind = ManagementServerKind.BashuPlatform,
+            CoreVersion = IAppHost.CoreVersion
         });
     }
 

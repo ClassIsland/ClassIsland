@@ -250,25 +250,28 @@ public class ManagementService : IManagementService
             throw new InvalidOperationException($"集控服务核心版本（{mf.CoreVersion}）与应用当前核心版本不兼容（{IAppHost.CoreVersion}）");
         }
 
-        var dialog = new TaskDialog
+        if (settings.ManagementServerKind != ManagementServerKind.BashuPlatform)
         {
-            Title = "ClassIsland",
-            SubHeader = "加入集控",
-            Content = $"确定要加入组织 {mf.OrganizationName} 的管理吗？",
-            Buttons =
+            var dialog = new TaskDialog
             {
-                TaskDialogButton.CancelButton,
-                new TaskDialogButton("加入", true)
+                Title = "ClassIsland",
+                SubHeader = "加入集控",
+                Content = $"确定要加入组织 {mf.OrganizationName} 的管理吗？",
+                Buttons =
                 {
-                    IsDefault = true
-                }
-            },
-            XamlRoot = AppBase.Current.GetRootWindow(),
-        };
+                    TaskDialogButton.CancelButton,
+                    new TaskDialogButton("加入", true)
+                    {
+                        IsDefault = true
+                    }
+                },
+                XamlRoot = AppBase.Current.GetRootWindow(),
+            };
 
-        var result = await dialog.ShowAsync();
-        if (result?.Equals(true) != true)
-            return;
+            var result = await dialog.ShowAsync();
+            if (result?.Equals(true) != true)
+                return;
+        }
 
         var w = CopyObject(settings);
         w.IsManagementEnabled = true;
@@ -282,7 +285,14 @@ public class ManagementService : IManagementService
             }
         }
         SaveConfig(ManagementSettingsPath, w);
-        await CommonTaskDialogs.ShowDialog("已加入集控", $"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
+        if (settings.ManagementServerKind == ManagementServerKind.BashuPlatform)
+        {
+            await CommonTaskDialogs.ShowDialog("绑定成功", $"已成功绑定两江巴蜀智慧教研平台（班级：{settings.BashuClassName}）。应用将自动重启以同步课表。");
+        }
+        else
+        {
+            await CommonTaskDialogs.ShowDialog("已加入集控", $"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
+        }
         await SetupManagement();
 
         AppBase.Current.Restart();

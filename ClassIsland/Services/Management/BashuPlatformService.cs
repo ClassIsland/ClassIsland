@@ -110,18 +110,18 @@ public class BashuPlatformService : IHostedService
             {
                 foreach (var item in itemsEl.EnumerateArray())
                 {
-                    var id = item.TryGetProperty("id", out var idEl) ? idEl.GetInt64() : 0;
+                    var id = item.TryGetProperty("id", out var idEl) ? BashuPlatformConnection.GetInt64Flexible(idEl) : 0;
                     if (id <= 0 || ProcessedNotificationIds.Contains(id))
                     {
                         continue;
                     }
 
                     ProcessedNotificationIds.Add(id);
-                    var content = item.TryGetProperty("content", out var cEl) ? cEl.GetString() ?? "" : "";
-                    var author = item.TryGetProperty("created_by_name", out var aEl) ? aEl.GetString() ?? "教师" : "教师";
-                    var priority = item.TryGetProperty("priority", out var pEl) ? pEl.GetString() ?? "normal" : "normal";
+                    var content = item.TryGetProperty("content", out var cEl) ? BashuPlatformConnection.GetStringFlexible(cEl) : "";
+                    var author = item.TryGetProperty("created_by_name", out var aEl) ? BashuPlatformConnection.GetStringFlexible(aEl) : "教师";
+                    var priority = item.TryGetProperty("priority", out var pEl) ? BashuPlatformConnection.GetStringFlexible(pEl) : "normal";
                     var isEmergency = priority == "emergency";
-                    var repeat = item.TryGetProperty("repeat_count", out var rEl) ? Math.Max(1, rEl.GetInt32()) : 1;
+                    var repeat = item.TryGetProperty("repeat_count", out var rEl) ? Math.Max(1, BashuPlatformConnection.GetInt32Flexible(rEl)) : 1;
 
                     Logger.LogInformation("收到平台通知：[{}] {} (来自 {})", priority, content, author);
 
