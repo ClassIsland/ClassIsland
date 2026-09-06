@@ -31,6 +31,6 @@
 		
 		<!-- Generate MD5 -->
 		<Exec Command="$(PowershellBinaryName) -ep bypass -NoLogo -File &quot;$(ClassIslandSdk_PackageRoot)generate-md5.ps1&quot; &quot;$(CipxPackageOutputDirectory)&quot;"
-		      Condition="'$(GenerateHashSummary)'=='true'"/>
+		      Condition="'$(GenerateHashSummary)'=='true' and '$(OS)'=='Windows_NT'"/>
 	</Target>
 </Project>

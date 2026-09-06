@@ -21,6 +21,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -171,6 +172,18 @@ public class PluginService : IPluginService
                 info.Exception = new InvalidOperationException($"不兼容的 API 版本 {apiVersion}。插件的 API 版本需要至少为 2.0.0.0 才能被当前版本的 ClassIsland 加载。");
                 PluginLoadedStatus.Add(info);
             }
+            if (info.IsEnabled && info.LoadStatus == PluginLoadStatus.NotLoaded && manifest.SupportedOSPlatforms != null && manifest.SupportedOSPlatforms.Count > 0)
+            {
+                var isSupported = (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && manifest.SupportedOSPlatforms.Contains(OSPlatform.Windows)) ||
+                                  (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && manifest.SupportedOSPlatforms.Contains(OSPlatform.Linux)) ||
+                                  (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && manifest.SupportedOSPlatforms.Contains(OSPlatform.OSX));
+                if (!isSupported)
+                {
+                    info.LoadStatus = PluginLoadStatus.Error;
+                    info.Exception = new PlatformNotSupportedException($"插件 {manifest.Name} 不支持当前操作系统平台。");
+                    PluginLoadedStatus.Add(info);
+                }
+            }
         }
         var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
         Console.WriteLine($"Resolved load order: {string.Join(", ", loadOrder)}");
@@ -181,27 +194,52 @@ public class PluginService : IPluginService
         foreach (var id in loadOrder)
         {
             var info = IPluginService.LoadedPluginsInternal.First(x => x.Manifest.Id == id);
+            if (info.LoadStatus != PluginLoadStatus.NotLoaded)
+            {
+                continue;
+            }
             var manifest = info.Manifest;
             var pluginDir = info.PluginFolderPath;
             try
             {
                 var fullPath = Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly));
+                if (!File.Exists(fullPath))
+                {
+                    throw new FileNotFoundException($"找不到插件入口程序集文件: {fullPath}", fullPath);
+                }
                 var loadContext = new PluginLoadContext(info, fullPath, suppressMacOsPluginLoadBehavior);
                 PluginLoadContexts[info.Manifest.Id] = loadContext;
                 var asm = loadContext.LoadFromAssemblyName(
                     new AssemblyName(Path.GetFileNameWithoutExtension(fullPath)));
-                var entrance = asm.ExportedTypes.FirstOrDefault(x =>
-                    x.BaseType == typeof(PluginBase) ||
-                    x.GetCustomAttributes().FirstOrDefault(a => a.GetType() == typeof(PluginEntrance)) != null);
+
+                System.Type[] types;
+                try
+                {
+                    types = asm.GetExportedTypes();
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    types = ex.Types.Where(t => t != null).ToArray()!;
+                }
+
+                var entrance = types.FirstOrDefault(x =>
+                    typeof(PluginBase).IsAssignableFrom(x) && !x.IsAbstract &&
+                    (x.BaseType == typeof(PluginBase) ||
+                     x.GetCustomAttributes().Any(a => a.GetType() == typeof(PluginEntrance) || a is PluginEntrance)));
 
                 if (entrance == null)
                 {
-                    continue;
+                    entrance = types.FirstOrDefault(x => typeof(PluginBase).IsAssignableFrom(x) && !x.IsAbstract);
+                }
+
+                if (entrance == null)
+                {
+                    throw new InvalidOperationException($"在入口程序集 {manifest.EntranceAssembly} 中找不到继承自 PluginBase 的插件入口类。");
                 }
 
                 if (Activator.CreateInstance(entrance) is not PluginBase entranceObj)
                 {
-                    continue;
+                    throw new InvalidOperationException($"无法实例化插件入口类 {entrance.FullName} 为 PluginBase。");
                 }
 
                 entranceObj.PluginConfigFolder = Path.Combine(PluginConfigsFolderPath, manifest.Id);
@@ -222,7 +260,6 @@ public class PluginService : IPluginService
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
                 info.LoadStatus = PluginLoadStatus.Loaded;
-                // Console.WriteLine($"Initialized plugin: {pluginDir} ({manifest.Version})");
                 PluginLoadedStatus.Add(info);
             }
             catch (Exception ex)
@@ -230,7 +267,6 @@ public class PluginService : IPluginService
                 info.Exception = ex;
                 info.LoadStatus = PluginLoadStatus.Error;
                 PluginLoadedStatus.Add(info);
-                // Console.WriteLine($"Failed to initialize plugin {manifest.Name}:"+ex);
             }
         }
         
