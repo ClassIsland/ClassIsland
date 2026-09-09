@@ -33,6 +33,23 @@
                 </ci:Field>
 
 
+                <Grid ColumnDefinitions="*,Auto" Margin="0 0 0 8">
+                    <CheckBox Content="启用标题左侧图标"
+                              IsChecked="{Binding Settings.IsLeftIconEnabled}" />
+                    <ci:IconExpressionEditor Grid.Column="1"
+                                             IsEnabled="{Binding Settings.IsLeftIconEnabled}"
+                                             IconExpression="{Binding Settings.LeftIcon}"
+                                             AutomationProperties.Name="标题左侧图标" />
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto" Margin="0 0 0 20">
+                    <CheckBox Content="启用标题右侧图标"
+                              IsChecked="{Binding Settings.IsRightIconEnabled}" />
+                    <ci:IconExpressionEditor Grid.Column="1"
+                                             IsEnabled="{Binding Settings.IsRightIconEnabled}"
+                                             IconExpression="{Binding Settings.RightIcon}"
+                                             AutomationProperties.Name="标题右侧图标" />
+                </Grid>
+
                 <ci:Field Margin="0 0 0 8"
                           Label="正文内容">
                     <TextBox Text="{Binding Settings.Content}"

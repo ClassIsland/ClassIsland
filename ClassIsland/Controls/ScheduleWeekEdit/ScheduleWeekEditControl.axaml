@@ -1,0 +1,88 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="using:ClassIsland.Controls.ScheduleWeekEdit"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <ControlTheme x:Key="{x:Type local:ScheduleWeekEditControl}" TargetType="local:ScheduleWeekEditControl">
+        <Setter Property="Focusable" Value="True"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="36,*,Auto" ClipToBounds="True">
+                    <Canvas Name="PART_Header" Grid.Row="0" IsHitTestVisible="False"/>
+                    <ScrollViewer Name="PART_ScrollViewer" Grid.Row="1"
+                                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible">
+                        <Canvas Name="PART_Canvas" Background="Transparent" ClipToBounds="True"
+                                HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    </ScrollViewer>
+                    <Canvas Name="PART_ResizeGuide" Grid.Row="1" IsVisible="False"
+                            IsHitTestVisible="False" ClipToBounds="True">
+                        <Border Name="PART_ResizeGuideLine" Height="2"
+                                Background="{DynamicResource AccentFillColorDefaultBrush}"/>
+                        <Border Name="PART_ResizeGuideLabel" Width="44" Height="20" CornerRadius="10"
+                                Background="{DynamicResource AccentFillColorDefaultBrush}">
+                            <TextBlock Name="PART_ResizeGuideTime" FontSize="11"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                        </Border>
+                    </Canvas>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2">
+                        <Button Name="PART_ZoomOut" Theme="{StaticResource TransparentButton}" ToolTip.Tip="缩小">
+                            <ci:FluentIcon Glyph="{ci:FI ZoomOutRegular}"/>
+                        </Button>
+                        <TextBlock Text="{Binding Scale, RelativeSource={RelativeSource TemplatedParent}, StringFormat='P0'}"
+                                   MinWidth="46" TextAlignment="Center" VerticalAlignment="Center"/>
+                        <Button Name="PART_ZoomIn" Theme="{StaticResource TransparentButton}" ToolTip.Tip="放大">
+                            <ci:FluentIcon Glyph="{ci:FI ZoomInRegular}"/>
+                        </Button>
+                        <Button Name="PART_LocateSelected" Theme="{StaticResource TransparentButton}" ToolTip.Tip="定位到选择的日程">
+                            <ci:FluentIcon Glyph="{ci:FI TargetRegular}"/>
+                        </Button>
+                        <Button Name="PART_FitAll" Theme="{StaticResource TransparentButton}" ToolTip.Tip="缩放到显示本周所有日程">
+                            <ci:FluentIcon Glyph="{ci:FI ArrowAutofitContentRegular}"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type local:ScheduleWeekBlock}" TargetType="local:ScheduleWeekBlock">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
+                        CornerRadius="4" ClipToBounds="True">
+                    <Panel>
+                        <Border Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0.45"/>
+                        <Border Name="HoverBorder" CornerRadius="4" BorderThickness="1"
+                                BorderBrush="{DynamicResource TextFillColorPrimaryBrush}" IsHitTestVisible="False"/>
+                        <StackPanel Name="Labels" IsHitTestVisible="False">
+                            <TextBlock Text="{TemplateBinding SubjectName}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                            <TextBlock Name="TimeLabel" Text="{TemplateBinding TimeText}" FontSize="11" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <Border BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="2"
+                                CornerRadius="4" IsVisible="{TemplateBinding IsSelected}" IsHitTestVisible="False"/>
+                        <Border Height="3" Width="22" CornerRadius="2" Margin="0,2" VerticalAlignment="Top"
+                                Background="{DynamicResource TextFillColorPrimaryBrush}" IsVisible="{TemplateBinding ShowHandles}"
+                                IsHitTestVisible="False"/>
+                        <Border Height="3" Width="22" CornerRadius="2" Margin="0,2" VerticalAlignment="Bottom"
+                                Background="{DynamicResource TextFillColorPrimaryBrush}" IsVisible="{TemplateBinding ShowHandles}"
+                                IsHitTestVisible="False"/>
+                    </Panel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^ /template/ Border#HoverBorder">
+            <Setter Property="Opacity" Value="0"/>
+        </Style>
+        <Style Selector="^ /template/ StackPanel#Labels">
+            <Setter Property="Margin" Value="5,6"/>
+        </Style>
+        <Style Selector="^:pointerover /template/ Border#HoverBorder">
+            <Setter Property="Opacity" Value="0.4"/>
+        </Style>
+        <Style Selector="^[IsCompact=True] /template/ StackPanel#Labels">
+            <Setter Property="Margin" Value="5,1"/>
+        </Style>
+        <Style Selector="^[IsCompact=True] /template/ TextBlock#TimeLabel">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

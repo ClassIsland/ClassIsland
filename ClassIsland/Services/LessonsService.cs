@@ -345,6 +345,14 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
     }
 
+    public OrderedDictionary<Guid, ScheduleItem> GetScheduleItemsByDate(DateOnly date)
+    {
+        var items = Profile.ScheduleItems
+            .Where(x => IsTimeRuleSatisfied(x.Value.EnableRule, date.ToDateTime(TimeOnly.MinValue)))
+            .OrderBy(x => x.Value.StartTime);
+        return new OrderedDictionary<Guid, ScheduleItem>(items);
+    }
+
     private ClassPlan? GetConvertedClassPlanFromScheduleItemsByDate(DateOnly date)
     {
         ClassPlan? classPlan = null;
@@ -355,10 +363,9 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return classPlan;
         }
 
-        var scheduleItems = Profile.ScheduleItems
-            .Where(x => IsTimeRuleSatisfied(x.Value.EnableRule, date.ToDateTime(TimeOnly.MinValue)))
-            .OrderBy(x => x.Value.StartTime)
-            .ToList();
+        var scheduleItems = 
+            GetScheduleItemsByDate(date)
+                .ToList();
 
         if (scheduleItems.Count <= 0)
         {

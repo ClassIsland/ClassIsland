@@ -191,6 +191,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             }));
 
         PropertyChanged += OnViewModelPropertyChanged;
+        InitializeScheduleWeek();
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs args)
@@ -233,6 +234,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     partial void OnSelectedScheduleItemKvpChanged(KeyValuePair<Guid, ScheduleItem>? value)
     {
+        SelectedScheduleItemId = value?.Key;
         SelectedScheduleItem = value?.Value;
     }
 
@@ -269,6 +271,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
 
         _resourcesReleased = true;
+        _scheduleWeekSubscriptions.Dispose();
         PropertyChanged -= OnViewModelPropertyChanged;
         foreach (var subscription in _externalSubscriptions)
         {

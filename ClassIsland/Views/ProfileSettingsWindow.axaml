@@ -17,6 +17,7 @@
         xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
         xmlns:profile1="clr-namespace:ClassIsland.Core.Enums.Profile;assembly=ClassIsland.Core"
         xmlns:scheduleDataGrid="clr-namespace:ClassIsland.Controls.ScheduleDataGrid"
+        xmlns:scheduleWeek="clr-namespace:ClassIsland.Controls.ScheduleWeekEdit"
         xmlns:profile2="clr-namespace:ClassIsland.Models.Profile"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
@@ -1867,6 +1868,10 @@
                             </controls:FACommandBar>
                             <!-- 课程选择 -->
                             <Grid Grid.Row="2" Grid.Column="0" Margin="0 0 3 0">
+                                <ci:ReusableTabControl TabStripPlacement="Bottom" Classes="compact barrier" Padding="0"
+                                                       SelectedIndex="{Binding ViewModel.SettingsService.Settings.ScheduleEditModeIndex, Mode=TwoWay}">
+                                    <TabItem ToolTip.Tip="列表视图">
+                                        <TabItem.Header><ci:FluentIcon Glyph="{ci:FI TextBulletListLtrRegular}"/></TabItem.Header>
                                 <DataGrid Grid.Row="0"
                                           x:Name="DataGridScheduleItems"
                                           ItemsSource="{Binding ViewModel.ScheduleItems.List}"
@@ -2014,6 +2019,48 @@
                                         </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
+                                    </TabItem>
+                                    <TabItem ToolTip.Tip="日程视图">
+                                        <TabItem.Header><ci:FluentIcon Glyph="{ci:FI CalendarWeekStartRegular}"/></TabItem.Header>
+                                        <Grid RowDefinitions="Auto,*">
+                                            <WrapPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                                <CalendarDatePicker Width="150" Margin="0,0,4,0"
+                                                    SelectedDate="{Binding ViewModel.ScheduleWeekNavigationDate, Mode=TwoWay}"
+                                                    DisplayDateEnd="{Binding ViewModel.ScheduleWeekNavigationMaxDate}"
+                                                    ToolTip.Tip="选择日期以跳转到所在周"/>
+                                                <Button Click="ScheduleWeekPrevious_OnClick" ToolTip.Tip="上一周" Margin="0,0,4,0"
+                                                        Theme="{StaticResource TransparentButton}">
+                                                    <ci:FluentIcon Glyph="{ci:FI ChevronLeftRegular}"/>
+                                                </Button>
+                                                <Button Click="ScheduleWeekToday_OnClick" Content="本周" Margin="0,0,4,0"
+                                                        Theme="{StaticResource TransparentButton}"/>
+                                                <Button Click="ScheduleWeekNext_OnClick" ToolTip.Tip="下一周" Margin="0,0,4,0"
+                                                        Theme="{StaticResource TransparentButton}">
+                                                    <ci:FluentIcon Glyph="{ci:FI ChevronRightRegular}"/>
+                                                </Button>
+                                                <TextBlock Text="{Binding ViewModel.ScheduleWeekCaption}" VerticalAlignment="Center" FontSize="12"/>
+                                            </WrapPanel>
+                                            <scheduleWeek:ScheduleWeekEditControl Grid.Row="1" x:Name="ScheduleWeekEditor"
+                                                ItemsSource="{Binding ViewModel.ScheduleWeekItems}"
+                                                WeekStart="{Binding ViewModel.ScheduleWeekStart}"
+                                                SelectedScheduleItemId="{Binding ViewModel.SelectedScheduleItemId, Mode=TwoWay}"
+                                                SelectedDate="{Binding ViewModel.ScheduleWeekSelectedDate, Mode=TwoWay}"
+                                                SelectedTime="{Binding ViewModel.ScheduleWeekSelectedTime, Mode=TwoWay}"
+                                                CreateRequested="ScheduleWeekEditor_OnCreateRequested"
+                                                EditRequested="ScheduleWeekEditor_OnEditRequested"
+                                                DeleteRequested="ScheduleWeekEditor_OnDeleteRequested">
+                                                <scheduleWeek:ScheduleWeekEditControl.IsReadonly>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                                        <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing"/>
+                                                        <Binding Path="ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing"/>
+                                                        <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing"/>
+                                                        <Binding Path="ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing"/>
+                                                    </MultiBinding>
+                                                </scheduleWeek:ScheduleWeekEditControl.IsReadonly>
+                                            </scheduleWeek:ScheduleWeekEditControl>
+                                        </Grid>
+                                    </TabItem>
+                                </ci:ReusableTabControl>
                             </Grid>
 
                             <!-- Gutter -->

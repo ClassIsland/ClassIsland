@@ -66,6 +66,12 @@
             <TabItem Header="控件">
                 <ScrollViewer>
                     <StackPanel Spacing="6">
+                        <ci:Field Label="IconExpressionEditor">
+                            <StackPanel Spacing="6">
+                                <ci:IconExpressionEditor IconExpression="{Binding ViewModel.IconExpression}" />
+                                <TextBox Text="{Binding ViewModel.IconExpression}" PlaceholderText="图标表达式（双向绑定）" />
+                            </StackPanel>
+                        </ci:Field>
                         <ci:Field Label="ChipListBoxTheme">
                             <ListBox Theme="{StaticResource ChipListBoxTheme}">
                                 <ListBoxItem>大地</ListBoxItem>

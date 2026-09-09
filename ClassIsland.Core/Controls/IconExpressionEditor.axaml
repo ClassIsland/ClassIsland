@@ -1,0 +1,126 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="using:ClassIsland.Core.Controls"
+             xmlns:icons="using:ClassIsland.Core.Icons"
+             xmlns:models="using:ClassIsland.Core.Models.UI"
+             xmlns:fa="using:FluentAvalonia.UI.Controls"
+             x:Class="ClassIsland.Core.Controls.IconExpressionEditor"
+             x:DataType="models:IconExpressionEditorViewModel"
+             x:CompileBindings="True">
+    <Grid x:Name="EditorRoot">
+        <Button x:Name="EditorButton" Width="56" Height="32" Padding="7,4"
+                HorizontalAlignment="Left" ToolTip.Tip="选择图标"
+                AutomationProperties.Name="选择图标">
+            <Grid ColumnDefinitions="20,8,12">
+                <fa:FAIconSourceElement IconSource="{Binding Preview}" Width="20" Height="20"
+                                        Classes="repair-fontsize" TextElement.FontSize="20" />
+                <ci:FluentIcon Grid.Column="2" Glyph="{x:Static icons:FluentIcons.ChevronDownRegular}"
+                               FontSize="12" />
+            </Grid>
+            <Button.Flyout>
+                <Flyout Placement="BottomEdgeAlignedLeft" Opened="OnFlyoutOpened">
+                    <Flyout.FlyoutPresenterTheme>
+                        <ControlTheme TargetType="FlyoutPresenter" BasedOn="{StaticResource {x:Type FlyoutPresenter}}">
+                            <Setter Property="Width" Value="350" />
+                            <Setter Property="Padding" Value="12" />
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                        </ControlTheme>
+                    </Flyout.FlyoutPresenterTheme>
+                    <StackPanel x:Name="FlyoutRoot" Width="324" Spacing="12">
+                        <Grid ColumnDefinitions="32,12,*" Height="40">
+                            <fa:FAIconSourceElement IconSource="{Binding Preview}" Width="32" Height="32"
+                                                    Classes="repair-fontsize" TextElement.FontSize="32" />
+                            <TabStrip Grid.Column="2" Theme="{StaticResource TabStripStyle}" Classes="compact"
+                                      HorizontalAlignment="Stretch" SelectedIndex="{Binding SelectedType, Mode=TwoWay}"
+                                      AutomationProperties.Name="图标类型">
+                                <TabStrip.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1" />
+                                    </ItemsPanelTemplate>
+                                </TabStrip.ItemsPanel>
+                                <TabStripItem Content="Fluent" />
+                                <TabStripItem Content="Lucide" />
+                                <TabStripItem Content="图像" />
+                            </TabStrip>
+                        </Grid>
+                        <StackPanel IsVisible="{Binding !IsImage}" Spacing="8">
+                            <Grid>
+                                <TextBox x:Name="SearchBox" Text="{Binding Query}" Height="32" Padding="36,5,8,5"
+                                         PlaceholderText="名称或 Unicode 码" AutomationProperties.Name="按名称或 Unicode 筛选图标"
+                                         KeyDown="OnSearchKeyDown" />
+                                <ci:FluentIcon Glyph="{x:Static icons:FluentIcons.SearchRegular}" FontSize="16"
+                                               Width="16" Margin="12,0,0,0" HorizontalAlignment="Left"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               IsHitTestVisible="False" />
+                            </Grid>
+                            <!-- Seven 36px rows plus 4px inset at each end; keep the viewport finite for virtualization. -->
+                            <Panel Height="260">
+                                <ScrollViewer x:Name="IconScrollViewer"
+                                              HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                    <fa:FAItemsRepeater x:Name="IconRepeater" ItemsSource="{Binding FilteredIcons}"
+                                                        VerticalCacheLength="1" Margin="0,4"
+                                                        KeyDown="OnIconKeyDown">
+                                        <fa:FAItemsRepeater.Layout>
+                                            <fa:FAUniformGridLayout Orientation="Horizontal"
+                                                                    MinItemWidth="36" MinItemHeight="36" />
+                                        </fa:FAItemsRepeater.Layout>
+                                        <fa:FAItemsRepeater.ItemTemplate>
+                                            <DataTemplate x:DataType="models:IconExpressionEditorItem">
+                                                <Button Width="36" Height="36" Padding="7"
+                                                        Classes="icon-choice" Classes.selected="{Binding IsSelected}"
+                                                        ToolTip.Tip="{Binding Description}" AutomationProperties.Name="{Binding Description}"
+                                                        Click="OnIconClick">
+                                                    <fa:FAFontIcon Glyph="{Binding Glyph}" FontFamily="{Binding FontFamily}"
+                                                                   FontSize="20" Width="20" Height="20" />
+                                                </Button>
+                                            </DataTemplate>
+                                        </fa:FAItemsRepeater.ItemTemplate>
+                                        <fa:FAItemsRepeater.Styles>
+                                            <Style Selector="Button.icon-choice">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Setter Property="BorderBrush" Value="Transparent" />
+                                                <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+                                            </Style>
+                                            <Style Selector="Button.icon-choice.selected">
+                                                <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                            </Style>
+                                            <Style Selector="Button.icon-choice.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                                                             Button.icon-choice.selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                            </Style>
+                                        </fa:FAItemsRepeater.Styles>
+                                    </fa:FAItemsRepeater>
+                                </ScrollViewer>
+                                <StackPanel IsVisible="{Binding HasNoResults}" Spacing="8" Margin="16"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            IsHitTestVisible="False">
+                                    <ci:FluentIcon Glyph="{x:Static icons:FluentIcons.SearchRegular}" FontSize="28"
+                                                   Width="28" Height="28" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                                    <TextBlock Text="没有找到匹配的图标" HorizontalAlignment="Center" />
+                                    <TextBlock Text="试试其他名称或 Unicode 码" TextWrapping="Wrap" TextAlignment="Center"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                            </Panel>
+                        </StackPanel>
+                        <Grid IsVisible="{Binding IsImage}" ColumnDefinitions="*,8,32">
+                            <TextBox Text="{Binding ImagePath}" PlaceholderText="图片路径或 URI" MinHeight="32"
+                                     AutomationProperties.Name="图片路径或 URI" />
+                            <Button Grid.Column="2" Width="32" Height="32" Padding="5" Click="OnBrowseClick"
+                                    IsEnabled="{Binding !IsBrowsing}" Theme="{StaticResource TransparentButton}"
+                                    ToolTip.Tip="浏览图片…" AutomationProperties.Name="浏览图片">
+                                <ci:FluentIcon Glyph="{x:Static icons:FluentIcons.FolderOpenRegular}" FontSize="20" />
+                            </Button>
+                        </Grid>
+                        <TextBlock Text="{Binding Message}" TextWrapping="Wrap"
+                                   IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+    </Grid>
+</UserControl>

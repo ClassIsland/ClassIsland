@@ -7,6 +7,7 @@
         <StackPanel Orientation="Horizontal" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
             <controls:FAIconSourceElement IconSource="{Binding LeftIconSource}" 
+                                        IsVisible="{Binding LeftIconSource, Converter={x:Static ObjectConverters.IsNotNull}}"
                                         VerticalAlignment="Center"
                                         Classes="repair-fontsize"
                                         TextElement.FontSize="20"
@@ -17,7 +18,14 @@
                                         VerticalAlignment="Center"
                                         Classes="repair-fontsize"
                                         TextElement.FontSize="20"
-                                        Height="20" Width="20"/>
+                                        Height="20" Width="20">
+                <controls:FAIconSourceElement.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="HasRightIcon" />
+                        <Binding Path="RightIconSource" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                    </MultiBinding>
+                </controls:FAIconSourceElement.IsVisible>
+            </controls:FAIconSourceElement>
         </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

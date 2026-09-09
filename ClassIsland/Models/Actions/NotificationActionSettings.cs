@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ClassIsland.Core.Icons;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.Actions;
 
@@ -16,6 +17,10 @@ public partial class NotificationActionSettings : ObservableRecipient
     private bool _isEffectEnabled = true;
     private bool _isAdvancedSettingsEnabled = false;
     [ObservableProperty] bool _isWaitForCompleteEnabled = false;
+    [ObservableProperty] private bool _isLeftIconEnabled = true;
+    [ObservableProperty] private bool _isRightIconEnabled = false;
+    [ObservableProperty] private string _leftIcon = $"lucide({LucideIcons.Info})";
+    [ObservableProperty] private string _rightIcon = $"lucide({LucideIcons.BellRing})";
 
     public string Content
     {

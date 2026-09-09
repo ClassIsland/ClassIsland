@@ -22,6 +22,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Controls.ScheduleDataGrid;
 using ClassIsland.Controls.TimeLine;
+using ClassIsland.Controls.ScheduleWeekEdit;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -1449,6 +1450,38 @@ public partial class ProfileSettingsWindow : ViewBase
 
     #region ScheduleItems
 
+    private void ScheduleWeekPrevious_OnClick(object? sender, RoutedEventArgs e) => ViewModel.MoveScheduleWeek(-1);
+    private void ScheduleWeekNext_OnClick(object? sender, RoutedEventArgs e) => ViewModel.MoveScheduleWeek(1);
+    private void ScheduleWeekToday_OnClick(object? sender, RoutedEventArgs e) => ViewModel.GoToCurrentScheduleWeek();
+
+    private void ScheduleWeekEditor_OnCreateRequested(object? sender, ScheduleWeekEditEventArgs e)
+    {
+        if (!CanEditScheduleItems()) return;
+        ViewModel.CreateScheduleItem(e.Date, e.StartTime);
+        e.Handled = true;
+    }
+
+    private void ScheduleWeekEditor_OnEditRequested(object? sender, ScheduleWeekEditEventArgs e)
+    {
+        if (!CanEditScheduleItems()) return;
+        if (!ViewModel.ApplyScheduleWeekEdit(e))
+            ToastsHelper.ShowToast(this, new ToastMessage("无法移动到该日期或时间，请在右侧检查课程的时间和启用范围。"));
+        e.Handled = true;
+    }
+
+    private void ScheduleWeekEditor_OnDeleteRequested(object? sender, ScheduleWeekEditEventArgs e)
+    {
+        if (!CanEditScheduleItems()) return;
+        ViewModel.SelectedScheduleItemId = e.ScheduleItemId;
+        ButtonDeleteScheduleItem_OnClick(this, e);
+        e.Handled = true;
+    }
+
+    private List<KeyValuePair<Guid, ScheduleItem>> GetSelectedScheduleItems() =>
+        ViewModel.SettingsService.Settings.ScheduleEditModeIndex == 1
+            ? ViewModel.SelectedScheduleItemKvp is { } selected ? [selected] : []
+            : DataGridScheduleItems.SelectedItems.OfType<KeyValuePair<Guid, ScheduleItem>>().ToList();
+
     private bool CanEditScheduleItems()
     {
         var policy = ViewModel.ManagementService.Policy;
@@ -1468,11 +1501,17 @@ public partial class ProfileSettingsWindow : ViewBase
         DataGridScheduleItems.CancelEdit();
         var wasReadOnly = DataGridScheduleItems.IsReadOnly;
         DataGridScheduleItems.IsReadOnly = true;
-        var scheduleItem = new KeyValuePair<Guid, ScheduleItem>(Guid.NewGuid(), new ScheduleItem());
         try
         {
-            ViewModel.ScheduleItems.List.Add(scheduleItem);
-            ViewModel.SelectedScheduleItemKvp = scheduleItem;
+            if (ViewModel.SettingsService.Settings.ScheduleEditModeIndex == 1)
+            {
+                var today = ViewModel.ExactTimeService.GetCurrentLocalDateTime();
+                var date = ViewModel.ScheduleWeekSelectedDate
+                           ?? ViewModel.ScheduleWeekStart.AddDays(((int)today.DayOfWeek + 6) % 7);
+                ViewModel.CreateScheduleItem(date, ViewModel.ScheduleWeekSelectedTime ?? TimeSpan.FromHours(8));
+            }
+            else
+                ViewModel.CreateScheduleItem();
         }
         finally
         {
@@ -1495,9 +1534,7 @@ public partial class ProfileSettingsWindow : ViewBase
         KeyValuePair<Guid, ScheduleItem>? lastAddedScheduleItem = null;
         try
         {
-            foreach (var scheduleItem in DataGridScheduleItems.SelectedItems
-                         .OfType<KeyValuePair<Guid, ScheduleItem>>()
-                         .ToList())
+            foreach (var scheduleItem in GetSelectedScheduleItems())
             {
                 var copyPair = new KeyValuePair<Guid, ScheduleItem>(
                     Guid.NewGuid(),
@@ -1531,8 +1568,7 @@ public partial class ProfileSettingsWindow : ViewBase
         DataGridScheduleItems.IsReadOnly = true;
         try
         {
-            var removedScheduleItems = DataGridScheduleItems.SelectedItems
-                .OfType<KeyValuePair<Guid, ScheduleItem>>()
+            var removedScheduleItems = GetSelectedScheduleItems()
                 .Select(item => (Item: item, Index: ViewModel.ScheduleItems.List.IndexOf(item)))
                 .Where(item => item.Index >= 0)
                 .OrderBy(item => item.Index)

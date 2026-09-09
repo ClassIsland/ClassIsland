@@ -2677,4 +2677,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
+
+    private int _scheduleEditModeIndex;
+
+    public int ScheduleEditModeIndex
+    {
+        get => _scheduleEditModeIndex;
+        set => SetProperty(ref _scheduleEditModeIndex, value);
+    }
 }
