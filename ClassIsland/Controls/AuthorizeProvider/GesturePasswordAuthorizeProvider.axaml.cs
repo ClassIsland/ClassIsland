@@ -78,6 +78,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     {
         CancelConfirmResetTimer();
         ConfirmFailed = false;
+        if (!e.Handled) GestureGrid.Reset();
     }
 
     private void CancelConfirmResetTimer()
