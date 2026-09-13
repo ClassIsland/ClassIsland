@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
@@ -41,6 +42,11 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
+    public SyncDictionaryList<Guid, SubjectGroup> SubjectGroups { get; }
+
+    public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems { get; } = [];
+    public ObservableCollection<KeyValuePair<Guid, string>> SubjectGroupSelectionItems { get; } = [];
+    public ObservableCollection<Subject> FilteredSubjects { get; } = [];
 
     public SyncDictionaryList<Guid, ClassPlanGroup> ClassPlanGroups { get; }
     public SyncDictionaryList<DateTime, OrderedSchedule> OrderedSchedules { get; }
@@ -61,6 +67,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private TimeLayoutItem? _selectedTimePoint;
     [ObservableProperty] private double _timeLineScale = 3.0;
     [ObservableProperty] private Subject? _selectedSubject;
+    [ObservableProperty] private Guid _selectedSubjectGroupId = Guid.Empty;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
     [ObservableProperty] private Guid _tempOverlayClassPlanTimeLayoutId = Guid.Empty;
@@ -138,10 +145,25 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);
         Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
+        SubjectGroups = new SyncDictionaryList<Guid, SubjectGroup>(ProfileService.Profile.SubjectGroups, Guid.NewGuid);
         ClassPlanGroups =
             new SyncDictionaryList<Guid, ClassPlanGroup>(ProfileService.Profile.ClassPlanGroups, Guid.NewGuid);
         OrderedSchedules =
             new SyncDictionaryList<DateTime, OrderedSchedule>(ProfileService.Profile.OrderedSchedules, () => DateTime.MinValue);
+
+        RefreshSubjectSelectionItems();
+        ProfileService.Profile.Subjects.CollectionChanged += SubjectsOnCollectionChanged;
+        ProfileService.Profile.SubjectGroups.CollectionChanged += SubjectGroupsOnCollectionChanged;
+        ProfileService.Profile.EditingSubjects.CollectionChanged += EditingSubjectsOnCollectionChanged;
+        foreach (var subject in ProfileService.Profile.Subjects.Values)
+        {
+            subject.PropertyChanged += SubjectOnPropertyChanged;
+        }
+        foreach (var group in ProfileService.Profile.SubjectGroups.Values)
+        {
+            group.PropertyChanged += SubjectGroupOnPropertyChanged;
+        }
+        RefreshFilteredSubjects();
 
         TempClassPlanList = ClassPlans.List
             .ToObservableChangeSet()
@@ -221,6 +243,109 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
                 SelectClassPlanByInstance(SelectedClassPlan, true);
             }
         };
+    }
+
+    private void SubjectOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Subject.GroupId))
+        {
+            RefreshSubjectSelectionItems();
+            RefreshFilteredSubjects();
+        }
+    }
+
+    private void SubjectGroupOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SubjectGroup.Name))
+        {
+            RefreshSubjectSelectionItems();
+        }
+    }
+
+    private void SubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        foreach (var item in e.OldItems?.OfType<KeyValuePair<Guid, Subject>>() ?? [])
+        {
+            item.Value.PropertyChanged -= SubjectOnPropertyChanged;
+        }
+        foreach (var item in e.NewItems?.OfType<KeyValuePair<Guid, Subject>>() ?? [])
+        {
+            item.Value.PropertyChanged += SubjectOnPropertyChanged;
+        }
+        RefreshSubjectSelectionItems();
+        RefreshFilteredSubjects();
+    }
+
+    private void SubjectGroupsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        foreach (var item in e.OldItems?.OfType<KeyValuePair<Guid, SubjectGroup>>() ?? [])
+        {
+            item.Value.PropertyChanged -= SubjectGroupOnPropertyChanged;
+        }
+        foreach (var item in e.NewItems?.OfType<KeyValuePair<Guid, SubjectGroup>>() ?? [])
+        {
+            item.Value.PropertyChanged += SubjectGroupOnPropertyChanged;
+        }
+        RefreshSubjectSelectionItems();
+        RefreshFilteredSubjects();
+    }
+
+    private void EditingSubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        RefreshFilteredSubjects();
+    }
+
+    private void RefreshSubjectSelectionItems()
+    {
+        var groups = ProfileService.Profile.SubjectGroups;
+        var subjects = ProfileService.Profile.Subjects;
+        var items = new List<SubjectSelectionItem>();
+
+        foreach (var group in groups)
+        {
+            items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name));
+            items.AddRange(subjects
+                .Where(x => x.Value.GroupId == group.Key)
+                .Select(x => new SubjectSelectionItem(x.Key, x.Value)));
+        }
+
+        items.Add(new SubjectSelectionItem(Guid.Empty, null, "未分组"));
+        items.AddRange(subjects
+            .Where(x => x.Value.GroupId == Guid.Empty || !groups.ContainsKey(x.Value.GroupId))
+            .Select(x => new SubjectSelectionItem(x.Key, x.Value)));
+
+        SubjectSelectionItems.Clear();
+        foreach (var item in items)
+        {
+            SubjectSelectionItems.Add(item);
+        }
+
+        SubjectGroupSelectionItems.Clear();
+        SubjectGroupSelectionItems.Add(new KeyValuePair<Guid, string>(Guid.Empty, "未分组"));
+        foreach (var group in groups)
+        {
+            SubjectGroupSelectionItems.Add(new KeyValuePair<Guid, string>(group.Key, group.Value.Name));
+        }
+    }
+
+    partial void OnSelectedSubjectGroupIdChanged(Guid value)
+    {
+        RefreshFilteredSubjects();
+    }
+
+    private void RefreshFilteredSubjects()
+    {
+        var subjects = ProfileService.Profile.EditingSubjects
+            .Where(x => SelectedSubjectGroupId == Guid.Empty
+                ? x.GroupId == Guid.Empty || !ProfileService.Profile.SubjectGroups.ContainsKey(x.GroupId)
+                : x.GroupId == SelectedSubjectGroupId)
+            .ToList();
+
+        FilteredSubjects.Clear();
+        foreach (var subject in subjects)
+        {
+            FilteredSubjects.Add(subject);
+        }
     }
 
     /// <summary>

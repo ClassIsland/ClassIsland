@@ -112,12 +112,23 @@
                                     <ComboBox HorizontalAlignment="Left"
                                               MinWidth="100"
                                               VerticalAlignment="Center"
-                                              ItemsSource="{Binding ViewModel.Subjects.List, UpdateSourceTrigger=PropertyChanged}"
+                                              ItemsSource="{Binding ViewModel.SubjectSelectionItems, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValueBinding="{Binding Key}"
                                               SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
+                                        <ComboBox.Styles>
+                                            <Style Selector="ComboBoxItem">
+                                                <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
+                                            </Style>
+                                        </ComboBox.Styles>
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Value.Name}" />
+                                                <Grid>
+                                                    <TextBlock Text="{Binding GroupName}"
+                                                               FontWeight="Bold"
+                                                               IsVisible="{Binding IsGroupHeader}" />
+                                                    <TextBlock Text="{Binding Value.Name}"
+                                                               IsVisible="{Binding !IsGroupHeader}" />
+                                                </Grid>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>

@@ -110,6 +110,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
                 var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
                 var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
                 MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
+                MergeDictionary(Profile.SubjectGroups, subjectOld.SubjectGroups, subjectNew.SubjectGroups);
                 spanDownload?.Finish();
             }
 
