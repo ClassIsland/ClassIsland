@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Controls.GesturePassword;
@@ -20,6 +21,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     private int[]? _firstGesture;
     private bool _isCooldownActive;
     private IDisposable? _confirmResetTimer;
+    private IDisposable? _cooldownTimer;
 
     public static readonly StyledProperty<bool> AuthorizeFailedProperty =
         AvaloniaProperty.Register<GesturePasswordAuthorizeProvider, bool>(nameof(AuthorizeFailed));
@@ -82,6 +84,14 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     {
         _confirmResetTimer?.Dispose();
         _confirmResetTimer = null;
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        CancelConfirmResetTimer();
+        _cooldownTimer?.Dispose();
+        _cooldownTimer = null;
     }
 
     private void GesturePasswordAuthorizeProvider_OnLoaded(object sender, RoutedEventArgs e)
@@ -162,8 +172,9 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
             _isCooldownActive = true;
             AuthorizeFailed = true;
             IsEnabled = false;
-            DispatcherTimer.RunOnce(() =>
+            _cooldownTimer = DispatcherTimer.RunOnce(() =>
             {
+                _cooldownTimer = null;
                 IsEnabled = true;
                 _isCooldownActive = false;
                 AuthorizeFailed = false;
@@ -196,15 +207,23 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     private bool VerifyGesture(int[] path)
     {
         if (string.IsNullOrEmpty(Settings.GestureHash)) return false;
+        if (Settings.GestureSalt is not { Length: > 0 }) return false;
 
-        var hash = Rfc2898DeriveBytes.Pbkdf2(
-            Encoding.UTF8.GetBytes(string.Join(",", path)),
-            Settings.GestureSalt,
-            HashIterations,
-            HashAlgorithmName.SHA256,
-            32);
-        var expectedHash = Convert.FromBase64String(Settings.GestureHash);
-        return CryptographicOperations.FixedTimeEquals(hash, expectedHash);
+        try
+        {
+            var hash = Rfc2898DeriveBytes.Pbkdf2(
+                Encoding.UTF8.GetBytes(string.Join(",", path)),
+                Settings.GestureSalt,
+                HashIterations,
+                HashAlgorithmName.SHA256,
+                32);
+            var expectedHash = Convert.FromBase64String(Settings.GestureHash);
+            return CryptographicOperations.FixedTimeEquals(hash, expectedHash);
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 
     private void ButtonChangeGesture_OnClick(object sender, RoutedEventArgs e)
