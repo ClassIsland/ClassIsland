@@ -105,7 +105,7 @@ public partial class ClassChangingViewModel : ObservableRecipient
 
     private void SubjectGroupOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(SubjectGroup.Name))
+        if (e.PropertyName is nameof(SubjectGroup.Name) or nameof(SubjectGroup.Color))
         {
             ScheduleSubjectSelectionItemsRefresh();
         }
@@ -133,7 +133,7 @@ public partial class ClassChangingViewModel : ObservableRecipient
         var subjects = ProfileService.Profile.Subjects;
         foreach (var group in groups)
         {
-            items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name));
+            items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name, group.Value.Color));
             items.AddRange(subjects.Where(x => x.Value.GroupId == group.Key)
                 .Select(x => new SubjectSelectionItem(x.Key, x.Value)));
         }

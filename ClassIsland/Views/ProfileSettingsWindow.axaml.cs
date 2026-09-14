@@ -1409,27 +1409,14 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.SelectedSubjectGroupId = ProfileSettingsViewModel.AllSubjectGroupId;
     }
 
-    private async void ButtonRenameSubjectGroup_OnClick(object? sender, RoutedEventArgs e)
+    private void ButtonEditSubjectGroupInfo_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (!ViewModel.ProfileService.Profile.SubjectGroups.TryGetValue(ViewModel.SelectedSubjectGroupId, out var group))
+        if (!ViewModel.CanEditSelectedSubjectGroup)
         {
             return;
         }
 
-        var textBox = new TextBox { Text = group.Name };
-        var result = await new ContentDialog()
-        {
-            Title = "重命名科目分组",
-            Content = new Field { Label = "分组名称", Content = textBox },
-            PrimaryButtonText = "保存",
-            SecondaryButtonText = "取消",
-            DefaultButton = ContentDialogButton.Primary
-        }.ShowAsync();
-
-        if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text))
-        {
-            group.Name = textBox.Text.Trim();
-        }
+        OpenDrawer("SubjectGroupInfoEditor");
     }
 
     private async void ButtonDeleteSubjectGroup_OnClick(object? sender, RoutedEventArgs e)

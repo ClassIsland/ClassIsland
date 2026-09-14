@@ -49,6 +49,7 @@
                                                       x:Key="TimeLayoutDictionaryKeyFinderMultiConverter" />
         <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:ClassPlan"
                                                       x:Key="ClassPlanDictionaryKeyFinderMultiConverter" />
+        <ci:ColorToColorPickerBrushConverter x:Key="SubjectGroupColorToBrushConverter" />
         
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
@@ -228,6 +229,24 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 科目分组信息 -->
+        <ScrollViewer x:Key="SubjectGroupInfoEditor" Width="332" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16"
+                        Spacing="8"
+                        DataContext="{Binding ViewModel.SelectedSubjectGroup}">
+                <TextBlock Text="分组信息" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                <ci:Field Label="名称">
+                    <TextBox Margin="0 4 0 0"
+                             Text="{Binding Name}"/>
+                </ci:Field>
+                <ci:Field Label="分组标题颜色">
+                    <ColorPicker Margin="0 4 0 0"
+                                 HorizontalAlignment="Left"
+                                 Color="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedSubjectGroupColor, Mode=TwoWay}"/>
+                </ci:Field>
             </StackPanel>
         </ScrollViewer>
         
@@ -432,6 +451,7 @@
                             <DataTemplate>
                                 <Grid>
                                     <TextBlock Text="{Binding GroupName}"
+                                               Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
                                                FontWeight="Bold"
                                                IsVisible="{Binding IsGroupHeader}" />
                                     <TextBlock Text="{Binding Value.Name}"
@@ -882,6 +902,7 @@
                                                             <DataTemplate>
                                                                 <Grid>
                                                                     <TextBlock Text="{Binding GroupName}"
+                                                                               Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
                                                                                FontWeight="Bold"
                                                                                IsVisible="{Binding IsGroupHeader}" />
                                                                     <TextBlock Text="{Binding Value.Name}"
@@ -960,6 +981,7 @@
                                                                                 Margin="2 0 0 0"
                                                                                 IsVisible="{Binding !IsGroupHeader}" />
                                                                             <TextBlock Text="{Binding GroupName}"
+                                                                                       Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
                                                                                        FontWeight="Bold"
                                                                                        IsVisible="{Binding IsGroupHeader}" />
                                                                         </Grid>
@@ -1120,6 +1142,7 @@
                                                                  Margin="2 0 0 0"
                                                                  IsVisible="{Binding !IsGroupHeader}" />
                                                                 <TextBlock Text="{Binding GroupName}"
+                                                                           Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
                                                                            FontWeight="Bold"
                                                                            IsVisible="{Binding IsGroupHeader}" />
                                                             </Grid>
@@ -1586,6 +1609,7 @@
                                                         <DataTemplate>
                                                             <Grid>
                                                                 <TextBlock Text="{Binding GroupName}"
+                                                                           Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
                                                                            FontWeight="Bold"
                                                                            IsVisible="{Binding IsGroupHeader}" />
                                                                 <TextBlock Text="{Binding Value.Name}"
@@ -1699,9 +1723,9 @@
                                         </MenuFlyout>
                                     </controls:CommandBarButton.Flyout>
                                 </controls:CommandBarButton>
-                                <controls:CommandBarButton Click="ButtonRenameSubjectGroup_OnClick" ToolTip.Tip="重命名选中的科目分组。"
+                                <controls:CommandBarButton Click="ButtonEditSubjectGroupInfo_OnClick" ToolTip.Tip="查看并编辑选中科目分组的信息。"
                                                            IsEnabled="{Binding ViewModel.CanEditSelectedSubjectGroup}"
-                                                           IconSource="{ci:FluentIconSource &#xE70F;}" Label="重命名分组"/>
+                                                           IconSource="{ci:FluentIconSource &#xE9E4;}" Label="分组信息"/>
                                 <controls:CommandBarButton Click="ButtonDeleteSubjectGroup_OnClick" ToolTip.Tip="删除选中的科目分组。"
                                                            IsEnabled="{Binding ViewModel.CanEditSelectedSubjectGroup}"
                                                            IconSource="{ci:FluentIconSource &#xE61D;}" Label="删除分组"/>

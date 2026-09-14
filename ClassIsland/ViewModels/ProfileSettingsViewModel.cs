@@ -18,6 +18,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Views;
+using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
@@ -76,6 +77,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private double _timeLineScale = 3.0;
     [ObservableProperty] private Subject? _selectedSubject;
     [ObservableProperty] private Guid _selectedSubjectGroupId = AllSubjectGroupId;
+    [ObservableProperty] private SubjectGroup? _selectedSubjectGroup;
+    [ObservableProperty] private Color _selectedSubjectGroupColor = Colors.DodgerBlue;
     [ObservableProperty] private bool _isSubjectSelectionGroupRowMode;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
@@ -267,9 +270,9 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     private void SubjectGroupOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(SubjectGroup.Name))
+        if (e.PropertyName is nameof(SubjectGroup.Name) or nameof(SubjectGroup.Color))
         {
-            ScheduleSubjectViewsRefresh(true);
+            ScheduleSubjectViewsRefresh(e.PropertyName == nameof(SubjectGroup.Name));
         }
     }
 
@@ -335,7 +338,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
         foreach (var group in groups)
         {
-            items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name));
+            items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name, group.Value.Color));
             items.AddRange(subjects
                 .Where(x => x.Value.GroupId == group.Key)
                 .Select(x => new SubjectSelectionItem(x.Key, x.Value)));
@@ -356,8 +359,37 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     partial void OnSelectedSubjectGroupIdChanged(Guid value)
     {
+        SelectedSubjectGroup = ProfileService.Profile.SubjectGroups.TryGetValue(value, out var group)
+            ? group
+            : null;
+        SelectedSubjectGroupColor = ParseSubjectGroupColor(group?.Color);
         OnPropertyChanged(nameof(CanEditSelectedSubjectGroup));
         ScheduleSubjectViewsRefresh();
+    }
+
+    partial void OnSelectedSubjectGroupColorChanged(Color value)
+    {
+        if (SelectedSubjectGroup != null)
+        {
+            SelectedSubjectGroup.Color = value.ToString();
+        }
+    }
+
+    private static Color ParseSubjectGroupColor(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return Colors.DodgerBlue;
+        }
+
+        try
+        {
+            return Color.Parse(value);
+        }
+        catch (FormatException)
+        {
+            return Colors.DodgerBlue;
+        }
     }
 
     private void RefreshSubjectGroupSelectionItems()

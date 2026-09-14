@@ -41,6 +41,7 @@
     </controls1:MyWindow.Styles>
     <controls1:MyWindow.Resources>
         <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+        <converters1:ColorToColorPickerBrushConverter x:Key="SubjectGroupColorToBrushConverter" />
 
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
@@ -124,6 +125,7 @@
                                             <DataTemplate>
                                                 <Grid>
                                                     <TextBlock Text="{Binding GroupName}"
+                                                               Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
                                                                FontWeight="Bold"
                                                                IsVisible="{Binding IsGroupHeader}" />
                                                     <TextBlock Text="{Binding Value.Name}"
