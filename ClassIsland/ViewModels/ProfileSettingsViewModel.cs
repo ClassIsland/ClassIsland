@@ -316,13 +316,14 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         Dispatcher.UIThread.Post(() =>
         {
             _subjectViewsRefreshPending = false;
-            RefreshSubjectSelectionItems();
-            RefreshFilteredSubjects();
+            // 先补齐下拉选项，再重建科目行，否则新 GroupId 会因暂时找不到选项而显示为空。
             if (_subjectGroupSelectionRefreshPending)
             {
                 _subjectGroupSelectionRefreshPending = false;
                 RefreshSubjectGroupSelectionItems();
             }
+            RefreshSubjectSelectionItems();
+            RefreshFilteredSubjects();
         }, DispatcherPriority.Background);
     }
 

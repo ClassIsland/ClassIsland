@@ -1666,7 +1666,7 @@
                          IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <Grid RowDefinitions="Auto,*">
                         <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="180" MinWidth="150" MaxWidth="260"/>
+                        <ColumnDefinition Width="250" MinWidth="150" MaxWidth="260"/>
                         <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="*" MinWidth="250"/>
                         <ColumnDefinition Width="5"/>
@@ -1693,9 +1693,9 @@
                                                            IconSource="{ci:FluentIconSource &#xE933;}" Label="分科预设">
                                     <controls:CommandBarButton.Flyout>
                                         <MenuFlyout>
-                                            <MenuItem Header="小学（主科、副科）" Tag="primary" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
-                                            <MenuItem Header="初中（主科、副科、小四门）" Tag="middle" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
-                                            <MenuItem Header="高中（必修、理科、文科）" Tag="high" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                            <MenuItem Header="小学" Tag="primary" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                            <MenuItem Header="初中" Tag="middle" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                            <MenuItem Header="高中" Tag="high" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
                                         </MenuFlyout>
                                     </controls:CommandBarButton.Flyout>
                                 </controls:CommandBarButton>
