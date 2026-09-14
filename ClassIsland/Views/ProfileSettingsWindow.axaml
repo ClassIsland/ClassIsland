@@ -501,6 +501,11 @@
             </StackPanel>
         </Flyout>
     </ci:MyWindow.Resources>
+    <ci:MyWindow.Styles>
+        <Style Selector="TabControl.subject-selection-header TabItem:selected /template/ Rectangle#PART_SelectedPipe">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </ci:MyWindow.Styles>
     <ci:DrawerHost DrawerPlacement="Right"
                IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                DrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
@@ -897,10 +902,29 @@
                                                           Grid.Row="0" Grid.RowSpan="2"
                                                           VerticalAlignment="Stretch" />
 
-                                            <TabControl Grid.Row="0" Grid.Column="2" Classes="compact"
+                                            <TabControl Grid.Row="0" Grid.Column="2" Classes="compact subject-selection-header"
                                                         Grid.RowSpan="2"
                                                         Padding="0">
-                                                <TabItem Header="编辑科目">
+                                                <TabItem>
+                                                    <TabItem.Header>
+                                                        <StackPanel Orientation="Horizontal" Spacing="2">
+                                                            <TextBlock Text="编辑科目" VerticalAlignment="Center" Margin="0 0 4 0" />
+                                                            <RadioButton GroupName="ListSubjectSelectionLayout"
+                                                                         Theme="{StaticResource TransparentToggleButton}"
+                                                                         Width="24" Height="24" Padding="2"
+                                                                         ToolTip.Tip="堆叠模式"
+                                                                         IsChecked="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode, Converter={StaticResource InvertBooleanConverter}, Mode=TwoWay}">
+                                                                <ci:FluentIcon Glyph="{ci:FI StackRegular}" FontSize="14" />
+                                                            </RadioButton>
+                                                            <RadioButton GroupName="ListSubjectSelectionLayout"
+                                                                         Theme="{StaticResource TransparentToggleButton}"
+                                                                         Width="24" Height="24" Padding="2"
+                                                                         ToolTip.Tip="分行模式"
+                                                                         IsChecked="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode, Mode=TwoWay}">
+                                                                <ci:FluentIcon Glyph="{ci:FI LayoutRowThreeRegular}" FontSize="14" />
+                                                            </RadioButton>
+                                                        </StackPanel>
+                                                    </TabItem.Header>
                                                     <Grid RowDefinitions="*, Auto">
                                                         <ListBox
                                                             Grid.Row="0"
@@ -918,7 +942,8 @@
                                                             </ListBox.Styles>
                                                             <ListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <WrapPanel Classes="animated-resize" />
+                                                                    <controls1:SubjectSelectionWrapPanel
+                                                                        IsGroupRowMode="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode}" />
                                                                 </ItemsPanelTemplate>
                                                             </ListBox.ItemsPanel>
                                                             <ListBox.ItemTemplate>
@@ -1036,10 +1061,29 @@
                                               Grid.Row="1" 
                                               VerticalAlignment="Stretch" />
 
-                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact tag-SubjectsInput"
+                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact tag-SubjectsInput subject-selection-header"
                                             IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                             Padding="0">
-                                    <TabItem Header="编辑科目">
+                                    <TabItem>
+                                        <TabItem.Header>
+                                            <StackPanel Orientation="Horizontal" Spacing="2">
+                                                <TextBlock Text="编辑科目" VerticalAlignment="Center" Margin="0 0 4 0" />
+                                                <RadioButton GroupName="WeekSubjectSelectionLayout"
+                                                             Theme="{StaticResource TransparentToggleButton}"
+                                                             Width="24" Height="24" Padding="2"
+                                                             ToolTip.Tip="堆叠模式"
+                                                             IsChecked="{Binding ViewModel.IsSubjectSelectionGroupRowMode, Converter={StaticResource InvertBooleanConverter}, Mode=TwoWay}">
+                                                    <ci:FluentIcon Glyph="{ci:FI StackRegular}" FontSize="14" />
+                                                </RadioButton>
+                                                <RadioButton GroupName="WeekSubjectSelectionLayout"
+                                                             Theme="{StaticResource TransparentToggleButton}"
+                                                             Width="24" Height="24" Padding="2"
+                                                             ToolTip.Tip="分行模式"
+                                                             IsChecked="{Binding ViewModel.IsSubjectSelectionGroupRowMode, Mode=TwoWay}">
+                                                    <ci:FluentIcon Glyph="{ci:FI LayoutRowThreeRegular}" FontSize="14" />
+                                                </RadioButton>
+                                            </StackPanel>
+                                        </TabItem.Header>
                                         <Grid RowDefinitions="*, Auto">
                                             <ListBox
                                                 Grid.Row="0"
@@ -1058,7 +1102,8 @@
                                                 </ListBox.Styles>
                                                 <ListBox.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <WrapPanel Classes="animated-resize" />
+                                                        <controls1:SubjectSelectionWrapPanel
+                                                            IsGroupRowMode="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode}" />
                                                     </ItemsPanelTemplate>
                                                 </ListBox.ItemsPanel>
                                                 <ListBox.ItemTemplate>
@@ -1644,11 +1689,21 @@
                                 <controls:CommandBarSeparator/>
                                 <controls:CommandBarButton Click="ButtonAddSubjectGroup_OnClick" ToolTip.Tip="新建一个科目分组。"
                                                            IconSource="{ci:FluentIconSource &#xE00D;}" Label="添加分组"/>
+                                <controls:CommandBarButton ToolTip.Tip="应用预设科目分组。"
+                                                           IconSource="{ci:FluentIconSource &#xE933;}" Label="分科预设">
+                                    <controls:CommandBarButton.Flyout>
+                                        <MenuFlyout>
+                                            <MenuItem Header="小学（主科、副科）" Tag="primary" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                            <MenuItem Header="初中（主科、副科、小四门）" Tag="middle" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                            <MenuItem Header="高中（必修、理科、文科）" Tag="high" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                        </MenuFlyout>
+                                    </controls:CommandBarButton.Flyout>
+                                </controls:CommandBarButton>
                                 <controls:CommandBarButton Click="ButtonRenameSubjectGroup_OnClick" ToolTip.Tip="重命名选中的科目分组。"
-                                                           IsEnabled="{Binding ViewModel.SelectedSubjectGroupId, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter={x:Static system:Guid.Empty}}"
+                                                           IsEnabled="{Binding ViewModel.CanEditSelectedSubjectGroup}"
                                                            IconSource="{ci:FluentIconSource &#xE70F;}" Label="重命名分组"/>
                                 <controls:CommandBarButton Click="ButtonDeleteSubjectGroup_OnClick" ToolTip.Tip="删除选中的科目分组。"
-                                                           IsEnabled="{Binding ViewModel.SelectedSubjectGroupId, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter={x:Static system:Guid.Empty}}"
+                                                           IsEnabled="{Binding ViewModel.CanEditSelectedSubjectGroup}"
                                                            IconSource="{ci:FluentIconSource &#xE61D;}" Label="删除分组"/>
                             </controls:CommandBar.PrimaryCommands>
                         </controls:CommandBar>
@@ -1659,10 +1714,10 @@
                                      Margin="4 0"
                                      SelectedValue="{Binding ViewModel.SelectedSubjectGroupId, Mode=TwoWay}"
                                      SelectedValueBinding="{Binding Key}"
-                                     ItemsSource="{Binding ViewModel.SubjectGroupSelectionItems}">
+                                     ItemsSource="{Binding ViewModel.SubjectGroupFilterItems}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Value}" />
+                                        <TextBlock Text="{Binding Name}" />
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
@@ -1725,7 +1780,7 @@
                                                           HorizontalAlignment="Stretch">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
-                                                            <TextBlock Text="{Binding Value}" />
+                                                            <TextBlock Text="{Binding Name}" />
                                                         </DataTemplate>
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>

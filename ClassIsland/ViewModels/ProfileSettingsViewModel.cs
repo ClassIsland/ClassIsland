@@ -18,6 +18,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Views;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Alias;
@@ -30,6 +31,9 @@ namespace ClassIsland.ViewModels;
 
 public partial class ProfileSettingsViewModel : ObservableRecipient
 {
+    // “全部”只用于界面筛选，不能作为科目的实际分组写入档案。
+    public static Guid AllSubjectGroupId { get; } = new("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
     public IProfileService ProfileService { get; }
     public IManagementService ManagementService { get; }
     public SettingsService SettingsService { get; }
@@ -45,8 +49,12 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SyncDictionaryList<Guid, SubjectGroup> SubjectGroups { get; }
 
     public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems { get; } = [];
-    public ObservableCollection<KeyValuePair<Guid, string>> SubjectGroupSelectionItems { get; } = [];
+    public ObservableCollection<SubjectGroupSelectionItem> SubjectGroupSelectionItems { get; } = [];
+    public ObservableCollection<SubjectGroupSelectionItem> SubjectGroupFilterItems { get; } = [];
     public ObservableCollection<Subject> FilteredSubjects { get; } = [];
+
+    public bool CanEditSelectedSubjectGroup =>
+        SelectedSubjectGroupId != AllSubjectGroupId && SelectedSubjectGroupId != Guid.Empty;
 
     public SyncDictionaryList<Guid, ClassPlanGroup> ClassPlanGroups { get; }
     public SyncDictionaryList<DateTime, OrderedSchedule> OrderedSchedules { get; }
@@ -67,7 +75,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private TimeLayoutItem? _selectedTimePoint;
     [ObservableProperty] private double _timeLineScale = 3.0;
     [ObservableProperty] private Subject? _selectedSubject;
-    [ObservableProperty] private Guid _selectedSubjectGroupId = Guid.Empty;
+    [ObservableProperty] private Guid _selectedSubjectGroupId = AllSubjectGroupId;
+    [ObservableProperty] private bool _isSubjectSelectionGroupRowMode;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
     [ObservableProperty] private Guid _tempOverlayClassPlanTimeLayoutId = Guid.Empty;
@@ -111,6 +120,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private ReadOnlyObservableCollection<ClassPlansTreeNode> _groupedClassPlans;
     private ClassPlansTreeNode? _selectedClassPlansTreeNode = null;
     private Guid _prevSelectedClassPlanGuid = Guid.Empty;
+    private bool _subjectViewsRefreshPending;
+    private bool _subjectGroupSelectionRefreshPending;
     
     public ClassPlansTreeNode? SelectedClassPlansTreeNode
     {
@@ -152,6 +163,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             new SyncDictionaryList<DateTime, OrderedSchedule>(ProfileService.Profile.OrderedSchedules, () => DateTime.MinValue);
 
         RefreshSubjectSelectionItems();
+        RefreshSubjectGroupSelectionItems();
         ProfileService.Profile.Subjects.CollectionChanged += SubjectsOnCollectionChanged;
         ProfileService.Profile.SubjectGroups.CollectionChanged += SubjectGroupsOnCollectionChanged;
         ProfileService.Profile.EditingSubjects.CollectionChanged += EditingSubjectsOnCollectionChanged;
@@ -249,8 +261,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     {
         if (e.PropertyName == nameof(Subject.GroupId))
         {
-            RefreshSubjectSelectionItems();
-            RefreshFilteredSubjects();
+            ScheduleSubjectViewsRefresh();
         }
     }
 
@@ -258,7 +269,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     {
         if (e.PropertyName == nameof(SubjectGroup.Name))
         {
-            RefreshSubjectSelectionItems();
+            ScheduleSubjectViewsRefresh(true);
         }
     }
 
@@ -272,8 +283,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         {
             item.Value.PropertyChanged += SubjectOnPropertyChanged;
         }
-        RefreshSubjectSelectionItems();
-        RefreshFilteredSubjects();
+        ScheduleSubjectViewsRefresh();
     }
 
     private void SubjectGroupsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -286,13 +296,34 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         {
             item.Value.PropertyChanged += SubjectGroupOnPropertyChanged;
         }
-        RefreshSubjectSelectionItems();
-        RefreshFilteredSubjects();
+        ScheduleSubjectViewsRefresh(true);
     }
 
     private void EditingSubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        RefreshFilteredSubjects();
+        ScheduleSubjectViewsRefresh();
+    }
+
+    private void ScheduleSubjectViewsRefresh(bool refreshSubjectGroupSelectionItems = false)
+    {
+        _subjectGroupSelectionRefreshPending |= refreshSubjectGroupSelectionItems;
+        if (_subjectViewsRefreshPending)
+        {
+            return;
+        }
+
+        _subjectViewsRefreshPending = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _subjectViewsRefreshPending = false;
+            RefreshSubjectSelectionItems();
+            RefreshFilteredSubjects();
+            if (_subjectGroupSelectionRefreshPending)
+            {
+                _subjectGroupSelectionRefreshPending = false;
+                RefreshSubjectGroupSelectionItems();
+            }
+        }, DispatcherPriority.Background);
     }
 
     private void RefreshSubjectSelectionItems()
@@ -320,31 +351,81 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             SubjectSelectionItems.Add(item);
         }
 
-        SubjectGroupSelectionItems.Clear();
-        SubjectGroupSelectionItems.Add(new KeyValuePair<Guid, string>(Guid.Empty, "未分组"));
-        foreach (var group in groups)
-        {
-            SubjectGroupSelectionItems.Add(new KeyValuePair<Guid, string>(group.Key, group.Value.Name));
-        }
     }
 
     partial void OnSelectedSubjectGroupIdChanged(Guid value)
     {
-        RefreshFilteredSubjects();
+        OnPropertyChanged(nameof(CanEditSelectedSubjectGroup));
+        ScheduleSubjectViewsRefresh();
+    }
+
+    private void RefreshSubjectGroupSelectionItems()
+    {
+        var groups = ProfileService.Profile.SubjectGroups
+            .Select(x => new SubjectGroupSelectionItem(x.Key, x.Value.Name))
+            .ToList();
+
+        SynchronizeSubjectGroupItems(SubjectGroupSelectionItems,
+        [
+            new SubjectGroupSelectionItem(Guid.Empty, "未分组"),
+            .. groups
+        ]);
+        SynchronizeSubjectGroupItems(SubjectGroupFilterItems,
+        [
+            new SubjectGroupSelectionItem(AllSubjectGroupId, "全部"),
+            new SubjectGroupSelectionItem(Guid.Empty, "未分组"),
+            .. groups
+        ]);
     }
 
     private void RefreshFilteredSubjects()
     {
         var subjects = ProfileService.Profile.EditingSubjects
-            .Where(x => SelectedSubjectGroupId == Guid.Empty
-                ? x.GroupId == Guid.Empty || !ProfileService.Profile.SubjectGroups.ContainsKey(x.GroupId)
-                : x.GroupId == SelectedSubjectGroupId)
+            .Where(x => SelectedSubjectGroupId == AllSubjectGroupId ||
+                        (SelectedSubjectGroupId == Guid.Empty
+                            ? x.GroupId == Guid.Empty || !ProfileService.Profile.SubjectGroups.ContainsKey(x.GroupId)
+                            : x.GroupId == SelectedSubjectGroupId))
             .ToList();
 
         FilteredSubjects.Clear();
         foreach (var subject in subjects)
         {
             FilteredSubjects.Add(subject);
+        }
+    }
+
+    private static void SynchronizeSubjectGroupItems(
+        ObservableCollection<SubjectGroupSelectionItem> target,
+        IReadOnlyList<SubjectGroupSelectionItem> source)
+    {
+        for (var targetIndex = 0; targetIndex < source.Count; targetIndex++)
+        {
+            var sourceItem = source[targetIndex];
+            var existingIndex = -1;
+            for (var index = targetIndex; index < target.Count; index++)
+            {
+                if (target[index].Key == sourceItem.Key)
+                {
+                    existingIndex = index;
+                    break;
+                }
+            }
+
+            if (existingIndex < 0)
+            {
+                target.Insert(targetIndex, sourceItem);
+            }
+            else if (existingIndex != targetIndex)
+            {
+                target.Move(existingIndex, targetIndex);
+            }
+
+            target[targetIndex].Name = sourceItem.Name;
+        }
+
+        while (target.Count > source.Count)
+        {
+            target.RemoveAt(target.Count - 1);
         }
     }
 

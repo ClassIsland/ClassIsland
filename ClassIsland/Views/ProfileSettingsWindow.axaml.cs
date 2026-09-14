@@ -1335,7 +1335,9 @@ public partial class ProfileSettingsWindow : MyWindow
         DataGridSubjects.IsReadOnly = true;
         var subject = new Subject
         {
-            GroupId = ViewModel.SelectedSubjectGroupId
+            GroupId = ViewModel.CanEditSelectedSubjectGroup
+                ? ViewModel.SelectedSubjectGroupId
+                : Guid.Empty
         };
         ViewModel.ProfileService.Profile.EditingSubjects.Add(subject);
         DataGridSubjects.IsReadOnly = false;
@@ -1384,6 +1386,27 @@ public partial class ProfileSettingsWindow : MyWindow
         var id = Guid.NewGuid();
         ViewModel.ProfileService.Profile.SubjectGroups.Add(id, group);
         ViewModel.SelectedSubjectGroupId = id;
+    }
+
+    private async void MenuItemApplySubjectGroupPreset_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: string presetId } ||
+            !SubjectGroupPreset.TryGetPreset(presetId, out var preset) || preset is null)
+        {
+            return;
+        }
+
+        var result = await ContentDialogHelper.ShowConfirmationDialog(
+            "应用分科预设",
+            "应用预设会覆盖当前全部科目分组，并按已有科目名称重新分组；未匹配的科目会保留在未分组。是否继续？",
+            positiveText: "应用预设");
+        if (!result)
+        {
+            return;
+        }
+
+        preset.Apply(ViewModel.ProfileService.Profile);
+        ViewModel.SelectedSubjectGroupId = ProfileSettingsViewModel.AllSubjectGroupId;
     }
 
     private async void ButtonRenameSubjectGroup_OnClick(object? sender, RoutedEventArgs e)

@@ -10,7 +10,8 @@ public sealed class SubjectSelectionItem
 {
     public SubjectSelectionItem(Guid key, Subject? value, string? groupName = null)
     {
-        Key = key;
+        // 分组标题不能参与科目 GUID 的选中匹配，使用独立键避免与未分组项冲突。
+        Key = value == null ? Guid.NewGuid() : key;
         Value = value;
         GroupName = groupName;
     }

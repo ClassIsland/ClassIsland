@@ -143,7 +143,7 @@ public class Profile : ObservableRecipient
     /// <param name="id">要删除的分组 GUID</param>
     public void DeleteSubjectGroup(Guid id)
     {
-        if (!SubjectGroups.Remove(id))
+        if (!SubjectGroups.ContainsKey(id))
         {
             return;
         }
@@ -152,6 +152,8 @@ public class Profile : ObservableRecipient
         {
             subject.GroupId = Guid.Empty;
         }
+
+        SubjectGroups.Remove(id);
     }
 
     private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e=null)

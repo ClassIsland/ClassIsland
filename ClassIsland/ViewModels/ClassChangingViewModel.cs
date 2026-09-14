@@ -10,6 +10,7 @@ using ClassIsland.Core.ComponentModels;
 using ClassIsland.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Shared.Models.Profile;
+using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using ReactiveUI;
@@ -38,6 +39,7 @@ public partial class ClassChangingViewModel : ObservableRecipient
     
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
     public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems { get; } = [];
+    private bool _subjectSelectionRefreshPending;
 
     public ClassChangingViewModel(IProfileService profileService, IManagementService managementService, SettingsService settingsService)
     {
@@ -48,10 +50,14 @@ public partial class ClassChangingViewModel : ObservableRecipient
         Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
         RefreshSubjectSelectionItems();
         ProfileService.Profile.Subjects.CollectionChanged += SubjectsOnCollectionChanged;
-        ProfileService.Profile.SubjectGroups.CollectionChanged += (_, _) => RefreshSubjectSelectionItems();
+        ProfileService.Profile.SubjectGroups.CollectionChanged += SubjectGroupsOnCollectionChanged;
         foreach (var subject in ProfileService.Profile.Subjects.Values)
         {
             subject.PropertyChanged += SubjectOnPropertyChanged;
+        }
+        foreach (var group in ProfileService.Profile.SubjectGroups.Values)
+        {
+            group.PropertyChanged += SubjectGroupOnPropertyChanged;
         }
         this.ObservableForProperty(x => x.TargetSubjectIndex)
             .Subscribe(_ => UpdateCanCompleteClassChanging());
@@ -73,15 +79,51 @@ public partial class ClassChangingViewModel : ObservableRecipient
         {
             item.Value.PropertyChanged += SubjectOnPropertyChanged;
         }
-        RefreshSubjectSelectionItems();
+        ScheduleSubjectSelectionItemsRefresh();
     }
 
     private void SubjectOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(Subject.GroupId))
         {
-            RefreshSubjectSelectionItems();
+            ScheduleSubjectSelectionItemsRefresh();
         }
+    }
+
+    private void SubjectGroupsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        foreach (var item in e.OldItems?.OfType<KeyValuePair<Guid, SubjectGroup>>() ?? [])
+        {
+            item.Value.PropertyChanged -= SubjectGroupOnPropertyChanged;
+        }
+        foreach (var item in e.NewItems?.OfType<KeyValuePair<Guid, SubjectGroup>>() ?? [])
+        {
+            item.Value.PropertyChanged += SubjectGroupOnPropertyChanged;
+        }
+        ScheduleSubjectSelectionItemsRefresh();
+    }
+
+    private void SubjectGroupOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SubjectGroup.Name))
+        {
+            ScheduleSubjectSelectionItemsRefresh();
+        }
+    }
+
+    private void ScheduleSubjectSelectionItemsRefresh()
+    {
+        if (_subjectSelectionRefreshPending)
+        {
+            return;
+        }
+
+        _subjectSelectionRefreshPending = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _subjectSelectionRefreshPending = false;
+            RefreshSubjectSelectionItems();
+        }, DispatcherPriority.Background);
     }
 
     private void RefreshSubjectSelectionItems()
