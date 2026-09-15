@@ -56,6 +56,12 @@ public partial class ClassChangingWindow : MyWindow
         InitializeComponent();
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        ViewModel.ReleaseSubjectSubscriptions();
+        base.OnClosed(e);
+    }
+
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var aI = GetSubjectIndex(ViewModel.SourceIndex);

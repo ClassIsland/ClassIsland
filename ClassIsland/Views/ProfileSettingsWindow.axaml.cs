@@ -1341,6 +1341,7 @@ public partial class ProfileSettingsWindow : MyWindow
         };
         ViewModel.ProfileService.Profile.EditingSubjects.Add(subject);
         DataGridSubjects.IsReadOnly = false;
+        ViewModel.RefreshFilteredSubjects();
         ViewModel.SelectedSubject = subject;
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.create", 1);
     }
@@ -1360,6 +1361,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
             ViewModel.ProfileService.Profile.EditingSubjects.Add(o);
         }
+        ViewModel.RefreshFilteredSubjects();
         ViewModel.SelectedSubject = ViewModel.ProfileService.Profile.EditingSubjects.LastOrDefault();
         DataGridSubjects.IsReadOnly = false;
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.duplicate", 1);
@@ -1385,6 +1387,8 @@ public partial class ProfileSettingsWindow : MyWindow
         var group = new SubjectGroup { Name = textBox.Text.Trim() };
         var id = Guid.NewGuid();
         ViewModel.ProfileService.Profile.SubjectGroups.Add(id, group);
+        // 先加入筛选选项，再设置选中值，避免列表尚未包含新分组时丢失高亮。
+        ViewModel.RefreshSubjectGroupSelectionItems();
         ViewModel.SelectedSubjectGroupId = id;
     }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using ClassIsland.Core.ComponentModels;
 using ClassIsland.Models.Profile;
+using ClassIsland.Helpers;
 using ClassIsland.Services;
 using ClassIsland.Shared.Models.Profile;
 using Avalonia.Threading;
@@ -38,8 +39,14 @@ public partial class ClassChangingViewModel : ObservableRecipient
     public IManagementService ManagementService { get; }
     
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
-    public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems { get; } = [];
+    private ObservableCollection<SubjectSelectionItem> _subjectSelectionItems = [];
+    public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems
+    {
+        get => _subjectSelectionItems;
+        private set => SetProperty(ref _subjectSelectionItems, value);
+    }
     private bool _subjectSelectionRefreshPending;
+    private bool _subjectSubscriptionsReleased;
 
     public ClassChangingViewModel(IProfileService profileService, IManagementService managementService, SettingsService settingsService)
     {
@@ -67,6 +74,22 @@ public partial class ClassChangingViewModel : ObservableRecipient
             .Subscribe(_ => UpdateCanCompleteClassChanging());
         SettingsService.Settings.ObservableForProperty(x => x.IsSwapMode)
             .Subscribe(_ => UpdateCanCompleteClassChanging());
+    }
+
+    internal void ReleaseSubjectSubscriptions()
+    {
+        // 换课窗口每次打开都会创建新实例，不能让档案事件继续持有已关闭的窗口模型。
+        _subjectSubscriptionsReleased = true;
+        ProfileService.Profile.Subjects.CollectionChanged -= SubjectsOnCollectionChanged;
+        ProfileService.Profile.SubjectGroups.CollectionChanged -= SubjectGroupsOnCollectionChanged;
+        foreach (var subject in ProfileService.Profile.Subjects.Values)
+        {
+            subject.PropertyChanged -= SubjectOnPropertyChanged;
+        }
+        foreach (var group in ProfileService.Profile.SubjectGroups.Values)
+        {
+            group.PropertyChanged -= SubjectGroupOnPropertyChanged;
+        }
     }
 
     private void SubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -122,31 +145,16 @@ public partial class ClassChangingViewModel : ObservableRecipient
         Dispatcher.UIThread.Post(() =>
         {
             _subjectSelectionRefreshPending = false;
-            RefreshSubjectSelectionItems();
+            if (!_subjectSubscriptionsReleased)
+            {
+                RefreshSubjectSelectionItems();
+            }
         }, DispatcherPriority.Background);
     }
 
     private void RefreshSubjectSelectionItems()
     {
-        var items = new List<SubjectSelectionItem>();
-        var groups = ProfileService.Profile.SubjectGroups;
-        var subjects = ProfileService.Profile.Subjects;
-        foreach (var group in groups)
-        {
-            items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name, group.Value.Color));
-            items.AddRange(subjects.Where(x => x.Value.GroupId == group.Key)
-                .Select(x => new SubjectSelectionItem(x.Key, x.Value)));
-        }
-        items.Add(new SubjectSelectionItem(Guid.Empty, null, "未分组"));
-        items.AddRange(subjects
-            .Where(x => x.Value.GroupId == Guid.Empty || !groups.ContainsKey(x.Value.GroupId))
-            .Select(x => new SubjectSelectionItem(x.Key, x.Value)));
-
-        SubjectSelectionItems.Clear();
-        foreach (var item in items)
-        {
-            SubjectSelectionItems.Add(item);
-        }
+        SubjectSelectionItems = SubjectSelectionHelper.CreateItems(SubjectSelectionItems, ProfileService.Profile);
     }
 
     private void UpdateCanCompleteClassChanging()

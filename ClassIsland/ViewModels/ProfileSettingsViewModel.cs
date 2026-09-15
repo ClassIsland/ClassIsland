@@ -14,6 +14,7 @@ using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Models.Profile;
+using ClassIsland.Helpers;
 using ClassIsland.Services;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
@@ -49,7 +50,12 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
     public SyncDictionaryList<Guid, SubjectGroup> SubjectGroups { get; }
 
-    public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems { get; } = [];
+    private ObservableCollection<SubjectSelectionItem> _subjectSelectionItems = [];
+    public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems
+    {
+        get => _subjectSelectionItems;
+        private set => SetProperty(ref _subjectSelectionItems, value);
+    }
     public ObservableCollection<SubjectGroupSelectionItem> SubjectGroupSelectionItems { get; } = [];
     public ObservableCollection<SubjectGroupSelectionItem> SubjectGroupFilterItems { get; } = [];
     public ObservableCollection<Subject> FilteredSubjects { get; } = [];
@@ -299,7 +305,10 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         {
             item.Value.PropertyChanged += SubjectGroupOnPropertyChanged;
         }
-        ScheduleSubjectViewsRefresh(true);
+        // 预设会先重建分组、再写入科目 GroupId；这里必须同步补齐下拉选项，
+        // 否则 ComboBox 会把暂时无法匹配的 SelectedValue 清空且不再自动恢复。
+        RefreshSubjectGroupSelectionItems();
+        ScheduleSubjectViewsRefresh();
     }
 
     private void EditingSubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -319,7 +328,6 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         Dispatcher.UIThread.Post(() =>
         {
             _subjectViewsRefreshPending = false;
-            // 先补齐下拉选项，再重建科目行，否则新 GroupId 会因暂时找不到选项而显示为空。
             if (_subjectGroupSelectionRefreshPending)
             {
                 _subjectGroupSelectionRefreshPending = false;
@@ -332,29 +340,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     private void RefreshSubjectSelectionItems()
     {
-        var groups = ProfileService.Profile.SubjectGroups;
-        var subjects = ProfileService.Profile.Subjects;
-        var items = new List<SubjectSelectionItem>();
-
-        foreach (var group in groups)
-        {
-            items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name, group.Value.Color));
-            items.AddRange(subjects
-                .Where(x => x.Value.GroupId == group.Key)
-                .Select(x => new SubjectSelectionItem(x.Key, x.Value)));
-        }
-
-        items.Add(new SubjectSelectionItem(Guid.Empty, null, "未分组"));
-        items.AddRange(subjects
-            .Where(x => x.Value.GroupId == Guid.Empty || !groups.ContainsKey(x.Value.GroupId))
-            .Select(x => new SubjectSelectionItem(x.Key, x.Value)));
-
-        SubjectSelectionItems.Clear();
-        foreach (var item in items)
-        {
-            SubjectSelectionItems.Add(item);
-        }
-
+        SubjectSelectionItems = SubjectSelectionHelper.CreateItems(SubjectSelectionItems, ProfileService.Profile);
     }
 
     partial void OnSelectedSubjectGroupIdChanged(Guid value)
@@ -392,7 +378,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
     }
 
-    private void RefreshSubjectGroupSelectionItems()
+    internal void RefreshSubjectGroupSelectionItems()
     {
         var groups = ProfileService.Profile.SubjectGroups
             .Select(x => new SubjectGroupSelectionItem(x.Key, x.Value.Name))
@@ -411,7 +397,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         ]);
     }
 
-    private void RefreshFilteredSubjects()
+    internal void RefreshFilteredSubjects()
     {
         var subjects = ProfileService.Profile.EditingSubjects
             .Where(x => SelectedSubjectGroupId == AllSubjectGroupId ||
@@ -420,10 +406,10 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
                             : x.GroupId == SelectedSubjectGroupId))
             .ToList();
 
-        FilteredSubjects.Clear();
-        foreach (var subject in subjects)
+        SubjectSelectionHelper.Synchronize(FilteredSubjects, subjects);
+        if (SelectedSubject != null && !subjects.Contains(SelectedSubject))
         {
-            FilteredSubjects.Add(subject);
+            SelectedSubject = null;
         }
     }
 

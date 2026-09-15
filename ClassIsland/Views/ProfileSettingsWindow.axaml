@@ -1799,6 +1799,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <ComboBox ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SubjectGroupSelectionItems}"
+                                                          IsEnabled="{Binding !$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing}"
                                                           SelectedValue="{Binding GroupId, Mode=TwoWay}"
                                                           SelectedValueBinding="{Binding Key}"
                                                           HorizontalAlignment="Stretch">
