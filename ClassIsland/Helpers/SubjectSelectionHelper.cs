@@ -24,7 +24,7 @@ internal static class SubjectSelectionHelper
             items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name, group.Value.Color));
             items.AddRange(profile.Subjects.Where(x => x.Value.GroupId == group.Key).Select(GetSubjectItem));
         }
-        items.Add(new SubjectSelectionItem(Guid.Empty, null, "未分组"));
+        items.Add(new SubjectSelectionItem(Guid.Empty, null, "未分组", isUngroupedHeader: true));
         items.AddRange(profile.Subjects
             .Where(x => x.Value.GroupId == Guid.Empty || !profile.SubjectGroups.ContainsKey(x.Value.GroupId))
             .Select(GetSubjectItem));

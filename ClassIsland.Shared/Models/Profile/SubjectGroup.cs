@@ -8,7 +8,7 @@ namespace ClassIsland.Shared.Models.Profile;
 public class SubjectGroup : ObservableRecipient
 {
     private string _name = "新科目分组";
-    private string _color = "#FF1E90FF";
+    private string _color = "";
 
     /// <summary>
     /// 科目分组名称。
@@ -25,7 +25,7 @@ public class SubjectGroup : ObservableRecipient
     }
 
     /// <summary>
-    /// 科目选择器中分组标题使用的颜色，采用 ARGB 十六进制格式。
+    /// 科目选择器中分组标题使用的颜色，采用 ARGB 十六进制格式；空值表示使用当前系统强调色。
     /// </summary>
     public string Color
     {

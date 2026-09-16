@@ -84,7 +84,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private Subject? _selectedSubject;
     [ObservableProperty] private Guid _selectedSubjectGroupId = AllSubjectGroupId;
     [ObservableProperty] private SubjectGroup? _selectedSubjectGroup;
-    [ObservableProperty] private Color _selectedSubjectGroupColor = Colors.DodgerBlue;
+    [ObservableProperty] private Color _selectedSubjectGroupColor = AccentColorPicker.GetCurrentAccentTextColor();
     [ObservableProperty] private bool _isSubjectSelectionGroupRowMode;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
@@ -131,6 +131,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     private Guid _prevSelectedClassPlanGuid = Guid.Empty;
     private bool _subjectViewsRefreshPending;
     private bool _subjectGroupSelectionRefreshPending;
+    private bool _isLoadingSelectedSubjectGroupColor;
     
     public ClassPlansTreeNode? SelectedClassPlansTreeNode
     {
@@ -348,14 +349,16 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         SelectedSubjectGroup = ProfileService.Profile.SubjectGroups.TryGetValue(value, out var group)
             ? group
             : null;
+        _isLoadingSelectedSubjectGroupColor = true;
         SelectedSubjectGroupColor = ParseSubjectGroupColor(group?.Color);
+        _isLoadingSelectedSubjectGroupColor = false;
         OnPropertyChanged(nameof(CanEditSelectedSubjectGroup));
         ScheduleSubjectViewsRefresh();
     }
 
     partial void OnSelectedSubjectGroupColorChanged(Color value)
     {
-        if (SelectedSubjectGroup != null)
+        if (!_isLoadingSelectedSubjectGroupColor && SelectedSubjectGroup != null)
         {
             SelectedSubjectGroup.Color = value.ToString();
         }
@@ -365,7 +368,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return Colors.DodgerBlue;
+            return AccentColorPicker.GetCurrentAccentTextColor();
         }
 
         try
@@ -374,7 +377,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
         catch (FormatException)
         {
-            return Colors.DodgerBlue;
+            return AccentColorPicker.GetCurrentAccentTextColor();
         }
     }
 
