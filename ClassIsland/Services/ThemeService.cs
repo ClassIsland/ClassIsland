@@ -28,7 +28,7 @@ public class ThemeService : IHostedService, IThemeService
     public async Task StopAsync(CancellationToken cancellationToken)
     {
     }
-    
+
 
     public ILogger<ThemeService> Logger { get; }
 
