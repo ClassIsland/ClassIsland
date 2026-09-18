@@ -94,7 +94,7 @@ public class Subject : AttachableSettingsObject
         Initial = "?",
         Name = "???"
     };
-    
+
     /// <summary>
     /// 代表一个空白科目。
     /// </summary>
