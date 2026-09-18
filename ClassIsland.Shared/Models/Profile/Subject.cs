@@ -85,7 +85,6 @@ public class Subject : AttachableSettingsObject
             OnPropertyChanged();
         }
     }
-    
 
     /// <summary>
     /// 代表后备科目。
