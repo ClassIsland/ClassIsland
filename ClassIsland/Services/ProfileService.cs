@@ -130,6 +130,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
         //Profile = ConfigureFileHelper.CopyObject(Profile);
         Profile.Subjects = CopyObject(Profile.Subjects);
+        Profile.SubjectGroups = CopyObject(Profile.SubjectGroups);
         Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
         Profile.ClassPlans = CopyObject(Profile.ClassPlans);
         Profile.RefreshTimeLayouts();
@@ -183,6 +184,9 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         Profile.ClassPlans.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.ClassPlanUpdated, args);
         Profile.TimeLayouts.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.TimeLayoutUpdated, args);
         Profile.Subjects.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.SubjectUpdated, args);
+        // 分组变更复用 SubjectUpdated：AuditEvents.proto 是与集控服务端共享的契约，
+        // 新增枚举值需要服务端同步支持，而分组本身就是科目维度的一部分。
+        Profile.SubjectGroups.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.SubjectUpdated, args);
         spanLoadingProfile?.Finish();
     }
 
@@ -190,6 +194,11 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     {
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
         {
+            // Remove 事件的 NewItems 为 null，必须回落到 OldItems，否则取下标会抛 ArgumentOutOfRangeException；
+            // Reset（Clear）两类都没有，退化成空 ItemId，不再让审计上报把整个变更操作带崩。
+            var item = args.NewItems is { Count: > 0 } ? args.NewItems[0]
+                : args.OldItems is { Count: > 0 } ? args.OldItems[0]
+                : null;
             connection.LogAuditEvent(eventType, new ProfileItemUpdated()
             {
                 Operation = args.Action switch
@@ -201,12 +210,13 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
                     NotifyCollectionChangedAction.Reset => ListItemUpdateOperations.Update,
                     _ => throw new ArgumentOutOfRangeException()
                 },
-                ItemId = args.NewItems?[0] switch
+                ItemId = item switch
                 {
                     KeyValuePair<Guid, ClassPlan> cp => cp.Key.ToString(),
                     KeyValuePair<Guid, TimeLayout> tl => tl.Key.ToString(),
                     KeyValuePair<Guid, Subject> s => s.Key.ToString(),
-                    _ => throw new ArgumentOutOfRangeException()
+                    KeyValuePair<Guid, SubjectGroup> g => g.Key.ToString(),
+                    _ => string.Empty
                 },
             });
         }

@@ -49,8 +49,6 @@
                                                       x:Key="TimeLayoutDictionaryKeyFinderMultiConverter" />
         <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:ClassPlan"
                                                       x:Key="ClassPlanDictionaryKeyFinderMultiConverter" />
-        <ci:ColorToColorPickerBrushConverter x:Key="SubjectGroupColorToBrushConverter" />
-        
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel DataContext="{Binding ViewModel.SelectedClassPlan}"
@@ -451,7 +449,9 @@
                             <DataTemplate>
                                 <Grid>
                                     <TextBlock Text="{Binding GroupName}"
-                                               Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
+                                               Classes="subject-group-header"
+                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                               Classes.custom-color="{Binding HasCustomGroupColor}"
                                                FontWeight="Bold"
                                                IsVisible="{Binding IsGroupHeader}" />
                                     <TextBlock Text="{Binding Value.Name}"
@@ -522,6 +522,21 @@
         </Flyout>
     </ci:MyWindow.Resources>
     <ci:MyWindow.Styles>
+        <Style Selector="TextBlock.subject-group-header.default-color">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+        </Style>
+        <Style Selector="TextBlock.subject-group-header.custom-color">
+            <!-- 转换器内联，避免 Styles 解析时找不到窗口 Resources。 -->
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <Binding Path="GroupColor">
+                        <Binding.Converter>
+                            <ci:ColorToColorPickerBrushConverter />
+                        </Binding.Converter>
+                    </Binding>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style Selector="TabControl.subject-selection-header TabItem:selected /template/ Rectangle#PART_SelectedPipe">
             <Setter Property="IsVisible" Value="False" />
         </Style>
@@ -902,7 +917,9 @@
                                                             <DataTemplate>
                                                                 <Grid>
                                                                     <TextBlock Text="{Binding GroupName}"
-                                                                               Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
+                                                                               Classes="subject-group-header"
+                                                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                               Classes.custom-color="{Binding HasCustomGroupColor}"
                                                                                FontWeight="Bold"
                                                                                IsVisible="{Binding IsGroupHeader}" />
                                                                     <TextBlock Text="{Binding Value.Name}"
@@ -954,7 +971,7 @@
                                                             ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SubjectSelectionItems}">
                                                             <ListBox.Styles>
                                                                 <Style Selector="ListBoxItem">
-                                                                    <Setter Property="IsEnabled" Value="{Binding !IsUngroupedHeader}" />
+                                                                    <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
                                                                     <Setter Property="IsHitTestVisible" Value="{Binding !IsGroupHeader}" />
                                                                     <Setter Property="Focusable" Value="{Binding !IsGroupHeader}" />
                                                                 </Style>
@@ -962,10 +979,16 @@
                                                                     <Setter Property="MinWidth" Value="0" />
                                                                     <Setter Property="Padding" Value="0" />
                                                                 </Style>
+                                                                <!-- 分组标题靠 IsEnabled=false 禁止选中，但 ListBoxItem:disabled 默认会把不透明度降到 50%，
+                                                                     使分组标题颜色与背景混合后发暗。这里恢复为不透明；限定在列表本身可用时，避免影响列表整体禁用的表现。 -->
+                                                                <Style Selector="ListBox:not(:disabled) ListBoxItem:disabled">
+                                                                    <Setter Property="Opacity" Value="1" />
+                                                                </Style>
                                                             </ListBox.Styles>
                                                             <ListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
                                                                     <controls1:SubjectSelectionWrapPanel
+                                                                        Classes="animated-resize"
                                                                         IsGroupRowMode="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode}" />
                                                                 </ItemsPanelTemplate>
                                                             </ListBox.ItemsPanel>
@@ -983,7 +1006,9 @@
                                                                                 Margin="2 0 0 0"
                                                                                 IsVisible="{Binding !IsGroupHeader}" />
                                                                             <TextBlock Text="{Binding GroupName}"
-                                                                                       Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
+                                                                                       Classes="subject-group-header"
+                                                                                       Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                                       Classes.custom-color="{Binding HasCustomGroupColor}"
                                                                                        FontWeight="Bold"
                                                                                        IsVisible="{Binding IsGroupHeader}" />
                                                                         </Grid>
@@ -1117,7 +1142,7 @@
                                                 ItemsSource="{Binding ViewModel.SubjectSelectionItems}">
                                                 <ListBox.Styles>
                                                     <Style Selector="ListBoxItem">
-                                                        <Setter Property="IsEnabled" Value="{Binding !IsUngroupedHeader}" />
+                                                        <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
                                                         <Setter Property="IsHitTestVisible" Value="{Binding !IsGroupHeader}" />
                                                         <Setter Property="Focusable" Value="{Binding !IsGroupHeader}" />
                                                     </Style>
@@ -1125,10 +1150,15 @@
                                                         <Setter Property="MinWidth" Value="0" />
                                                         <Setter Property="Padding" Value="0" />
                                                     </Style>
+                                                    <!-- 同上：分组标题禁止选中会连带降低不透明度，这里恢复，仅在列表本身可用时生效。 -->
+                                                    <Style Selector="ListBox:not(:disabled) ListBoxItem:disabled">
+                                                        <Setter Property="Opacity" Value="1" />
+                                                    </Style>
                                                 </ListBox.Styles>
                                                 <ListBox.ItemsPanel>
                                                     <ItemsPanelTemplate>
                                                         <controls1:SubjectSelectionWrapPanel
+                                                            Classes="animated-resize"
                                                             IsGroupRowMode="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode}" />
                                                     </ItemsPanelTemplate>
                                                 </ListBox.ItemsPanel>
@@ -1146,7 +1176,9 @@
                                                                  Margin="2 0 0 0"
                                                                  IsVisible="{Binding !IsGroupHeader}" />
                                                                 <TextBlock Text="{Binding GroupName}"
-                                                                           Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
+                                                                           Classes="subject-group-header"
+                                                                           Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                           Classes.custom-color="{Binding HasCustomGroupColor}"
                                                                            FontWeight="Bold"
                                                                            IsVisible="{Binding IsGroupHeader}" />
                                                             </Grid>
@@ -1613,7 +1645,9 @@
                                                         <DataTemplate>
                                                             <Grid>
                                                                 <TextBlock Text="{Binding GroupName}"
-                                                                           Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
+                                                                           Classes="subject-group-header"
+                                                                           Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                           Classes.custom-color="{Binding HasCustomGroupColor}"
                                                                            FontWeight="Bold"
                                                                            IsVisible="{Binding IsGroupHeader}" />
                                                                 <TextBlock Text="{Binding Value.Name}"

@@ -11,6 +11,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.ComponentModels;
 using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core.Models.Theming;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Models.Profile;
@@ -44,11 +45,11 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public IActionService ActionService { get; }
     public ILogger<ProfileSettingsWindow> Logger { get; }
     public ITutorialService TutorialService { get; }
+    public IThemeService ThemeService { get; }
 
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
-    public SyncDictionaryList<Guid, SubjectGroup> SubjectGroups { get; }
 
     private ObservableCollection<SubjectSelectionItem> _subjectSelectionItems = [];
     public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems
@@ -84,7 +85,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private Subject? _selectedSubject;
     [ObservableProperty] private Guid _selectedSubjectGroupId = AllSubjectGroupId;
     [ObservableProperty] private SubjectGroup? _selectedSubjectGroup;
-    [ObservableProperty] private Color _selectedSubjectGroupColor = AccentColorPicker.GetCurrentAccentTextColor();
+    [ObservableProperty] private Color _selectedSubjectGroupColor = AccentColorPicker.GetCurrentAccentColor();
     [ObservableProperty] private bool _isSubjectSelectionGroupRowMode;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
@@ -152,7 +153,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
         IActionService actionService,
         ILogger<ProfileSettingsWindow> logger,
-        ITutorialService tutorialService)
+        ITutorialService tutorialService,
+        IThemeService themeService)
     {
         ProfileService = profileService;
         ManagementService = managementService;
@@ -162,11 +164,12 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         ActionService = actionService;
         Logger = logger;
         TutorialService = tutorialService;
+        ThemeService = themeService;
+        ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
 
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);
         Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
-        SubjectGroups = new SyncDictionaryList<Guid, SubjectGroup>(ProfileService.Profile.SubjectGroups, Guid.NewGuid);
         ClassPlanGroups =
             new SyncDictionaryList<Guid, ClassPlanGroup>(ProfileService.Profile.ClassPlanGroups, Guid.NewGuid);
         OrderedSchedules =
@@ -174,17 +177,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
         RefreshSubjectSelectionItems();
         RefreshSubjectGroupSelectionItems();
-        ProfileService.Profile.Subjects.CollectionChanged += SubjectsOnCollectionChanged;
-        ProfileService.Profile.SubjectGroups.CollectionChanged += SubjectGroupsOnCollectionChanged;
-        ProfileService.Profile.EditingSubjects.CollectionChanged += EditingSubjectsOnCollectionChanged;
-        foreach (var subject in ProfileService.Profile.Subjects.Values)
-        {
-            subject.PropertyChanged += SubjectOnPropertyChanged;
-        }
-        foreach (var group in ProfileService.Profile.SubjectGroups.Values)
-        {
-            group.PropertyChanged += SubjectGroupOnPropertyChanged;
-        }
+        EnsureProfileEventSubscriptions();
         RefreshFilteredSubjects();
 
         TempClassPlanList = ClassPlans.List
@@ -267,12 +260,76 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         };
     }
 
+    private Profile? _subscribedProfile;
+    private ObservableDictionary<Guid, Subject>? _subscribedSubjects;
+    private ObservableDictionary<Guid, SubjectGroup>? _subscribedSubjectGroups;
+
+    /// <summary>
+    /// 订阅档案中科目与分组的变化。幂等：档案或其字典实例被替换（例如集控拉取档案会整体替换
+    /// <see cref="Profile.Subjects"/>）之后会重新挂接，避免订阅残留在旧实例上而收不到通知。
+    /// </summary>
+    internal void EnsureProfileEventSubscriptions()
+    {
+        var profile = ProfileService.Profile;
+        if (ReferenceEquals(_subscribedProfile, profile) &&
+            ReferenceEquals(_subscribedSubjects, profile.Subjects) &&
+            ReferenceEquals(_subscribedSubjectGroups, profile.SubjectGroups))
+        {
+            return;
+        }
+
+        if (_subscribedSubjects != null)
+        {
+            _subscribedSubjects.CollectionChanged -= SubjectsOnCollectionChanged;
+            foreach (var subject in _subscribedSubjects.Values)
+            {
+                subject.PropertyChanged -= SubjectOnPropertyChanged;
+            }
+        }
+
+        if (_subscribedSubjectGroups != null)
+        {
+            _subscribedSubjectGroups.CollectionChanged -= SubjectGroupsOnCollectionChanged;
+            foreach (var group in _subscribedSubjectGroups.Values)
+            {
+                group.PropertyChanged -= SubjectGroupOnPropertyChanged;
+            }
+        }
+
+        _subscribedProfile = profile;
+        _subscribedSubjects = profile.Subjects;
+        _subscribedSubjectGroups = profile.SubjectGroups;
+        _subscribedSubjects.CollectionChanged += SubjectsOnCollectionChanged;
+        _subscribedSubjectGroups.CollectionChanged += SubjectGroupsOnCollectionChanged;
+        foreach (var subject in _subscribedSubjects.Values)
+        {
+            subject.PropertyChanged += SubjectOnPropertyChanged;
+        }
+        foreach (var group in _subscribedSubjectGroups.Values)
+        {
+            group.PropertyChanged += SubjectGroupOnPropertyChanged;
+        }
+
+        ScheduleSubjectViewsRefresh(refreshSubjectGroupSelectionItems: true);
+    }
+
     private void SubjectOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(Subject.GroupId))
+        if (e.PropertyName != nameof(Subject.GroupId))
         {
-            ScheduleSubjectViewsRefresh();
+            return;
         }
+
+        // 筛选在某个具体分组时，若被改动的正好是当前编辑的科目，就跟着它切换筛选：
+        // 否则该行会立刻从列表里消失、右侧编辑面板也被清空，编辑中途被打断。
+        if (sender is Subject subject && ReferenceEquals(subject, SelectedSubject) && CanEditSelectedSubjectGroup &&
+            subject.GroupId != SelectedSubjectGroupId &&
+            (subject.GroupId == Guid.Empty || ProfileService.Profile.SubjectGroups.ContainsKey(subject.GroupId)))
+        {
+            SelectedSubjectGroupId = subject.GroupId;
+        }
+
+        ScheduleSubjectViewsRefresh();
     }
 
     private void SubjectGroupOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -312,10 +369,9 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         ScheduleSubjectViewsRefresh();
     }
 
-    private void EditingSubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        ScheduleSubjectViewsRefresh();
-    }
+    // 不订阅 Profile.EditingSubjects：对它的新增/删除都会写回 Subjects 并触发
+    // Subjects.CollectionChanged，而 EditingSubjects 实例在 Subjects 被替换时会被整体重建，
+    // 订阅它只会在档案重载后静默失效。
 
     private void ScheduleSubjectViewsRefresh(bool refreshSubjectGroupSelectionItems = false)
     {
@@ -358,17 +414,46 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     partial void OnSelectedSubjectGroupColorChanged(Color value)
     {
-        if (!_isLoadingSelectedSubjectGroupColor && SelectedSubjectGroup != null)
+        if (_isLoadingSelectedSubjectGroupColor || SelectedSubjectGroup == null)
         {
-            SelectedSubjectGroup.Color = value.ToString();
+            return;
         }
+
+        // 默认强调色保持为空，课表选课继续用主题文本强调色，并跟随系统强调色变化。
+        SelectedSubjectGroup.Color = AccentColorPicker.IsCurrentAccentColor(value)
+            ? string.Empty
+            : value.ToString();
+    }
+
+    private void ThemeServiceOnThemeUpdated(object? sender, ThemeUpdatedEventArgs e)
+    {
+        // 延后一个调度周期：既保证 FluentAvalonia 已完成主题字典更新后再解析颜色，
+        // 也规避系统外观变化事件可能来自非 UI 线程的情况。
+        Dispatcher.UIThread.Post(RefreshSelectedSubjectGroupAccentColor);
+    }
+
+    /// <summary>
+    /// 外观变化后重算「分组标题颜色」色块。色块展示的是当前外观下强调色的渲染结果，
+    /// 因此主题或系统强调色变化后需要重算。仅在分组使用默认颜色（跟随系统强调色）时刷新，
+    /// 避免覆盖用户自定义的颜色。
+    /// </summary>
+    internal void RefreshSelectedSubjectGroupAccentColor()
+    {
+        if (!string.IsNullOrWhiteSpace(SelectedSubjectGroup?.Color))
+        {
+            return;
+        }
+
+        _isLoadingSelectedSubjectGroupColor = true;
+        SelectedSubjectGroupColor = AccentColorPicker.GetCurrentAccentColor();
+        _isLoadingSelectedSubjectGroupColor = false;
     }
 
     private static Color ParseSubjectGroupColor(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return AccentColorPicker.GetCurrentAccentTextColor();
+            return AccentColorPicker.GetCurrentAccentColor();
         }
 
         try
@@ -377,7 +462,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
         catch (FormatException)
         {
-            return AccentColorPicker.GetCurrentAccentTextColor();
+            return AccentColorPicker.GetCurrentAccentColor();
         }
     }
 

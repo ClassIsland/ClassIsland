@@ -161,6 +161,9 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
+        // 窗口是 Singleton，会在关闭后再次打开；这里顺带把订阅对齐到当前的档案实例，
+        // 避免档案被整体替换（如集控拉取）后仍停留在旧实例上。
+        ViewModel.EnsureProfileEventSubscriptions();
         BuildTransferNavigationItems();
     }
 
@@ -1403,6 +1406,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var result = await ContentDialogHelper.ShowConfirmationDialog(
             "应用分科预设",
             "应用预设会覆盖当前全部科目分组，并按已有科目名称重新分组；未匹配的科目会保留在未分组。是否继续？",
+            root: this,
             positiveText: "应用预设");
         if (!result)
         {

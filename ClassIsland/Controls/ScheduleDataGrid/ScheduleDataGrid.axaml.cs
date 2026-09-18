@@ -187,8 +187,6 @@ public partial class ScheduleDataGrid : TemplatedControl
     public ScheduleDataGrid()
     {
         AddHandler(ScheduleDataGridCellControl.ScheduleDataGridSelectionChangedEvent, DataGridWeekSchedule_OnScheduleDataGridSelectionChanged, RoutingStrategies.Bubble);
-        SetValue(ScheduleDataGridCellControl.SubjectsListProperty,
-            new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid));
         SetValue(TimeLayoutsProperty,
             new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid));
         SetValue(ClassPlansProperty,

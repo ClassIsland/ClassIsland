@@ -10,23 +10,37 @@ namespace ClassIsland.Helpers;
 internal static class SubjectSelectionHelper
 {
     public static ObservableCollection<SubjectSelectionItem> CreateItems(
-        IEnumerable<SubjectSelectionItem> previousItems, Profile profile)
+        IEnumerable<SubjectSelectionItem>? previousItems, Profile profile) =>
+        CreateItems(previousItems, profile.Subjects, profile.SubjectGroups);
+
+    /// <summary>
+    /// 按「分组 → 组内科目 → 未分组」的顺序生成选择项。科目与分组直接取自档案字典，
+    /// 便于课表看板单元格等只拿到字典实例（而非整个 <see cref="Profile"/>）的调用方复用同一套排序。
+    /// </summary>
+    public static ObservableCollection<SubjectSelectionItem> CreateItems(
+        IEnumerable<SubjectSelectionItem>? previousItems,
+        IEnumerable<KeyValuePair<Guid, Subject>> subjects,
+        IEnumerable<KeyValuePair<Guid, SubjectGroup>> subjectGroups)
     {
-        var existingSubjects = previousItems.Where(x => !x.IsGroupHeader).ToDictionary(x => x.Key);
+        var subjectList = subjects.ToList();
+        var groupList = subjectGroups.ToList();
+        var groupKeys = groupList.Select(x => x.Key).ToHashSet();
+        var existingSubjects = previousItems?.Where(x => !x.IsGroupHeader).ToDictionary(x => x.Key)
+                                ?? new Dictionary<Guid, SubjectSelectionItem>();
         var items = new List<SubjectSelectionItem>();
         SubjectSelectionItem GetSubjectItem(KeyValuePair<Guid, Subject> subject) =>
             existingSubjects.TryGetValue(subject.Key, out var item) && ReferenceEquals(item.Value, subject.Value)
                 ? item
                 : new SubjectSelectionItem(subject.Key, subject.Value);
 
-        foreach (var group in profile.SubjectGroups)
+        foreach (var group in groupList)
         {
             items.Add(new SubjectSelectionItem(Guid.Empty, null, group.Value.Name, group.Value.Color));
-            items.AddRange(profile.Subjects.Where(x => x.Value.GroupId == group.Key).Select(GetSubjectItem));
+            items.AddRange(subjectList.Where(x => x.Value.GroupId == group.Key).Select(GetSubjectItem));
         }
         items.Add(new SubjectSelectionItem(Guid.Empty, null, "未分组", isUngroupedHeader: true));
-        items.AddRange(profile.Subjects
-            .Where(x => x.Value.GroupId == Guid.Empty || !profile.SubjectGroups.ContainsKey(x.Value.GroupId))
+        items.AddRange(subjectList
+            .Where(x => x.Value.GroupId == Guid.Empty || !groupKeys.Contains(x.Value.GroupId))
             .Select(GetSubjectItem));
         // ComboBox 在 Move 当前项时也会丢失选择；整体换源并复用科目项可保留选择。
         return new ObservableCollection<SubjectSelectionItem>(items);

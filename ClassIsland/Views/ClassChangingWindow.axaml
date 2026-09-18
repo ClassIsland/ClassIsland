@@ -24,7 +24,28 @@
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
         WindowStartupLocation="CenterScreen"
         Unloaded="Control_OnUnloaded">
+    <controls1:MyWindow.Resources>
+        <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+        <converters1:IndexConverter x:Key="IndexConverter" />
+        <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
+        <converters1:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
+    </controls1:MyWindow.Resources>
     <controls1:MyWindow.Styles>
+        <Style Selector="TextBlock.subject-group-header.default-color">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+        </Style>
+        <Style Selector="TextBlock.subject-group-header.custom-color">
+            <!-- 转换器内联，避免 Styles 解析时找不到窗口 Resources。 -->
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <Binding Path="GroupColor">
+                        <Binding.Converter>
+                            <converters1:ColorToColorPickerBrushConverter />
+                        </Binding.Converter>
+                    </Binding>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style Selector="ci|LessonsListBox ListBoxItem">
             <Setter Property="IsHitTestVisible">
                 <Setter.Value>
@@ -39,14 +60,6 @@
             <Setter Property="IsTabStop" Value="False" />
         </Style>
     </controls1:MyWindow.Styles>
-    <controls1:MyWindow.Resources>
-        <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
-        <converters1:ColorToColorPickerBrushConverter x:Key="SubjectGroupColorToBrushConverter" />
-
-        <converters1:IndexConverter x:Key="IndexConverter" />
-        <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
-        <converters1:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
-    </controls1:MyWindow.Resources>
     <Grid RowDefinitions="Auto,*,Auto,Auto" MinWidth="730" MinHeight="175">
 
         <!-- Content -->
@@ -125,7 +138,9 @@
                                             <DataTemplate>
                                                 <Grid>
                                                     <TextBlock Text="{Binding GroupName}"
-                                                               Foreground="{Binding GroupColor, Converter={StaticResource SubjectGroupColorToBrushConverter}}"
+                                                               Classes="subject-group-header"
+                                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                               Classes.custom-color="{Binding HasCustomGroupColor}"
                                                                FontWeight="Bold"
                                                                IsVisible="{Binding IsGroupHeader}" />
                                                     <TextBlock Text="{Binding Value.Name}"

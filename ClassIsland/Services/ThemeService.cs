@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
+using Avalonia.Platform;
 using Avalonia.Styling;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
@@ -72,5 +73,24 @@ public class ThemeService : IHostedService, IThemeService
         {
             AppBase.Current.Resources["CustomizedAccentBarBackground1Brush"] = newBrush;
         }
+
+        // 本事件此前从未被触发过，导致订阅者在主题变化时不会刷新。
+        // 注意不能直接用 AppBase.Current.ActualThemeVariant 判断明暗：主题设为「跟随系统」时它恒为
+        // ThemeVariant.Default，需要回落到系统外观。
+        var realThemeMode = themeMode switch
+        {
+            1 => 0,
+            2 => 1,
+            _ => AppBase.Current.PlatformSettings?.GetColorValues().ThemeVariant == PlatformThemeVariant.Dark
+                ? 1
+                : 0
+        };
+        CurrentRealThemeMode = realThemeMode;
+        ThemeUpdated?.Invoke(this, new ThemeUpdatedEventArgs
+        {
+            ThemeMode = themeMode,
+            Primary = primary ?? AppBase.Current.PlatformSettings?.GetColorValues().AccentColor1 ?? Colors.DodgerBlue,
+            RealThemeMode = realThemeMode
+        });
     }
 }

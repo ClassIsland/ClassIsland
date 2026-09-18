@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using ClassIsland.Core.ComponentModels;
 using ClassIsland.Models.Profile;
 using ClassIsland.Helpers;
 using ClassIsland.Services;
@@ -37,8 +36,7 @@ public partial class ClassChangingViewModel : ObservableRecipient
     public IProfileService ProfileService { get; }
 
     public IManagementService ManagementService { get; }
-    
-    public SyncDictionaryList<Guid, Subject> Subjects { get; }
+
     private ObservableCollection<SubjectSelectionItem> _subjectSelectionItems = [];
     public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems
     {
@@ -54,7 +52,6 @@ public partial class ClassChangingViewModel : ObservableRecipient
         ManagementService = managementService;
         SettingsService = settingsService;
 
-        Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
         RefreshSubjectSelectionItems();
         ProfileService.Profile.Subjects.CollectionChanged += SubjectsOnCollectionChanged;
         ProfileService.Profile.SubjectGroups.CollectionChanged += SubjectGroupsOnCollectionChanged;
