@@ -371,3 +371,6 @@ cipx/
 
 **/.idea/avalonia.xml
 **/.idea/copilot.*
+
+# Local AI assistant notes
+/.workbuddy-ai/

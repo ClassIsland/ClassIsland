@@ -16,8 +16,7 @@ public static class AccentColorPicker
 
         // 色块必须与分组标题实际渲染出的颜色一致：标题用的是 AccentTextFillColorPrimaryBrush，
         // 该画刷按当前外观解析（深色外观下是系统强调色的浅色变体，浅色外观下是深色变体）。
-        // 注意不能直接用 Application.ActualThemeVariant：跟随系统时它恒为 Default，
-        // 会命中浅色主题字典，导致深色外观下取到明显偏深的强调色。
+        // 资源查询必须显式传入有效外观，避免用 Default 查询时选中错误的主题字典。
         if (TryGetColor(app, "AccentTextFillColorPrimaryBrush", theme, out var accent))
         {
             return accent;

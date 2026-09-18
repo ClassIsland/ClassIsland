@@ -161,8 +161,7 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        // 窗口是 Singleton，会在关闭后再次打开；这里顺带把订阅对齐到当前的档案实例，
-        // 避免档案被整体替换（如集控拉取）后仍停留在旧实例上。
+        // 窗口关闭时仅隐藏；加载时幂等挂接，避免重复订阅。
         ViewModel.EnsureProfileEventSubscriptions();
         BuildTransferNavigationItems();
     }
@@ -1390,8 +1389,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var group = new SubjectGroup { Name = textBox.Text.Trim() };
         var id = Guid.NewGuid();
         ViewModel.ProfileService.Profile.SubjectGroups.Add(id, group);
-        // 先加入筛选选项，再设置选中值，避免列表尚未包含新分组时丢失高亮。
-        ViewModel.RefreshSubjectGroupSelectionItems();
+        // 集合变更处理器已同步更新筛选选项，此时可以安全地选中新分组。
         ViewModel.SelectedSubjectGroupId = id;
     }
 

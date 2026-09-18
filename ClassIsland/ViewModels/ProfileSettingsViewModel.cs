@@ -57,8 +57,19 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         get => _subjectSelectionItems;
         private set => SetProperty(ref _subjectSelectionItems, value);
     }
-    public ObservableCollection<SubjectGroupSelectionItem> SubjectGroupSelectionItems { get; } = [];
-    public ObservableCollection<SubjectGroupSelectionItem> SubjectGroupFilterItems { get; } = [];
+    private ObservableCollection<SubjectGroupSelectionItem> _subjectGroupSelectionItems = [];
+    public ObservableCollection<SubjectGroupSelectionItem> SubjectGroupSelectionItems
+    {
+        get => _subjectGroupSelectionItems;
+        private set => SetProperty(ref _subjectGroupSelectionItems, value);
+    }
+
+    private ObservableCollection<SubjectGroupSelectionItem> _subjectGroupFilterItems = [];
+    public ObservableCollection<SubjectGroupSelectionItem> SubjectGroupFilterItems
+    {
+        get => _subjectGroupFilterItems;
+        private set => SetProperty(ref _subjectGroupFilterItems, value);
+    }
     public ObservableCollection<Subject> FilteredSubjects { get; } = [];
 
     public bool CanEditSelectedSubjectGroup =>
@@ -265,8 +276,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     private ObservableDictionary<Guid, SubjectGroup>? _subscribedSubjectGroups;
 
     /// <summary>
-    /// 订阅档案中科目与分组的变化。幂等：档案或其字典实例被替换（例如集控拉取档案会整体替换
-    /// <see cref="Profile.Subjects"/>）之后会重新挂接，避免订阅残留在旧实例上而收不到通知。
+    /// 订阅科目与分组变化，重复调用不会累积订阅。当前档案在启动时加载；
+    /// 若调用方替换了档案或字典，再次调用可将这些订阅迁移到新实例。
     /// </summary>
     internal void EnsureProfileEventSubscriptions()
     {
@@ -320,9 +331,10 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             return;
         }
 
-        // 筛选在某个具体分组时，若被改动的正好是当前编辑的科目，就跟着它切换筛选：
+        // 筛选在某个分组（含未分组）时，若被改动的正好是当前编辑的科目，就跟着它切换筛选：
         // 否则该行会立刻从列表里消失、右侧编辑面板也被清空，编辑中途被打断。
-        if (sender is Subject subject && ReferenceEquals(subject, SelectedSubject) && CanEditSelectedSubjectGroup &&
+        if (sender is Subject subject && ReferenceEquals(subject, SelectedSubject) &&
+            SelectedSubjectGroupId != AllSubjectGroupId &&
             subject.GroupId != SelectedSubjectGroupId &&
             (subject.GroupId == Guid.Empty || ProfileService.Profile.SubjectGroups.ContainsKey(subject.GroupId)))
         {
@@ -472,12 +484,12 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             .Select(x => new SubjectGroupSelectionItem(x.Key, x.Value.Name))
             .ToList();
 
-        SynchronizeSubjectGroupItems(SubjectGroupSelectionItems,
+        SubjectGroupSelectionItems = SubjectSelectionHelper.CreateGroupItems(SubjectGroupSelectionItems,
         [
             new SubjectGroupSelectionItem(Guid.Empty, "未分组"),
             .. groups
         ]);
-        SynchronizeSubjectGroupItems(SubjectGroupFilterItems,
+        SubjectGroupFilterItems = SubjectSelectionHelper.CreateGroupItems(SubjectGroupFilterItems,
         [
             new SubjectGroupSelectionItem(AllSubjectGroupId, "全部"),
             new SubjectGroupSelectionItem(Guid.Empty, "未分组"),
@@ -498,41 +510,6 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         if (SelectedSubject != null && !subjects.Contains(SelectedSubject))
         {
             SelectedSubject = null;
-        }
-    }
-
-    private static void SynchronizeSubjectGroupItems(
-        ObservableCollection<SubjectGroupSelectionItem> target,
-        IReadOnlyList<SubjectGroupSelectionItem> source)
-    {
-        for (var targetIndex = 0; targetIndex < source.Count; targetIndex++)
-        {
-            var sourceItem = source[targetIndex];
-            var existingIndex = -1;
-            for (var index = targetIndex; index < target.Count; index++)
-            {
-                if (target[index].Key == sourceItem.Key)
-                {
-                    existingIndex = index;
-                    break;
-                }
-            }
-
-            if (existingIndex < 0)
-            {
-                target.Insert(targetIndex, sourceItem);
-            }
-            else if (existingIndex != targetIndex)
-            {
-                target.Move(existingIndex, targetIndex);
-            }
-
-            target[targetIndex].Name = sourceItem.Name;
-        }
-
-        while (target.Count > source.Count)
-        {
-            target.RemoveAt(target.Count - 1);
         }
     }
 

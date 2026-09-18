@@ -522,21 +522,7 @@
         </Flyout>
     </ci:MyWindow.Resources>
     <ci:MyWindow.Styles>
-        <Style Selector="TextBlock.subject-group-header.default-color">
-            <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
-        </Style>
-        <Style Selector="TextBlock.subject-group-header.custom-color">
-            <!-- 转换器内联，避免 Styles 解析时找不到窗口 Resources。 -->
-            <Setter Property="Foreground">
-                <Setter.Value>
-                    <Binding Path="GroupColor">
-                        <Binding.Converter>
-                            <ci:ColorToColorPickerBrushConverter />
-                        </Binding.Converter>
-                    </Binding>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <StyleInclude Source="avares://ClassIsland/Controls/SubjectGroupHeaderStyles.axaml" />
         <Style Selector="TabControl.subject-selection-header TabItem:selected /template/ Rectangle#PART_SelectedPipe">
             <Setter Property="IsVisible" Value="False" />
         </Style>
@@ -897,7 +883,7 @@
                                                                             <Setter Property="IsVisible" Value="False" />
                                                                         </Style>
                                                                     </Grid.Styles>
-                                                    <ComboBox
+                                                                    <ComboBox
                                                                         ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SubjectSelectionItems}"
                                                                         SelectedValue="{Binding SubjectId}"
                                                                         HorizontalAlignment="Stretch"
@@ -914,19 +900,19 @@
                                                                             </BehaviorCollection>
                                                                         </Interaction.Behaviors>
                                                                         <ComboBox.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Grid>
-                                                                    <TextBlock Text="{Binding GroupName}"
-                                                                               Classes="subject-group-header"
-                                                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
-                                                                               Classes.custom-color="{Binding HasCustomGroupColor}"
-                                                                               FontWeight="Bold"
-                                                                               IsVisible="{Binding IsGroupHeader}" />
-                                                                    <TextBlock Text="{Binding Value.Name}"
-                                                                               IsVisible="{Binding !IsGroupHeader}"
-                                                                               Margin="0 4 0 0" />
-                                                                </Grid>
-                                                            </DataTemplate>
+                                                                            <DataTemplate>
+                                                                                <Grid>
+                                                                                    <TextBlock Text="{Binding GroupName}"
+                                                                                               Classes="subject-group-header"
+                                                                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                                               Classes.custom-color="{Binding HasCustomGroupColor}"
+                                                                                               FontWeight="Bold"
+                                                                                               IsVisible="{Binding IsGroupHeader}" />
+                                                                                    <TextBlock Text="{Binding Value.Name}"
+                                                                                               IsVisible="{Binding !IsGroupHeader}"
+                                                                                               Margin="0 4 0 0" />
+                                                                                </Grid>
+                                                                            </DataTemplate>
                                                                         </ComboBox.ItemTemplate>
                                                                     </ComboBox>
                                                                 </Grid>

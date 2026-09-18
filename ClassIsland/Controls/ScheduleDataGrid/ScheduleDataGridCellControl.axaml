@@ -80,20 +80,7 @@
                                     <Setter Property="SelectedValue"
                                             Value="{Binding ClassInfo.SubjectId, RelativeSource={RelativeSource TemplatedParent}}" />
                                 </Style>
-                                <Style Selector="TextBlock.subject-group-header.default-color">
-                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
-                                </Style>
-                                <Style Selector="TextBlock.subject-group-header.custom-color">
-                                    <Setter Property="Foreground">
-                                        <Setter.Value>
-                                            <Binding Path="GroupColor">
-                                                <Binding.Converter>
-                                                    <ci:ColorToColorPickerBrushConverter />
-                                                </Binding.Converter>
-                                            </Binding>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
+                                <StyleInclude Source="avares://ClassIsland/Controls/SubjectGroupHeaderStyles.axaml" />
                             </Popup.Styles>
                             <Border Classes="popup-bg">
                                 <ListBox

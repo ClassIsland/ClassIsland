@@ -194,8 +194,8 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     {
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
         {
-            // Remove 事件的 NewItems 为 null，必须回落到 OldItems，否则取下标会抛 ArgumentOutOfRangeException；
-            // Reset（Clear）两类都没有，退化成空 ItemId，不再让审计上报把整个变更操作带崩。
+            // 删除从 OldItems 取标识；ObservableDictionary.Clear 也发出 Remove，
+            // 且清空空字典时 OldItems 为空，因此取值前需要检查数量。
             var item = args.NewItems is { Count: > 0 } ? args.NewItems[0]
                 : args.OldItems is { Count: > 0 } ? args.OldItems[0]
                 : null;

@@ -11,6 +11,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.ComponentModels;
 using ClassIsland.Helpers;
 using ClassIsland.Models.Profile;
 using ClassIsland.Shared;
@@ -65,6 +66,13 @@ public class ScheduleDataGridCellControl : TemplatedControl
 
     public static void SetSubjects(Control obj, ObservableDictionary<Guid, Subject> value) => obj.SetValue(SubjectsProperty, value);
     public static ObservableDictionary<Guid, Subject> GetSubjects(Control obj) => obj.GetValue(SubjectsProperty);
+
+    // 保留旧附加属性，兼容已有的外部 XAML 与插件绑定。
+    public static readonly AttachedProperty<SyncDictionaryList<Guid, Subject>> SubjectsListProperty =
+        AvaloniaProperty.RegisterAttached<ScheduleDataGridCellControl, Control, SyncDictionaryList<Guid, Subject>>("SubjectsList", inherits: true);
+
+    public static void SetSubjectsList(Control obj, SyncDictionaryList<Guid, Subject> value) => obj.SetValue(SubjectsListProperty, value);
+    public static SyncDictionaryList<Guid, Subject> GetSubjectsList(Control obj) => obj.GetValue(SubjectsListProperty);
 
     public static readonly AttachedProperty<ObservableDictionary<Guid, SubjectGroup>> SubjectGroupsProperty =
         AvaloniaProperty.RegisterAttached<ScheduleDataGridCellControl, Control, ObservableDictionary<Guid, SubjectGroup>>("SubjectGroups", inherits: true);

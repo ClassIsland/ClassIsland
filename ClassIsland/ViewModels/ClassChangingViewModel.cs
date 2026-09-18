@@ -1,5 +1,6 @@
 using System;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.ComponentModels;
 using ClassIsland.Core.Abstractions.Services.Management;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,6 +37,12 @@ public partial class ClassChangingViewModel : ObservableRecipient
     public IProfileService ProfileService { get; }
 
     public IManagementService ManagementService { get; }
+
+    private SyncDictionaryList<Guid, Subject>? _subjects;
+
+    // 保留旧公开绑定入口；内置界面使用分组数据源，无外部调用时无需创建旧包装。
+    public SyncDictionaryList<Guid, Subject> Subjects =>
+        _subjects ??= new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
 
     private ObservableCollection<SubjectSelectionItem> _subjectSelectionItems = [];
     public ObservableCollection<SubjectSelectionItem> SubjectSelectionItems

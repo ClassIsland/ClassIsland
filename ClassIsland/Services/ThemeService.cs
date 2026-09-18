@@ -74,9 +74,8 @@ public class ThemeService : IHostedService, IThemeService
             AppBase.Current.Resources["CustomizedAccentBarBackground1Brush"] = newBrush;
         }
 
-        // 本事件此前从未被触发过，导致订阅者在主题变化时不会刷新。
-        // 注意不能直接用 AppBase.Current.ActualThemeVariant 判断明暗：主题设为「跟随系统」时它恒为
-        // ThemeVariant.Default，需要回落到系统外观。
+        // 设置主题后通知订阅者刷新；跟随系统时由平台外观计算事件中的实际模式，
+        // 避免依赖尚未完成传播的应用主题属性。
         var realThemeMode = themeMode switch
         {
             1 => 0,

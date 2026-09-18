@@ -46,6 +46,25 @@ internal static class SubjectSelectionHelper
         return new ObservableCollection<SubjectSelectionItem>(items);
     }
 
+    public static ObservableCollection<SubjectGroupSelectionItem> CreateGroupItems(
+        IEnumerable<SubjectGroupSelectionItem> previousItems,
+        IEnumerable<SubjectGroupSelectionItem> source)
+    {
+        var existingItems = previousItems.ToDictionary(x => x.Key);
+        var items = source.Select(item =>
+        {
+            if (!existingItems.TryGetValue(item.Key, out var existing))
+            {
+                return item;
+            }
+
+            existing.Name = item.Name;
+            return existing;
+        });
+        // 分组下拉框也不能 Move 已选项；换源时保留对象身份，兼顾改名与结构变化。
+        return new ObservableCollection<SubjectGroupSelectionItem>(items);
+    }
+
     public static void Synchronize<T>(ObservableCollection<T> target, IReadOnlyList<T> source)
     {
         // Clear/Reset 会清空选择控件的选中项；保留现有对象并移动它们，以维持双向绑定的选择状态。
