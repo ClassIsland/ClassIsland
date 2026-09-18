@@ -230,7 +230,6 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- 科目分组信息 -->
         <ScrollViewer x:Key="SubjectGroupInfoEditor" Width="332" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="16"
                         Spacing="8"
@@ -1136,7 +1135,6 @@
                                                         <Setter Property="MinWidth" Value="0" />
                                                         <Setter Property="Padding" Value="0" />
                                                     </Style>
-                                                    <!-- 同上：分组标题禁止选中会连带降低不透明度，这里恢复，仅在列表本身可用时生效。 -->
                                                     <Style Selector="ListBox:not(:disabled) ListBoxItem:disabled">
                                                         <Setter Property="Opacity" Value="1" />
                                                     </Style>

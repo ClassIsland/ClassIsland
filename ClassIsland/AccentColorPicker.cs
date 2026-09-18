@@ -14,9 +14,7 @@ public static class AccentColorPicker
         var app = AppBase.Current;
         var theme = GetEffectiveThemeVariant(app);
 
-        // 色块必须与分组标题实际渲染出的颜色一致：标题用的是 AccentTextFillColorPrimaryBrush，
-        // 该画刷按当前外观解析（深色外观下是系统强调色的浅色变体，浅色外观下是深色变体）。
-        // 资源查询必须显式传入有效外观，避免用 Default 查询时选中错误的主题字典。
+        // 使用标题实际采用的画刷，并按生效外观查询，避免 Default 命中错误的主题字典。
         if (TryGetColor(app, "AccentTextFillColorPrimaryBrush", theme, out var accent))
         {
             return accent;
@@ -30,11 +28,7 @@ public static class AccentColorPicker
         return GetSystemAccentColorFallback();
     }
 
-    /// <summary>
-    /// 获取当前真正生效的外观变体。跟随系统时 <see cref="Application.RequestedThemeVariant"/> 会被
-    /// <c>ThemeService.SetTheme</c> 显式设成 <see cref="ThemeVariant.Default"/>，此时需要回落到真实
-    /// 生效的外观，否则按主题字典查颜色会命中浅色字典，拿到明显偏深的强调色。
-    /// </summary>
+    // 跟随系统时 RequestedThemeVariant 为 Default，资源查询必须使用实际生效的外观。
     private static ThemeVariant GetEffectiveThemeVariant(Application app)
     {
         var requested = app.RequestedThemeVariant;
@@ -43,8 +37,7 @@ public static class AccentColorPicker
             return requested;
         }
 
-        // 跟随系统时 Application.ActualThemeVariant 实测会解析成真实生效的外观（Dark/Light），
-        // 比直接问系统外观更贴近控件自身的解析结果。
+        // ActualThemeVariant 与控件解析主题资源时使用的外观一致。
         var actual = app.ActualThemeVariant;
         if (actual is not null && actual != ThemeVariant.Default)
         {

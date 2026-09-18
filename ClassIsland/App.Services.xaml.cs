@@ -101,9 +101,7 @@ public partial class App
         services.AddSingleton<ITutorialService, TutorialService>();
         services.AddSingleton<IRefreshingService, RefreshingService>();
         // ViewModels
-        // 必须是 Singleton：除档案编辑窗口外，规则设置控件（如「科目是」）也会解析这个 ViewModel，
-        // 而它是 keyed transient、每次展示都会新建。若此处是 Transient，则每建一次控件就会多出一个
-        // 订阅了档案与主题事件、且永远不会释放的实例，并在每次科目变更时重复刷新。
+        // 多个 transient 控件会解析此 ViewModel；使用单例避免档案和主题事件订阅重复累积。
         services.AddSingleton<ProfileSettingsViewModel>();
         services.AddTransient<DevPortalViewModel>();
         services.AddTransient<AppLogsViewModel>();

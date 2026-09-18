@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace ClassIsland.Shared.Models.Profile;
 
 /// <summary>
-/// 代表一组科目。
+/// 档案中用于组织科目的可持久化分组。
 /// </summary>
 public class SubjectGroup : ObservableRecipient
 {
@@ -11,7 +11,7 @@ public class SubjectGroup : ObservableRecipient
     private string _color = "";
 
     /// <summary>
-    /// 科目分组名称。
+    /// 在科目选择器中显示的分组名称。
     /// </summary>
     public string Name
     {
