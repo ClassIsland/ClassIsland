@@ -86,7 +86,6 @@ public class Subject : AttachableSettingsObject
         }
     }
     
-    
 
     /// <summary>
     /// 代表后备科目。
