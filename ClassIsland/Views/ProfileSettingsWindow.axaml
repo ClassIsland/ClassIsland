@@ -1721,7 +1721,7 @@
                         <ColumnDefinition Width="450" MaxWidth="500" MinWidth="200"/>
                         </Grid.ColumnDefinitions>
                         <!-- 科目操作 -->
-                        <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="5"
+                        <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="5" Classes="hide-popup-indicator"
                                  Grid.Row="0" DefaultLabelPosition="Right"
                                  IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource BooleanToBooleanReConverter}}">
                             <controls:CommandBar.PrimaryCommands>
