@@ -87,6 +87,6 @@ public class SubjectSelectionWrapPanel : Panel
         var isGroupHeader = child.DataContext is SubjectSelectionItem { IsGroupHeader: true };
         var exceedsAvailableWidth = !double.IsPositiveInfinity(availableWidth)
                                     && lineWidth + childWidth > availableWidth;
-        return IsGroupRowMode && isGroupHeader || exceedsAvailableWidth;
+        return (IsGroupRowMode && isGroupHeader) || exceedsAvailableWidth;
     }
 }
