@@ -29,7 +29,6 @@ public class ThemeService : IHostedService, IThemeService
     {
     }
 
-
     public ILogger<ThemeService> Logger { get; }
 
     public event EventHandler<ThemeUpdatedEventArgs>? ThemeUpdated;
