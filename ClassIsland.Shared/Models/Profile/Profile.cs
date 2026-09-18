@@ -17,6 +17,7 @@ public class Profile : ObservableRecipient
     private ObservableDictionary<Guid, TimeLayout> _timeLayouts = new();
     private ObservableDictionary<Guid, ClassPlan> _classPlans = new();
     private ObservableDictionary<Guid, Subject> _subjects = new();
+    private ObservableDictionary<Guid, SubjectGroup> _subjectGroups = new();
     private bool _isOverlayClassPlanEnabled = false;
     private Guid? _overlayClassPlanId = null;
     private ObservableCollection<Subject> _editingSubjects = new();
@@ -134,6 +135,25 @@ public class Profile : ObservableRecipient
             ClassPlans.Remove(i.Key);
         }
         ClassPlanGroups.Remove(id);
+    }
+
+    /// <summary>
+    /// 删除科目分组，并将其中的科目移回未分组。
+    /// </summary>
+    /// <param name="id">要删除的分组 GUID</param>
+    public void DeleteSubjectGroup(Guid id)
+    {
+        if (!SubjectGroups.ContainsKey(id))
+        {
+            return;
+        }
+
+        foreach (var subject in Subjects.Values.Where(x => x.GroupId == id))
+        {
+            subject.GroupId = Guid.Empty;
+        }
+
+        SubjectGroups.Remove(id);
     }
 
     private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e=null)
@@ -288,6 +308,20 @@ public class Profile : ObservableRecipient
         {
             if (Equals(value, _subjects)) return;
             _subjects = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 存储的科目分组字典，键为 GUID。
+    /// </summary>
+    public ObservableDictionary<Guid, SubjectGroup> SubjectGroups
+    {
+        get => _subjectGroups;
+        set
+        {
+            if (Equals(value, _subjectGroups)) return;
+            _subjectGroups = value;
             OnPropertyChanged();
         }
     }

@@ -101,7 +101,8 @@ public partial class App
         services.AddSingleton<ITutorialService, TutorialService>();
         services.AddSingleton<IRefreshingService, RefreshingService>();
         // ViewModels
-        services.AddTransient<ProfileSettingsViewModel>();
+        // 多个 transient 控件会解析此 ViewModel；使用单例避免档案和主题事件订阅重复累积。
+        services.AddSingleton<ProfileSettingsViewModel>();
         services.AddTransient<DevPortalViewModel>();
         services.AddTransient<AppLogsViewModel>();
         services.AddTransient<WelcomeViewModel>();
@@ -292,7 +293,7 @@ public partial class App
         services.AddProfileTransferProvider<CsesImportProvider>("classisland.profileTransfer.import.cses", "从 CSES 导入", ProfileTransferProviderType.Import, "\ue6cb");
         services.AddProfileTransferProvider<ClassIsland1ImportProvider>("classisland.profileTransfer.import.legacyV1", "从 ClassIsland 1.x 导入", ProfileTransferProviderType.Import, "bitmap(avares://ClassIsland/Assets/AppLogo.png)");
         services.AddProfileTransferProvider<ClassWidgets1ImportProvider>("classisland.profileTransfer.import.classWidgets", "从 Class Widgets 1.2 导入", ProfileTransferProviderType.Import);
-        services.AddProfileTransferProvider("classisland.profileTransfer.export.cses", "导出到 CSES", ProfileTransferProviderType.Export, CsesExportHelper.CsesExportHandler, "\ue6cb");
+        services.AddProfileTransferProvider("classisland.profileTransfer.export.cses", "导出为 CSES 文件", ProfileTransferProviderType.Export, CsesExportHelper.CsesExportHandler, "\ue6cb");
         // Themes
         services.AddXamlTheme(new Uri("avares://ClassIsland/XamlThemes/ClassicTheme/Styles.axaml"), new ThemeManifest()
         {

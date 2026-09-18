@@ -73,13 +73,14 @@
                                 <Style Selector="Popup[IsOpen=True] ListBox#PART_InnerListBox">
                                     <Setter Property="ItemsSource">
                                         <Binding
-                                            Path="$self.(scheduleDataGrid:ScheduleDataGridCellControl.SubjectsList).List"
+                                            Path="SubjectSelectionItems"
                                             x:CompileBindings="True"
                                             RelativeSource="{RelativeSource TemplatedParent}" />
                                     </Setter>
                                     <Setter Property="SelectedValue"
                                             Value="{Binding ClassInfo.SubjectId, RelativeSource={RelativeSource TemplatedParent}}" />
                                 </Style>
+                                <StyleInclude Source="avares://ClassIsland/Controls/SubjectGroupHeaderStyles.axaml" />
                             </Popup.Styles>
                             <Border Classes="popup-bg">
                                 <ListBox
@@ -91,22 +92,40 @@
                                         <Style Selector="ListBoxItem">
                                             <Setter Property="MinWidth" Value="0" />
                                             <Setter Property="Padding" Value="0" />
+                                            <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
+                                            <Setter Property="IsHitTestVisible" Value="{Binding !IsGroupHeader}" />
+                                            <Setter Property="Focusable" Value="{Binding !IsGroupHeader}" />
+                                        </Style>
+                                        <!-- 分组标题靠 IsEnabled=false 禁止选中，但 ListBoxItem:disabled 默认会把不透明度降到 50%，
+                                             使分组标题颜色与背景混合后发暗。这里恢复为不透明；限定在列表本身可用时，避免影响列表整体禁用的表现。 -->
+                                        <Style Selector="ListBox:not(:disabled) ListBoxItem:disabled">
+                                            <Setter Property="Opacity" Value="1" />
                                         </Style>
                                     </ListBox.Styles>
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <WrapPanel Classes="animated-resize" />
+                                            <controls:SubjectSelectionWrapPanel Classes="animated-resize" />
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Border Background="Transparent"
                                                     Padding="8">
-                                                <TextBlock Text="{Binding Value.Initial}"
-                                                           ToolTip.Tip="{Binding Value.Name}"
-                                                           FontSize="16"
-                                                           IsHitTestVisible="False"
-                                                           Margin="2 0 0 0" />
+                                                <Grid>
+                                                    <TextBlock Text="{Binding Value.Initial}"
+                                                               ToolTip.Tip="{Binding Value.Name}"
+                                                               FontSize="16"
+                                                               IsHitTestVisible="False"
+                                                               Margin="2 0 0 0"
+                                                               IsVisible="{Binding !IsGroupHeader}" />
+                                                    <TextBlock Text="{Binding GroupName}"
+                                                               Classes="subject-group-header"
+                                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                               Classes.custom-color="{Binding HasCustomGroupColor}"
+                                                               FontWeight="Bold"
+                                                               IsHitTestVisible="False"
+                                                               IsVisible="{Binding IsGroupHeader}" />
+                                                </Grid>
                                             </Border>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>

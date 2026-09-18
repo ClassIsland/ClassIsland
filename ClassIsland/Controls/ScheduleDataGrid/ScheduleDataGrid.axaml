@@ -46,6 +46,7 @@
                               SelectedItem="{Binding SelectedWeekClassPlanRow, Mode=TwoWay}"
                               SelectedIndex="{Binding SelectedClassInfoIndex, Converter={x:Static ci:PreventNullConverter.Instance}, Mode=OneWay}"
                               scheduleDataGrid:ScheduleDataGridCellControl.Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
+                              scheduleDataGrid:ScheduleDataGridCellControl.SubjectGroups="{Binding ProfileService.Profile.SubjectGroups, Mode=OneWay}"
                               x:Name="PART_DataGridWeekSchedule">
                         <DataGrid.Styles>
                             <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">

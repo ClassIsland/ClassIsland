@@ -161,6 +161,8 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
+        // 窗口关闭时仅隐藏；加载时幂等挂接，避免重复订阅。
+        ViewModel.EnsureProfileEventSubscriptions();
         BuildTransferNavigationItems();
     }
 
@@ -710,9 +712,10 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void InputElementSubjectItem_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (ViewModel.SelectedClassInfo != null && sender is Border { DataContext: KeyValuePair<Guid, Subject> kvp })
+        if (ViewModel.SelectedClassInfo != null && sender is Border { DataContext: SubjectSelectionItem item }
+            && !item.IsGroupHeader)
         {
-            ViewModel.SelectedClassInfo.SubjectId = kvp.Key;
+            ViewModel.SelectedClassInfo.SubjectId = item.Key;
         }
         
     }
@@ -1330,16 +1333,18 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
     {
-        //DataGridSubjects.CancelEdit();
-        
-        var isCreating = DataGridSubjects.SelectedIndex == ViewModel.ProfileService.Profile.Subjects.Count;
-        
         DataGridSubjects.CancelEdit();
         DataGridSubjects.IsReadOnly = true;
-        ViewModel.ProfileService.Profile.EditingSubjects.Add(new Subject());
+        var subject = new Subject
+        {
+            GroupId = ViewModel.CanEditSelectedSubjectGroup
+                ? ViewModel.SelectedSubjectGroupId
+                : Guid.Empty
+        };
+        ViewModel.ProfileService.Profile.EditingSubjects.Add(subject);
         DataGridSubjects.IsReadOnly = false;
-        DataGridSubjects.SelectedIndex = ViewModel.ProfileService.Profile.Subjects.Count - 1;
-        //TextBoxSubjectName.Focus();
+        ViewModel.RefreshFilteredSubjects();
+        ViewModel.SelectedSubject = subject;
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.create", 1);
     }
     
@@ -1358,9 +1363,86 @@ public partial class ProfileSettingsWindow : MyWindow
 
             ViewModel.ProfileService.Profile.EditingSubjects.Add(o);
         }
-        DataGridSubjects.SelectedItem = ViewModel.ProfileService.Profile.EditingSubjects.Last();
+        ViewModel.RefreshFilteredSubjects();
+        ViewModel.SelectedSubject = ViewModel.ProfileService.Profile.EditingSubjects.LastOrDefault();
         DataGridSubjects.IsReadOnly = false;
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.duplicate", 1);
+    }
+
+    private async void ButtonAddSubjectGroup_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var textBox = new TextBox();
+        var result = await new ContentDialog()
+        {
+            Title = "新建科目分组",
+            Content = new Field { Label = "分组名称", Content = textBox },
+            PrimaryButtonText = "新建",
+            SecondaryButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync();
+
+        if (result != ContentDialogResult.Primary || string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            return;
+        }
+
+        var group = new SubjectGroup { Name = textBox.Text.Trim() };
+        var id = Guid.NewGuid();
+        ViewModel.ProfileService.Profile.SubjectGroups.Add(id, group);
+        // 集合变更处理器已同步更新筛选选项，此时可以安全地选中新分组。
+        ViewModel.SelectedSubjectGroupId = id;
+    }
+
+    private async void MenuItemApplySubjectGroupPreset_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: string presetId } ||
+            !SubjectGroupPreset.TryGetPreset(presetId, out var preset) || preset is null)
+        {
+            return;
+        }
+
+        var result = await ContentDialogHelper.ShowConfirmationDialog(
+            "应用分科预设",
+            "应用预设会覆盖当前全部科目分组，并按已有科目名称重新分组；未匹配的科目会保留在未分组。是否继续？",
+            root: this,
+            positiveText: "应用预设");
+        if (!result)
+        {
+            return;
+        }
+
+        preset.Apply(ViewModel.ProfileService.Profile);
+        ViewModel.SelectedSubjectGroupId = ProfileSettingsViewModel.AllSubjectGroupId;
+    }
+
+    private void ButtonEditSubjectGroupInfo_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.CanEditSelectedSubjectGroup)
+        {
+            return;
+        }
+
+        OpenDrawer("SubjectGroupInfoEditor");
+    }
+
+    private async void ButtonDeleteSubjectGroup_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.ProfileService.Profile.SubjectGroups.TryGetValue(ViewModel.SelectedSubjectGroupId, out var group))
+        {
+            return;
+        }
+
+        var result = await ContentDialogHelper.ShowConfirmationDialog(
+            "删除科目分组",
+            $"删除“{group.Name}”后，其中的科目会移动到未分组。是否继续？",
+            positiveText: "删除");
+        if (!result)
+        {
+            return;
+        }
+
+        ViewModel.ProfileService.Profile.DeleteSubjectGroup(ViewModel.SelectedSubjectGroupId);
+        ViewModel.SelectedSubjectGroupId = Guid.Empty;
     }
 
     private void ButtonDeleteSubject_OnClick(object sender, RoutedEventArgs e)

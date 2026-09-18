@@ -49,7 +49,6 @@
                                                       x:Key="TimeLayoutDictionaryKeyFinderMultiConverter" />
         <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:ClassPlan"
                                                       x:Key="ClassPlanDictionaryKeyFinderMultiConverter" />
-        
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel DataContext="{Binding ViewModel.SelectedClassPlan}"
@@ -228,6 +227,23 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <ScrollViewer x:Key="SubjectGroupInfoEditor" Width="332" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16"
+                        Spacing="8"
+                        DataContext="{Binding ViewModel.SelectedSubjectGroup}">
+                <TextBlock Text="分组信息" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                <ci:Field Label="名称">
+                    <TextBox Margin="0 4 0 0"
+                             Text="{Binding Name}"/>
+                </ci:Field>
+                <ci:Field Label="分组标题颜色">
+                    <ColorPicker Margin="0 4 0 0"
+                                 HorizontalAlignment="Left"
+                                 Color="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedSubjectGroupColor, Mode=TwoWay}"/>
+                </ci:Field>
             </StackPanel>
         </ScrollViewer>
         
@@ -420,12 +436,26 @@
                 <ci:Field Label="换课成…">
                     <ComboBox HorizontalAlignment="Stretch"
                               Margin="0 0 0 8"
-                              ItemsSource="{Binding ViewModel.Subjects.List, UpdateSourceTrigger=PropertyChanged}"
+                              ItemsSource="{Binding ViewModel.SubjectSelectionItems, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValueBinding="{Binding Key}"
                               SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
+                        <ComboBox.Styles>
+                            <Style Selector="ComboBoxItem">
+                                <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
+                            </Style>
+                        </ComboBox.Styles>
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Value.Name}" />
+                                <Grid>
+                                    <TextBlock Text="{Binding GroupName}"
+                                               Classes="subject-group-header"
+                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                               Classes.custom-color="{Binding HasCustomGroupColor}"
+                                               FontWeight="Bold"
+                                               IsVisible="{Binding IsGroupHeader}" />
+                                    <TextBlock Text="{Binding Value.Name}"
+                                               IsVisible="{Binding !IsGroupHeader}" />
+                                </Grid>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -490,6 +520,12 @@
             </StackPanel>
         </Flyout>
     </ci:MyWindow.Resources>
+    <ci:MyWindow.Styles>
+        <StyleInclude Source="avares://ClassIsland/Controls/SubjectGroupHeaderStyles.axaml" />
+        <Style Selector="TabControl.subject-selection-header TabItem:selected /template/ Rectangle#PART_SelectedPipe">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </ci:MyWindow.Styles>
     <ci:DrawerHost DrawerPlacement="Right"
                IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                DrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
@@ -847,11 +883,16 @@
                                                                         </Style>
                                                                     </Grid.Styles>
                                                                     <ComboBox
-                                                                        ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}"
+                                                                        ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SubjectSelectionItems}"
                                                                         SelectedValue="{Binding SubjectId}"
                                                                         HorizontalAlignment="Stretch"
                                                                         SelectedValueBinding="{Binding Key}"
                                                                         FontSize="13">
+                                                                        <ComboBox.Styles>
+                                                                            <Style Selector="ComboBoxItem">
+                                                                                <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
+                                                                            </Style>
+                                                                        </ComboBox.Styles>
                                                                         <Interaction.Behaviors>
                                                                             <BehaviorCollection>
                                                                                 <behaviors:ComboBoxEmptyFixBehavior />
@@ -859,8 +900,17 @@
                                                                         </Interaction.Behaviors>
                                                                         <ComboBox.ItemTemplate>
                                                                             <DataTemplate>
-                                                                                <TextBlock Text="{Binding Value.Name}"
-                                                                                    Margin="0 4 0 0" />
+                                                                                <Grid>
+                                                                                    <TextBlock Text="{Binding GroupName}"
+                                                                                               Classes="subject-group-header"
+                                                                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                                               Classes.custom-color="{Binding HasCustomGroupColor}"
+                                                                                               FontWeight="Bold"
+                                                                                               IsVisible="{Binding IsGroupHeader}" />
+                                                                                    <TextBlock Text="{Binding Value.Name}"
+                                                                                               IsVisible="{Binding !IsGroupHeader}"
+                                                                                               Margin="0 4 0 0" />
+                                                                                </Grid>
                                                                             </DataTemplate>
                                                                         </ComboBox.ItemTemplate>
                                                                     </ComboBox>
@@ -875,25 +925,56 @@
                                                           Grid.Row="0" Grid.RowSpan="2"
                                                           VerticalAlignment="Stretch" />
 
-                                            <TabControl Grid.Row="0" Grid.Column="2" Classes="compact"
+                                            <TabControl Grid.Row="0" Grid.Column="2" Classes="compact subject-selection-header"
                                                         Grid.RowSpan="2"
                                                         Padding="0">
-                                                <TabItem Header="编辑科目">
+                                                <TabItem>
+                                                    <TabItem.Header>
+                                                        <StackPanel Orientation="Horizontal" Spacing="2">
+                                                            <TextBlock Text="编辑科目" VerticalAlignment="Center" Margin="0 0 4 0" />
+                                                            <RadioButton GroupName="ListSubjectSelectionLayout"
+                                                                         Theme="{StaticResource TransparentToggleButton}"
+                                                                         Width="24" Height="24" Padding="2"
+                                                                         ToolTip.Tip="堆叠模式"
+                                                                         IsChecked="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode, Converter={StaticResource InvertBooleanConverter}, Mode=TwoWay}">
+                                                                <ci:FluentIcon Glyph="{ci:FI StackRegular}" FontSize="14" />
+                                                            </RadioButton>
+                                                            <RadioButton GroupName="ListSubjectSelectionLayout"
+                                                                         Theme="{StaticResource TransparentToggleButton}"
+                                                                         Width="24" Height="24" Padding="2"
+                                                                         ToolTip.Tip="分行模式"
+                                                                         IsChecked="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode, Mode=TwoWay}">
+                                                                <ci:FluentIcon Glyph="{ci:FI LayoutRowThreeRegular}" FontSize="14" />
+                                                            </RadioButton>
+                                                        </StackPanel>
+                                                    </TabItem.Header>
                                                     <Grid RowDefinitions="*, Auto">
                                                         <ListBox
                                                             Grid.Row="0"
                                                             SelectedValue="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.SubjectId, Mode=OneWay}"
                                                             SelectedValueBinding="{Binding Key}"
-                                                            ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}">
+                                                            ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SubjectSelectionItems}">
                                                             <ListBox.Styles>
+                                                                <Style Selector="ListBoxItem">
+                                                                    <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
+                                                                    <Setter Property="IsHitTestVisible" Value="{Binding !IsGroupHeader}" />
+                                                                    <Setter Property="Focusable" Value="{Binding !IsGroupHeader}" />
+                                                                </Style>
                                                                 <Style Selector="ListBoxItem">
                                                                     <Setter Property="MinWidth" Value="0" />
                                                                     <Setter Property="Padding" Value="0" />
                                                                 </Style>
+                                                                <!-- 分组标题靠 IsEnabled=false 禁止选中，但 ListBoxItem:disabled 默认会把不透明度降到 50%，
+                                                                     使分组标题颜色与背景混合后发暗。这里恢复为不透明；限定在列表本身可用时，避免影响列表整体禁用的表现。 -->
+                                                                <Style Selector="ListBox:not(:disabled) ListBoxItem:disabled">
+                                                                    <Setter Property="Opacity" Value="1" />
+                                                                </Style>
                                                             </ListBox.Styles>
                                                             <ListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <WrapPanel Classes="animated-resize" />
+                                                                    <controls1:SubjectSelectionWrapPanel
+                                                                        Classes="animated-resize"
+                                                                        IsGroupRowMode="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode}" />
                                                                 </ItemsPanelTemplate>
                                                             </ListBox.ItemsPanel>
                                                             <ListBox.ItemTemplate>
@@ -902,11 +983,20 @@
                                                                             PointerReleased="InputElementSubjectItem_OnTapped"
                                                                             PointerPressed="InputElementSubjectItem_OnPointerPressed"
                                                                             Padding="8">
-                                                                        <TextBlock Text="{Binding Value.Initial}"
-                                                                            ToolTip.Tip="{Binding Value.Name}"
-                                                                            FontSize="16"
-                                                                            IsHitTestVisible="False"
-                                                                            Margin="2 0 0 0" />
+                                                                        <Grid>
+                                                                            <TextBlock Text="{Binding Value.Initial}"
+                                                                                ToolTip.Tip="{Binding Value.Name}"
+                                                                                FontSize="16"
+                                                                                IsHitTestVisible="False"
+                                                                                Margin="2 0 0 0"
+                                                                                IsVisible="{Binding !IsGroupHeader}" />
+                                                                            <TextBlock Text="{Binding GroupName}"
+                                                                                       Classes="subject-group-header"
+                                                                                       Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                                       Classes.custom-color="{Binding HasCustomGroupColor}"
+                                                                                       FontWeight="Bold"
+                                                                                       IsVisible="{Binding IsGroupHeader}" />
+                                                                        </Grid>
                                                                     </Border>
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
@@ -1005,26 +1095,55 @@
                                               Grid.Row="1" 
                                               VerticalAlignment="Stretch" />
 
-                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact tag-SubjectsInput"
+                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact tag-SubjectsInput subject-selection-header"
                                             IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                             Padding="0">
-                                    <TabItem Header="编辑科目">
+                                    <TabItem>
+                                        <TabItem.Header>
+                                            <StackPanel Orientation="Horizontal" Spacing="2">
+                                                <TextBlock Text="编辑科目" VerticalAlignment="Center" Margin="0 0 4 0" />
+                                                <RadioButton GroupName="WeekSubjectSelectionLayout"
+                                                             Theme="{StaticResource TransparentToggleButton}"
+                                                             Width="24" Height="24" Padding="2"
+                                                             ToolTip.Tip="堆叠模式"
+                                                             IsChecked="{Binding ViewModel.IsSubjectSelectionGroupRowMode, Converter={StaticResource InvertBooleanConverter}, Mode=TwoWay}">
+                                                    <ci:FluentIcon Glyph="{ci:FI StackRegular}" FontSize="14" />
+                                                </RadioButton>
+                                                <RadioButton GroupName="WeekSubjectSelectionLayout"
+                                                             Theme="{StaticResource TransparentToggleButton}"
+                                                             Width="24" Height="24" Padding="2"
+                                                             ToolTip.Tip="分行模式"
+                                                             IsChecked="{Binding ViewModel.IsSubjectSelectionGroupRowMode, Mode=TwoWay}">
+                                                    <ci:FluentIcon Glyph="{ci:FI LayoutRowThreeRegular}" FontSize="14" />
+                                                </RadioButton>
+                                            </StackPanel>
+                                        </TabItem.Header>
                                         <Grid RowDefinitions="*, Auto">
                                             <ListBox
                                                 Grid.Row="0"
                                                 IsEnabled="{Binding !ViewModel.SelectedClassInfo.IsEmpty}"
                                                 SelectedValue="{Binding ViewModel.SelectedClassInfo.SubjectId, Mode=OneWay}"
                                                 SelectedValueBinding="{Binding Key}"
-                                                ItemsSource="{Binding ViewModel.Subjects.List}">
+                                                ItemsSource="{Binding ViewModel.SubjectSelectionItems}">
                                                 <ListBox.Styles>
+                                                    <Style Selector="ListBoxItem">
+                                                        <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
+                                                        <Setter Property="IsHitTestVisible" Value="{Binding !IsGroupHeader}" />
+                                                        <Setter Property="Focusable" Value="{Binding !IsGroupHeader}" />
+                                                    </Style>
                                                     <Style Selector="ListBoxItem">
                                                         <Setter Property="MinWidth" Value="0" />
                                                         <Setter Property="Padding" Value="0" />
                                                     </Style>
+                                                    <Style Selector="ListBox:not(:disabled) ListBoxItem:disabled">
+                                                        <Setter Property="Opacity" Value="1" />
+                                                    </Style>
                                                 </ListBox.Styles>
                                                 <ListBox.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <WrapPanel Classes="animated-resize" />
+                                                        <controls1:SubjectSelectionWrapPanel
+                                                            Classes="animated-resize"
+                                                            IsGroupRowMode="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsSubjectSelectionGroupRowMode}" />
                                                     </ItemsPanelTemplate>
                                                 </ListBox.ItemsPanel>
                                                 <ListBox.ItemTemplate>
@@ -1033,11 +1152,20 @@
                                                                 PointerReleased="InputElementSubjectItem_OnTapped"
                                                                 PointerPressed="InputElementSubjectItem_OnPointerPressed"
                                                                 Padding="8">
-                                                            <TextBlock Text="{Binding Value.Initial}"
-                                                                ToolTip.Tip="{Binding Value.Name}"
-                                                                FontSize="16"
-                                                                IsHitTestVisible="False"
-                                                                Margin="2 0 0 0" />
+                                                            <Grid>
+                                                                <TextBlock Text="{Binding Value.Initial}"
+                                                                 ToolTip.Tip="{Binding Value.Name}"
+                                                                 FontSize="16"
+                                                                 IsHitTestVisible="False"
+                                                                 Margin="2 0 0 0"
+                                                                 IsVisible="{Binding !IsGroupHeader}" />
+                                                                <TextBlock Text="{Binding GroupName}"
+                                                                           Classes="subject-group-header"
+                                                                           Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                           Classes.custom-color="{Binding HasCustomGroupColor}"
+                                                                           FontWeight="Bold"
+                                                                           IsVisible="{Binding IsGroupHeader}" />
+                                                            </Grid>
                                                         </Border>
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
@@ -1489,12 +1617,26 @@
                                                 <ci:IconText Glyph="&#xE47A;" Text="默认课程"  />
                                                 <ComboBox
                                                     HorizontalAlignment="Stretch"
-                                                    ItemsSource="{Binding ViewModel.Subjects.List, UpdateSourceTrigger=PropertyChanged}"
+                                                    ItemsSource="{Binding ViewModel.SubjectSelectionItems, UpdateSourceTrigger=PropertyChanged}"
                                                     SelectedValueBinding="{Binding Key}"
                                                     SelectedValue="{Binding ViewModel.SelectedTimePoint.DefaultClassId}">
+                                                    <ComboBox.Styles>
+                                                        <Style Selector="ComboBoxItem">
+                                                            <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
+                                                        </Style>
+                                                    </ComboBox.Styles>
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
-                                                            <TextBlock Text="{Binding Value.Name}" />
+                                                            <Grid>
+                                                                <TextBlock Text="{Binding GroupName}"
+                                                                           Classes="subject-group-header"
+                                                                           Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                                           Classes.custom-color="{Binding HasCustomGroupColor}"
+                                                                           FontWeight="Bold"
+                                                                           IsVisible="{Binding IsGroupHeader}" />
+                                                                <TextBlock Text="{Binding Value.Name}"
+                                                                           IsVisible="{Binding !IsGroupHeader}" />
+                                                            </Grid>
                                                         </DataTemplate>
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
@@ -1570,12 +1712,14 @@
                          IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <Grid RowDefinitions="Auto,*">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="5"/>
-                            <ColumnDefinition Width="450" MaxWidth="500" MinWidth="200"/>
+                        <ColumnDefinition Width="250" MinWidth="150" MaxWidth="260"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*" MinWidth="250"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="450" MaxWidth="500" MinWidth="200"/>
                         </Grid.ColumnDefinitions>
                         <!-- 科目操作 -->
-                        <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="3"
+                        <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="5" Classes="hide-popup-indicator"
                                  Grid.Row="0" DefaultLabelPosition="Right"
                                  IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource BooleanToBooleanReConverter}}">
                             <controls:CommandBar.PrimaryCommands>
@@ -1588,14 +1732,48 @@
                                 <controls:CommandBarButton Click="ButtonDeleteSubject_OnClick" ToolTip.Tip="删除选中的科目。"
                                                            IsEnabled="{Binding ViewModel.SelectedSubject, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                            IconSource="{ci:FluentIconSource &#xE61D;}" Label="删除"/>
+                                <controls:CommandBarSeparator/>
+                                <controls:CommandBarButton Click="ButtonAddSubjectGroup_OnClick" ToolTip.Tip="新建一个科目分组。"
+                                                           IconSource="{ci:FluentIconSource &#xE00D;}" Label="添加分组"/>
+                                <controls:CommandBarButton ToolTip.Tip="应用预设科目分组。"
+                                                           IconSource="{ci:FluentIconSource &#xE933;}" Label="分科预设">
+                                    <controls:CommandBarButton.Flyout>
+                                        <MenuFlyout>
+                                            <MenuItem Header="小学" Tag="primary" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                            <MenuItem Header="初中" Tag="middle" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                            <MenuItem Header="高中" Tag="high" Click="MenuItemApplySubjectGroupPreset_OnClick"/>
+                                        </MenuFlyout>
+                                    </controls:CommandBarButton.Flyout>
+                                </controls:CommandBarButton>
+                                <controls:CommandBarButton Click="ButtonEditSubjectGroupInfo_OnClick" ToolTip.Tip="查看并编辑选中科目分组的信息。"
+                                                           IsEnabled="{Binding ViewModel.CanEditSelectedSubjectGroup}"
+                                                           IconSource="{ci:FluentIconSource &#xE9E4;}" Label="分组信息"/>
+                                <controls:CommandBarButton Click="ButtonDeleteSubjectGroup_OnClick" ToolTip.Tip="删除选中的科目分组。"
+                                                           IsEnabled="{Binding ViewModel.CanEditSelectedSubjectGroup}"
+                                                           IconSource="{ci:FluentIconSource &#xE61D;}" Label="删除分组"/>
                             </controls:CommandBar.PrimaryCommands>
                         </controls:CommandBar>
                         <!-- 科目选择 -->
-                        <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0">
+                        <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0" RowDefinitions="Auto,*">
+                            <TextBlock Text="科目分组" Theme="{StaticResource SubtitleTextBlockStyle}" Margin="8 8 8 4" />
+                            <ListBox Grid.Row="1"
+                                     Margin="4 0"
+                                     SelectedValue="{Binding ViewModel.SelectedSubjectGroupId, Mode=TwoWay}"
+                                     SelectedValueBinding="{Binding Key}"
+                                     ItemsSource="{Binding ViewModel.SubjectGroupFilterItems}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+
+                        <Grid Grid.Row="1" Grid.Column="2" Margin="0 0 3 0">
                             <!-- 科目 -->
                             <DataGrid Grid.Row="0"
                                       x:Name="DataGridSubjects"
-                                      ItemsSource="{Binding ViewModel.ProfileService.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      ItemsSource="{Binding ViewModel.FilteredSubjects, Mode=OneWay}"
                                       AutoGenerateColumns="False"
                                       IsReadOnly="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing}"
                                       SelectedItem="{Binding ViewModel.SelectedSubject}"
@@ -1639,6 +1817,23 @@
                                                         Header="科目名"/>
                                     <DataGridTextColumn Binding="{Binding Initial, Mode=TwoWay}"
                                                             Header="简称"/>
+                                    <DataGridTemplateColumn Header="分组">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SubjectGroupSelectionItems}"
+                                                          IsEnabled="{Binding !$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing}"
+                                                          SelectedValue="{Binding GroupId, Mode=TwoWay}"
+                                                          SelectedValueBinding="{Binding Key}"
+                                                          HorizontalAlignment="Stretch">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Name}" />
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                     <DataGridCheckBoxColumn Binding="{Binding IsOutDoor, Mode=TwoWay}"
                                                                 Header="户外课程？"/>
                                     <DataGridTextColumn Binding="{Binding TeacherName, Mode=TwoWay}"
@@ -1653,8 +1848,12 @@
                                       MaxWidth="500"
                                       Width="5" HorizontalAlignment="Stretch"/>
 
+                        <GridSplitter Grid.Row="1"
+                                      Grid.Column="3"
+                                      Width="5" HorizontalAlignment="Stretch"/>
+
                         <!-- 科目编辑 -->
-                        <ci:Emptiable Grid.Row="1" Grid.Column="2" 
+                        <ci:Emptiable Grid.Row="1" Grid.Column="4"
                                       IsDirectContentMode="True"
                                       Data="{Binding ViewModel.SelectedSubject}">
                             <Grid Margin="3 0 0 0"

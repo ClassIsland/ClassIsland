@@ -25,6 +25,7 @@
         WindowStartupLocation="CenterScreen"
         Unloaded="Control_OnUnloaded">
     <controls1:MyWindow.Styles>
+        <StyleInclude Source="avares://ClassIsland/Controls/SubjectGroupHeaderStyles.axaml" />
         <Style Selector="ci|LessonsListBox ListBoxItem">
             <Setter Property="IsHitTestVisible">
                 <Setter.Value>
@@ -41,7 +42,6 @@
     </controls1:MyWindow.Styles>
     <controls1:MyWindow.Resources>
         <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
-
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
         <converters1:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
@@ -112,12 +112,26 @@
                                     <ComboBox HorizontalAlignment="Left"
                                               MinWidth="100"
                                               VerticalAlignment="Center"
-                                              ItemsSource="{Binding ViewModel.Subjects.List, UpdateSourceTrigger=PropertyChanged}"
+                                              ItemsSource="{Binding ViewModel.SubjectSelectionItems, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValueBinding="{Binding Key}"
                                               SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
+                                        <ComboBox.Styles>
+                                            <Style Selector="ComboBoxItem">
+                                                <Setter Property="IsEnabled" Value="{Binding !IsGroupHeader}" />
+                                            </Style>
+                                        </ComboBox.Styles>
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Value.Name}" />
+                                                <Grid>
+                                                    <TextBlock Text="{Binding GroupName}"
+                                                               Classes="subject-group-header"
+                                                               Classes.default-color="{Binding UsesDefaultGroupColor}"
+                                                               Classes.custom-color="{Binding HasCustomGroupColor}"
+                                                               FontWeight="Bold"
+                                                               IsVisible="{Binding IsGroupHeader}" />
+                                                    <TextBlock Text="{Binding Value.Name}"
+                                                               IsVisible="{Binding !IsGroupHeader}" />
+                                                </Grid>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
