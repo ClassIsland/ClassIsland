@@ -803,6 +803,119 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region TimeLayouts
     
+    #region 时间点编辑器：保留秒值
+
+    // 当由本窗口自身改动时间回写模型时置为 true，用于抑制随之而来的事件，避免递归。
+    private bool _isUpdatingTimeFromEditor;
+
+    /// <summary>
+    /// 应用时间点编辑器中选择的新时间。
+    /// </summary>
+    /// <remarks>
+    /// 时间选择器只提供到秒的完整 TimeSpan，但它的「确认」动作会重建整个值并回写绑定。
+    /// 在「用户只改了时/分」的场景下，秒位可能变成 0，从而静默改写档案（上游 #2007）。
+    ///
+    /// 这里改为 OneWay 绑定 + 显式写回：只有当新时间确实与现值不同才写入模型，
+    /// 打开后直接确认这类「无改动」操作不会产生任何写回，秒值因此得以保留。
+    /// </remarks>
+    private static void ApplyPickedTime(
+        TimeLayoutItem? target,
+        TimeSpan? picked,
+        Action<TimeLayoutItem, TimeSpan> assign,
+        Action<TimeLayoutItem> afterAssign,
+        ref bool suppress)
+    {
+        if (target == null || picked == null || suppress)
+        {
+            return;
+        }
+
+        var newTime = picked.Value;
+        if (newTime == target.StartTime && newTime == target.EndTime)
+        {
+            // 时间未发生实际变化，不写回，避免无谓的档案改动。
+            return;
+        }
+
+        suppress = true;
+        try
+        {
+            assign(target, newTime);
+            afterAssign(target);
+        }
+        finally
+        {
+            suppress = false;
+        }
+    }
+
+    /// <summary>
+    /// 变更时间点时间后，按时间顺序重排时间表，并让课程表组件立即反映新的顺序。
+    /// </summary>
+    private void NormalizeTimeLayoutOrder(TimeLayoutItem? item)
+    {
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        if (timeLayout == null)
+        {
+            return;
+        }
+
+        SortTimeLayoutLayouts(timeLayout);
+        timeLayout.SortCompleted();
+
+        if (item != null)
+        {
+            TimeLineListControl?.ScrollIntoViewCentered(item);
+        }
+    }
+
+    private void TimePickerStart_OnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)
+    {
+        var target = ViewModel.SelectedTimePoint;
+        ApplyPickedTime(
+            target,
+            e.NewTime,
+            static (item, time) => item.StartTime = time,
+            NormalizeTimeLayoutOrder,
+            ref _isUpdatingTimeFromEditor);
+    }
+
+    private void TimePickerEnd_OnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)
+    {
+        var target = ViewModel.SelectedTimePoint;
+        ApplyPickedTime(
+            target,
+            e.NewTime,
+            static (item, time) => item.EndTime = time,
+            NormalizeTimeLayoutOrder,
+            ref _isUpdatingTimeFromEditor);
+    }
+
+    #endregion
+
+    /// <summary>
+    /// 按开始时间（其次结束时间）对时间表中的时间点排序。
+    /// </summary>
+    /// <remarks>
+    /// 不使用 <see cref="TimeLayoutItem.CompareTo"/>：它的比较方向与 <see cref="IComparable"/> 约定相反，
+    /// 直接 Sort() 会得到降序结果。
+    /// </remarks>
+    private static void SortTimeLayoutLayouts(TimeLayout timeLayout)
+    {
+        var sorted = timeLayout.Layouts
+            .OrderBy(x => x.StartTime)
+            .ThenBy(x => x.EndTime)
+            .ToList();
+
+        for (var i = 0; i < sorted.Count; i++)
+        {
+            var current = timeLayout.Layouts.IndexOf(sorted[i]);
+            if (current != i)
+            {
+                timeLayout.Layouts.Move(current, i);
+            }
+        }
+    }
     public void UpdateTimeLayout()
     {
         var timeLayout = ViewModel.SelectedTimeLayout;
