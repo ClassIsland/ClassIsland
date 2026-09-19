@@ -270,6 +270,10 @@
     <Style Selector="controls|MenuFlyoutSubItem">
         <Setter Property="ci:FaMenuFlyoutSubItemTouchFixAssist.IsRepairApplied" Value="True"/>
     </Style>
+
+    <Style Selector="controls|SettingsExpander">
+        <Setter Property="ci:FaSettingsExpanderEmptyFixAssist.IsRepairApplied" Value="True"/>
+    </Style>
     
     <Style Selector=":is(windowing|AppWindow):not(:windows) :is(Control).custom-titlebar-only">
         <Setter Property="IsVisible" Value="False"/>
