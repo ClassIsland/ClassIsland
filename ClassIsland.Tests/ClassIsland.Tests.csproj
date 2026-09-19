@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <BaseFramework>net8.0</BaseFramework>
+        <AssemblyName>ClassIsland.Tests</AssemblyName>
+        <RootNamespace>ClassIsland.Tests</RootNamespace>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <EnableDefaultAvaloniaItems>false</EnableDefaultAvaloniaItems>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+        <PackageReference Include="xunit" Version="2.9.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+        <PackageReference Include="Avalonia.Headless.XUnit" Version="11.3.17" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\ClassIsland\ClassIsland.csproj" />
+    </ItemGroup>
+
+    <Import Project="../CrossPlatformProps.props" />
+
+    <!--
+      注意：以下清理必须放在 Import 之后。
+      CrossPlatformProps.props 会设置 ApplicationManifest/ApplicationIcon（指向相对源项目的路径），
+      在测试项目目录下并不存在，会导致 CSC 报 CS1926 / CS7064。
+      本项目是纯逻辑单元测试，不需要清单与图标。
+    -->
+    <PropertyGroup>
+        <ApplicationIcon />
+        <ApplicationManifest />
+        <Win32Manifest />
+    </PropertyGroup>
+
+    <!--
+      ClassIsland 中声明的 AvaloniaResource 会传递到本项目，路径按源项目解析，在本项目下不存在。
+      这些项在构建阶段注入，因此用 target 清空。
+    -->
+    <Target Name="StripInheritedAvaloniaResources" BeforeTargets="GenerateAvaloniaResourcesTask;CoreCompile;ResolveAssemblyReferences">
+        <ItemGroup>
+            <AvaloniaResource Remove="@(AvaloniaResource)" />
+            <AvaloniaXaml Remove="@(AvaloniaXaml)" />
+        </ItemGroup>
+    </Target>
+</Project>
