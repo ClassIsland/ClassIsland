@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Helpers;
 using ClassIsland.Shared.Models.Profile;
+using ClassIsland.Views;
 
 namespace ClassIsland.Controls.TimeLine;
 
@@ -178,7 +179,7 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
 
     void ThumbBottom_OnDragDelta(object sender, VectorEventArgs e)
     {
-        var a = TimePoint.EndTime;
+        var a = _initEndTime;
         var b = NextTimePoint();
         var d = GetDelta(a, e.Vector.Y);
         Console.WriteLine(d);
@@ -256,6 +257,47 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
         // App.GetService<ProfileSettingsWindow>().UpdateTimeLayout();
     }
 
+    /// <summary>
+    /// 拖动结束后按时间重新排序时间表。
+    /// </summary>
+    /// <remarks>
+    /// 拖动过程中不能排序，否则条目位置会在拖动期间跳变。但改动时间后集合顺序会与时间不一致，
+    /// 而主界面课程表组件的显示顺序取自排序后的时间点列表（见 <see cref="ClassPlan.OrderByTime"/>），
+    /// 因此必须在拖动结束时收敛一次顺序（上游 #2006）。
+    /// </remarks>
+    private void RequestTimeLayoutReorder()
+    {
+        var window = this.FindAncestorOfType<ProfileSettingsWindow>();
+        if (window == null)
+        {
+            return;
+        }
+
+        window.UpdateTimeLayout();
+        window.TimeLineListControl?.ScrollIntoViewCentered(TimePoint);
+    }
+
+    private void Thumb_OnDragCompleted(object? sender, VectorEventArgs e)
+        => RequestTimeLayoutReorder();
+
+    private void ThumbTop_OnDragCompleted(object? sender, VectorEventArgs e)
+        => RequestTimeLayoutReorder();
+
+    private void ThumbBottom_OnDragCompleted(object? sender, VectorEventArgs e)
+        => RequestTimeLayoutReorder();
+
+    /// <summary>
+    /// 记录拖动前的结束时间。
+    /// </summary>
+    /// <remarks>
+    /// 此前 <c>ThumbBottom</c> 没有绑定 DragStarted，导致 <see cref="_initEndTime"/> 始终是
+    /// 字段初始值 <see cref="TimeSpan.Zero"/>：<c>ThumbBottom_OnDragDelta</c> 里的
+    /// <c>GetDelta(a, ...)</c> 用 a=0 计算，首次点按底边时会把结束时间直接吸附到 00:00 附近。
+    /// </remarks>
+    private void ThumbBottom_OnDragStarted(object? sender, VectorEventArgs e)
+    {
+        _initEndTime = TimePoint.EndTime;
+    }
     private void ThumbTop_OnDragStarted(object? sender, VectorEventArgs e)
     {
         _initStartTime = TimePoint.StartTime;

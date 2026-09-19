@@ -923,11 +923,44 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             return;
         }
-        var l = timeLayout.Layouts.ToList();
-        l.Sort();
-        l.Reverse();
-        timeLayout.Layouts = new ObservableCollection<TimeLayoutItem>(l);
+        // 已经有序时不重建集合：避免选中项丢失、以及拖动结束后列表闪动。
+        if (IsTimeLayoutSorted(timeLayout))
+        {
+            timeLayout.SortCompleted();
+            return;
+        }
+
+        var previouslySelected = ViewModel.SelectedTimePoint;
+        SortTimeLayoutLayouts(timeLayout);
         timeLayout.SortCompleted();
+
+        // 就地重排（ObservableCollection.Move）不会重置选中项，这里仅作确认性恢复。
+        if (previouslySelected != null)
+        {
+            ViewModel.SelectedTimePoint = previouslySelected;
+            TimeLineListControl?.ScrollIntoViewCentered(previouslySelected);
+        }
+    }
+
+    /// <summary>
+    /// 判断时间表中的时间点是否已按时间先后排列。
+    /// </summary>
+    private static bool IsTimeLayoutSorted(TimeLayout timeLayout)
+    {
+        for (var i = 1; i < timeLayout.Layouts.Count; i++)
+        {
+            var prev = timeLayout.Layouts[i - 1];
+            var curr = timeLayout.Layouts[i];
+            if (prev.StartTime > curr.StartTime)
+            {
+                return false;
+            }
+            if (prev.StartTime == curr.StartTime && prev.EndTime > curr.EndTime)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void ButtonAddTimeLayout_OnClick(object sender, RoutedEventArgs e)
