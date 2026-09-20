@@ -36,6 +36,9 @@
     <ci:ViewBase.DataTemplates>
     </ci:ViewBase.DataTemplates>
     <ci:ViewBase.Resources>
+        <converters:StringToColorConverter x:Key="StringToColorConverter"/>
+        <converters:SubjectIconSourceConverter x:Key="SubjectIconSourceConverter"/>
+        <converters:SubjectColorBrushConverter x:Key="SubjectColorBrushConverter"/>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
                                               x:Key="SubjectIdToSubjectConverter"
                                               Dictionary="{Binding ViewModel.ProfileService.Profile.Subjects}"/>
@@ -2191,7 +2194,7 @@
                                     </DataGrid.Styles>
                                     <DataGrid.Columns>
                                         <DataGridTemplateColumn Header="" IsReadOnly="True"
-                                                                Width="50">
+                                                                Width="24">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -2206,29 +2209,46 @@
                                                                 PreviewOpacity="0.5"
                                                                 IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}}"/>
                                                         </Interaction.Behaviors>
-                                                        <ci:TouchDragThumb HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="32" Opacity="0"/>
-                                                        <ci:FluentIcon Classes="l-instructive"
-                                                                       ToolTip.Tip="拖拽调整科目顺序">
-                                                            <Interaction.Behaviors>
-                                                                <DataTriggerBehavior Binding="{Binding Value.IsOutDoor}" Value="True">
-                                                                    <AddClassAction ClassName="out-door"/>
-                                                                </DataTriggerBehavior>
-                                                                <DataTriggerBehavior Binding="{Binding Value.IsOutDoor}" Value="False">
-                                                                    <RemoveClassAction ClassName="out-door"/>
-                                                                </DataTriggerBehavior>
-                                                            </Interaction.Behaviors>
-                                                            <ci:FluentIcon.Styles>
-                                                                <Style Selector="ci|FluentIcon">
-                                                                    <Setter Property="Glyph" Value="&#xE47A;"/>
-                                                                    <Style Selector="^.out-door">
-                                                                        <Setter Property="Glyph" Value="&#xF02B;"/>                                                     
-                                                                    </Style>
-                                                                </Style>
-                                                            </ci:FluentIcon.Styles>
-                                                        </ci:FluentIcon>
+                                                        <ci:TouchDragThumb HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="32"
+                                                                           IsExplicitVisible="True"/>
                                                     </Grid>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header="图标" Width="72">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <controls:FAIconSourceElement IconSource="{Binding Value.Icon, Converter={StaticResource SubjectIconSourceConverter}}"
+                                                                                  Width="20" Height="20" TextElement.FontSize="20"
+                                                                                  Classes="repair-fontsize" HorizontalAlignment="Center"
+                                                                                  IsHitTestVisible="False"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <ci:IconExpressionEditor IconExpression="{Binding Value.Icon}"
+                                                                             HorizontalAlignment="Center"
+                                                                             IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header="主题色" Width="72">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Border Width="24" Height="24" CornerRadius="4"
+                                                            Background="{Binding Value.ColorHex, Converter={StaticResource SubjectColorBrushConverter}}"
+                                                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                                            BorderThickness="1" HorizontalAlignment="Center"
+                                                            IsHitTestVisible="False"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <ColorPicker Color="{Binding Value.ColorHex, Mode=TwoWay, Converter={StaticResource StringToColorConverter}}"
+                                                                 HorizontalAlignment="Center"
+                                                                 IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
                                         </DataGridTemplateColumn>
                                         <DataGridTextColumn Binding="{Binding Value.Name, Mode=TwoWay}"
                                                             Header="科目名"/>
@@ -2238,6 +2258,8 @@
                                                                     Header="户外课程？"/>
                                         <DataGridTextColumn Binding="{Binding Value.TeacherName, Mode=TwoWay}"
                                                                 Header="科任老师"/>
+                                        <DataGridTextColumn Binding="{Binding Value.Location, Mode=TwoWay}"
+                                                            Header="地点"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -2261,25 +2283,38 @@
                                             <TextBlock Text="编辑科目信息"
                                                        Theme="{StaticResource SubtitleTextBlockStyle}"/>
                                             <!-- 科目名 & 简称 -->
-                                            <Grid ColumnDefinitions="*,*">
+                                            <Grid ColumnDefinitions="Auto,*,*,Auto" ColumnSpacing="4">
+                                                <!-- 图标 -->
+                                                <ci:Field Grid.Column="0" Label="图标">
+                                                    <ci:IconExpressionEditor IconExpression="{Binding Icon}"/>
+                                                </ci:Field>
                                                 <!-- 科目名 -->
-                                                <ci:Field Grid.Column="0" Label="科目名" Margin="0 0 2 0">
+                                                <ci:Field Grid.Column="1" Label="科目名">
                                                     <TextBox x:Name="TextBoxSubjectName"
                                                              Text="{Binding Name}" />
                                                 </ci:Field>
                                                 <!-- 简称 -->
-                                                <ci:Field Grid.Column="1" Label="简称" Margin="2 0 0 0">
+                                                <ci:Field Grid.Column="2" Label="简称">
                                                     <TextBox Text="{Binding Initial}" />
+                                                </ci:Field>
+                                                <!-- 主题色 -->
+                                                <ci:Field Grid.Column="3" Label="主题色">
+                                                    <ColorPicker Color="{Binding ColorHex, Mode=TwoWay, Converter={StaticResource StringToColorConverter}}"/>
                                                 </ci:Field>
                                             </Grid>
                                             <!-- 科任老师 -->
                                             <ci:Field Label="科任老师">
                                                 <TextBox Text="{Binding TeacherName}" />
                                             </ci:Field>
+                                            <!-- 地点 -->
+                                            <ci:Field Label="地点">
+                                                <TextBox Text="{Binding Location}" />
+                                            </ci:Field>
                                             <!-- 户外课程 -->
                                             <CheckBox Margin="0 6 0 0"
                                                       IsChecked="{Binding IsOutDoor}"
                                                       Content="该科目是户外课程" />
+
                                             <!-- 附加属性 -->
                                             <Separator Margin="0 20 0 8" />
                                             <ci:IconText Glyph="&#xEF2B;" Text="更多选项" Margin="0 0 0 8" />
