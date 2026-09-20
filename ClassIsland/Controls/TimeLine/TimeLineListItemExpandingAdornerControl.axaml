@@ -32,7 +32,8 @@
                    HorizontalAlignment="Stretch"
                    Cursor="SizeAll"
                    DragStarted="Thumb_OnDragStarted"
-                   DragDelta="Thumb_OnDragDelta">
+                   DragDelta="Thumb_OnDragDelta"
+                   DragCompleted="Thumb_OnDragCompleted">
                 <Thumb.Template>
                     <ControlTemplate TargetType="Thumb">
                         <Border Background="Transparent"/>
@@ -44,11 +45,14 @@
                    DragStarted="ThumbTop_OnDragStarted"
                    Cursor="SizeNorthSouth"
                    DragDelta="ThumbTop_OnDragDelta"
+                   DragCompleted="ThumbTop_OnDragCompleted"
                    x:Name="ThumbTop"/>
             <Thumb Template="{StaticResource ResizeThumbTemplate}"
                VerticalAlignment="Bottom"
                Cursor="SizeNorthSouth"
+               DragStarted="ThumbBottom_OnDragStarted"
                DragDelta="ThumbBottom_OnDragDelta"
+               DragCompleted="ThumbBottom_OnDragCompleted"
                x:Name="ThumbBottom"/>
         </Grid>
         <Panel Grid.Row="1" Grid.Column="1" 

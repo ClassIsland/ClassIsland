@@ -803,6 +803,119 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region TimeLayouts
     
+    #region 时间点编辑器：保留秒值
+
+    // 当由本窗口自身改动时间回写模型时置为 true，用于抑制随之而来的事件，避免递归。
+    private bool _isUpdatingTimeFromEditor;
+
+    /// <summary>
+    /// 应用时间点编辑器中选择的新时间。
+    /// </summary>
+    /// <remarks>
+    /// 时间选择器只提供到秒的完整 TimeSpan，但它的「确认」动作会重建整个值并回写绑定。
+    /// 在「用户只改了时/分」的场景下，秒位可能变成 0，从而静默改写档案（上游 #2007）。
+    ///
+    /// 这里改为 OneWay 绑定 + 显式写回：只有当新时间确实与现值不同才写入模型，
+    /// 打开后直接确认这类「无改动」操作不会产生任何写回，秒值因此得以保留。
+    /// </remarks>
+    private static void ApplyPickedTime(
+        TimeLayoutItem? target,
+        TimeSpan? picked,
+        Action<TimeLayoutItem, TimeSpan> assign,
+        Action<TimeLayoutItem> afterAssign,
+        ref bool suppress)
+    {
+        if (target == null || picked == null || suppress)
+        {
+            return;
+        }
+
+        var newTime = picked.Value;
+        if (newTime == target.StartTime && newTime == target.EndTime)
+        {
+            // 时间未发生实际变化，不写回，避免无谓的档案改动。
+            return;
+        }
+
+        suppress = true;
+        try
+        {
+            assign(target, newTime);
+            afterAssign(target);
+        }
+        finally
+        {
+            suppress = false;
+        }
+    }
+
+    /// <summary>
+    /// 变更时间点时间后，按时间顺序重排时间表，并让课程表组件立即反映新的顺序。
+    /// </summary>
+    private void NormalizeTimeLayoutOrder(TimeLayoutItem? item)
+    {
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        if (timeLayout == null)
+        {
+            return;
+        }
+
+        SortTimeLayoutLayouts(timeLayout);
+        timeLayout.SortCompleted();
+
+        if (item != null)
+        {
+            TimeLineListControl?.ScrollIntoViewCentered(item);
+        }
+    }
+
+    private void TimePickerStart_OnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)
+    {
+        var target = ViewModel.SelectedTimePoint;
+        ApplyPickedTime(
+            target,
+            e.NewTime,
+            static (item, time) => item.StartTime = time,
+            NormalizeTimeLayoutOrder,
+            ref _isUpdatingTimeFromEditor);
+    }
+
+    private void TimePickerEnd_OnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)
+    {
+        var target = ViewModel.SelectedTimePoint;
+        ApplyPickedTime(
+            target,
+            e.NewTime,
+            static (item, time) => item.EndTime = time,
+            NormalizeTimeLayoutOrder,
+            ref _isUpdatingTimeFromEditor);
+    }
+
+    #endregion
+
+    /// <summary>
+    /// 按开始时间（其次结束时间）对时间表中的时间点排序。
+    /// </summary>
+    /// <remarks>
+    /// 不使用 <see cref="TimeLayoutItem.CompareTo"/>：它的比较方向与 <see cref="IComparable"/> 约定相反，
+    /// 直接 Sort() 会得到降序结果。
+    /// </remarks>
+    private static void SortTimeLayoutLayouts(TimeLayout timeLayout)
+    {
+        var sorted = timeLayout.Layouts
+            .OrderBy(x => x.StartTime)
+            .ThenBy(x => x.EndTime)
+            .ToList();
+
+        for (var i = 0; i < sorted.Count; i++)
+        {
+            var current = timeLayout.Layouts.IndexOf(sorted[i]);
+            if (current != i)
+            {
+                timeLayout.Layouts.Move(current, i);
+            }
+        }
+    }
     public void UpdateTimeLayout()
     {
         var timeLayout = ViewModel.SelectedTimeLayout;
@@ -810,11 +923,44 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             return;
         }
-        var l = timeLayout.Layouts.ToList();
-        l.Sort();
-        l.Reverse();
-        timeLayout.Layouts = new ObservableCollection<TimeLayoutItem>(l);
+        // 已经有序时不重建集合：避免选中项丢失、以及拖动结束后列表闪动。
+        if (IsTimeLayoutSorted(timeLayout))
+        {
+            timeLayout.SortCompleted();
+            return;
+        }
+
+        var previouslySelected = ViewModel.SelectedTimePoint;
+        SortTimeLayoutLayouts(timeLayout);
         timeLayout.SortCompleted();
+
+        // 就地重排（ObservableCollection.Move）不会重置选中项，这里仅作确认性恢复。
+        if (previouslySelected != null)
+        {
+            ViewModel.SelectedTimePoint = previouslySelected;
+            TimeLineListControl?.ScrollIntoViewCentered(previouslySelected);
+        }
+    }
+
+    /// <summary>
+    /// 判断时间表中的时间点是否已按时间先后排列。
+    /// </summary>
+    private static bool IsTimeLayoutSorted(TimeLayout timeLayout)
+    {
+        for (var i = 1; i < timeLayout.Layouts.Count; i++)
+        {
+            var prev = timeLayout.Layouts[i - 1];
+            var curr = timeLayout.Layouts[i];
+            if (prev.StartTime > curr.StartTime)
+            {
+                return false;
+            }
+            if (prev.StartTime == curr.StartTime && prev.EndTime > curr.EndTime)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void ButtonAddTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -844,30 +990,71 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.duplicate", 1);
     }
     
-    private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
-        var key = ViewModel.ProfileService.Profile.TimeLayouts
-            .FirstOrDefault(x => x.Value == ViewModel.SelectedTimeLayout).Key;
-        var c = ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeLayoutId == key);
         const string eventName = "views.ProfileSettingsWindow.timeLayout.remove";
-        if (c)
+        var profile = ViewModel.ProfileService.Profile;
+        var selected = ViewModel.SelectedTimeLayout;
+
+        // 用引用相等反查选中时间表的 key。
+        // 注意：这里曾用 FirstOrDefault(...).Key，若命中失败会得到 default 的 Guid.Empty，
+        // 随后的 Remove(Guid.Empty) 静默返回 false —— 界面毫无反应且无任何提示（上游 #2012）。
+        // 改为显式解析，无法解析时给出可见反馈并记录日志。
+        Guid? resolvedKey = null;
+        if (selected != null)
+        {
+            foreach (var kvp in profile.TimeLayouts)
+            {
+                if (ReferenceEquals(kvp.Value, selected))
+                {
+                    resolvedKey = kvp.Key;
+                    break;
+                }
+            }
+        }
+
+        if (resolvedKey is not { } key)
+        {
+            Logger.LogError(
+                "删除时间表失败：无法在档案中定位选中的时间表（SelectedTimeLayout 为 {SelectedState}）。",
+                selected == null ? "null" : "非档案内实例");
+            this.ShowWarningToast("无法删除该时间表：未能在档案中找到对应的记录。");
+            SentrySdk.Metrics.EmitCounter(eventName, 1,
+            [
+                new KeyValuePair<string, object>("IsSuccess", "false"),
+                new KeyValuePair<string, object>("Reason", "无法定位时间表")
+            ]);
+            return;
+        }
+
+        if (profile.ClassPlans.Any(x => x.Value.TimeLayoutId == key))
         {
             this.ShowWarningToast("仍有课表在使用该时间表。删除时间表前需要删除所有使用该时间表的课表。");
             SentrySdk.Metrics.EmitCounter(eventName, 1,
             [
                 new KeyValuePair<string, object>("IsSuccess", "false"),
                 new KeyValuePair<string, object>("Reason", "仍有课表在使用该时间表。")
-            ]
-            );
+            ]);
+            return;
+        }
+
+        if (!profile.TimeLayouts.Remove(key))
+        {
+            // 走到这里说明 key 解析成功但移除失败，属于数据不一致，必须暴露出来。
+            Logger.LogError("删除时间表失败：Remove({Key}) 返回 false。", key);
+            this.ShowWarningToast("删除时间表失败：档案数据可能不一致，请检查日志。");
+            SentrySdk.Metrics.EmitCounter(eventName, 1,
+            [
+                new KeyValuePair<string, object>("IsSuccess", "false"),
+                new KeyValuePair<string, object>("Reason", "Remove 返回 false")
+            ]);
             return;
         }
 
         SentrySdk.Metrics.EmitCounter(eventName, 1,
         [
             new KeyValuePair<string, object>("IsSuccess", "true")
-        ]
-        );
-        ViewModel.ProfileService.Profile.TimeLayouts.Remove(key);
+        ]);
         FlyoutHelper.CloseAncestorFlyout(sender);
     }
     

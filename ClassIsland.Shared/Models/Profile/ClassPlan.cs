@@ -51,14 +51,29 @@ public class ClassPlan : AttachableSettingsObject
         OnPropertyChanged(nameof(ValidTimeLayoutItems));
     }
 
+    /// <summary>
+    /// 将时间点按时间先后排序（先开始时间，再结束时间）。
+    /// </summary>
+    /// <remarks>
+    /// 这是唯一被认可的显示排序规则：主界面课程表组件绑定的是 <see cref="ValidTimeLayoutItems"/>，
+    /// 而该列表的顺序必须由时间决定，而不是由数据在档案文件中的存储顺序决定（上游 #2006）。
+    ///
+    /// 这里刻意不使用 <see cref="TimeLayoutItem.CompareTo"/>：它的比较方向与 <see cref="System.IComparable"/>
+    /// 约定相反，直接 <c>List.Sort()</c> 会得到降序结果。
+    /// </remarks>
+    public static List<TimeLayoutItem> OrderByTime(IEnumerable<TimeLayoutItem> items)
+        => items.OrderBy(x => x.StartTime)
+            .ThenBy(x => x.EndTime)
+            .ToList();
+
     private ObservableCollection<TimeLayoutItem> GetValidTimeLayoutItems()
     {
         if (TimeLayout == null)
             return [];
         var timeLayoutMap = Classes.ToDictionary(x => x.CurrentTimeLayoutItem, x => x);
-        var displayTimePoints = TimeLayout.Layouts
-            .Where(x => x.TimeType is 0 or 1 or 2)
-            .ToList();
+        // 按时间排序后再输出：课程表组件直接绑定本列表（LessonsListBox），若不排序，显示顺序会
+        // 取决于数据在文件中的存储顺序，导致「先追加、再改时间」的时间点永远显示在末尾（上游 #2006）。
+        var displayTimePoints = OrderByTime(TimeLayout.Layouts.Where(x => x.TimeType is 0 or 1 or 2));
         ObservableCollection<TimeLayoutItem> items = [.. displayTimePoints.Select(x => x)];
         List<TimeLayoutItem> remove = [];
         // 正向搜索

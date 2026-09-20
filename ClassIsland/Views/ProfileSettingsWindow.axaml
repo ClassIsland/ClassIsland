@@ -1451,12 +1451,14 @@
                                                 <!--<TextBlock Text="{Binding}"/>-->
                                                 <ci:Field Label="开始时间">
                                                     <TimePicker
-                                                        SelectedTime="{Binding ViewModel.SelectedTimePoint.StartTime}"
+                                                        SelectedTime="{Binding ViewModel.SelectedTimePoint.StartTime, Mode=OneWay}"
+                                                        SelectedTimeChanged="TimePickerStart_OnSelectedTimeChanged"
                                                         UseSeconds="True" />
                                                 </ci:Field>
                                                 <ci:Field Label="结束时间" x:Name="FieldEndTime">
                                                     <TimePicker
-                                                        SelectedTime="{Binding ViewModel.SelectedTimePoint.EndTime}"
+                                                        SelectedTime="{Binding ViewModel.SelectedTimePoint.EndTime, Mode=OneWay}"
+                                                        SelectedTimeChanged="TimePickerEnd_OnSelectedTimeChanged"
                                                         UseSeconds="True">
                                                     </TimePicker>
                                                 </ci:Field>

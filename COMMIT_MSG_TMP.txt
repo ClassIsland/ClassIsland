@@ -1,0 +1,29 @@
+fix(ui/profile-editor): 删除时间表失败时给出可见反馈（诊断增强）
+
+[AI-generated] 本提交由 AI 助手撰写，已由仓库作者审阅。
+
+背景（上游 #2012「在档案编辑界面点击删除时间表后没有删除」）：报告者未看到
+任何提示，界面毫无反应。
+
+排查结论（附带 9 个诊断用例，见 ClassIsland.Tests）：
+- 删除逻辑在正常路径下是正确的：SyncDictionaryList 与 ObservableDictionary 的
+  同步链、以及用引用相等反查 key 的方式，均已用真实数据结构验证通过。
+- 但发现两条静默失败路径：
+  1) 若 SelectedTimeLayout 与字典内实例不是同一引用，原写法
+     FirstOrDefault(x => x.Value == selected).Key 会退化为 default 的 Guid.Empty，
+     随后 Remove(Guid.Empty) 返回 false —— 无异常、无日志、无提示。
+  2) 若目标 key 恰为 Guid.Empty 而档案中存在 TimeLayoutId 为默认值 Guid.Empty
+     的课表，会被「仍有课表在使用该时间表」误拦。
+
+变更：
+- 用 ReferenceEquals 显式反查 key，无法解析时记录 LogError 并弹出警告提示，
+  不再静默返回。
+- 检查 TimeLayouts.Remove 的返回值；为 false 时同样记录日志并提示数据可能不一致。
+- 顺带移除该方法 async void 但无 await 的写法，改为同步 void（原写法会吞掉
+  异常且难以处理失败分支）。
+
+说明：本提交是「让失败可见」的诊断增强，并非已确认修复 #2012 的根因 —— 报告
+未提供可复现步骤，其复现视频为二进制附件，本地无法分析。请复现后再判定：若仍
+失败，日志与提示会指出是「无法定位」还是「Remove 返回 false」。
+
+验证：构建 0 错误；测试 35/35 通过（含 9 个新增诊断用例）。
