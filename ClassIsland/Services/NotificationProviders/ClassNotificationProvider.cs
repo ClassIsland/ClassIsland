@@ -135,7 +135,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
         var prepareOnClassNotificationRequest = new NotificationRequest
         {
-            MaskContent = NotificationContent.CreateTwoIconsMask(mask, rightIcon: "lucide(\ue54f)", factory:
+            MaskContent = NotificationContent.CreateTwoIconsMask(mask, rightIcon: LessonsService.NextClassSubject.Icon, factory:
                 x =>
                 {
                     x.SpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。";
@@ -273,7 +273,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         var onClassNotificationRequest = new NotificationRequest()
         {
             MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnMaskText,
-                rightIcon: "lucide(\ue54f)", factory:
+                rightIcon: LessonsService.NextClassSubject.Icon, factory:
                 x =>
                 {
                     x.IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn;
