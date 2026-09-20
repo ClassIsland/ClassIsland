@@ -990,30 +990,71 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.duplicate", 1);
     }
     
-    private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
-        var key = ViewModel.ProfileService.Profile.TimeLayouts
-            .FirstOrDefault(x => x.Value == ViewModel.SelectedTimeLayout).Key;
-        var c = ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeLayoutId == key);
         const string eventName = "views.ProfileSettingsWindow.timeLayout.remove";
-        if (c)
+        var profile = ViewModel.ProfileService.Profile;
+        var selected = ViewModel.SelectedTimeLayout;
+
+        // 用引用相等反查选中时间表的 key。
+        // 注意：这里曾用 FirstOrDefault(...).Key，若命中失败会得到 default 的 Guid.Empty，
+        // 随后的 Remove(Guid.Empty) 静默返回 false —— 界面毫无反应且无任何提示（上游 #2012）。
+        // 改为显式解析，无法解析时给出可见反馈并记录日志。
+        Guid? resolvedKey = null;
+        if (selected != null)
+        {
+            foreach (var kvp in profile.TimeLayouts)
+            {
+                if (ReferenceEquals(kvp.Value, selected))
+                {
+                    resolvedKey = kvp.Key;
+                    break;
+                }
+            }
+        }
+
+        if (resolvedKey is not { } key)
+        {
+            Logger.LogError(
+                "删除时间表失败：无法在档案中定位选中的时间表（SelectedTimeLayout 为 {SelectedState}）。",
+                selected == null ? "null" : "非档案内实例");
+            this.ShowWarningToast("无法删除该时间表：未能在档案中找到对应的记录。");
+            SentrySdk.Metrics.EmitCounter(eventName, 1,
+            [
+                new KeyValuePair<string, object>("IsSuccess", "false"),
+                new KeyValuePair<string, object>("Reason", "无法定位时间表")
+            ]);
+            return;
+        }
+
+        if (profile.ClassPlans.Any(x => x.Value.TimeLayoutId == key))
         {
             this.ShowWarningToast("仍有课表在使用该时间表。删除时间表前需要删除所有使用该时间表的课表。");
             SentrySdk.Metrics.EmitCounter(eventName, 1,
             [
                 new KeyValuePair<string, object>("IsSuccess", "false"),
                 new KeyValuePair<string, object>("Reason", "仍有课表在使用该时间表。")
-            ]
-            );
+            ]);
+            return;
+        }
+
+        if (!profile.TimeLayouts.Remove(key))
+        {
+            // 走到这里说明 key 解析成功但移除失败，属于数据不一致，必须暴露出来。
+            Logger.LogError("删除时间表失败：Remove({Key}) 返回 false。", key);
+            this.ShowWarningToast("删除时间表失败：档案数据可能不一致，请检查日志。");
+            SentrySdk.Metrics.EmitCounter(eventName, 1,
+            [
+                new KeyValuePair<string, object>("IsSuccess", "false"),
+                new KeyValuePair<string, object>("Reason", "Remove 返回 false")
+            ]);
             return;
         }
 
         SentrySdk.Metrics.EmitCounter(eventName, 1,
         [
             new KeyValuePair<string, object>("IsSuccess", "true")
-        ]
-        );
-        ViewModel.ProfileService.Profile.TimeLayouts.Remove(key);
+        ]);
         FlyoutHelper.CloseAncestorFlyout(sender);
     }
     
