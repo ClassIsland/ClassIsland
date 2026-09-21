@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform;
 using ClassIsland.Core;
+using ClassIsland.Core.Extensions;
 using Mono.Unix;
 using WindowsShortcutFactory;
 
@@ -79,9 +80,8 @@ public static class ShortcutHelpers
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 ".local/share/applications/cn.classisland.app.desktop") : path;
 
-        var raw = await new StreamReader(
-                AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.desktop")))
-            .ReadToEndAsync();
+        var raw = await AssetLoader.ReadAllTextAsync(
+            new Uri("avares://ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.desktop"));
         var args = isAutostart ? "--autostartup" : "--uri %u";
         var final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance, args);
         await File.WriteAllTextAsync(targetPath, final);

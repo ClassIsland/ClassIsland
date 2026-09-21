@@ -53,6 +53,8 @@ public class FileLoggerProvider : ILoggerProvider
         }
         catch (Exception e)
         {
+            _logWriter?.Dispose();
+            _logStream?.Dispose();
             Console.WriteLine(e);
         }
     }
@@ -114,7 +116,8 @@ public class FileLoggerProvider : ILoggerProvider
 
     public void Dispose()
     {
-        _logWriter?.Close();
+        _logWriter?.Dispose();
+        _logStream?.Dispose();
         _loggers.Clear();
         GC.SuppressFinalize(this);
     }

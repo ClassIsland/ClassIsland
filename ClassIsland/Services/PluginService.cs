@@ -80,7 +80,8 @@ public class PluginService : IPluginService
                 var mf = pkg.GetEntry(PluginManifestFileName);
                 if (mf == null)
                     continue;
-                var mfText = new StreamReader(mf.Open()).ReadToEnd();
+                using var reader = new StreamReader(mf.Open());
+                var mfText = reader.ReadToEnd();
                 var manifest = deserializer.Deserialize<PluginManifest>(mfText);
                 var targetPath = Path.Combine(PluginsRootPath, manifest.Id);
                 Console.Write($"正在处理插件安装: {manifest.Name}({manifest.Id},{manifest.Version})...");

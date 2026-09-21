@@ -37,15 +37,18 @@ public static class DetachedSignatureProcessor
         try
         {
             // 读取公钥
-            var pgpPub = new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(publicKeyStream));
+            using var publicKeyDecoder = PgpUtilities.GetDecoderStream(publicKeyStream);
+            var pgpPub = new PgpPublicKeyRingBundle(publicKeyDecoder);
 
             // 读取签名
-            var pgpFact = new PgpObjectFactory(PgpUtilities.GetDecoderStream(signatureStream));
+            using var signatureDecoder = PgpUtilities.GetDecoderStream(signatureStream);
+            var pgpFact = new PgpObjectFactory(signatureDecoder);
             var pgpObj = pgpFact.NextPgpObject();
 
             if (pgpObj is PgpCompressedData compressedData)
             {
-                pgpObj = new PgpObjectFactory(compressedData.GetDataStream()).NextPgpObject();
+                using var compressedStream = compressedData.GetDataStream();
+                pgpObj = new PgpObjectFactory(compressedStream).NextPgpObject();
             }
 
             if (pgpObj is not PgpSignatureList sigList)
@@ -64,13 +67,10 @@ public static class DetachedSignatureProcessor
             sig.InitVerify(key);
 
             // 读取数据并传递给签名对象
-            using (var inputData = dataStream)
+            int ch;
+            while ((ch = dataStream.ReadByte()) >= 0)
             {
-                int ch;
-                while ((ch = inputData.ReadByte()) >= 0)
-                {
-                    sig.Update((byte)ch);
-                }
+                sig.Update((byte)ch);
             }
 
             return sig.Verify();
@@ -98,9 +98,7 @@ public static class DetachedSignatureProcessor
         string keyIn,
         string passPhrase)
     {
-        Stream outputStreamRaw = new MemoryStream();
-        Stream outputStream = new ArmoredOutputStream(outputStreamRaw);
-        
+        using var outputStreamRaw = new MemoryStream();
 
         var pgpSec = new EncryptionKeys(keyIn, passPhrase);
         PgpPrivateKey pgpPrivKey = pgpSec.PrivateKey;
@@ -109,23 +107,21 @@ public static class DetachedSignatureProcessor
 
         sGen.InitSign(PgpSignature.BinaryDocument, pgpPrivKey);
 
-        BcpgOutputStream bOut = new BcpgOutputStream(outputStream);
-
-        Stream fIn = new MemoryStream(Encoding.UTF8.GetBytes(content));
-
-        int ch;
-        while ((ch = fIn.ReadByte()) >= 0)
+        using (var outputStream = new ArmoredOutputStream(outputStreamRaw))
+        using (var bOut = new BcpgOutputStream(outputStream))
+        using (var fIn = new MemoryStream(Encoding.UTF8.GetBytes(content)))
         {
-            sGen.Update((byte)ch);
+            int ch;
+            while ((ch = fIn.ReadByte()) >= 0)
+            {
+                sGen.Update((byte)ch);
+            }
+
+            sGen.Generate().Encode(bOut);
         }
 
-        fIn.Close();
-
-        sGen.Generate().Encode(bOut);
-
-        outputStream.Close();
-
         outputStreamRaw.Seek(0, SeekOrigin.Begin);
-        return new StreamReader(outputStreamRaw).ReadToEnd();
+        using var reader = new StreamReader(outputStreamRaw);
+        return reader.ReadToEnd();
     }
 }

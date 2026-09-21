@@ -11,6 +11,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using ClassIsland.Core.Extensions.UI;
+using ClassIsland.Core.Extensions;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
@@ -485,9 +486,8 @@ public partial class ProfileSettingsWindow : ViewBase
         }
 
         var profile = new Profile();
-        var subject =
-            await new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json",
-                UriKind.Absolute))).ReadToEndAsync();
+        var subject = await AssetLoader.ReadAllTextAsync(new Uri("avares://ClassIsland/Assets/default-subjects.json",
+            UriKind.Absolute));
         profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
         var json = JsonSerializer.Serialize(profile);
         await File.WriteAllTextAsync(path, json);

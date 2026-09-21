@@ -11,6 +11,8 @@ namespace ClassIsland.Platforms.Linux.Services;
 
 public class DesktopToastService : IDesktopToastService
 {
+    private static readonly HttpClient ImageHttpClient = new();
+
     private Dictionary<string, Action> ActivationActions { get; } = new();
 
     private Dictionary<DesktopToastContent, List<string>> ActivationActionIds { get; } = new();
@@ -215,7 +217,7 @@ public class DesktopToastService : IDesktopToastService
                     return new Uri(sourceUri.AbsolutePath);
                 case "avares":
                 {
-                    var stream = AssetLoader.Open(sourceUri);
+                    await using var stream = AssetLoader.Open(sourceUri);
                     var imagePath = Path.GetTempFileName();
                     await using var fileStream = File.Create(imagePath);
                     await stream.CopyToAsync(fileStream);
@@ -224,8 +226,7 @@ public class DesktopToastService : IDesktopToastService
                 case "http" or "https":
                 {
                     var imagePath = Path.GetTempFileName();
-                    var client = new HttpClient();
-                    var stream = await client.GetStreamAsync(sourceUri);
+                    await using var stream = await ImageHttpClient.GetStreamAsync(sourceUri);
                     await using var fileStream = File.Create(imagePath);
                     await stream.CopyToAsync(fileStream);
                     return new Uri(imagePath);

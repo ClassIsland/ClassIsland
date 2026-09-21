@@ -11,6 +11,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using ClassIsland.Core.Extensions.UI;
+using ClassIsland.Core.Extensions;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -51,11 +52,10 @@ public partial class AboutSettingsPage : SettingsPageBase
     {
         DataContext = this;
         InitializeComponent();
-        var r = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/LICENSE.txt")));
-        ViewModel.License = r.ReadToEnd();
+        ViewModel.License = AssetLoader.ReadAllText(new Uri("avares://ClassIsland/Assets/LICENSE.txt"));
 
-        using var dependenciesStream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/dependencies.g.json"));
-        ViewModel.ThirdPartyLibs = JsonSerializer.Deserialize<ObservableCollection<NuGetLicenseInfo>>(dependenciesStream) ?? [];
+        var dependenciesJson = AssetLoader.ReadAllText(new Uri("avares://ClassIsland/Assets/dependencies.g.json"));
+        ViewModel.ThirdPartyLibs = JsonSerializer.Deserialize<ObservableCollection<NuGetLicenseInfo>>(dependenciesJson) ?? [];
     }
 
     private void UriNavigationCommands_OnClick(object sender, RoutedEventArgs e)
@@ -169,9 +169,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
         if (ViewModel.SayingsCollection.Count <= 0)
         {
-            var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
-
-            var sayings = await new StreamReader(stream).ReadToEndAsync();
+            var sayings = await AssetLoader.ReadAllTextAsync(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
             string[] sayingsArray= sayings.Split(Environment.NewLine);
             var collection = new ObservableCollection<string>(sayingsArray);
             var countRaw = collection.Count;
@@ -193,8 +191,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private async void SettingsExpanderItemShowOssLicense_OnClick(object? sender, RoutedEventArgs e)
     {
-        var license = await new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/LICENSE.txt")))
-            .ReadToEndAsync();
+        var license = await AssetLoader.ReadAllTextAsync(new Uri("avares://ClassIsland/Assets/LICENSE.txt"));
         await new FAContentDialog()
         {
             Title = "开放源代码许可",

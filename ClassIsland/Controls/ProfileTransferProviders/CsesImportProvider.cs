@@ -12,6 +12,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Controls.ProfileTransferProviders;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
@@ -51,8 +52,8 @@ public partial class CsesImportProvider : GenericImportProviderBase
             await using var stream = await file.OpenReadAsync();
             using var reader = new StreamReader(stream);
             var csesProfile = CsesLoader.LoadFromYamlString(await reader.ReadToEndAsync());
-            var templateProfileJson =
-                await new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json"))).ReadToEndAsync();
+            var templateProfileJson = await AssetLoader.ReadAllTextAsync(
+                new Uri("avares://ClassIsland/Assets/default-subjects.json"));
             var templateProfile = JsonSerializer.Deserialize<Profile>(templateProfileJson);
             var profile = csesProfile.ToClassIslandObject(ImportType == 0 ? ProfileService.Profile : templateProfile);
             if (ImportType == 1)

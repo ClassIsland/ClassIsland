@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Platform;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Enums.Metadata.Announcement;
@@ -27,8 +28,8 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
     {
         Logger = logger;
 
-        var keyStream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
-        MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
+        MetadataPublisherPublicKey = AssetLoader.ReadAllText(new Uri(
+            "avares://ClassIsland/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
 
         UpdateReadAnnouncements();
         AnnouncementsInternal =

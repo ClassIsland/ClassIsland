@@ -435,7 +435,8 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             var mf = pkg.GetEntry("manifest.yml");
             if (mf == null)
                 return;
-            var mfText = new StreamReader(mf.Open()).ReadToEnd();
+            using var reader = new StreamReader(mf.Open());
+            var mfText = reader.ReadToEnd();
             var manifest = deserializer.Deserialize<PluginManifest>(mfText);
             var targetPath = Path.Combine(ThemesPath, manifest.Id);
             if (Directory.Exists(targetPath))

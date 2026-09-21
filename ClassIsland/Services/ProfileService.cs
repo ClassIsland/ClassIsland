@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Platform;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -148,7 +149,8 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogInformation("档案不存在：{}", path);
             if (!ManagementService.IsManagementEnabled)  // 在集控模式下不需要默认科目
             {
-                var subject = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json"))).ReadToEnd();
+                var subject = await AssetLoader.ReadAllTextAsync(
+                    new Uri("avares://ClassIsland/Assets/default-subjects.json"));
                 Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
             }
             SaveProfile(filename);

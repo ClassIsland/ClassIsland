@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using Avalonia.Platform;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Models.External.ClassWidgets;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
@@ -28,8 +29,8 @@ internal static class ClassWidgets2ProfileTransferHelper
     {
         if (profile == null)
         {
-            using var reader = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json")));
-            profile = JsonSerializer.Deserialize<Profile>(reader.ReadToEnd())
+            var templateJson = AssetLoader.ReadAllText(new Uri("avares://ClassIsland/Assets/default-subjects.json"));
+            profile = JsonSerializer.Deserialize<Profile>(templateJson)
                       ?? throw new InvalidDataException("无法加载默认档案模板。");
         }
 

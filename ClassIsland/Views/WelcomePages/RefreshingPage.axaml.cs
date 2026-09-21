@@ -13,6 +13,7 @@ using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Automation;
 using ClassIsland.Services;
@@ -83,9 +84,8 @@ public partial class RefreshingPage : UserControl, IWelcomePage
             else
             {
                 var profileNew = new Profile();
-                using var streamReader = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json",
-                    UriKind.Absolute)));
-                var subject = await streamReader.ReadToEndAsync();
+                var subject = await AssetLoader.ReadAllTextAsync(new Uri("avares://ClassIsland/Assets/default-subjects.json",
+                    UriKind.Absolute));
                 profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
                 var json = JsonSerializer.Serialize(profileNew);
                 var newFile = Guid.NewGuid().ToString();

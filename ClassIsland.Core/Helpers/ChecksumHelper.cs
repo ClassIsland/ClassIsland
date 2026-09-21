@@ -50,10 +50,9 @@ public static class ChecksumHelper
     /// <returns>校验结果</returns>
     public static bool CheckChecksum(string filePath, string checksum)
     {
-        var stream = File.OpenRead(filePath);
+        using var stream = File.OpenRead(filePath);
         var md5 = MD5.HashData(stream);
         var md5Hex = Convert.ToHexString(md5);
-        stream.Close();
         return string.Compare(checksum, md5Hex, StringComparison.CurrentCultureIgnoreCase) == 0;
     }
 

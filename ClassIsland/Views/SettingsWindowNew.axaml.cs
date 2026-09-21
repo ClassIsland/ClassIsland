@@ -11,6 +11,7 @@ using System.Windows;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Extensions.UI;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
@@ -278,9 +279,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
         if (ViewModel.EchoCaveTextsAll.Count <= 0)
         {
-            var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
-
-            var sayings = await new StreamReader(stream).ReadToEndAsync();
+            var sayings = await AssetLoader.ReadAllTextAsync(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
             if (_resourcesReleased)
             {
                 return;
