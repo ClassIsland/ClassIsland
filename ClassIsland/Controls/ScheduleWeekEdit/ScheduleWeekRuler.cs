@@ -11,12 +11,15 @@ internal sealed class ScheduleWeekRuler : Control
 {
     public static readonly StyledProperty<double> ScaleProperty =
         AvaloniaProperty.Register<ScheduleWeekRuler, double>(nameof(Scale), 2);
+    public static readonly StyledProperty<bool> ShowTimeScaleProperty =
+        AvaloniaProperty.Register<ScheduleWeekRuler, bool>(nameof(ShowTimeScale), true);
 
     public double Scale { get => GetValue(ScaleProperty); set => SetValue(ScaleProperty, value); }
+    public bool ShowTimeScale { get => GetValue(ShowTimeScaleProperty); set => SetValue(ShowTimeScaleProperty, value); }
 
     static ScheduleWeekRuler()
     {
-        AffectsRender<ScheduleWeekRuler>(TextElement.ForegroundProperty, ScaleProperty);
+        AffectsRender<ScheduleWeekRuler>(TextElement.ForegroundProperty, ScaleProperty, ShowTimeScaleProperty);
     }
 
     public override void Render(DrawingContext context)
@@ -24,7 +27,7 @@ internal sealed class ScheduleWeekRuler : Control
         var foreground = GetValue(TextElement.ForegroundProperty) ?? Brushes.Gray;
         var columnWidth = Math.Max(0, Bounds.Width - ScheduleWeekEditControl.RulerWidth) / 7;
         var labelInterval = Scale * 30 >= 18 ? 30 : Scale * 60 >= 18 ? 60 : Scale * 120 >= 18 ? 120 : 240;
-        for (var minutes = 0; minutes <= 1440; minutes += 30)
+        for (var minutes = 0; ShowTimeScale && minutes <= 1440; minutes += 30)
         {
             var y = minutes * Scale;
             using (context.PushOpacity(minutes % 60 == 0 ? 0.35 : 0.14))
@@ -37,7 +40,7 @@ internal sealed class ScheduleWeekRuler : Control
                 context.DrawText(text, new Point(3, Math.Clamp(y - 7, 0, Math.Max(0, Bounds.Height - 15))));
         }
         using (context.PushOpacity(0.15))
-            for (var day = 0; day <= 7; day++)
+            for (var day = 1; day < 7; day++)
             {
                 var x = ScheduleWeekEditControl.RulerWidth + day * columnWidth;
                 context.DrawLine(new Pen(foreground), new Point(x, 0), new Point(x, Bounds.Height));

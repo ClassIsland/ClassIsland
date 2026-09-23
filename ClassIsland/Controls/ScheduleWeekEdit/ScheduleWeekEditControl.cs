@@ -5,6 +5,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
@@ -66,7 +67,9 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private Border? _resizeGuideLabel;
     private TextBlock? _resizeGuideTime;
     private ScheduleWeekRuler? _ruler;
+    private ScheduleWeekRuler? _headerRuler;
     private readonly List<TextBlock> _dayHeaders = [];
+    private readonly List<Run> _dayHeaderDates = [];
     private readonly Dictionary<(Guid Id, DateOnly Date), ScheduleWeekBlock> _blocks = [];
     private INotifyCollectionChanged? _observedItems;
     private DragState? _drag;
@@ -106,7 +109,9 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         base.OnApplyTemplate(e);
         _blocks.Clear();
         _dayHeaders.Clear();
+        _dayHeaderDates.Clear();
         _ruler = null;
+        _headerRuler = null;
         _canvas = e.NameScope.Find<Canvas>("PART_Canvas");
         _header = e.NameScope.Find<Canvas>("PART_Header");
         _scrollViewer = e.NameScope.Find<ScrollViewer>("PART_ScrollViewer");
@@ -355,7 +360,14 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         _ruler.Scale = Scale;
         _ruler.Width = width;
         _ruler.Height = height;
-        string[] days = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+        if (_headerRuler == null)
+        {
+            _headerRuler = new ScheduleWeekRuler { ShowTimeScale = false, IsHitTestVisible = false, ZIndex = -1 };
+            _header.Children.Add(_headerRuler);
+        }
+        _headerRuler.Width = width;
+        _headerRuler.Height = _header.Bounds.Height;
+        string[] days = ["一", "二", "三", "四", "五", "六", "日"];
         var items = (ItemsSource ?? []).Select(item =>
         {
             var display = item;
@@ -374,13 +386,19 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             if (_dayHeaders.Count <= day)
             {
                 var label = new TextBlock { TextAlignment = TextAlignment.Center, FontSize = 12 };
+                var dateRun = new Run();
+                dateRun.Classes.Add("l2");
+                label.Inlines!.Add(new Run($"{days[day]} "));
+                label.Inlines.Add(dateRun);
+                _dayHeaderDates.Add(dateRun);
                 _dayHeaders.Add(label);
                 _header.Children.Add(label);
             }
             var header = _dayHeaders[day];
-            header.Text = $"{days[day]}\n{date:MM/dd}";
+            _dayHeaderDates[day].Text = $"{date:MM/dd}";
             header.Width = columnWidth;
             Canvas.SetLeft(header, RulerWidth + day * columnWidth);
+            Canvas.SetTop(header, 4);
             var dayItems = items.Where(x => x.Display.Date == date).OrderBy(x => x.Display.StartTime).ThenBy(x => x.Source.ScheduleItemId).ToList();
             // Include the minimum visual hit area in collision layout so zero/short courses remain selectable.
             var group = new List<DisplayOccurrence>();

@@ -6,7 +6,7 @@
         <Setter Property="Focusable" Value="True"/>
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="36,*,Auto" ClipToBounds="True">
+                <Grid RowDefinitions="24,*,Auto" ClipToBounds="True">
                     <Canvas Name="PART_Header" Grid.Row="0" IsHitTestVisible="False"/>
                     <ScrollViewer Name="PART_ScrollViewer" Grid.Row="1"
                                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible">
