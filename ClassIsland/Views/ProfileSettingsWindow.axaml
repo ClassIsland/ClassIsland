@@ -505,6 +505,30 @@
             </StackPanel>
         </Flyout>
 
+        <Grid x:Key="ProfileMigrationsDebugDrawer"
+              Width="600" Margin="16" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+            <TextBlock Text="迁移信息（调试）" Theme="{StaticResource SubtitleTextBlockStyle}" />
+            <TextBlock Grid.Row="1" Text="直接编辑当前档案的迁移记录，保存方式与其他档案修改相同。"
+                       TextWrapping="Wrap" />
+            <DataGrid Grid.Row="2" x:Name="ProfileMigrationsDataGrid"
+                      ItemsSource="{Binding ViewModel.ProfileService.Profile.Migrations}"
+                      AutoGenerateColumns="False" IsReadOnly="False" SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="迁移 ID" Width="*"
+                                        Binding="{Binding Id, Mode=TwoWay}" />
+                    <DataGridCheckBoxColumn Header="允许降级"
+                                            Binding="{Binding AllowDowngrade, Mode=TwoWay}" />
+                    <DataGridCheckBoxColumn Header="降级时移除"
+                                            Binding="{Binding RemoveOnDowngrade, Mode=TwoWay}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8">
+                <Button Content="新增" Command="{Binding ViewModel.AddProfileMigrationCommand}" />
+                <Button Content="删除选中项" Command="{Binding ViewModel.RemoveProfileMigrationCommand}"
+                        CommandParameter="{Binding #ProfileMigrationsDataGrid.SelectedItem}" />
+            </StackPanel>
+        </Grid>
+
         <Grid x:Key="ProfileTransferDrawer"
               Width="600"
               ClipToBounds="True"

@@ -1,0 +1,54 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:icons="using:ClassIsland.Core.Icons"
+             xmlns:vm="clr-namespace:ClassIsland.ViewModels"
+             x:Class="ClassIsland.Views.ProfileRecoveryWindow"
+             x:DataType="vm:ProfileRecoveryViewModel"
+             Header="ClassIsland"
+             HostWidth="500" HostHeight="320"
+             HostStartupLocation="CenterScreen"
+             SizeToContent="Height" MinHeight="260" MaxHeight="480"
+             ShowAsDialog="True" CanResize="False" CanMaximize="False">
+    <Grid RowDefinitions="Auto,Auto">
+        <ScrollViewer Grid.Row="0">
+            <Grid Margin="24" ColumnDefinitions="32,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="16">
+                <ci:FluentIcon Grid.Column="0" Grid.Row="0"
+                               Glyph="{x:Static icons:FluentIcons.DocumentErrorRegular}"
+                               FontSize="28" Width="32" Height="32"
+                               Foreground="{DynamicResource SystemFillColorCriticalBrush}"/>
+                <StackPanel Grid.Column="1" Grid.Row="0" Spacing="8">
+                    <TextBlock Text="无法加载档案" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Grid.Row="1" Spacing="8" Margin="0 20 0 0"
+                            IsVisible="{Binding CanSwitchProfile}">
+                    <TextBlock Text="选择其他档案"/>
+                    <ComboBox ItemsSource="{Binding Profiles}"
+                              SelectedItem="{Binding SelectedProfile}"
+                              PlaceholderText="请选择档案"
+                              AutomationProperties.Name="选择其他档案"
+                              HorizontalAlignment="Stretch"/>
+                    <TextBlock Text="选择或新建档案后将重启应用。" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" Grid.Row="2" Margin="0 12 0 0"
+                           Text="{Binding ErrorMessage}" TextWrapping="Wrap"
+                           IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           AutomationProperties.LiveSetting="Polite"/>
+            </Grid>
+        </ScrollViewer>
+        <Border Grid.Row="1" Padding="20,12"
+                Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}">
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                <Button Content="退出" Command="{Binding ExitCommand}" MinWidth="88" IsCancel="True"/>
+                <Button Content="恢复备份" Command="{Binding RestoreBackupCommand}" MinWidth="88"/>
+                <Button Content="新建档案" Command="{Binding CreateProfileCommand}"
+                        IsVisible="{Binding CanSwitchProfile}" MinWidth="88"/>
+                <Button Content="使用所选档案" Command="{Binding SelectProfileCommand}"
+                        IsVisible="{Binding CanSwitchProfile}" Classes="accent" MinWidth="120"
+                        IsDefault="True"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</ci:ViewBase>

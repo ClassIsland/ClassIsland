@@ -14,6 +14,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Services.Management;
+using ClassIsland.Models.Profile;
 using ClassIsland.Shared.Models.Profile;
 
 using Microsoft.Extensions.Logging;
@@ -22,6 +23,7 @@ using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
@@ -30,7 +32,7 @@ using Sentry;
 
 namespace ClassIsland.Services;
 
-public class ProfileService : IProfileService, INotifyPropertyChanged
+public partial class ProfileService : IProfileService, INotifyPropertyChanged
 {
     public string CurrentProfilePath { 
         get; 
@@ -47,6 +49,15 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
 
     public static readonly string ProfilePath = Path.Combine(CommonDirectories.AppRootFolderPath, "Profiles");
+
+    public static readonly List<ProfileMigration> CurrentMigrations =
+    [
+        new()
+        {
+            Id = "classisland.subjects.extension1",
+            RemoveOnDowngrade = true
+        }
+    ];
 
     public Profile Profile {
         get;
@@ -76,13 +87,14 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         }
     }
 
-    private async Task MergeManagementProfileAsync()
+    private async Task<Action?> MergeManagementProfileAsync(Profile profile)
     {
         var span = SentrySdk.GetSpan();
         var spanLoadMgmtProfile = span?.StartChild("profile-mgmt-pull-profile");
         Logger.LogInformation("正在拉取集控档案");
         if (ManagementService.Connection == null)
-            return;
+            return null;
+        Action? commitVersions = null;
         try
         {
             Profile? classPlan = null;
@@ -91,36 +103,44 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(ManagementService.Versions.ClassPlanVersion))
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-classPlan");
-                var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
-                var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
-                MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
-                MergeDictionary(Profile.ClassPlanGroups, cpOld.ClassPlanGroups, cpNew.ClassPlanGroups);
+                var cpOld = File.Exists(ManagementClassPlanPath) ? ReadProfile(ManagementClassPlanPath) : new Profile();
+                var cpNew = classPlan = await DownloadManagementProfileAsync(ManagementService.Manifest.ClassPlanSource.Value!);
+                MergeDictionary(profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
+                MergeDictionary(profile.ClassPlanGroups, cpOld.ClassPlanGroups, cpNew.ClassPlanGroups);
                 spanDownload?.Finish();
             }
             if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-timeLayout");
-                var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
-                var tlNew = timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
-                MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
+                var tlOld = File.Exists(ManagementTimeLayoutPath) ? ReadProfile(ManagementTimeLayoutPath) : new Profile();
+                var tlNew = timeLayouts = await DownloadManagementProfileAsync(ManagementService.Manifest.TimeLayoutSource.Value!);
+                MergeDictionary(profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
                 spanDownload?.Finish();
             }
             if (ManagementService.Manifest.SubjectsSource.IsNewerAndNotNull(ManagementService.Versions.SubjectsVersion))
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-subjects");
-                var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
-                var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
-                MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
+                var subjectOld = File.Exists(ManagementSubjectsPath) ? ReadProfile(ManagementSubjectsPath) : new Profile();
+                var subjectNew = subjects = await DownloadManagementProfileAsync(ManagementService.Manifest.SubjectsSource.Value!);
+                MergeDictionary(profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
                 spanDownload?.Finish();
             }
 
-            var spanSaving = spanLoadMgmtProfile?.StartChild("profile-mgmt-save");
-            SaveProfile("_management-profile.json");
-            ManagementService.Versions.ClassPlanVersion = ManagementService.Manifest.ClassPlanSource.Version;
-            ManagementService.Versions.TimeLayoutVersion = ManagementService.Manifest.TimeLayoutSource.Version;
-            ManagementService.Versions.SubjectsVersion = ManagementService.Manifest.SubjectsSource.Version;
-            ManagementService.SaveSettings();
-            spanSaving?.Finish();
+            var classPlanVersion = ManagementService.Manifest.ClassPlanSource.Version;
+            var timeLayoutVersion = ManagementService.Manifest.TimeLayoutSource.Version;
+            var subjectsVersion = ManagementService.Manifest.SubjectsSource.Version;
+            commitVersions = () =>
+            {
+                ManagementService.Versions.ClassPlanVersion = classPlanVersion;
+                ManagementService.Versions.TimeLayoutVersion = timeLayoutVersion;
+                ManagementService.Versions.SubjectsVersion = subjectsVersion;
+                ManagementService.SaveSettings();
+            };
+        }
+        catch (ProfileLoadException exp)
+        {
+            spanLoadMgmtProfile?.Finish(exp);
+            throw;
         }
         catch (Exception exp)
         {
@@ -129,41 +149,64 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         }
 
         //Profile = ConfigureFileHelper.CopyObject(Profile);
-        Profile.Subjects = CopyObject(Profile.Subjects);
-        Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
-        Profile.ClassPlans = CopyObject(Profile.ClassPlans);
-        Profile.RefreshTimeLayouts();
+        profile.Subjects = CopyObject(profile.Subjects);
+        profile.TimeLayouts = CopyObject(profile.TimeLayouts);
+        profile.ClassPlans = CopyObject(profile.ClassPlans);
+        profile.RefreshTimeLayouts();
         Logger.LogTrace("成功拉取集控档案！");
         spanLoadMgmtProfile?.Finish();
+        return commitVersions;
     }
 
     public async Task LoadProfileAsync()
     {
+        _isProfileLoaded = false;
+        IsCurrentProfileTrusted = false;
         var span = SentrySdk.GetSpan();
         var spanLoadingProfile = span?.StartChild("profile-loading");
         var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
         var path = Path.Combine(ProfilePath, filename);
         Logger.LogInformation("加载档案中：{}", path);
-        if (!File.Exists(path))
+        try
         {
-            Logger.LogInformation("档案不存在：{}", path);
-            if (!ManagementService.IsManagementEnabled)  // 在集控模式下不需要默认科目
+            var backupOriginal = File.Exists(path);
+            Profile candidate;
+            if (!backupOriginal)
             {
-                var subject = await AssetLoader.ReadAllTextAsync(
-                    new Uri("avares://ClassIsland/Assets/default-subjects.json"));
-                Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
+                candidate = CreateProfile(!ManagementService.IsManagementEnabled);
             }
-            SaveProfile(filename);
+            else
+            {
+                try
+                {
+                    candidate = ReadProfile(path);
+                }
+                catch (ProfileReadException exception) when (IsBackupEnabled && File.Exists(path + ".bak"))
+                {
+                    Logger.LogWarning(exception, "读取档案失败，尝试只读加载备份：{Path}", path);
+                    candidate = ReadProfile(path + ".bak");
+                    backupOriginal = false;
+                }
+            }
+
+            var commitVersions = ManagementService.IsManagementEnabled
+                ? await MergeManagementProfileAsync(candidate)
+                : null;
+            await ApplyMigrationsAsync(candidate);
+            CommitLoadedProfile(path, candidate, backupOriginal && IsBackupEnabled);
+            commitVersions?.Invoke();
+            Profile.PropertyChanged -= ProfileOnPropertyChanged;
+            Profile = candidate;
+            CurrentProfilePath = filename;
         }
-
-        var r = LoadConfig<Profile>(path);
-
-        Profile = r;
-        if (ManagementService.IsManagementEnabled)
+        catch (Exception exception)
         {
-            await MergeManagementProfileAsync();
+            spanLoadingProfile?.Finish(exception);
+            Logger.LogError(exception, "档案加载未完成，已禁止保存：{Path}", path);
+            if (exception is ProfileLoadException)
+                throw;
+            throw new ProfileLoadException("档案更新未完成。", exception);
         }
-        Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
 
         if (SettingsService.Settings.TrustedProfileIds.Contains(Profile.Id))
         {
@@ -176,16 +219,18 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             SettingsService.WillMigrateProfileTrustedState = false;
             Logger.LogInformation("自动信任来自 1.5.4.0 以前的当前档案。");
         }
-        CurrentProfilePath = filename;
         Logger.LogTrace("成功加载档案！信任：{}", IsCurrentProfileTrusted);
         CleanExpiredTempClassPlan();
         _isProfileLoaded = true;
+        Profile.PropertyChanged += ProfileOnPropertyChanged;
 
         Profile.ClassPlans.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.ClassPlanUpdated, args);
         Profile.TimeLayouts.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.TimeLayoutUpdated, args);
         Profile.Subjects.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.SubjectUpdated, args);
         spanLoadingProfile?.Finish();
     }
+
+    private void ProfileOnPropertyChanged(object? sender, PropertyChangedEventArgs args) => SaveProfile();
 
     public void AuditProfileChangeEvent(AuditEvents eventType, NotifyCollectionChangedEventArgs args)
     {
@@ -217,15 +262,16 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public void SaveProfile()
     {
-        if (!_isProfileLoaded)
-        {
-            return;
-        }
         SaveProfile(Path.GetFileName(CurrentProfilePath));
     }
 
     public void SaveProfile(string filename)
     {
+        if (!_isProfileLoaded)
+        {
+            Logger.LogWarning("档案尚未成功加载，已阻止保存：{FileName}", filename);
+            return;
+        }
         Logger.LogInformation("写入档案文件：{}", Path.Combine(ProfilePath, filename));
         SaveConfig(Path.Combine(ProfilePath, filename), Profile);
     }
@@ -423,6 +469,29 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         SettingsService.Settings.TrustedProfileIds.Add(Profile.Id);
         IsCurrentProfileTrusted = true;
         Logger.LogInformation("已信任当前档案 {}", Profile.Id);
+    }
+
+    public static Profile CreateProfile(bool applyTemplate, string templateName = "default.json")
+    {
+        var profile = new Profile
+        {
+            Migrations = CopyObject(CurrentMigrations)
+        };
+
+        if (applyTemplate)
+        {
+            var json = AssetLoader.ReadAllText(new Uri($"avares://ClassIsland/Assets/ProfileTemplates/{templateName}"));
+            var template = JsonSerializer.Deserialize<Profile>(json)!;
+            profile.Subjects = CopyObject(template.Subjects);
+            profile.TimeLayouts = CopyObject(template.TimeLayouts);
+            profile.ClassPlans = CopyObject(template.ClassPlans);
+            profile.ScheduleItems = CopyObject(template.ScheduleItems);
+            profile.ClassPlanGroups = CopyObject(template.ClassPlanGroups);
+            profile.OrderedSchedules = CopyObject(template.OrderedSchedules);
+            profile.ScheduleType = template.ScheduleType;
+        }
+
+        return profile;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

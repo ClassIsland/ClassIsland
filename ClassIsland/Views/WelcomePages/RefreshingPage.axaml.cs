@@ -8,7 +8,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
 using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
@@ -19,7 +18,6 @@ using ClassIsland.Core.Models.Automation;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
-using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.Logging;
 
@@ -83,10 +81,7 @@ public partial class RefreshingPage : UserControl, IWelcomePage
             }
             else
             {
-                var profileNew = new Profile();
-                var subject = await AssetLoader.ReadAllTextAsync(new Uri("avares://ClassIsland/Assets/default-subjects.json",
-                    UriKind.Absolute));
-                profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
+                var profileNew = ProfileService.CreateProfile(true);
                 var json = JsonSerializer.Serialize(profileNew);
                 var newFile = Guid.NewGuid().ToString();
                 await File.WriteAllTextAsync(Path.Combine(ProfileService.ProfilePath, $"{newFile}.json"), json);

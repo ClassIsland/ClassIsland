@@ -18,7 +18,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Controls.ScheduleDataGrid;
@@ -96,6 +95,9 @@ public partial class ProfileSettingsWindow : ViewBase
         ListViewTimePoints.KeyDown += OnKeyDown;
         // 撤销/重做使用窗口级快捷键，避免依赖时间点列表是否获得焦点
         AddHandler(KeyDownEvent, OnGlobalUndoRedoKeyDown, RoutingStrategies.Tunnel);
+#if DEBUG
+        AddHandler(KeyDownEvent, OnDebugKeyDown, RoutingStrategies.Tunnel);
+#endif
         _externalSubscriptions.Add(ViewModel.ObservableForProperty(x => x.IsDrawerOpen)
             .Subscribe(_ => OnDrawerStateChanged()));
         _externalSubscriptions.Add(ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
@@ -108,6 +110,19 @@ public partial class ProfileSettingsWindow : ViewBase
                 ViewModel.UndoDescriptions.Clear(); ViewModel.RedoDescriptions.Clear();
             }));
     }
+
+#if DEBUG
+    private void OnDebugKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.F10 || e.KeyModifiers != KeyModifiers.None)
+        {
+            return;
+        }
+
+        OpenDrawer("ProfileMigrationsDebugDrawer");
+        e.Handled = true;
+    }
+#endif
 
     private void OnGlobalUndoRedoKeyDown(object? sender, KeyEventArgs e)
     {
@@ -196,6 +211,12 @@ public partial class ProfileSettingsWindow : ViewBase
 
     public void OpenDrawer(string key)
     {
+#if !DEBUG
+        if (key == "ProfileMigrationsDebugDrawer")
+        {
+            return;
+        }
+#endif
         if (_resourcesReleased)
         {
             return;
@@ -370,6 +391,9 @@ public partial class ProfileSettingsWindow : ViewBase
         TimeLineListControl.KeyDown -= OnKeyDown;
         ListViewTimePoints.KeyDown -= OnKeyDown;
         RemoveHandler(KeyDownEvent, OnGlobalUndoRedoKeyDown);
+#if DEBUG
+        RemoveHandler(KeyDownEvent, OnDebugKeyDown);
+#endif
         Loaded -= Control_OnLoaded;
         Closing -= Window_OnClosing;
         Closed -= Window_OnClosed;
@@ -485,10 +509,7 @@ public partial class ProfileSettingsWindow : ViewBase
             return;
         }
 
-        var profile = new Profile();
-        var subject = await AssetLoader.ReadAllTextAsync(new Uri("avares://ClassIsland/Assets/default-subjects.json",
-            UriKind.Absolute));
-        profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
+        var profile = Services.ProfileService.CreateProfile(true);
         var json = JsonSerializer.Serialize(profile);
         await File.WriteAllTextAsync(path, json);
         RefreshProfiles();

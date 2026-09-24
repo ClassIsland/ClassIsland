@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using Avalonia.Platform;
 using ClassIsland.Core.Extensions;
 using ClassIsland.Models.External.ClassWidgets;
+using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 
@@ -27,12 +27,7 @@ internal static class ClassWidgets2ProfileTransferHelper
 
     internal static Profile Convert(Cw2ImportAnalysis analysis, Profile? profile = null)
     {
-        if (profile == null)
-        {
-            var templateJson = AssetLoader.ReadAllText(new Uri("avares://ClassIsland/Assets/default-subjects.json"));
-            profile = JsonSerializer.Deserialize<Profile>(templateJson)
-                      ?? throw new InvalidDataException("无法加载默认档案模板。");
-        }
+        profile ??= ProfileService.CreateProfile(true);
 
         var subjectsByName = new Dictionary<string, Guid>(StringComparer.Ordinal);
         foreach (var (id, subject) in profile.Subjects)
