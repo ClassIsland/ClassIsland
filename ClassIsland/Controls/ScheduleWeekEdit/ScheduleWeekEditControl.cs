@@ -507,6 +507,12 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        if (_drag != null)
+        {
+            e.PreventGestureRecognition();
+            e.Handled = true;
+            return;
+        }
         if (_canvas == null || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
         var source = e.Source as Visual;
         var block = source as ScheduleWeekBlock ?? source?.GetVisualAncestors().OfType<ScheduleWeekBlock>().FirstOrDefault();
@@ -526,6 +532,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                 Cursor = new Cursor(kind == DragKind.Move ? StandardCursorType.SizeAll : StandardCursorType.SizeNorthSouth);
                 ToolTip.SetIsOpen(block, false);
                 e.Pointer.Capture(this);
+                // The scroll viewer must not take this touch pointer after the drag begins.
+                e.PreventGestureRecognition();
                 UpdateResizeGuide();
             }
         }
@@ -563,7 +571,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                         ? StandardCursorType.SizeAll : StandardCursorType.SizeNorthSouth);
             return;
         }
-        if (_canvas == null || IsReadonly) return;
+        if (_canvas == null || IsReadonly || e.Pointer != drag.Pointer) return;
         var point = e.GetPosition(_canvas);
         if (!drag.HasMoved && Math.Abs(point.Y - drag.Origin.Y) < 3 && Math.Abs(point.X - drag.Origin.X) < 3) return;
         var wasMoving = drag.HasMoved;
@@ -593,7 +601,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-        if (_drag is not { } drag) return;
+        if (_drag is not { } drag || e.Pointer != drag.Pointer) return;
         _drag = null;
         e.Pointer.Capture(null);
         Cursor = null;
@@ -641,7 +649,11 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         }
     }
 
-    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e) { base.OnPointerCaptureLost(e); CancelDrag(); }
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        base.OnPointerCaptureLost(e);
+        if (_drag?.Pointer == e.Pointer) CancelDrag();
+    }
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
