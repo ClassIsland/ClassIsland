@@ -484,7 +484,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                 _canvas!.Children.Add(block);
             }
             block.Occurrence = item;
-            block.SubjectName = item.SubjectName;
+            block.UpdateSubjectAppearance(item);
             block.TimeText = $"{FormatTime(item.StartTime)}–{FormatTime(item.EndTime)}";
             block.Width = Math.Max(1, columnWidth / laneEnds.Count - 4);
             block.Height = Math.Max(MinimumBlockHeight, (item.EndTime - item.StartTime).TotalMinutes * Scale);

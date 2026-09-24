@@ -50,14 +50,14 @@
                 <Border Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
                         CornerRadius="4" ClipToBounds="True">
                     <Panel>
-                        <Border Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0.45"/>
+                        <Border Background="{TemplateBinding SubjectBrush}" Opacity="0.45"/>
                         <Border Name="HoverBorder" CornerRadius="4" BorderThickness="1"
                                 BorderBrush="{DynamicResource TextFillColorPrimaryBrush}" IsHitTestVisible="False"/>
                         <StackPanel Name="Labels" IsHitTestVisible="False">
-                            <TextBlock Text="{TemplateBinding SubjectName}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                            <TextBlock Name="PART_SubjectLabel" FontWeight="SemiBold" TextWrapping="Wrap"/>
                             <TextBlock Name="TimeLabel" Text="{TemplateBinding TimeText}" FontSize="11" TextWrapping="Wrap"/>
                         </StackPanel>
-                        <Border BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="2"
+                        <Border BorderBrush="{TemplateBinding SubjectBrush}" BorderThickness="2"
                                 CornerRadius="4" IsVisible="{TemplateBinding IsSelected}" IsHitTestVisible="False"/>
                         <Border Height="3" Width="22" CornerRadius="2" Margin="0,2" VerticalAlignment="Top"
                                 Background="{DynamicResource TextFillColorPrimaryBrush}" IsVisible="{TemplateBinding ShowHandles}"

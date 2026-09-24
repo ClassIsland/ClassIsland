@@ -124,9 +124,13 @@ public partial class ProfileSettingsViewModel
             var date = ScheduleWeekStart.AddDays(day);
             foreach (var (id, item) in LessonsService.GetScheduleItemsByDate(date))
             {
-                var name = profile.Subjects.TryGetValue(item.SubjectId, out var subject) && !string.IsNullOrWhiteSpace(subject.Name)
-                    ? subject.Name : "未指定科目";
-                occurrences.Add(new ScheduleWeekOccurrence(id, date, name, item.StartTime, item.EndTime));
+                profile.Subjects.TryGetValue(item.SubjectId, out var subject);
+                var name = !string.IsNullOrWhiteSpace(subject?.Name) ? subject.Name : "未指定科目";
+                occurrences.Add(new ScheduleWeekOccurrence(id, date, name, item.StartTime, item.EndTime)
+                {
+                    SubjectColorHex = subject?.ColorHex,
+                    SubjectIconExpression = subject?.Icon
+                });
             }
         }
         if (!ScheduleWeekItems.SequenceEqual(occurrences))
