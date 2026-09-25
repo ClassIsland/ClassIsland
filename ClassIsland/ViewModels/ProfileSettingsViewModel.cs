@@ -271,7 +271,6 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
 
         _resourcesReleased = true;
-        _scheduleWeekSubscriptions.Dispose();
         PropertyChanged -= OnViewModelPropertyChanged;
         foreach (var subscription in _externalSubscriptions)
         {

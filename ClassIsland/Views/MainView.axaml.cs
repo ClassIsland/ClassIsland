@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -10,7 +9,6 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
-using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared;
@@ -66,33 +64,9 @@ public partial class MainView : ViewBase
     {
         if (MainViewTabs.SelectedIndex != 1) return;
 
-        var profile = App.GetService<IProfileService>().Profile;
         var today = DateOnly.FromDateTime(App.GetService<IExactTimeService>().GetCurrentLocalDateTime());
         var weekStart = today.AddDays(-(((int)today.DayOfWeek + 6) % 7));
-        var occurrences = new List<ScheduleWeekOccurrence>();
-        for (var day = 0; day < 7; day++)
-        {
-            var date = weekStart.AddDays(day);
-            foreach (var (id, item) in LessonsService.GetScheduleItemsByDate(date))
-            {
-                profile.Subjects.TryGetValue(item.SubjectId, out var subject);
-                var name = !string.IsNullOrWhiteSpace(subject?.Name) ? subject.Name : "未指定科目";
-                occurrences.Add(new ScheduleWeekOccurrence(id, date, name, item.StartTime, item.EndTime)
-                {
-                    SubjectColorHex = subject?.ColorHex,
-                    SubjectIconExpression = subject?.Icon
-                });
-            }
-        }
         ScheduleWeekTest.WeekStart = weekStart;
-        if (ScheduleWeekTest.SelectedScheduleItemId is { } selectedId
-            && occurrences.TrueForAll(item => item.ScheduleItemId != selectedId))
-        {
-            ScheduleWeekTest.SelectedScheduleItemId = null;
-            ScheduleWeekTest.SelectedDate = null;
-            ScheduleWeekTest.SelectedTime = null;
-        }
-        ScheduleWeekTest.ItemsSource = occurrences;
     }
     
     

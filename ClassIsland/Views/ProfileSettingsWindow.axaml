@@ -2073,7 +2073,6 @@
                                                 <TextBlock Text="{Binding ViewModel.ScheduleWeekCaption}" VerticalAlignment="Center" FontSize="12"/>
                                             </WrapPanel>
                                             <scheduleWeek:ScheduleWeekEditControl Grid.Row="1" x:Name="ScheduleWeekEditor"
-                                                ItemsSource="{Binding ViewModel.ScheduleWeekItems}"
                                                 WeekStart="{Binding ViewModel.ScheduleWeekStart}"
                                                 SelectedScheduleItemId="{Binding ViewModel.SelectedScheduleItemId, Mode=TwoWay}"
                                                 SelectedDate="{Binding ViewModel.ScheduleWeekSelectedDate, Mode=TwoWay}"

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -21,9 +20,7 @@ public partial class ProfileSettingsViewModel
     [ObservableProperty] private Guid? _selectedScheduleItemId;
     [ObservableProperty] private DateOnly? _scheduleWeekSelectedDate;
     [ObservableProperty] private TimeSpan? _scheduleWeekSelectedTime;
-    [ObservableProperty] private IReadOnlyList<ScheduleWeekOccurrence> _scheduleWeekItems = [];
-    private readonly CompositeDisposable _scheduleWeekSubscriptions = new();
-    private bool _scheduleWeekRefreshQueued;
+    private Settings? _observedScheduleWeekSettings;
 
     public string ScheduleWeekCaption
     {
@@ -39,9 +36,43 @@ public partial class ProfileSettingsViewModel
 
     private void InitializeScheduleWeek()
     {
+        ObserveScheduleWeekSettings();
+        PropertyChangedEventHandler handler = (_, args) =>
+        {
+            if (args.PropertyName != nameof(SettingsService.Settings)) return;
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_resourcesReleased) return;
+                ObserveScheduleWeekSettings();
+                OnPropertyChanged(nameof(ScheduleWeekCaption));
+            });
+        };
+        SettingsService.PropertyChanged += handler;
+        _externalSubscriptions.Add(Disposable.Create(() =>
+        {
+            SettingsService.PropertyChanged -= handler;
+            if (_observedScheduleWeekSettings != null)
+                _observedScheduleWeekSettings.PropertyChanged -= ScheduleWeekSettingsChanged;
+        }));
         var today = DateOnly.FromDateTime(ExactTimeService.GetCurrentLocalDateTime());
         ScheduleWeekNavigationDate = today.ToDateTime(TimeOnly.MinValue);
-        RefreshScheduleWeek();
+    }
+
+    private void ObserveScheduleWeekSettings()
+    {
+        if (_observedScheduleWeekSettings != null)
+            _observedScheduleWeekSettings.PropertyChanged -= ScheduleWeekSettingsChanged;
+        _observedScheduleWeekSettings = SettingsService.Settings;
+        _observedScheduleWeekSettings.PropertyChanged += ScheduleWeekSettingsChanged;
+    }
+
+    private void ScheduleWeekSettingsChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(Settings.SingleWeekStartTime))
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (!_resourcesReleased) OnPropertyChanged(nameof(ScheduleWeekCaption));
+            });
     }
 
     partial void OnScheduleWeekStartChanged(DateOnly value)
@@ -56,7 +87,6 @@ public partial class ProfileSettingsViewModel
         }
         ScheduleWeekSelectedDate = null;
         ScheduleWeekSelectedTime = null;
-        QueueScheduleWeekRefresh();
     }
 
     partial void OnScheduleWeekNavigationDateChanged(DateTime? value)
@@ -85,72 +115,6 @@ public partial class ProfileSettingsViewModel
     {
         var today = DateOnly.FromDateTime(ExactTimeService.GetCurrentLocalDateTime());
         ScheduleWeekNavigationDate = today.ToDateTime(TimeOnly.MinValue);
-    }
-
-    private void QueueScheduleWeekRefresh()
-    {
-        if (_resourcesReleased || _scheduleWeekRefreshQueued) return;
-        _scheduleWeekRefreshQueued = true;
-        Dispatcher.UIThread.Post(() =>
-        {
-            _scheduleWeekRefreshQueued = false;
-            if (!_resourcesReleased) RefreshScheduleWeek();
-        });
-    }
-
-    private void RefreshScheduleWeek()
-    {
-        OnPropertyChanged(nameof(ScheduleWeekCaption));
-        _scheduleWeekSubscriptions.Clear();
-        var profile = ProfileService.Profile;
-        WatchProperties(profile);
-        WatchProperties(SettingsService);
-        if (ProfileService is INotifyPropertyChanged profileService) WatchProperties(profileService);
-        WatchProperties(SettingsService.Settings);
-        WatchCollection(SettingsService.Settings.MultiWeekRotationOffset);
-        WatchCollection(profile.ScheduleItems);
-        WatchCollection(profile.Subjects);
-        foreach (var item in profile.ScheduleItems.Values)
-        {
-            WatchProperties(item);
-            WatchProperties(item.EnableRule);
-            WatchCollection(item.EnableRule.EnableDates);
-        }
-        foreach (var subject in profile.Subjects.Values) WatchProperties(subject);
-
-        var occurrences = new List<ScheduleWeekOccurrence>();
-        for (var day = 0; day < 7; day++)
-        {
-            var date = ScheduleWeekStart.AddDays(day);
-            foreach (var (id, item) in LessonsService.GetScheduleItemsByDate(date))
-            {
-                profile.Subjects.TryGetValue(item.SubjectId, out var subject);
-                var name = !string.IsNullOrWhiteSpace(subject?.Name) ? subject.Name : "未指定科目";
-                occurrences.Add(new ScheduleWeekOccurrence(id, date, name, item.StartTime, item.EndTime)
-                {
-                    SubjectColorHex = subject?.ColorHex,
-                    SubjectIconExpression = subject?.Icon
-                });
-            }
-        }
-        if (!ScheduleWeekItems.SequenceEqual(occurrences))
-            ScheduleWeekItems = occurrences;
-        if (SelectedScheduleItemId is { } selectedId && !profile.ScheduleItems.ContainsKey(selectedId))
-            SelectedScheduleItemId = null;
-    }
-
-    private void WatchProperties(INotifyPropertyChanged source)
-    {
-        PropertyChangedEventHandler handler = (_, _) => QueueScheduleWeekRefresh();
-        source.PropertyChanged += handler;
-        _scheduleWeekSubscriptions.Add(Disposable.Create(() => source.PropertyChanged -= handler));
-    }
-
-    private void WatchCollection(INotifyCollectionChanged source)
-    {
-        NotifyCollectionChangedEventHandler handler = (_, _) => QueueScheduleWeekRefresh();
-        source.CollectionChanged += handler;
-        _scheduleWeekSubscriptions.Add(Disposable.Create(() => source.CollectionChanged -= handler));
     }
 
     public KeyValuePair<Guid, ScheduleItem> CreateScheduleItem(DateOnly? date = null, TimeSpan? startTime = null)
@@ -217,8 +181,6 @@ public partial class ProfileSettingsViewModel
             item.EndTime = request.EndTime;
         }
         if (delta != 0) item.EnableRule = rule;
-        // The edit control must receive the committed times before releasing its drag preview.
-        RefreshScheduleWeek();
         return true;
     }
 }

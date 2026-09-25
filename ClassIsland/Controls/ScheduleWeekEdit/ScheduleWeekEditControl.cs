@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -13,12 +15,15 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models;
+using ClassIsland.Services;
+using ClassIsland.Shared;
 
 namespace ClassIsland.Controls.ScheduleWeekEdit;
 
 /// <summary>
-/// Edits dated course projections through requests, without owning profile data or recurrence rules.
+/// Displays dated courses and sends edit requests without owning profile data or recurrence rules.
 /// </summary>
 public sealed class ScheduleWeekEditControl : TemplatedControl
 {
@@ -29,6 +34,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         AvaloniaProperty.Register<ScheduleWeekEditControl, IEnumerable<ScheduleWeekOccurrence>?>(nameof(ItemsSource));
     public static readonly StyledProperty<DateOnly> WeekStartProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, DateOnly>(nameof(WeekStart));
+    public static readonly StyledProperty<bool> AutoFetchScheduleItemsProperty =
+        AvaloniaProperty.Register<ScheduleWeekEditControl, bool>(nameof(AutoFetchScheduleItems), true);
     public static readonly StyledProperty<Guid?> SelectedScheduleItemIdProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, Guid?>(nameof(SelectedScheduleItemId), defaultBindingMode: BindingMode.TwoWay);
     public static readonly StyledProperty<DateOnly?> SelectedDateProperty =
@@ -42,6 +49,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
 
     public IEnumerable<ScheduleWeekOccurrence>? ItemsSource { get => GetValue(ItemsSourceProperty); set => SetValue(ItemsSourceProperty, value); }
     public DateOnly WeekStart { get => GetValue(WeekStartProperty); set => SetValue(WeekStartProperty, value); }
+    /// <summary>Fetches the displayed week's courses from the active profile when enabled.</summary>
+    public bool AutoFetchScheduleItems { get => GetValue(AutoFetchScheduleItemsProperty); set => SetValue(AutoFetchScheduleItemsProperty, value); }
     public Guid? SelectedScheduleItemId { get => GetValue(SelectedScheduleItemIdProperty); set => SetValue(SelectedScheduleItemIdProperty, value); }
     public DateOnly? SelectedDate { get => GetValue(SelectedDateProperty); set => SetValue(SelectedDateProperty, value); }
     public TimeSpan? SelectedTime { get => GetValue(SelectedTimeProperty); set => SetValue(SelectedTimeProperty, value); }
@@ -72,7 +81,10 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private readonly List<Run> _dayHeaderDates = [];
     private bool? _compactHeaders;
     private readonly Dictionary<(Guid Id, DateOnly Date), ScheduleWeekBlock> _blocks = [];
+    private readonly CompositeDisposable _autoItemSubscriptions = new();
+    private IReadOnlyList<ScheduleWeekOccurrence> _autoItems = [];
     private INotifyCollectionChanged? _observedItems;
+    private bool _autoRefreshQueued;
     private DragState? _drag;
     private bool _isCommittingEdit;
     private bool _attached;
@@ -141,6 +153,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         base.OnAttachedToVisualTree(e);
         _attached = true;
         ObserveItems();
+        if (AutoFetchScheduleItems) RefreshAutomaticItems();
         Rebuild();
     }
 
@@ -152,6 +165,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         if (_observedItems != null)
             _observedItems.CollectionChanged -= ItemsChanged;
         _observedItems = null;
+        _autoItemSubscriptions.Clear();
         base.OnDetachedFromVisualTree(e);
     }
 
@@ -160,11 +174,32 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         base.OnPropertyChanged(change);
         if (change.Property == ItemsSourceProperty)
         {
+            ObserveItems();
+            if (!AutoFetchScheduleItems)
+            {
+                CancelDrag();
+                Rebuild();
+            }
+        }
+        else if (change.Property == AutoFetchScheduleItemsProperty)
+        {
             CancelDrag();
             ObserveItems();
+            if (AutoFetchScheduleItems) RefreshAutomaticItems();
+            else
+            {
+                _autoItemSubscriptions.Clear();
+                _autoItems = [];
+            }
             Rebuild();
         }
-        else if (change.Property == WeekStartProperty || change.Property == ScaleProperty || change.Property == IsReadonlyProperty)
+        else if (change.Property == WeekStartProperty)
+        {
+            CancelDrag();
+            if (AutoFetchScheduleItems) RefreshAutomaticItems();
+            Rebuild();
+        }
+        else if (change.Property == ScaleProperty || change.Property == IsReadonlyProperty)
         {
             CancelDrag();
             Rebuild();
@@ -184,10 +219,82 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     {
         if (_observedItems != null)
             _observedItems.CollectionChanged -= ItemsChanged;
-        _observedItems = _attached ? ItemsSource as INotifyCollectionChanged : null;
+        _observedItems = _attached && !AutoFetchScheduleItems ? ItemsSource as INotifyCollectionChanged : null;
         if (_observedItems != null)
             _observedItems.CollectionChanged += ItemsChanged;
     }
+
+    private void QueueAutomaticRefresh()
+    {
+        if (!_attached || !AutoFetchScheduleItems || _autoRefreshQueued) return;
+        _autoRefreshQueued = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _autoRefreshQueued = false;
+            if (_attached && AutoFetchScheduleItems) RefreshAutomaticItems();
+        });
+    }
+
+    private void RefreshAutomaticItems()
+    {
+        if (!_attached || !AutoFetchScheduleItems) return;
+
+        _autoItemSubscriptions.Clear();
+        var profileService = IAppHost.GetService<IProfileService>();
+        var lessonsService = IAppHost.GetService<ILessonsService>();
+        var settingsService = IAppHost.GetService<SettingsService>();
+        var profile = profileService.Profile;
+        WatchProperties(profile);
+        WatchProperties(settingsService);
+        if (profileService is INotifyPropertyChanged observableProfileService) WatchProperties(observableProfileService);
+        WatchProperties(settingsService.Settings);
+        WatchCollection(settingsService.Settings.MultiWeekRotationOffset);
+        WatchCollection(profile.ScheduleItems);
+        WatchCollection(profile.Subjects);
+        foreach (var item in profile.ScheduleItems.Values)
+        {
+            WatchProperties(item);
+            WatchProperties(item.EnableRule);
+            WatchCollection(item.EnableRule.EnableDates);
+        }
+        foreach (var subject in profile.Subjects.Values) WatchProperties(subject);
+
+        var occurrences = new List<ScheduleWeekOccurrence>();
+        for (var day = 0; day < 7; day++)
+        {
+            var date = WeekStart.AddDays(day);
+            foreach (var (id, item) in lessonsService.GetScheduleItemsByDate(date))
+            {
+                profile.Subjects.TryGetValue(item.SubjectId, out var subject);
+                var name = !string.IsNullOrWhiteSpace(subject?.Name) ? subject.Name : "未指定科目";
+                occurrences.Add(new ScheduleWeekOccurrence(id, date, name, item.StartTime, item.EndTime)
+                {
+                    SubjectColorHex = subject?.ColorHex,
+                    SubjectIconExpression = subject?.Icon
+                });
+            }
+        }
+        _autoItems = occurrences;
+        if (SelectedScheduleItemId is { } selectedId && !profile.ScheduleItems.ContainsKey(selectedId))
+            SetCurrentValue(SelectedScheduleItemIdProperty, (Guid?)null);
+        Rebuild();
+    }
+
+    private void WatchProperties(INotifyPropertyChanged source)
+    {
+        PropertyChangedEventHandler handler = (_, _) => QueueAutomaticRefresh();
+        source.PropertyChanged += handler;
+        _autoItemSubscriptions.Add(Disposable.Create(() => source.PropertyChanged -= handler));
+    }
+
+    private void WatchCollection(INotifyCollectionChanged source)
+    {
+        NotifyCollectionChangedEventHandler handler = (_, _) => QueueAutomaticRefresh();
+        source.CollectionChanged += handler;
+        _autoItemSubscriptions.Add(Disposable.Create(() => source.CollectionChanged -= handler));
+    }
+
+    private IEnumerable<ScheduleWeekOccurrence> CurrentItems => AutoFetchScheduleItems ? _autoItems : ItemsSource ?? [];
 
     private void ItemsChanged(object? sender, NotifyCollectionChangedEventArgs e) { CancelDrag(); Rebuild(); }
     private void ScrollChanged(object? sender, ScrollChangedEventArgs e)
@@ -233,7 +340,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             Math.Max(0, 1440 * Scale - _scrollViewer.Viewport.Height)));
     }
 
-    private IEnumerable<ScheduleWeekOccurrence> VisibleOccurrences() => (ItemsSource ?? [])
+    private IEnumerable<ScheduleWeekOccurrence> VisibleOccurrences() => CurrentItems
         .Where(item => item.Date.DayNumber >= WeekStart.DayNumber && item.Date.DayNumber - WeekStart.DayNumber < 7);
 
     private ScheduleWeekOccurrence? SelectedOccurrence() => VisibleOccurrences()
@@ -381,7 +488,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             _dayHeaderDates.Clear();
             _compactHeaders = compactHeaders;
         }
-        var items = (ItemsSource ?? []).Select(item =>
+        var items = CurrentItems.Select(item =>
         {
             var display = item;
             if (_drag is { HasMoved: true } drag && drag.Item.ScheduleItemId == item.ScheduleItemId)
@@ -636,6 +743,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                     ScheduleItemId = preview.ScheduleItemId, OriginalDate = drag.Item.Date, Date = preview.Date,
                     StartTime = preview.StartTime, EndTime = preview.EndTime
                 });
+                if (AutoFetchScheduleItems) RefreshAutomaticItems();
                 RemapCommittedBlocks(drag);
             }
         }
@@ -651,8 +759,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     {
         var preview = drag.Preview;
         var delta = preview.Date.DayNumber - drag.Item.Date.DayNumber;
-        if (delta == 0 || ItemsSource?.Any(item => item.ScheduleItemId == preview.ScheduleItemId
-                && item.Date == preview.Date && item.StartTime == preview.StartTime && item.EndTime == preview.EndTime) != true)
+        if (delta == 0 || !CurrentItems.Any(item => item.ScheduleItemId == preview.ScheduleItemId
+                && item.Date == preview.Date && item.StartTime == preview.StartTime && item.EndTime == preview.EndTime))
             return;
         var moved = _blocks.Where(pair => pair.Key.Id == preview.ScheduleItemId).ToList();
         foreach (var (key, _) in moved) _blocks.Remove(key);
