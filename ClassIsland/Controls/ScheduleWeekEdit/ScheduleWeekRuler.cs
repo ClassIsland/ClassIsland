@@ -10,7 +10,7 @@ namespace ClassIsland.Controls.ScheduleWeekEdit;
 internal sealed class ScheduleWeekRuler : Control
 {
     public static readonly StyledProperty<double> ScaleProperty =
-        AvaloniaProperty.Register<ScheduleWeekRuler, double>(nameof(Scale), 2);
+        AvaloniaProperty.Register<ScheduleWeekRuler, double>(nameof(Scale), 1);
     public static readonly StyledProperty<bool> ShowTimeScaleProperty =
         AvaloniaProperty.Register<ScheduleWeekRuler, bool>(nameof(ShowTimeScale), true);
 
@@ -37,7 +37,8 @@ internal sealed class ScheduleWeekRuler : Control
             var text = new FormattedText(label, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface(FontFamily.Default), 11, foreground);
             using (context.PushOpacity(minutes % 60 == 0 ? 1 : 0.6))
-                context.DrawText(text, new Point(3, Math.Clamp(y - 7, 0, Math.Max(0, Bounds.Height - 15))));
+                context.DrawText(text, new Point(ScheduleWeekEditControl.RulerWidth - text.Width,
+                    Math.Clamp(y - 7, 0, Math.Max(0, Bounds.Height - 15))));
         }
         using (context.PushOpacity(0.15))
             for (var day = 1; day < 7; day++)

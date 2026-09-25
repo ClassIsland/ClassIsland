@@ -27,6 +27,8 @@ public sealed class ScheduleWeekBlock : TemplatedControl
         AvaloniaProperty.Register<ScheduleWeekBlock, bool>(nameof(IsSelected));
     public static readonly StyledProperty<bool> IsCompactProperty =
         AvaloniaProperty.Register<ScheduleWeekBlock, bool>(nameof(IsCompact));
+    public static readonly StyledProperty<bool> ShowTimeTextProperty =
+        AvaloniaProperty.Register<ScheduleWeekBlock, bool>(nameof(ShowTimeText), true);
 
     public string SubjectName { get => GetValue(SubjectNameProperty); set => SetValue(SubjectNameProperty, value); }
     public IBrush SubjectBrush { get => GetValue(SubjectBrushProperty); set => SetValue(SubjectBrushProperty, value); }
@@ -34,7 +36,9 @@ public sealed class ScheduleWeekBlock : TemplatedControl
     public bool ShowHandles { get => GetValue(ShowHandlesProperty); set => SetValue(ShowHandlesProperty, value); }
     public bool IsSelected { get => GetValue(IsSelectedProperty); set => SetValue(IsSelectedProperty, value); }
     public bool IsCompact { get => GetValue(IsCompactProperty); set => SetValue(IsCompactProperty, value); }
+    public bool ShowTimeText { get => GetValue(ShowTimeTextProperty); set => SetValue(ShowTimeTextProperty, value); }
     public required ScheduleWeekOccurrence Occurrence { get; set; }
+    private StackPanel? _labels;
     private TextBlock? _subjectLabel;
     private string? _subjectColorHex;
     private string? _subjectIconExpression;
@@ -43,7 +47,9 @@ public sealed class ScheduleWeekBlock : TemplatedControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
+        _labels = e.NameScope.Find<StackPanel>("Labels");
         _subjectLabel = e.NameScope.Find<TextBlock>("PART_SubjectLabel");
+        UpdateLabelsScale();
         UpdateSubjectTitle();
     }
 
@@ -52,6 +58,17 @@ public sealed class ScheduleWeekBlock : TemplatedControl
         base.OnPropertyChanged(change);
         if (change.Property == SubjectNameProperty)
             UpdateSubjectTitle();
+        else if (change.Property == BoundsProperty || change.Property == IsCompactProperty)
+            UpdateLabelsScale();
+    }
+
+    private void UpdateLabelsScale()
+    {
+        if (_labels?.RenderTransform is not ScaleTransform transform || Bounds.Width <= 0) return;
+        var availableWidth = Math.Max(0, Bounds.Width - _labels.Margin.Left - _labels.Margin.Right);
+        var scale = Math.Min(1, availableWidth / _labels.MinWidth);
+        transform.ScaleX = scale;
+        transform.ScaleY = scale;
     }
 
     internal void UpdateSubjectAppearance(ScheduleWeekOccurrence item)

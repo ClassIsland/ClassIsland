@@ -22,8 +22,8 @@ namespace ClassIsland.Controls.ScheduleWeekEdit;
 /// </summary>
 public sealed class ScheduleWeekEditControl : TemplatedControl
 {
-    internal const double RulerWidth = 48;
-    private const double MinimumDayWidth = 54;
+    internal const double RulerWidth = 36;
+    private const double MinimumDayWidth = 40;
     private const double MinimumBlockHeight = 18;
     public static readonly StyledProperty<IEnumerable<ScheduleWeekOccurrence>?> ItemsSourceProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, IEnumerable<ScheduleWeekOccurrence>?>(nameof(ItemsSource));
@@ -36,7 +36,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     public static readonly StyledProperty<TimeSpan?> SelectedTimeProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, TimeSpan?>(nameof(SelectedTime), defaultBindingMode: BindingMode.TwoWay);
     public static readonly StyledProperty<double> ScaleProperty =
-        AvaloniaProperty.Register<ScheduleWeekEditControl, double>(nameof(Scale), 2, validate: value => double.IsFinite(value) && value > 0);
+        AvaloniaProperty.Register<ScheduleWeekEditControl, double>(nameof(Scale), 1, validate: value => double.IsFinite(value) && value > 0);
     public static readonly StyledProperty<bool> IsReadonlyProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, bool>(nameof(IsReadonly));
 
@@ -70,6 +70,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private ScheduleWeekRuler? _headerRuler;
     private readonly List<TextBlock> _dayHeaders = [];
     private readonly List<Run> _dayHeaderDates = [];
+    private bool? _compactHeaders;
     private readonly Dictionary<(Guid Id, DateOnly Date), ScheduleWeekBlock> _blocks = [];
     private INotifyCollectionChanged? _observedItems;
     private DragState? _drag;
@@ -110,6 +111,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         _blocks.Clear();
         _dayHeaders.Clear();
         _dayHeaderDates.Clear();
+        _compactHeaders = null;
         _ruler = null;
         _headerRuler = null;
         _canvas = e.NameScope.Find<Canvas>("PART_Canvas");
@@ -352,6 +354,9 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         var width = _canvas.Bounds.Width;
         if (width <= RulerWidth) return;
         var columnWidth = (width - RulerWidth) / 7;
+        var compactHeaders = columnWidth < 54;
+        var headerHeight = compactHeaders ? 36 : 24;
+        _header.Height = headerHeight;
         if (_ruler == null)
         {
             _ruler = new ScheduleWeekRuler { IsHitTestVisible = false };
@@ -366,8 +371,16 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             _header.Children.Add(_headerRuler);
         }
         _headerRuler.Width = width;
-        _headerRuler.Height = _header.Bounds.Height;
+        _headerRuler.Height = headerHeight;
         string[] days = ["一", "二", "三", "四", "五", "六", "日"];
+        if (_compactHeaders != compactHeaders)
+        {
+            foreach (var header in _dayHeaders)
+                _header.Children.Remove(header);
+            _dayHeaders.Clear();
+            _dayHeaderDates.Clear();
+            _compactHeaders = compactHeaders;
+        }
         var items = (ItemsSource ?? []).Select(item =>
         {
             var display = item;
@@ -388,17 +401,19 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                 var label = new TextBlock { TextAlignment = TextAlignment.Center, FontSize = 12 };
                 var dateRun = new Run();
                 dateRun.Classes.Add("l2");
-                label.Inlines!.Add(new Run($"{days[day]} "));
+                label.Inlines!.Add(new Run(compactHeaders ? days[day] : $"{days[day]} "));
+                if (compactHeaders)
+                    label.Inlines.Add(new LineBreak());
                 label.Inlines.Add(dateRun);
                 _dayHeaderDates.Add(dateRun);
                 _dayHeaders.Add(label);
                 _header.Children.Add(label);
             }
             var header = _dayHeaders[day];
-            _dayHeaderDates[day].Text = $"{date:MM/dd}";
+            _dayHeaderDates[day].Text = compactHeaders ? $"{date:M/d}" : $"{date:MM/dd}";
             header.Width = columnWidth;
             Canvas.SetLeft(header, RulerWidth + day * columnWidth);
-            Canvas.SetTop(header, 4);
+            Canvas.SetTop(header, compactHeaders ? 2 : 4);
             var dayItems = items.Where(x => x.Display.Date == date).OrderBy(x => x.Display.StartTime).ThenBy(x => x.Source.ScheduleItemId).ToList();
             // Include the minimum visual hit area in collision layout so zero/short courses remain selectable.
             var group = new List<DisplayOccurrence>();
@@ -488,7 +503,9 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             block.TimeText = $"{FormatTime(item.StartTime)}–{FormatTime(item.EndTime)}";
             block.Width = Math.Max(1, columnWidth / laneEnds.Count - 4);
             block.Height = Math.Max(MinimumBlockHeight, (item.EndTime - item.StartTime).TotalMinutes * Scale);
-            block.IsCompact = block.Height < 44;
+            // Labels need 50px plus 5px on each side before compact margins take over.
+            block.IsCompact = block.Height < 44 || block.Width < 60;
+            block.ShowTimeText = block.Height >= 44;
             block.IsVisible = true;
             block.Cursor = new Cursor(IsReadonly ? StandardCursorType.Arrow : StandardCursorType.SizeAll);
             var tip = $"{item.SubjectName}\n{item.Date:yyyy-MM-dd} {block.TimeText}";

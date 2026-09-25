@@ -6,8 +6,8 @@
         <Setter Property="Focusable" Value="True"/>
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="24,*,Auto" ClipToBounds="True">
-                    <Canvas Name="PART_Header" Grid.Row="0" IsHitTestVisible="False"/>
+                <Grid RowDefinitions="Auto,*,Auto" ClipToBounds="True">
+                    <Canvas Name="PART_Header" Grid.Row="0" Height="24" IsHitTestVisible="False"/>
                     <ScrollViewer Name="PART_ScrollViewer" Grid.Row="1"
                                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible">
                         <Canvas Name="PART_Canvas" Background="Transparent" ClipToBounds="True"
@@ -17,7 +17,7 @@
                             IsHitTestVisible="False" ClipToBounds="True">
                         <Border Name="PART_ResizeGuideLine" Height="2"
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"/>
-                        <Border Name="PART_ResizeGuideLabel" Width="44" Height="20" CornerRadius="10"
+                        <Border Name="PART_ResizeGuideLabel" Width="34" Height="20" CornerRadius="10"
                                 Background="{DynamicResource AccentFillColorDefaultBrush}">
                             <TextBlock Name="PART_ResizeGuideTime" FontSize="11"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -53,9 +53,14 @@
                         <Border Background="{TemplateBinding SubjectBrush}" Opacity="0.45"/>
                         <Border Name="HoverBorder" CornerRadius="4" BorderThickness="1"
                                 BorderBrush="{DynamicResource TextFillColorPrimaryBrush}" IsHitTestVisible="False"/>
-                        <StackPanel Name="Labels" IsHitTestVisible="False">
+                        <StackPanel Name="Labels" MinWidth="50" HorizontalAlignment="Left"
+                                    RenderTransformOrigin="0,0" IsHitTestVisible="False">
+                            <StackPanel.RenderTransform>
+                                <ScaleTransform/>
+                            </StackPanel.RenderTransform>
                             <TextBlock Name="PART_SubjectLabel" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                            <TextBlock Name="TimeLabel" Text="{TemplateBinding TimeText}" FontSize="11" TextWrapping="Wrap"/>
+                            <TextBlock Name="TimeLabel" Text="{TemplateBinding TimeText}" FontSize="11"
+                                       TextWrapping="Wrap" IsVisible="{TemplateBinding ShowTimeText}"/>
                         </StackPanel>
                         <Border BorderBrush="{TemplateBinding SubjectBrush}" BorderThickness="2"
                                 CornerRadius="4" IsVisible="{TemplateBinding IsSelected}" IsHitTestVisible="False"/>
@@ -79,10 +84,7 @@
             <Setter Property="Opacity" Value="0.4"/>
         </Style>
         <Style Selector="^[IsCompact=True] /template/ StackPanel#Labels">
-            <Setter Property="Margin" Value="5,1"/>
-        </Style>
-        <Style Selector="^[IsCompact=True] /template/ TextBlock#TimeLabel">
-            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="Margin" Value="2,1"/>
         </Style>
     </ControlTheme>
 </ResourceDictionary>

@@ -1244,6 +1244,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         IAppHost.GetService<DevPortalWindow>().Show();
     }
+
+    private void NativeMenuItemDebugOpenMainView_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<MainView>().Show();
+    }
     
     private void NativeMenuItemDebugOpenWelcomeWindow_OnClick(object? sender, EventArgs e)
     {
