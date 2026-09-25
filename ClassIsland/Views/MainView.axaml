@@ -9,55 +9,75 @@
              x:Class="ClassIsland.Views.MainView"
              NavigationPage.HasBackButton="False"
              Header="ClassIsland">
-    <ci:ReusableTabControl x:Name="MainViewTabs" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
-                           Padding="0" Margin="0">
-        <TabItem Header="首页">
-            <ScrollViewer>
-                <StackPanel Classes="settings-container animated-intro">
-                    <controls:FAInfoBar Severity="Warning" Message="早期开发中，大部分功能仍不可用，不代表最终品质。"
-                                    IsOpen="True"/>
-        
-                    <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE699;}"
-                                             Header="编辑档案…"
-                                             IsClickEnabled="True"
-                                             Click="ButtonSettings_OnClick"/>
-                    <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE6A1;}"
-                                             Header="加载临时课表…"
-                                             IsClickEnabled="True"
-                                             Click="MenuItemTemporaryClassPlan_OnClick"/>
-                    <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE15F;}"
-                                             Header="换课…"
-                                             IsClickEnabled="True"
-                                             Click="MenuItemClassSwap_OnClick"/>
-                    <Separator/>
-                    <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C9;}"
-                                             Header="编辑主界面…"
-                                             IsClickEnabled="True"/>
-                    <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xEF27;}"
-                                             Header="应用设置…"
-                                             IsClickEnabled="True"
-                                             Click="MenuItemSettings_OnClick"/>
-                    <Separator/>
-                    <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0BD;}"
-                                             Header="重启"
-                                             IsClickEnabled="True"
-                                             Click="MenuItemRestartApp_OnClick"/>
-                    <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0DF;}"
-                                             Header="退出"
-                                             IsClickEnabled="True"
-                                             Click="MenuItemExitApp_OnClick"/>
-                    <Separator/>
-                    <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI BugRegular}}"
-                                             Header="Dev Portal"
-                                             IsClickEnabled="True"
-                                             Click="FASettingsExpanderDevPortal_OnClick"/>
-                </StackPanel>
-            </ScrollViewer>
-        </TabItem>
-        <TabItem Header="周视图测试">
-            <Grid RowDefinitions="Auto,*">
-                <scheduleWeek:ScheduleWeekEditControl x:Name="ScheduleWeekTest" Grid.Row="1" IsReadonly="True"/>
-            </Grid>
-        </TabItem>
-    </ci:ReusableTabControl>
+    <ci:ViewBase.Styles>
+        <Style Selector="TabControl#MainViewTabs /template/ ItemsPresenter#PART_ItemsPresenter">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </ci:ViewBase.Styles>
+    <ci:AdaptiveNavigationView x:Name="MainNavigation"
+                               Header="{Binding #MainViewTabs.SelectedItem.Header}">
+        <ci:AdaptiveNavigationView.MenuItems>
+            <controls:FANavigationViewItem x:Name="HomeNavigationItem"
+                                           Content="今天"
+                                           IconSource="{ci:FluentIconSource {ci:FI HomeRegular}, FontSize=22}" />
+            <controls:FANavigationViewItem x:Name="WeekNavigationItem"
+                                           Content="本周"
+                                           IconSource="{ci:FluentIconSource {ci:FI CalendarWeekStartRegular}, FontSize=22}" />
+            <controls:FANavigationViewItem x:Name="MoreNavigationItem"
+                                           Content="更多"
+                                           IconSource="{ci:FluentIconSource {ci:FI MoreHorizontalRegular}, FontSize=22}" />
+        </ci:AdaptiveNavigationView.MenuItems>
+        <ci:ReusableTabControl x:Name="MainViewTabs" SelectedIndex="0"
+                               HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                               Padding="0" Margin="0">
+            <TabItem Header="今天">
+                
+            </TabItem>
+            <TabItem Header="本周">
+                <Grid RowDefinitions="Auto,*">
+                    <scheduleWeek:ScheduleWeekEditControl x:Name="ScheduleWeekTest" Grid.Row="1" IsReadonly="True"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="更多">
+                <ScrollViewer>
+                    <StackPanel Classes="settings-container animated-intro">
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE699;}"
+                                                 Header="编辑档案…"
+                                                 IsClickEnabled="True"
+                                                 Click="ButtonSettings_OnClick"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE6A1;}"
+                                                 Header="加载临时课表…"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemTemporaryClassPlan_OnClick"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE15F;}"
+                                                 Header="换课…"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemClassSwap_OnClick"/>
+                        <Separator/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C9;}"
+                                                 Header="编辑主界面…"
+                                                 IsClickEnabled="True"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xEF27;}"
+                                                 Header="应用设置…"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemSettings_OnClick"/>
+                        <Separator/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0BD;}"
+                                                 Header="重启"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemRestartApp_OnClick"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0DF;}"
+                                                 Header="退出"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemExitApp_OnClick"/>
+                        <Separator/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI BugRegular}}"
+                                                 Header="Dev Portal"
+                                                 IsClickEnabled="True"
+                                                 Click="FASettingsExpanderDevPortal_OnClick"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </ci:ReusableTabControl>
+    </ci:AdaptiveNavigationView>
 </ci:ViewBase>

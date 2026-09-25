@@ -37,6 +37,8 @@ public partial class MainView : ViewBase
         LessonsService = lessonsService;
         InitializeComponent();
         MainViewTabs.SelectionChanged += MainViewTabs_OnSelectionChanged;
+        MainNavigation.SelectionChanged += MainNavigation_OnSelectionChanged;
+        MainNavigation.SelectedItem = HomeNavigationItem;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -56,7 +58,37 @@ public partial class MainView : ViewBase
         base.OnDetachedFromVisualTree(e);
     }
 
-    private void MainViewTabs_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => RefreshScheduleWeekIfVisible();
+    private void MainViewTabs_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        var item = MainViewTabs.SelectedIndex switch
+        {
+            0 => HomeNavigationItem,
+            1 => WeekNavigationItem,
+            2 => MoreNavigationItem
+        };
+        if (MainNavigation.SelectedItem != item)
+            MainNavigation.SelectedItem = item;
+        RefreshScheduleWeekIfVisible();
+    }
+
+    private void MainNavigation_OnSelectionChanged(object? sender, FANavigationViewSelectionChangedEventArgs e)
+    {
+        if (e.SelectedItem == HomeNavigationItem)
+        {
+            if (MainViewTabs.SelectedIndex != 0)
+                MainViewTabs.SelectedIndex = 0;
+        }
+        else if (e.SelectedItem == WeekNavigationItem)
+        {
+            if (MainViewTabs.SelectedIndex != 1)
+                MainViewTabs.SelectedIndex = 1;
+        } 
+        else if (e.SelectedItem == MoreNavigationItem)
+        {
+            if (MainViewTabs.SelectedIndex != 2)
+                MainViewTabs.SelectedIndex = 2;
+        }
+    }
 
     private void ScheduleWeekHost_OnActivated(object? sender, EventArgs e) => RefreshScheduleWeekIfVisible();
 
