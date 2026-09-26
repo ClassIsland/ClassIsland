@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Avalonia.Platform;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Tutorial;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +17,7 @@ public static class TutorialRegistryExtensions
     /// </summary>
     public static IServiceCollection AddTutorialGroupByUri(this IServiceCollection services, Uri uri)
     {
-        using var sr = new StreamReader(AssetLoader.Open(uri));
-        var content = JsonSerializer.Deserialize<TutorialGroup>(sr.ReadToEnd());
+        var content = JsonSerializer.Deserialize<TutorialGroup>(AssetLoader.ReadAllText(uri));
         if (content == null)
         {
             throw new InvalidOperationException("无效的教程文件");

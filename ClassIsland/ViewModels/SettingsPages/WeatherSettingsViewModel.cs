@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using ClassIsland.Core.Models.Weather;
@@ -21,6 +22,7 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
     private readonly ILogger<WeatherSettingsPage> _logger;
     private readonly DispatcherTimer _searchDebounceTimer;
     private string _pendingSearchText = string.Empty;
+    private bool _isActivated;
 
     public SettingsService SettingsService => _settingsService;
     public ILocationService LocationService => _locationService;
@@ -55,13 +57,43 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
         _searchDebounceTimer.Tick += SearchDebounceTimer_Tick;
 
         SelectedLocationSource = settingsService.Settings.WeatherLocationSource;
-        settingsService.Settings.PropertyChanged += (_, e) =>
+    }
+
+    /// <summary>
+    /// 订阅全局设置变更并启动搜索防抖计时。页面加载时调用。
+    /// </summary>
+    public void Activate()
+    {
+        if (_isActivated)
         {
-            if (e.PropertyName == nameof(SettingsService.Settings.WeatherLocationSource))
-            {
-                SelectedLocationSource = settingsService.Settings.WeatherLocationSource;
-            }
-        };
+            return;
+        }
+
+        _isActivated = true;
+        _settingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+    }
+
+    /// <summary>
+    /// 释放对全局设置对象的订阅，避免 ViewModel 被静态服务长期保留。页面卸载时调用。
+    /// </summary>
+    public void Deactivate()
+    {
+        if (!_isActivated)
+        {
+            return;
+        }
+
+        _isActivated = false;
+        _searchDebounceTimer.Stop();
+        _settingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SettingsService.Settings.WeatherLocationSource))
+        {
+            SelectedLocationSource = _settingsService.Settings.WeatherLocationSource;
+        }
     }
 
     public async Task InitializeAsync()
@@ -115,6 +147,19 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
         }
     }
 
+    public async Task<WeatherQueryResult> RefreshWeatherWithResultAsync()
+    {
+        IsRefreshingWeather = true;
+        try
+        {
+            return await _weatherService.QueryWeatherWithResultAsync();
+        }
+        finally
+        {
+            IsRefreshingWeather = false;
+        }
+    }
+
     public async Task SelectCityAsync(City? city)
     {
         if (city == null) return;
@@ -146,8 +191,15 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
 
     partial void OnSelectedLocationSourceChanged(int value)
     {
-        if (value is < 0 or > 1) return;
-        if (value == _settingsService.Settings.WeatherLocationSource) return;
+        if (value is not (0 or 1) ||
+            value == _settingsService.Settings.WeatherLocationSource)
+        {
+            return;
+        }
         _settingsService.Settings.WeatherLocationSource = value;
+        if (value == 1)
+        {
+            _ = RefreshWeatherAsync();
+        }
     }
 }

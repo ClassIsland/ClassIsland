@@ -154,6 +154,7 @@ public class DrawerHost : ContentControl
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
+        var previousDrawerContentPresenter = _drawerContentPresenter;
         ClearCompositionAnimations();
         ClearDrawerWidthPlaceholder();
         if (_drawerContentBorder != null) 
@@ -162,7 +163,13 @@ public class DrawerHost : ContentControl
             _ignoreLayer.PointerPressed -= IgnoreLayerOnPointerPressed;
 
         _contentPresenter = e.NameScope.Find<ContentPresenter>("PART_ContentPresenter");
-        _drawerContentPresenter = e.NameScope.Find<ContentPresenter>("PART_DrawerContentPresenter");
+        var drawerContentPresenter = e.NameScope.Find<ContentPresenter>("PART_DrawerContentPresenter");
+        if (previousDrawerContentPresenter != null &&
+            !ReferenceEquals(previousDrawerContentPresenter, drawerContentPresenter))
+        {
+            previousDrawerContentPresenter.Content = null;
+        }
+        _drawerContentPresenter = drawerContentPresenter;
         _drawerLoadingIndicatorHost = e.NameScope.Find<Grid>("PART_DrawerLoadingIndicatorHost");
         _drawerLoadingIndicator = e.NameScope.Find<FAProgressRing>("PART_DrawerLoadingIndicator");
         _ignoreLayer = e.NameScope.Find<Border>("PART_IgnoreLayer");
@@ -252,13 +259,40 @@ public class DrawerHost : ContentControl
 
         if (!IsDrawerOpen)
         {
-            _drawerContentPresenter.Content = null;
             UpdateDeferredDrawerWidth();
             return;
         }
 
         UpdateDeferredDrawerWidth();
-        if (!_isDrawerOpeningPending)
+        if (IsDrawerContentCurrent())
+        {
+            if (!_isDrawerOpeningPending)
+            {
+                _drawerContentPresenter.IsVisible = true;
+            }
+            return;
+        }
+
+        _drawerContentPresenter.IsVisible = false;
+        ClearStaleDrawerContent();
+        UpdateDeferredDrawerWidth();
+        if (DrawerContent == null)
+        {
+            if (!_isDrawerOpeningPending)
+            {
+                ++_drawerContentLoadRequestId;
+            }
+            CompleteDrawerContentLoadingIndicator();
+            RestoreDrawerContentOpacity();
+            ClearDrawerWidthPlaceholder();
+        }
+        else if (_isDrawerOpeningPending)
+        {
+            CompleteDrawerContentLoadingIndicator();
+            StartDrawerContentLoadingIndicator(_drawerContentLoadRequestId);
+            ApplyDrawerWidthPlaceholder(ActualDrawerWidth);
+        }
+        else
         {
             ScheduleDrawerContentLoad(_drawerOpenOperationId);
         }
@@ -273,7 +307,11 @@ public class DrawerHost : ContentControl
         StartDrawerContentLoadingIndicator(loadRequestId);
         if (_drawerContentPresenter != null)
         {
-            _drawerContentPresenter.Content = null;
+            _drawerContentPresenter.IsVisible = false;
+        }
+        if (!IsDrawerContentCurrent())
+        {
+            ClearStaleDrawerContent();
         }
         UpdateDeferredDrawerWidth();
         UpdateDrawerOffset(animate: true);
@@ -302,7 +340,32 @@ public class DrawerHost : ContentControl
 
         UpdateDrawerOffset(animate: true);
         UpdateDrawerContentOffset();
-        ScheduleDrawerContentLoad(operationId, loadRequestId);
+        if (IsDrawerContentCurrent())
+        {
+            if (_drawerContentPresenter != null)
+            {
+                _drawerContentPresenter.IsVisible = true;
+            }
+            CompleteDrawerContentLoadingIndicator(loadRequestId);
+            RestoreDrawerContentOpacity();
+            ClearDrawerWidthPlaceholder();
+        }
+        else if (DrawerContent == null)
+        {
+            if (_drawerContentPresenter != null)
+            {
+                _drawerContentPresenter.IsVisible = true;
+            }
+            CompleteDrawerContentLoadingIndicator(loadRequestId);
+            RestoreDrawerContentOpacity();
+            ClearDrawerWidthPlaceholder();
+        }
+        else
+        {
+            ClearStaleDrawerContent();
+            UpdateDeferredDrawerWidth();
+            ScheduleDrawerContentLoad(operationId, loadRequestId);
+        }
     }
 
     private void ScheduleDrawerContentLoad(int operationId)
@@ -313,6 +376,18 @@ public class DrawerHost : ContentControl
 
     private void ScheduleDrawerContentLoad(int operationId, int loadRequestId)
     {
+        if (DrawerContent == null)
+        {
+            if (_drawerContentPresenter != null)
+            {
+                _drawerContentPresenter.IsVisible = true;
+            }
+            CompleteDrawerContentLoadingIndicator();
+            RestoreDrawerContentOpacity();
+            ClearDrawerWidthPlaceholder();
+            return;
+        }
+
         if (_activeDrawerContentLoadRequestId != loadRequestId)
         {
             CompleteDrawerContentLoadingIndicator();
@@ -379,10 +454,12 @@ public class DrawerHost : ContentControl
         {
             _drawerContentPresenter!.Content = DrawerContent;
             _drawerContentPresenter.UpdateChild();
+            _drawerContentPresenter.IsVisible = true;
             ClearDrawerWidthPlaceholder();
         }
         catch
         {
+            _drawerContentPresenter!.IsVisible = true;
             CompleteDrawerContentLoadingIndicator(loadRequestId);
             RestoreDrawerContentOpacity();
             throw;
@@ -437,11 +514,44 @@ public class DrawerHost : ContentControl
 
         if (!IsDrawerOpen)
         {
-            _drawerContentPresenter.Content = null;
+            return;
         }
-        else if (!_isDrawerOpeningPending && !Equals(_drawerContentPresenter.Content, DrawerContent))
+
+        if (_isDrawerOpeningPending || IsDrawerContentCurrent())
+        {
+            if (!_isDrawerOpeningPending)
+            {
+                _drawerContentPresenter.IsVisible = true;
+            }
+            return;
+        }
+
+        _drawerContentPresenter.IsVisible = false;
+        ClearStaleDrawerContent();
+        UpdateDeferredDrawerWidth();
+        if (DrawerContent == null)
+        {
+            CompleteDrawerContentLoadingIndicator();
+            RestoreDrawerContentOpacity();
+            ClearDrawerWidthPlaceholder();
+        }
+        else
         {
             ScheduleDrawerContentLoad(_drawerOpenOperationId);
+        }
+    }
+
+    private bool IsDrawerContentCurrent()
+    {
+        return _drawerContentPresenter != null &&
+               Equals(_drawerContentPresenter.Content, DrawerContent);
+    }
+
+    private void ClearStaleDrawerContent()
+    {
+        if (_drawerContentPresenter != null && !IsDrawerContentCurrent())
+        {
+            _drawerContentPresenter.Content = null;
         }
     }
 
@@ -450,6 +560,10 @@ public class DrawerHost : ContentControl
         ++_drawerOpenOperationId;
         ++_drawerContentLoadRequestId;
         _isDrawerOpeningPending = false;
+        if (_drawerContentPresenter != null)
+        {
+            _drawerContentPresenter.IsVisible = true;
+        }
         CompleteDrawerContentLoadingIndicator();
         RestoreDrawerContentOpacity();
     }

@@ -5,6 +5,7 @@ using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Abstractions.Models.Components;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums.UI;
 using ClassIsland.Core.Services.Registry;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -312,6 +313,34 @@ public class ComponentSettings : ObservableRecipient, IMainWindowCustomizableNod
             OnPropertyChanged();
         }
     }
+
+    /// <summary>
+    /// 背景材质覆盖模式
+    /// </summary>
+    public int BackgroundMaterialOverrideMode
+    {
+        get;
+        set
+        {
+            if (value == field) return;
+            field = value;
+            OnPropertyChanged();
+        }
+    } = 0;
+
+    /// <summary>
+    /// 覆盖的背景材质类型。
+    /// </summary>
+    public MainWindowBackgroundMaterialType BackgroundMaterialType
+    {
+        get;
+        set
+        {
+            if (value == field) return;
+            field = value;
+            OnPropertyChanged();
+        }
+    } = MainWindowBackgroundMaterialType.Acrylic;
 
     #endregion
 

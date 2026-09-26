@@ -187,6 +187,33 @@
                 </controls1:FASettingsExpanderItem>
             </controls1:FASettingsExpander>
 
+            <!-- 自定义背景效果-->
+            <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xE523;}"
+                                        Header="自定义背景效果"
+                                        Description="自定义主界面的背景效果，仅在较新版本的 Windows 上可用，可能会产生额外性能开销。"
+                                        IsExpanded="{Binding ViewModel.SettingsService.Settings.IsMainWindowBackgroundMaterialEnabled, Mode=OneWay}">
+                <controls1:FASettingsExpander.IsVisible>
+                    <OnPlatform Default="False">
+                        <On Options="Windows" Content="True"/>
+                    </OnPlatform>
+                </controls1:FASettingsExpander.IsVisible>
+                <controls1:FASettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsMainWindowBackgroundMaterialEnabled, Mode=TwoWay}"/>
+                </controls1:FASettingsExpander.Footer>
+                <controls1:FASettingsExpanderItem
+                                                Content="画刷类型"
+                                                Description="选择主界面背景使用的材质。">
+                    <controls1:FASettingsExpanderItem.Footer>
+                        <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.MainWindowBackgroundMaterialType, Mode=TwoWay, Converter={x:Static ci:EnumToIntConverter.Instance}}"
+                                  Foreground="{DynamicResource MaterialDesignBody}">
+                            <ComboBoxItem>亚克力</ComboBoxItem>
+                            <ComboBoxItem>类液态玻璃</ComboBoxItem>
+                            <ComboBoxItem>云母</ComboBoxItem>
+                        </ComboBox>
+                    </controls1:FASettingsExpanderItem.Footer>
+                </controls1:FASettingsExpanderItem>
+            </controls1:FASettingsExpander>
+
             <!-- 指针移入淡化 -->
             <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xE5C3;}"
                                         Header="指针移入淡化"

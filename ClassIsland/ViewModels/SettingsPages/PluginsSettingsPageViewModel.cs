@@ -43,9 +43,29 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
     private ReadOnlyObservableCollection<KeyValuePair<string, PluginInfo>> _mergedPluginsFiltered = null!;
     public ReadOnlyObservableCollection<KeyValuePair<string, PluginInfo>> MergedPluginsFiltered => _mergedPluginsFiltered;
 
-    [ObservableProperty] private SyncDictionaryList<string, string> _officialPluginMirrors = null!;
+    private SyncDictionaryList<string, string> _officialPluginMirrors = null!;
+    public SyncDictionaryList<string, string> OfficialPluginMirrors
+    {
+        get => _officialPluginMirrors;
+        private set
+        {
+            if (ReferenceEquals(_officialPluginMirrors, value))
+            {
+                return;
+            }
 
-    public SyncDictionaryList<string, PluginInfo> MergedPlugins { get; }
+            _officialPluginMirrors?.Dispose();
+            _officialPluginMirrors = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private SyncDictionaryList<string, PluginInfo> _mergedPlugins = null!;
+    public SyncDictionaryList<string, PluginInfo> MergedPlugins => _mergedPlugins;
+
+    private IDisposable? _officialIndexMirrorsSubscription;
+    private IDisposable? _mergedPluginsSubscription;
+    private bool _isActivated;
 
     /// <inheritdoc/>
     public PluginsSettingsPageViewModel(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService, ILogger<PluginsSettingsPage> logger)
@@ -55,25 +75,67 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         SettingsService = settingsService;
         Logger = logger;
 
-        MergedPlugins = new SyncDictionaryList<string, PluginInfo>(PluginMarketService.MergedPlugins, () => "");
-        SettingsService.Settings
+        Activate();
+        UpdateOfficialPluginSources();
+    }
+
+    /// <summary>
+    /// 订阅全局服务和集合，用于更新插件列表。页面加载时调用。
+    /// </summary>
+    public void Activate()
+    {
+        if (_isActivated)
+        {
+            return;
+        }
+
+        _isActivated = true;
+        _mergedPlugins = new SyncDictionaryList<string, PluginInfo>(PluginMarketService.MergedPlugins, () => "");
+        OnPropertyChanged(nameof(MergedPlugins));
+        UpdateMergedPlugins();
+
+        _officialIndexMirrorsSubscription = SettingsService.Settings
             .ObservableForProperty(x => x.OfficialIndexMirrors)
             .Subscribe(_ => UpdateOfficialPluginSources());
+    }
 
-        UpdateMergedPlugins();
-        UpdateOfficialPluginSources();
+    /// <summary>
+    /// 释放对全局服务和集合的订阅，避免 ViewModel 被静态服务长期保留。页面卸载时调用。
+    /// </summary>
+    public void Deactivate()
+    {
+        if (!_isActivated)
+        {
+            return;
+        }
+
+        _isActivated = false;
+
+        _officialIndexMirrorsSubscription?.Dispose();
+        _officialIndexMirrorsSubscription = null;
+
+        _mergedPluginsSubscription?.Dispose();
+        _mergedPluginsSubscription = null;
+        _mergedPluginsFiltered = null!;
+        OnPropertyChanged(nameof(MergedPluginsFiltered));
+
+        _mergedPlugins?.Dispose();
+        _mergedPlugins = null!;
+        OnPropertyChanged(nameof(MergedPlugins));
+
+        OfficialPluginMirrors = null!;
     }
 
     public void UpdateMergedPlugins()
     {
-        if (MergedPluginsFiltered != null)
+        if (_mergedPluginsFiltered != null)
             return;
 
         var pluginFilter = this
             .WhenAnyValue(x => x.PluginFilterText, x => x.PluginCategoryIndex)
             .Select(_ => new Func<KeyValuePair<string, PluginInfo>, bool>(PluginSourceFilter));
 
-        MergedPlugins.List
+        _mergedPluginsSubscription = MergedPlugins.List
             .ToObservableChangeSet()
             .Filter(pluginFilter)
             .ObserveOn(RxApp.MainThreadScheduler)

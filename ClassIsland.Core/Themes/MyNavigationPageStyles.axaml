@@ -1,0 +1,163 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="NavigationPage">
+        <Setter Property="Template">
+          <ControlTemplate TargetType="NavigationPage">
+            <!-- ClipToBounds prevents slide animations bleeding outside the control bounds. -->
+            <Panel ClipToBounds="True">
+              <DockPanel>
+                <!-- Reserves nav-bar height in Inset mode. Invisible in Overlay mode. -->
+                <Border Name="PART_NavBarSpacer"
+                        Height="{TemplateBinding EffectiveBarHeight}"
+                        IsVisible="False"
+                        DockPanel.Dock="Top" />
+
+                <ContentPresenter Name="PART_BottomCommandBar"
+                                  DockPanel.Dock="Bottom"
+                                  HorizontalContentAlignment="Stretch"
+                                  Background="{TemplateBinding Background}"
+                                  Content="{Binding CurrentPage?.(NavigationPage.BottomCommandBar), RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}" />
+
+                <!-- Back and front presenters enable slide transitions without Control recycling. -->
+                <Grid Name="PART_ContentHost"
+                      Background="{TemplateBinding Background}"
+                      ClipToBounds="True">
+                  <ContentPresenter Name="PART_PageBackPresenter"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch" />
+                  <ContentPresenter Name="PART_PagePresenter"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch" />
+                </Grid>
+              </DockPanel>
+
+              <!-- Navigation bar floats above content (ZIndex=1). -->
+              <Border Name="PART_NavigationBar"
+                      ZIndex="1"
+                      VerticalAlignment="Top"
+                      ClipToBounds="True"
+                      Height="{TemplateBinding EffectiveBarHeight}">
+                <Grid Margin="12,0,0,0" ColumnDefinitions="Auto, *, Auto">
+                  <Grid.Styles>
+                    <Style
+                      Selector="Button#PART_BackButton:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
+                      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                      <Setter Property="BorderThickness" Value="2" />
+                      <Setter Property="CornerRadius" Value="4" />
+                    </Style>
+                    <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                      <Setter Property="Background" Value="Transparent" />
+                    </Style>
+                    <Style Selector="Button#PART_OverflowButton /template/ ContentPresenter#PART_ContentPresenter">
+                      <Setter Property="Background" Value="Transparent" />
+                      <Setter Property="CornerRadius" Value="0" />
+                    </Style>
+                    <Style
+                      Selector="Button#PART_OverflowButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+                    </Style>
+                    <Style
+                      Selector="Button#PART_OverflowButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+                    </Style>
+                  </Grid.Styles>
+
+                  <Button x:Name="PART_BackButton"
+                          Grid.Column="0"
+                          Theme="{StaticResource TransparentButton}"
+                          IsVisible="{TemplateBinding IsBackButtonEffectivelyVisible}"
+                          VerticalAlignment="Stretch"
+                          Padding="8,0"
+                          ToolTip.Tip="返回">
+                    <Panel Background="Transparent">
+                      <ci:FluentIcon Glyph="{ci:FI ArrowLeftRegular}"
+                                     x:Name="PART_BackButtonDefaultIcon"
+                                     Width="24"
+                                     Height="24"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+                      <ContentPresenter
+                        x:Name="PART_BackButtonContentPresenter"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center" />
+                    </Panel>
+                  </Button>
+
+                  <ContentPresenter Name="PART_Header"
+                                    Grid.Column="1"
+                                    FontSize="20"
+                                    Foreground="{DynamicResource NavigationBarForeground}"
+                                    Content="{Binding CurrentPage?.Header, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"
+                                    ContentTemplate="{Binding CurrentPage?.HeaderTemplate, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Margin="0,0,12,0" />
+
+                  <ContentPresenter Name="PART_TopCommandBar"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Right"
+                                    VerticalContentAlignment="Stretch"
+                                    Foreground="{DynamicResource NavigationBarForeground}"
+                                    Content="{Binding CurrentPage?.(NavigationPage.TopCommandBar), RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}">
+                    <ContentPresenter.Styles>
+                      <Style Selector="CommandBar">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="MinHeight" Value="0" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                      </Style>
+                      <Style Selector="CommandBarButton">
+                        <Setter Property="MinHeight" Value="0" />
+                        <Setter Property="Padding" Value="8,0" />
+                      </Style>
+                      <Style Selector="CommandBarToggleButton">
+                        <Setter Property="MinHeight" Value="0" />
+                        <Setter Property="Padding" Value="8,0" />
+                      </Style>
+                      <Style Selector="Button#PART_OverflowButton">
+                        <Setter Property="MinHeight" Value="0" />
+                        <Setter Property="Padding" Value="8,0" />
+                      </Style>
+                    </ContentPresenter.Styles>
+                  </ContentPresenter>
+                </Grid>
+              </Border>
+
+              <!-- Nav-bar shadow gradient. Margin.Top is set from code to match EffectiveBarHeight. -->
+              <Border Name="PART_NavBarShadow"
+                      ZIndex="1"
+                      VerticalAlignment="Top"
+                      IsVisible="False"
+                      Height="4"
+                      IsHitTestVisible="False">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Color="#0C000000" Offset="0" />
+                    <GradientStop Color="#00000000" Offset="1" />
+                  </LinearGradientBrush>
+                </Border.Background>
+              </Border>
+
+              <!-- Modal overlay: ZIndex=99 holds the static layer during transitions; ZIndex=100 is the animating modal. -->
+              <ContentPresenter Name="PART_ModalBackPresenter"
+                                ZIndex="99"
+                                IsVisible="False"
+                                Background="{TemplateBinding Background}" />
+              <ContentPresenter Name="PART_ModalPresenter"
+                                ZIndex="100"
+                                IsVisible="False"
+                                Background="{TemplateBinding Background}" />
+            </Panel>
+          </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

@@ -18,4 +18,15 @@
     <SolidColorBrush x:Key="CustomizedAccentBarBackground1Brush" Color="#FFDDE6F0" />
     
     <SolidColorBrush x:Key="TextFillColorInformativeSecondaryBrush" Color="#c0000000" />
+
+    <!--
+        FluentAvalonia 只在深色主题中定义了 TitleBarBackground / TitleBarForeground 等资源，
+        亮色主题下这些资源缺失会导致 FAAppWindow 的 DefaultTitleBar（拖动标题栏的命中区域）
+        背景为 null，从而无法进行命中测试，表现为标题栏无法拖动。
+        这里在亮色主题中补齐这些资源（背景保持透明、仅用于命中测试，前景使用亮色主题文字色）。
+    -->
+    <SolidColorBrush x:Key="TitleBarBackground" Color="Transparent" />
+    <SolidColorBrush x:Key="TitleBarBackgroundInactive" Color="Transparent" />
+    <SolidColorBrush x:Key="TitleBarForeground" Color="#E4000000" />
+    <SolidColorBrush x:Key="TitleBarForegroundInactive" Color="#5C000000" />
 </ResourceDictionary>

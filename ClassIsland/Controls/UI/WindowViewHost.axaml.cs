@@ -1,22 +1,34 @@
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Avalonia.Rendering.Composition;
+using Avalonia.Rendering.Composition.Animations;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Controls.UI;
 
-[PseudoClasses(":mobile", ":inlineHeader")]
+[PseudoClasses(":mobile", ":inlineHeader", ":closed")]
 public partial class WindowViewHost : MyWindow, IViewHost
 {
     public bool IsMobileMode { get; init; }
@@ -27,7 +39,17 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private bool _isShowed = false;
 
+    private bool _isWindowLoaded = false;
+
+    private TaskCompletionSource? _windowLoadedCompletionSource;
+
+    private bool _hasLoadedInitialContent = false;
+
     private bool _isClosed = false;
+
+    private bool _isHostContentPreparedForDetach = false;
+
+    private bool _isHostContentDetached = false;
 
     private bool _isSyncingHostSize = false;
 
@@ -52,10 +74,11 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private IDisposable? _currentViewHostFeaturesObserver;
 
     private AvaloniaList<WindowFeatures>? _observedHostFeatures;
-
     private WindowFeatures _appliedHostFeatures;
 
     private double _inlineHeaderHeight = 32.0;
+
+    private static readonly TimeSpan ContentLoadingProgressRingFadeOutDuration = TimeSpan.FromMilliseconds(200);
 
     public static readonly DirectProperty<WindowViewHost, double> InlineHeaderHeightProperty = AvaloniaProperty.RegisterDirect<WindowViewHost, double>(
         nameof(InlineHeaderHeight), o => o.InlineHeaderHeight, (o, v) => o.InlineHeaderHeight = v);
@@ -72,7 +95,14 @@ public partial class WindowViewHost : MyWindow, IViewHost
         InitializeComponent();
         Closing += OnClosing;
         Closed += OnClosed;
+        Loaded += WindowViewHost_OnLoaded;
         PositionChanged += OnPositionChanged;
+    }
+
+    private void WindowViewHost_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        _isWindowLoaded = true;
+        _windowLoadedCompletionSource?.TrySetResult();
     }
 
     private void OnPositionChanged(object? sender, PixelPointEventArgs e)
@@ -82,11 +112,67 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private void OnClosed(object? sender, EventArgs e)
     {
+        if (_isClosed)
+        {
+            return;
+        }
+
         _isClosed = true;
+        PseudoClasses.Set(":closed", true);
+        DetachHostContent();
+        Content = null;
+        DataContext = null;
+        MyOwner = null;
+    }
+
+    private void DetachHostContent()
+    {
+        if (_isHostContentDetached)
+        {
+            return;
+        }
+
+        PrepareHostContentForDetach();
+        _isHostContentDetached = true;
+
+        foreach (var page in NavigationPage.NavigationStack.ToArray())
+        {
+            NavigationPage.RemovePage(page);
+        }
+
+        NavigationPage.Template = null;
+        NavigationPage.ApplyTemplate();
+    }
+
+    private void PrepareHostContentForDetach()
+    {
+        if (_isHostContentPreparedForDetach)
+        {
+            return;
+        }
+
+        _isHostContentPreparedForDetach = true;
         SetCurrentView(null);
-        NavigationPage.PopAllModalsAsync(null);
-        NavigationPage.PopToRootAsync(null);
-        NavigationPage.ReplaceAsync(new ContentPage(), null);
+        NavigationPage.Popped -= NavigationPage_OnPopped;
+
+        foreach (var icon in NavigationPage.GetVisualDescendants()
+                     .OfType<FASymbolIcon>()
+                     .Where(x => ReferenceEquals(x.TemplatedParent, NavigationPage)))
+        {
+            icon.ClearValue(FASymbolIcon.SymbolProperty);
+            icon.ClearValue(TextElement.FontSizeProperty);
+            icon.ClearValue(TextElement.ForegroundProperty);
+        }
+
+        Styles.Clear();
+    }
+
+    protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
+    {
+        // Keep the pages in the logical tree until Avalonia has invalidated their styles.
+        // Removing them here would skip the normal child detach traversal and break reuse.
+        PrepareHostContentForDetach();
+        base.OnDetachedFromLogicalTree(e);
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
@@ -633,8 +719,106 @@ public partial class WindowViewHost : MyWindow, IViewHost
         }
         
         Activate();
-        await NavigationPage.PushAsync(view);
+        if (_hasLoadedInitialContent)
+        {
+            await NavigationPage.PushAsync(view);
+        }
+        else
+        {
+#if DEBUG
+            var animationWaitStartedAt = Stopwatch.GetTimestamp();
+            var viewLoadStartedAt = 0L;
+            var uiBlockingStartedAt = 0L;
+            var animationWaitDuration = TimeSpan.Zero;
+            var viewLoadDuration = TimeSpan.Zero;
+            var uiBlockingDuration = TimeSpan.Zero;
+#endif
+
+            ContentLoadingProgressRing.IsVisible = true;
+            try
+            {
+                if (!IThemeService.IsWaitForTransientDisabled)
+                {
+                    await WaitForWindowInitializedAsync();
+                    await WaitForNextRenderedFrameAsync();
+                }
+#if DEBUG
+                animationWaitDuration = Stopwatch.GetElapsedTime(animationWaitStartedAt);
+                viewLoadStartedAt = Stopwatch.GetTimestamp();
+                uiBlockingStartedAt = viewLoadStartedAt;
+                await NavigationPage.PushAsync(view);
+                viewLoadDuration = Stopwatch.GetElapsedTime(viewLoadStartedAt);
+#else
+                await NavigationPage.PushAsync(view);
+#endif
+                _hasLoadedInitialContent = true;
+                SetCurrentView(view);
+            }
+            finally
+            {
+                ContentLoadingProgressRing.IsVisible = false;
+            }
+
+#if DEBUG
+            await WaitForWindowInitializedAsync();
+            await WaitForNextRenderedFrameAsync();
+            uiBlockingDuration = Stopwatch.GetElapsedTime(uiBlockingStartedAt);
+            ShowInitialContentLoadTimingToast(animationWaitDuration, viewLoadDuration, uiBlockingDuration);
+#endif
+            return;
+        }
         SetCurrentView(view);
+    }
+
+#if DEBUG
+    private void ShowInitialContentLoadTimingToast(TimeSpan animationWaitDuration, TimeSpan viewLoadDuration, TimeSpan uiBlockingDuration)
+    {
+        this.ShowToast(new ToastMessage($"(debug) \n窗口加载时动画等待 {animationWaitDuration.TotalMilliseconds:F1} ms\n视图实际加载 {viewLoadDuration.TotalMilliseconds:F1} ms\n界面阻塞 {uiBlockingDuration.TotalMilliseconds:F1} ms。")
+        {
+            Duration = TimeSpan.FromSeconds(10)
+        });
+    }
+#endif
+
+    private Task WaitForWindowInitializedAsync()
+    {
+        if (_isWindowLoaded)
+        {
+            return Task.CompletedTask;
+        }
+
+        _windowLoadedCompletionSource ??= new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        return _windowLoadedCompletionSource.Task;
+    }
+
+    private Task WaitForNextRenderedFrameAsync()
+    {
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var compositor = ElementComposition.GetElementVisual(this)?.Compositor
+                         ?? throw new InvalidOperationException("窗口必须连接到可视树后才能等待渲染完成。");
+
+        // The composition update runs after binding and layout, immediately before
+        // the batch is committed. Its Rendered task is the first reliable signal
+        // that the frame containing the current visibility state was drawn.
+        compositor.RequestCompositionUpdate(() =>
+        {
+            var batch = compositor.RequestCompositionBatchCommitAsync();
+            _ = CompleteWhenRenderedAsync(batch.Rendered, completion);
+        });
+        return completion.Task;
+    }
+
+    private static async Task CompleteWhenRenderedAsync(Task renderedTask, TaskCompletionSource completion)
+    {
+        try
+        {
+            await renderedTask.ConfigureAwait(false);
+            completion.TrySetResult();
+        }
+        catch (Exception ex)
+        {
+            completion.TrySetException(ex);
+        }
     }
 
     public async Task ShowView(ViewBase view, ViewBase? owner = null)

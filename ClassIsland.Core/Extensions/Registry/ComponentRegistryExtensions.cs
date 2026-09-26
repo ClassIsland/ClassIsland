@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
@@ -62,6 +62,7 @@ public static class ComponentRegistryExtensions
             services.AddTransient(settings);
             info.SettingsType = settings;
         }
+        info.SourcePlugin = ComponentRegistryService.CurrentRegisteringPlugin.Value;
         ComponentRegistryService.Registered.Add(info);
         ComponentRegistryService.RegisteredSettings.Add(new ComponentSettings()
         {

@@ -1,14 +1,24 @@
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class SettingsPageInfo : Attribute
 {
+    private const string DefaultUnSelectedIconExpression = "\uef27";
+    private const string DefaultSelectedIconExpression = "\uef26";
+
+    private readonly string _unSelectedIconExpression = DefaultUnSelectedIconExpression;
+    private readonly string _selectedIconExpression = DefaultSelectedIconExpression;
+
     public string Name { get; } = "";
     public string Id { get; } = "";
-    public string UnSelectedIconGlyph { get; } = "\uef27";
-    public string SelectedIconGlyph { get; } = "\uef26";
+    public FAIconSource? UnSelectedIconSource =>
+        IconExpressionHelper.TryParseOrNull(_unSelectedIconExpression);
+    public FAIconSource? SelectedIconSource =>
+        IconExpressionHelper.TryParseOrNull(_selectedIconExpression);
     public string UnSelectedBitmapUri { get; } = "";
     public string SelectedBitmapUri { get; } = "";
     public bool UseBitmapIcon { get; } = false;
@@ -34,13 +44,13 @@ public class SettingsPageInfo : Attribute
         HideDefault = hideDefault;
     }
 
-    public SettingsPageInfo(string id, string name, string unSelectedIconGlyph, string selectedIconGlyph, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, category)
+    public SettingsPageInfo(string id, string name, string unSelectedIconExpression, string selectedIconExpression, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, category)
     {
-        UnSelectedIconGlyph = unSelectedIconGlyph;
-        SelectedIconGlyph = selectedIconGlyph;
+        _unSelectedIconExpression = unSelectedIconExpression;
+        _selectedIconExpression = selectedIconExpression;
     }
 
-    public SettingsPageInfo(string id, string name, string unSelectedIconGlyph, string selectedIconGlyph, bool hideDefault, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, unSelectedIconGlyph, selectedIconGlyph, category)
+    public SettingsPageInfo(string id, string name, string unSelectedIconExpression, string selectedIconExpression, bool hideDefault, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, unSelectedIconExpression, selectedIconExpression, category)
     {
         HideDefault = hideDefault;
     }

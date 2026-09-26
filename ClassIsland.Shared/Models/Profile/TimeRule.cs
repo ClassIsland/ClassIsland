@@ -23,6 +23,48 @@ public partial class TimeRule : ObservableRecipient
     [JsonIgnore]
     public string TypeString => Type.ToString();
 
+    /// <summary>
+    /// 是否限制启用时间范围
+    /// </summary>
+    [ObservableProperty] private bool _restrictsEnableRange = false;
+
+    // 能不能早日把 dnf 目标 drop 掉😭熬比版本毁我一生
+    /// <summary>
+    /// 限制启用时间起始日期
+    /// </summary>
+#if NET6_0_OR_GREATER
+    [ObservableProperty] private DateOnly _rangeStart = DateOnly.FromDateTime(DateTime.Today);
+#else
+    [ObservableProperty] private string _rangeStart = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+#endif
+
+    /// <summary>
+    /// 限制启用时间结束日期
+    /// </summary>
+#if NET6_0_OR_GREATER
+    [ObservableProperty] private DateOnly _rangeEnd = DateOnly.FromDateTime(DateTime.Today);
+#else
+    [ObservableProperty] private string _rangeEnd = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+#endif
+
+#if NET6_0_OR_GREATER
+    partial void OnRangeStartChanged(DateOnly value)
+    {
+        if (RangeEnd < value)
+        {
+            RangeEnd = value;
+        }
+    }
+
+    partial void OnRangeEndChanged(DateOnly value)
+    {
+        if (RangeStart > value)
+        {
+            RangeStart = value;
+        }
+    }
+#endif
+
     #region Weekly
 
     /// <summary>

@@ -62,6 +62,22 @@ public static class MainWindowCustomizableNodeHelper
         {
             control.ClearValue(MainWindowStylesAssist.BackgroundOpacityProperty);
         }
+        
+        switch (settings.BackgroundMaterialOverrideMode)
+        {
+            case 1:
+                control.SetValue(MainWindowStylesAssist.IsBackgroundMaterialEnabledProperty, false);
+                control.SetValue(MainWindowStylesAssist.BackgroundMaterialTypeProperty, settings.BackgroundMaterialType);
+                break;
+            case 2:
+                control.SetValue(MainWindowStylesAssist.IsBackgroundMaterialEnabledProperty, true);
+                control.SetValue(MainWindowStylesAssist.BackgroundMaterialTypeProperty, settings.BackgroundMaterialType);
+                break;
+            default:
+                control.ClearValue(MainWindowStylesAssist.IsBackgroundMaterialEnabledProperty);
+                control.ClearValue(MainWindowStylesAssist.BackgroundMaterialTypeProperty);
+                break;
+        }
 
         ControlColorHelper.SetControlForegroundColor(control, settings.ForegroundColor, 
             settings.IsCustomForegroundColorEnabled);

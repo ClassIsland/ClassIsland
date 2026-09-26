@@ -1,5 +1,8 @@
 ﻿namespace ClassIsland.Core.Attributes;
 
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
+
 /// <summary>
 /// 代表提醒渠道信息
 /// </summary>
@@ -13,9 +16,10 @@ public class NotificationChannelInfo(string guid, string name, string descriptio
     public Guid Guid { get; } = Guid.Parse(guid);
 
     /// <summary>
-    /// 图表类型
+    /// 渠道图标
     /// </summary>
-    public string IconGlyph { get; } = "\ue02a";
+    public FAIconSource? IconSource { get; } =
+        IconExpressionHelper.TryParseOrNull("\ue02a");
 
     /// <summary>
     /// 渠道名称
@@ -40,9 +44,9 @@ public class NotificationChannelInfo(string guid, string name, string descriptio
     /// <summary>
     /// 初始化一个 <see cref="NotificationChannelInfo"/> 实例
     /// </summary>
-    public NotificationChannelInfo(string guid, string name, string iconGlyph, string description = "", Type? settingsControlType = null) : this(guid, name,
+    public NotificationChannelInfo(string guid, string name, string iconExpression, string description = "", Type? settingsControlType = null) : this(guid, name,
         description, settingsControlType)
     {
-        IconGlyph = iconGlyph;
+        IconSource = IconExpressionHelper.TryParseOrNull(iconExpression);
     }
 }

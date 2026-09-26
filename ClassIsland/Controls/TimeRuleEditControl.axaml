@@ -45,11 +45,18 @@
             </TabStripItem>
         </TabStrip>
         
-        <ci:ReusableTabControl 
+        <ci:ReusableTabControl
             Padding="0"
             Margin="0 4 0 0"
-            SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.Type, Converter={x:Static ci:EnumToIntConverter.Instance}}">
-            <TabItem IsVisible="False">
+            SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.Type, Mode=OneWay, Converter={x:Static ci:EnumToIntConverter.Instance}}">
+            <ci:ReusableTabControl.Styles>
+                <Style Selector="TabControl /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="Height" Value="0"/>
+                    <Setter Property="IsHitTestVisible" Value="False"/>
+                    <Setter Property="ClipToBounds" Value="True"/>
+                </Style>
+            </ci:ReusableTabControl.Styles>
+            <TabItem Header="">
                 <StackPanel Spacing="6">
                     <StackPanel Orientation="Horizontal" Classes="items-valign-center"
                                 x:Name="StackPanelWeekDivSettings"
@@ -83,7 +90,7 @@
                     </ListBox>
                 </StackPanel>
             </TabItem>
-            <TabItem IsVisible="False">
+            <TabItem Header="">
                 <StackPanel Spacing="2" >
                     <TextBlock Text="当今天是以下任意日期："/>
                     <ListBox ItemsSource="{Binding $parent[controls:TimeRuleEditControl].TimeRule.EnableDates}">
@@ -140,7 +147,7 @@
                     </Button>
                 </StackPanel>
             </TabItem>
-            <TabItem IsVisible="False">
+            <TabItem Header="">
                 <StackPanel Spacing="6">
                     <WrapPanel Classes="items-valign-center" ItemSpacing="4">
                         <TextBlock Text="从开学起，每"/>
@@ -161,6 +168,22 @@
             </TabItem>
         </ci:ReusableTabControl>
        
-        
+        <CheckBox Content="并且今天处于以下日期范围" IsChecked="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RestrictsEnableRange}"
+                  Margin="0 4 0 0"/>
+        <Grid IsVisible="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RestrictsEnableRange}"
+              ColumnDefinitions="Auto * Auto * Auto"
+              Classes="items-valign-center">
+            <TextBlock Text="[" Grid.Column="0" Margin="0 0 4 0"/>
+            <CalendarDatePicker Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                DisplayDateEnd="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeEnd, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"
+                                SelectedDate="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeStart, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"/>
+            <TextBlock Text="~" Grid.Column="2" Margin="8 0"/>
+            <CalendarDatePicker Grid.Column="3"
+                                HorizontalAlignment="Stretch"
+                                DisplayDateStart="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeStart, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"
+                                SelectedDate="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeEnd, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"/>
+            <TextBlock Text="]" Grid.Column="4" Margin="4 0 0 0"/>
+        </Grid>
     </StackPanel>
 </UserControl>

@@ -30,4 +30,9 @@ public class CityInfo
     /// Latitude 城市或地区的纬度。
     /// </summary>
     [JsonPropertyName("longitude")] public string Longitude { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Status 查询状态。
+    /// </summary>
+    [JsonPropertyName("status")] public int Status { get; set; } = -1;
 }

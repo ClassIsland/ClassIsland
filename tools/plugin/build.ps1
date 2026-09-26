@@ -37,7 +37,7 @@ catch {
 
 Write-Host "🔧 正在设置开发环境变量…" -ForegroundColor Cyan
 
-[Environment]::SetEnvironmentVariable("ClassIsland_DebugBinaryFile", [System.IO.Path]::GetFullPath("${classIslandRoot}\bin\Debug\net8.0-windows10.0.19041.0\ClassIsland.Desktop.exe"), 1)
-[Environment]::SetEnvironmentVariable("ClassIsland_DebugBinaryDirectory", [System.IO.Path]::GetFullPath("${classIslandRoot}/bin\Debug\net8.0-windows10.0.19041.0\"), 1)
+[Environment]::SetEnvironmentVariable("ClassIsland_DebugBinaryFile", [System.IO.Path]::GetFullPath("${classIslandRoot}\bin\Debug\net10.0-windows10.0.19041.0\ClassIsland.Desktop.exe"), 1)
+[Environment]::SetEnvironmentVariable("ClassIsland_DebugBinaryDirectory", [System.IO.Path]::GetFullPath("${classIslandRoot}/bin\Debug\net10.0-windows10.0.19041.0\"), 1)
 
 Write-Host "构建完成" -ForegroundColor Green

@@ -288,6 +288,42 @@ public class ObservableOrderedDictionary<TKey, TValue> :
             index));
     }
 
+    /// <summary>
+    /// Moves the item at the specified index to a new index.
+    /// </summary>
+    /// <param name="oldIndex">The zero-based index of the item to move.</param>
+    /// <param name="newIndex">The zero-based destination index.</param>
+    public void Move(int oldIndex, int newIndex)
+    {
+        if (oldIndex < 0 || oldIndex >= _items.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(oldIndex));
+        }
+
+        if (newIndex < 0 || newIndex >= _items.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(newIndex));
+        }
+
+        if (oldIndex == newIndex)
+        {
+            return;
+        }
+
+        var item = _items[oldIndex];
+        _items.RemoveAt(oldIndex);
+        _items.Insert(newIndex, item);
+
+        OnPropertyChanged(nameof(Keys));
+        OnPropertyChanged(nameof(Values));
+        OnPropertyChanged(IndexerName);
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(
+            NotifyCollectionChangedAction.Move,
+            item,
+            newIndex,
+            oldIndex));
+    }
+
     /// <inheritdoc/>
 #if NETCOREAPP
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)

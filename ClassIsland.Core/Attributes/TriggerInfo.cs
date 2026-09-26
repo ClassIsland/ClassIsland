@@ -1,13 +1,16 @@
 ﻿namespace ClassIsland.Core.Attributes;
 
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
+
 /// <summary>
 /// 自动化触发器信息。
 /// </summary>
 /// <param name="id">触发器 ID</param>
 /// <param name="name">触发器名称</param>
-/// <param name="iconGlyph">触发器图表类型</param>
+/// <param name="iconExpression">触发器图标表达式</param>
 [AttributeUsage(AttributeTargets.Class)]
-public class TriggerInfo(string id, string name, string iconGlyph="\uED55") : Attribute
+public class TriggerInfo(string id, string name, string iconExpression = "\uED55") : Attribute
 {
     /// <summary>
     /// 触发器 ID
@@ -20,9 +23,9 @@ public class TriggerInfo(string id, string name, string iconGlyph="\uED55") : At
     public string Name { get; } = name;
 
     /// <summary>
-    /// 触发器图标类型
+    /// 触发器图标
     /// </summary>
-    public string IconGlyph { get; } = iconGlyph;
+    public FAIconSource? IconSource { get; } = IconExpressionHelper.TryParseOrNull(iconExpression);
 
     /// <summary>
     /// 触发器类型

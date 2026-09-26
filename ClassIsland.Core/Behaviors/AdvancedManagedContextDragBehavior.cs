@@ -355,7 +355,7 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
         var properties = e.GetCurrentPoint(ao).Properties;
         if (properties.IsLeftButtonPressed && IsEnabled)
         {
-            if (e.Source is Control control && ao.DataContext == control.DataContext)
+            if (e.Source is Control control && Equals(ao.DataContext, control.DataContext))
             {
                 if ((control as ISelectable ?? control.Parent as ISelectable ?? control.FindLogicalAncestorOfType<ISelectable>())?.IsSelected ?? false)
                     e.Handled = true;

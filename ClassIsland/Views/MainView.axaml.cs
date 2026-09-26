@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -23,6 +24,7 @@ public partial class MainView : ViewBase
     public INotificationHostService NotificationHostService { get; }
     public ILessonsService LessonsService { get; }
     public ClassChangingWindow? ClassChangingWindow { get; set; }
+    private Window? _scheduleWeekHost;
     
 
     public MainView(IManagementService managementService,
@@ -35,6 +37,37 @@ public partial class MainView : ViewBase
         NotificationHostService = notificationHostService;
         LessonsService = lessonsService;
         InitializeComponent();
+        MainViewTabs.SelectionChanged += MainViewTabs_OnSelectionChanged;
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _scheduleWeekHost = TopLevel.GetTopLevel(this) as Window;
+        if (_scheduleWeekHost != null)
+            _scheduleWeekHost.Activated += ScheduleWeekHost_OnActivated;
+        RefreshScheduleWeekIfVisible();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        if (_scheduleWeekHost != null)
+            _scheduleWeekHost.Activated -= ScheduleWeekHost_OnActivated;
+        _scheduleWeekHost = null;
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void MainViewTabs_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => RefreshScheduleWeekIfVisible();
+
+    private void ScheduleWeekHost_OnActivated(object? sender, EventArgs e) => RefreshScheduleWeekIfVisible();
+
+    private void RefreshScheduleWeekIfVisible()
+    {
+        if (MainViewTabs.SelectedIndex != 1) return;
+
+        var today = DateOnly.FromDateTime(App.GetService<IExactTimeService>().GetCurrentLocalDateTime());
+        var weekStart = today.AddDays(-(((int)today.DayOfWeek + 6) % 7));
+        ScheduleWeekTest.WeekStart = weekStart;
     }
     
     
@@ -72,8 +105,9 @@ public partial class MainView : ViewBase
     
     private void MenuItemTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
-        App.GetService<ProfileSettingsWindow>().Open();
+        var window = App.GetService<ProfileSettingsWindow>();
+        window.OpenDrawer("TemporaryClassPlan");
+        window.Open();
     }
     
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
@@ -114,8 +148,9 @@ public partial class MainView : ViewBase
         }
         if (LessonsService.CurrentClassPlan == null) // 如果今天没有课程，则选择临时课表
         {
-            App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
-            App.GetService<ProfileSettingsWindow>().Open();
+            var window = App.GetService<ProfileSettingsWindow>();
+            window.OpenDrawer("TemporaryClassPlan");
+            window.Open();
             return;
         }
 

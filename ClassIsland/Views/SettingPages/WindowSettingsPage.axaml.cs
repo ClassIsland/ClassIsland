@@ -46,16 +46,12 @@ public partial class WindowSettingsPage : SettingsPageBase
 
         ViewModel = IAppHost.GetService<WindowSettingsViewModel>();
         DataContext = this;
-        
         _taskbarTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
         };
         _taskbarTimer.Tick += TaskbarTimer_Tick;
-        _taskbarTimer.Start();
         TaskbarTimer_Tick();
-        ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
-        _isSettingsSubscribed = true;
         ViewModel.Screens = new ObservableCollection<Screen>(AppBase.Current.MainWindow!.Screens.All);
     }   
 
@@ -86,7 +82,14 @@ public partial class WindowSettingsPage : SettingsPageBase
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        
+        if (_taskbarTimer == null || _isSettingsSubscribed)
+        {
+            return;
+        }
+
+        _taskbarTimer.Start();
+        ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        _isSettingsSubscribed = true;
     }
 
     private void Control_OnUnloaded(object? sender, RoutedEventArgs e)

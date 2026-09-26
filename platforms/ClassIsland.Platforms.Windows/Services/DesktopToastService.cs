@@ -20,6 +20,8 @@ namespace ClassIsland.Platform.Windows.Services;
 
 public class DesktopToastService : IDesktopToastService, IDisposable
 {
+    private static readonly HttpClient ImageHttpClient = new();
+
     private string AumId { get; }
 
     private Dictionary<string, Action> ActivationActions { get; } = new();
@@ -124,7 +126,7 @@ public class DesktopToastService : IDesktopToastService, IDisposable
                     return sourceUri;
                 case "avares":
                 {
-                    var stream = AssetLoader.Open(sourceUri);
+                    await using var stream = AssetLoader.Open(sourceUri);
                     var imagePath = Path.GetTempFileName();
                     await using var fileStream = File.Create(imagePath);
                     await stream.CopyToAsync(fileStream);
@@ -133,8 +135,7 @@ public class DesktopToastService : IDesktopToastService, IDisposable
                 case "http" or "https":
                 {
                     var imagePath = Path.GetTempFileName();
-                    var client = new HttpClient();
-                    var stream = await client.GetStreamAsync(sourceUri);
+                    await using var stream = await ImageHttpClient.GetStreamAsync(sourceUri);
                     await using var fileStream = File.Create(imagePath);
                     await stream.CopyToAsync(fileStream);
                     return new Uri(imagePath);

@@ -45,7 +45,7 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
-    private void MakeValidTimeLayoutItemsDirty()
+    internal void MakeValidTimeLayoutItemsDirty()
     {
         _isValidTimeLayoutItemsDirty = true;
         OnPropertyChanged(nameof(ValidTimeLayoutItems));

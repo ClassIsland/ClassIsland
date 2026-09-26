@@ -25,6 +25,12 @@ public interface IWeatherService : INotifyPropertyChanged
     /// </summary>
     Task QueryWeatherAsync();
     /// <summary>
+    /// 立刻查询天气并返回结果
+    /// </summary>
+    /// <returns>天气查询结果</returns>
+    Task<WeatherQueryResult> QueryWeatherWithResultAsync();
+
+    /// <summary>
     /// 根据天气代码获得天气名称
     /// </summary>
     /// <param name="code">天气代码</param>

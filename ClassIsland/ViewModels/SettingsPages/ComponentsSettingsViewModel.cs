@@ -45,6 +45,12 @@ public partial class ComponentsSettingsViewModel : ObservableRecipient
     public IReadOnlyList<ComponentInfo> ContainerComponents { get; } =
         ComponentRegistryService.Registered.Where(x => x.IsComponentContainer).ToList();
 
+    /// <summary>
+    /// 按来源分组，供"组件库"Tab 展示。
+    /// </summary>
+    public IReadOnlyList<ComponentGroup> GroupedComponents { get; } =
+        ComponentRegistryService.GetGroupedSortedComponents();
+
     /// <inheritdoc/>
     public ComponentsSettingsViewModel(IComponentsService componentsService, SettingsService settingsService)
     {

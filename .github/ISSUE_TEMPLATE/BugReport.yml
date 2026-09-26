@@ -13,7 +13,6 @@ body:
         > 重要：如果要提出**多个 Bug**，请为每一个 Bug 开一个单独的 issue。
         >
         > 如果您不知道如何有效、精准地表述，我们建议您先阅读《提问的智慧》（[链接](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)）。
-        
   - type: checkboxes
     id: checklist
     attributes:
@@ -26,7 +25,7 @@ body:
         - label: 我已知晓并同意，此处仅用于汇报程序中存在的问题（关于其他非程序本身的问题应当在 Discussion 板块提出）。
           required: true
   - type: markdown
-    attributes: 
+    attributes:
       value: |
         ### Bug 信息
 
@@ -35,7 +34,7 @@ body:
         > [!note]
         > 上传附件时**请优先使用 GitHub 的附件系统上传附件**，将需要上传的附件粘贴或拖动到撰写区域即可上传。多个文件可打包为 zip 格式后上传。**尽量避免使用需要登陆或安装客户端才能接收附件的网盘（如\*度网盘、\*克网盘、1\*3网盘等）上传附件**，以避免开发者因不具有对应网盘客户端或账户而延误问题诊断。
   - type: textarea
-    id: excepted
+    id: expected
     attributes:
       label: 期望的行为
       description: 详细的描述你期望发生的行为，突出与目前（可能不正确的）行为的不同。
@@ -76,9 +75,9 @@ body:
     id: diagnostics
     attributes:
       label: 诊断信息
-      description: | 
+      description: |
         在【应用设置】->【关于】->【查看诊断信息】中查看。请完整复制其中的诊断信息并粘贴到下面的文本输入框中，不要做任何更改。
-        ⚠️请始终填写此栏，无论您认为是否需要，否则您的问题将可能因无效被关闭。
+        ⚠️ 请务必填写此栏。无论您认为是否需要，缺少该信息的问题可能无法处理。
       render: plaintext
     validations:
       required: true

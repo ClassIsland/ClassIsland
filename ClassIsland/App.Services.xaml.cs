@@ -136,8 +136,8 @@ public partial class App
         // services.AddTransient<FeatureDebugWindow>();
         services.AddSingleton<TopmostEffectWindow>();
         services.AddSingleton<AppLogsWindow>();
-        services.AddSingleton<SettingsWindowNew>();
-        services.AddSingleton<ProfileSettingsWindow>();
+        services.AddTransientView<SettingsWindowNew>();
+        services.AddTransientView<ProfileSettingsWindow>();
         services.AddTransient<ClassPlanDetailsWindow>();
         if (!PlatformHelper.IsAppleMobile)
         {
@@ -308,6 +308,7 @@ public partial class App
         services.AddProfileTransferProvider<CsesImportProvider>("classisland.profileTransfer.import.cses", "从 CSES 导入", ProfileTransferProviderType.Import, "\ue6cb");
         services.AddProfileTransferProvider<ClassIsland1ImportProvider>("classisland.profileTransfer.import.legacyV1", "从 ClassIsland 1.x 导入", ProfileTransferProviderType.Import, "bitmap(avares://ClassIsland/Assets/AppLogo.png)");
         services.AddProfileTransferProvider<ClassWidgets1ImportProvider>("classisland.profileTransfer.import.classWidgets", "从 Class Widgets 1.2 导入", ProfileTransferProviderType.Import);
+        services.AddProfileTransferProvider<ClassWidgets2ImportProvider>("classisland.profileTransfer.import.classWidgets2", "从 Class Widgets 2 导入", ProfileTransferProviderType.Import);
         services.AddProfileTransferProvider("classisland.profileTransfer.export.cses", "导出到 CSES", ProfileTransferProviderType.Export, CsesExportHelper.CsesExportHandler, "\ue6cb");
         // Themes
         services.AddXamlTheme(new Uri("avares://ClassIsland/XamlThemes/ClassicTheme/Styles.axaml"), new ThemeManifest()

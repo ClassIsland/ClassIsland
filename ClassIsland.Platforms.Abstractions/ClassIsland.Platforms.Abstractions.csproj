@@ -13,7 +13,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
-<!--        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />-->
         <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     </ItemGroup>
     

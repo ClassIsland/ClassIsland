@@ -1,11 +1,14 @@
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
@@ -19,7 +22,7 @@ using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
-
+using ClassIsland.Models;
 
 namespace ClassIsland.Views;
 
@@ -79,6 +82,12 @@ public partial class ClassChangingWindow : ViewBase
     private void ButtonNext_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SlideIndex = 1;
+    }
+    
+    private void ButtonAdvancedClassChanging_OnClick(object sender, RoutedEventArgs e)
+    {
+        Dispatcher.UIThread.InvokeAsync(() =>{App.GetService<ProfileSettingsWindow>().Open(new Uri("classisland://app/profile/adjustment"));} );
+        Close();
     }
 
     private async void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
@@ -168,8 +177,9 @@ public partial class ClassChangingWindow : ViewBase
 
     private void ButtonTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
-        App.GetService<ProfileSettingsWindow>().Open();
+        var window = App.GetService<ProfileSettingsWindow>();
+        window.OpenDrawer("TemporaryClassPlan");
+        window.Open();
         Close();
     }
 

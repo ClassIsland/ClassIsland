@@ -7,6 +7,15 @@ namespace ClassIsland.Core.Controls;
 
 public partial class IconText : UserControl
 {
+    public static readonly StyledProperty<FAIconSource?> IconSourceProperty =
+        AvaloniaProperty.Register<IconText, FAIconSource?>(nameof(IconSource));
+
+    public FAIconSource? IconSource
+    {
+        get => GetValue(IconSourceProperty);
+        set => SetValue(IconSourceProperty, value);
+    }
+
     public static readonly StyledProperty<string?> GlyphProperty = AvaloniaProperty.Register<IconText, string?>(
         nameof(Glyph));
 

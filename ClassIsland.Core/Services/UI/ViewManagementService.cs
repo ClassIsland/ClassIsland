@@ -1,3 +1,6 @@
+using System.Collections.Concurrent;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.UI;
 using ClassIsland.Core.Enums.UI;
@@ -14,6 +17,38 @@ public class ViewManagementService
     /// 服务实例。
     /// </summary>
     public static ViewManagementService Instance { get; } = new();
+
+    private static ConcurrentDictionary<Type, ViewBase> LoadedViews { get; } = new();
+
+    internal T GetOrCreateTransientView<T>(IServiceProvider sp) where T : ViewBase
+    {
+        if (LoadedViews.TryGetValue(typeof(T), out var v1) && v1 is T v)
+        {
+            return v;
+        }
+
+        var view = ActivateNewView<T>(serviceProvider: sp);
+        view.Closed += ViewOnClosed;
+        LoadedViews.TryAdd(typeof(T), view);
+
+        return view;
+
+        void ViewOnClosed(object? sender, RoutedEventArgs e)
+        {
+            LoadedViews.Remove(typeof(T), out _);
+            view.Closed -= ViewOnClosed;
+
+            DispatcherTimer.RunOnce(() =>
+            {
+                var foreground = AppBase.Current.DesktopLifetime?.Windows.Any(x => x.IsActive) != false;
+                GC.Collect(
+                    GC.MaxGeneration,
+                    foreground ? GCCollectionMode.Forced : GCCollectionMode.Aggressive,
+                    blocking: !foreground,
+                    compacting: !foreground);
+            }, TimeSpan.FromSeconds(3.25), DispatcherPriority.ApplicationIdle);
+        }
+    }
 
     private ViewManagementService()
     {

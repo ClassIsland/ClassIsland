@@ -35,7 +35,7 @@
                     
                     <DataGrid Grid.Row="1"
                               Margin="0 2 0 0"
-                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
                               ItemsSource="{Binding WeekClassPlanRows, Mode=TwoWay}"
                               CanUserSortColumns="False"
                               CanUserReorderColumns="False"
@@ -75,7 +75,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn Width="*" MinWidth="100">
                                 <DataGridTemplateColumn.Header>
                                     <scheduleDataGrid:ScheduleDataGridColHeaderControl
                                         Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[0]}"
@@ -89,7 +89,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn Width="*" MinWidth="100">
                                 <DataGridTemplateColumn.Header>
                                     <scheduleDataGrid:ScheduleDataGridColHeaderControl
                                         Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[1]}"
@@ -103,7 +103,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn Width="*" MinWidth="100">
                                 <DataGridTemplateColumn.Header>
                                     <scheduleDataGrid:ScheduleDataGridColHeaderControl
                                         Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[2]}"
@@ -117,7 +117,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn Width="*" MinWidth="100">
                                 <DataGridTemplateColumn.Header>
                                     <scheduleDataGrid:ScheduleDataGridColHeaderControl
                                         Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[3]}"
@@ -131,7 +131,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn Width="*" MinWidth="100">
                                 <DataGridTemplateColumn.Header>
                                     <scheduleDataGrid:ScheduleDataGridColHeaderControl
                                         Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[4]}"
@@ -145,7 +145,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn Width="*" MinWidth="100">
                                 <DataGridTemplateColumn.Header>
                                     <scheduleDataGrid:ScheduleDataGridColHeaderControl
                                         Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[5]}"
@@ -159,7 +159,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn Width="*" MinWidth="100">
                                 <DataGridTemplateColumn.Header>
                                     <scheduleDataGrid:ScheduleDataGridColHeaderControl
                                         Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[6]}"

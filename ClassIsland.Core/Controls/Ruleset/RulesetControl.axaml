@@ -197,7 +197,7 @@
                                                       ItemsSource="{x:Static services:IRulesetService.Rules}">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <controls:IconText Glyph="{Binding Value.IconGlyph}"
+                                                        <controls:IconText IconSource="{Binding Value.IconSource}"
                                                                            Text="{Binding Value.Name}" />
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>

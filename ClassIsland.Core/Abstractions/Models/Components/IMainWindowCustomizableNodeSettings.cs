@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Avalonia.Media;
+using ClassIsland.Core.Enums.UI;
 
 namespace ClassIsland.Core.Abstractions.Models.Components;
 
@@ -77,4 +78,14 @@ public interface IMainWindowCustomizableNodeSettings : INotifyPropertyChanged
     /// 元素不透明度
     /// </summary>
     public double Opacity { get; set; }
+    
+    /// <summary>
+    /// 背景材质覆盖模式
+    /// </summary>
+    public int BackgroundMaterialOverrideMode { get; set; }
+    
+    /// <summary>
+    /// 覆盖的背景材质类型。
+    /// </summary>
+    public MainWindowBackgroundMaterialType BackgroundMaterialType { get; set; }
 }

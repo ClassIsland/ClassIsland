@@ -3,14 +3,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
              x:Class="ClassIsland.Core.Controls.IconText">
     <StackPanel Orientation="Horizontal" Spacing="{Binding $parent[ci:IconText].Spacing, Mode=OneWay}">
+        <fa:FAIconSourceElement IconSource="{Binding $parent[ci:IconText].IconSource, Mode=OneWay}"
+                                VerticalAlignment="Center"
+                                Width="16"
+                                Height="16"
+                                TextElement.FontSize="16"
+                                Classes="repair-fontsize"
+                                IsVisible="{Binding $parent[ci:IconText].IconSource, Converter={x:Static ObjectConverters.IsNotNull}}" />
         <ci:FluentIcon Glyph="{Binding $parent[ci:IconText].Glyph, Mode=OneWay}"
                        VerticalAlignment="Center"
                        FontSize="16">
             <ci:FluentIcon.IsVisible>
-                <Binding Path="$parent[ci:IconText].Glyph" Converter="{x:Static StringConverters.IsNotNullOrEmpty}" />
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="$parent[ci:IconText].Glyph" Converter="{x:Static StringConverters.IsNotNullOrEmpty}" />
+                    <Binding Path="$parent[ci:IconText].IconSource" Converter="{x:Static ObjectConverters.IsNull}" />
+                </MultiBinding>
             </ci:FluentIcon.IsVisible>
         </ci:FluentIcon>
         <TextBlock Text="{Binding $parent[ci:IconText].Text}"

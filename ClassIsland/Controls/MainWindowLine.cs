@@ -298,7 +298,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     public static FuncValueConverter<double, Thickness> DoubleToThicknessBottomConverter { get; } =
         new(x => new Thickness(0, 0, 0, x));
 
-    private ObservableCollection<ComponentSettings>? _prevSubscription;
+    private MainWindowLineSettings? _subscribedSettings;
+    private ObservableCollection<ComponentSettings>? _subscribedChildren;
 
     public MainWindowLine()
     {
@@ -319,19 +320,14 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         this.GetObservable(SettingsProperty)
             .Subscribe(_ =>
             {
-                if (Settings == null)
-                {
-                    return;
-                }
-
-                if (_prevSubscription != null)
-                {
-                    _prevSubscription.CollectionChanged -= ChildrenOnCollectionChanged;
-                }
-
-                _prevSubscription = Settings.Children;
-                Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
+                UpdateSettingsSubscriptions(Settings);
                 UpdateHiddenState();
+                if (Settings == null && IsLoaded)
+                {
+                    ClearValue(MainWindowStylesAssist.IsBackgroundMaterialEnabledProperty);
+                    ClearValue(MainWindowStylesAssist.BackgroundMaterialTypeProperty);
+                }
+                UpdateStyles();
             });
         this.GetObservable(IsVisibleProperty).Subscribe(_ =>
         {
@@ -405,6 +401,39 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         UpdateHiddenState();
     }
 
+    private void UpdateSettingsSubscriptions(MainWindowLineSettings? settings)
+    {
+        if (_subscribedSettings != null)
+        {
+            _subscribedSettings.PropertyChanged -= MySettingsOnPropertyChanged;
+            _subscribedSettings = null;
+        }
+        UpdateChildrenSubscription(null);
+
+        if (!IsLoaded || settings == null)
+        {
+            return;
+        }
+
+        _subscribedSettings = settings;
+        _subscribedSettings.PropertyChanged += MySettingsOnPropertyChanged;
+        UpdateChildrenSubscription(_subscribedSettings.Children);
+    }
+
+    private void UpdateChildrenSubscription(ObservableCollection<ComponentSettings>? children)
+    {
+        if (_subscribedChildren != null)
+        {
+            _subscribedChildren.CollectionChanged -= ChildrenOnCollectionChanged;
+        }
+
+        _subscribedChildren = children;
+        if (_subscribedChildren != null)
+        {
+            _subscribedChildren.CollectionChanged += ChildrenOnCollectionChanged;
+        }
+    }
+
     private void UpdateHiddenState()
     {
         IsAllComponentsHid = Settings?.Children
@@ -436,15 +465,10 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         MainWindow.RawInputEvent += MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateSettingsSubscriptions(Settings);
         UpdateHiddenState();
         UpdateFadeStatus();
         NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : LineNumber);
-        if (Settings != null)
-        {
-            Settings.PropertyChanged -= MySettingsOnPropertyChanged;
-            Settings.PropertyChanged += MySettingsOnPropertyChanged;
-        }
-        
         UpdateStyles();
         _isLoadCompleted = true;
     }
@@ -457,10 +481,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         MainWindow.MainWindowAnimationEvent -= MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
         NotificationHostService.UnregisterNotificationConsumer(this);
-        if (Settings != null)
-        {
-            Settings.PropertyChanged -= MySettingsOnPropertyChanged;
-        }
+        UpdateSettingsSubscriptions(null);
         foreach (var ticket in _notificationPlayingTickets)
         {
             ticket.Cancel();
@@ -472,6 +493,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     
     private void MySettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(MainWindowLineSettings.Children) && _subscribedSettings != null)
+        {
+            UpdateChildrenSubscription(_subscribedSettings.Children);
+            UpdateHiddenState();
+        }
         UpdateStyles();
     }
 

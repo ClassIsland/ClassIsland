@@ -8,6 +8,7 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
              xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
+             xmlns:icons="clr-namespace:ClassIsland.Core.Icons;assembly=ClassIsland.Core"
              xmlns:attributes="clr-namespace:ClassIsland.Core.Attributes;assembly=ClassIsland.Core"
              xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -145,69 +146,83 @@
         </ScrollViewer>
         <Grid x:Key="ComponentsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}"
               RowDefinitions="* Auto Auto">
-            <ListBox ItemsSource="{Binding ViewModel.ComponentInfos}"
-                     SelectedItem="{Binding ViewModel.SelectedComponentInfo}"
-                     Classes="drag-source">
-                <ListBox.Styles>
-                    <Style Selector="ListBox.drag-source ListBoxItem">
-                        <Setter Property="Interaction.Behaviors">
-                            <BehaviorCollectionTemplate>
-                                <BehaviorCollection>
-                                    <ci:AdvancedManagedContextDragBehavior 
-                                        PreviewOpacity="0.5"
-                                        HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
-                                    </ci:AdvancedManagedContextDragBehavior>
-                                </BehaviorCollection>
-                            </BehaviorCollectionTemplate>
-                        </Setter>
-                    </Style>
-                </ListBox.Styles>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
-                              Margin="0 8" Height="50">
-                            <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                               Width="24"/>
-                            <controls:FAIconSourceElement Grid.Column="1" Grid.Row="0"
-                                                        Grid.RowSpan="2"
-                                                        Width="32" Height="32"
-                                                        VerticalAlignment="Center"
-                                                        ClipToBounds="False"
-                                                        TextElement.FontSize="32"
-                                                        Classes="repair-fontsize"
-                                                        Margin="0 -4 4 0"
-                                                        IconSource="{Binding IconSource}"/>
-                            <TextBlock Grid.Row="0" Grid.Column="2"
-                                       Text="{Binding Name}"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Top"
-                                       Margin="0 0 0 1"
-                                       TextTrimming="CharacterEllipsis"/>
-                            <TextBlock Grid.Row="1" Grid.Column="2"
-                                       Text="{Binding Description}"
-                                       Opacity="0.75"
-                                       FontSize="12"
-                                       FontWeight="Regular"
-                                       TextWrapping="Wrap"
-                                       HorizontalAlignment="Stretch"
-                                       TextAlignment="Left"
-                                       TextTrimming="CharacterEllipsis"/>
-                            
-                        </Grid>
+            <ScrollViewer Grid.Row="0" Padding="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding ViewModel.ComponentGroups}">
+                    <ItemsControl.Styles>
+                        <Style Selector="ListBox.drag-source ListBoxItem">
+                            <Setter Property="Interaction.Behaviors">
+                                <BehaviorCollectionTemplate>
+                                    <BehaviorCollection>
+                                        <ci:AdvancedManagedContextDragBehavior
+                                            PreviewOpacity="0.5"
+                                            HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
+                                        </ci:AdvancedManagedContextDragBehavior>
+                                    </BehaviorCollection>
+                                </BehaviorCollectionTemplate>
+                            </Setter>
+                        </Style>
+                    </ItemsControl.Styles>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="components:ComponentGroup">
+                            <StackPanel Margin="0 0 0 12">
+                                <TextBlock Text="{Binding GroupName}"
+                                           FontWeight="SemiBold"
+                                           Margin="0 0 0 4"/>
+                                <ListBox ItemsSource="{Binding Components}"
+                                         SelectedItem="{Binding $parent[editMode:EditModeView].ViewModel.SelectedComponentInfo, Mode=OneWayToSource}"
+                                         Classes="drag-source"
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
+                                              Margin="0 8" Height="50">
+                                            <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                                               Width="24"/>
+                                            <controls:FAIconSourceElement Grid.Column="1" Grid.Row="0"
+                                                                        Grid.RowSpan="2"
+                                                                        Width="32" Height="32"
+                                                                        VerticalAlignment="Center"
+                                                                        ClipToBounds="False"
+                                                                        TextElement.FontSize="32"
+                                                                        Classes="repair-fontsize"
+                                                                        Margin="0 -4 4 0"
+                                                                        IconSource="{Binding IconSource}"/>
+                                            <TextBlock Grid.Row="0" Grid.Column="2"
+                                                       Text="{Binding Name}"
+                                                       HorizontalAlignment="Left"
+                                                       VerticalAlignment="Top"
+                                                       Margin="0 0 0 1"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="2"
+                                                       Text="{Binding Description}"
+                                                       Opacity="0.75"
+                                                       FontSize="12"
+                                                       FontWeight="Regular"
+                                                       TextWrapping="Wrap"
+                                                       HorizontalAlignment="Stretch"
+                                                       TextAlignment="Left"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel>
+                                            <Interaction.Behaviors>
+                                                <BehaviorCollection>
+                                                    <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
+                                                </BehaviorCollection>
+                                            </Interaction.Behaviors>
+                                        </WrapPanel>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                        </StackPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel>
-                            <Interaction.Behaviors>
-                                <BehaviorCollection>
-                                    <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
-                                </BehaviorCollection>
-                            </Interaction.Behaviors>
-                        </WrapPanel>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
             <Separator Grid.Row="1" Margin="0 4" />
             <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Text="将组件拖动到主界面上即可添加组件。" Classes="l-instructive"
@@ -331,6 +346,34 @@
                                     IsSnapToTickEnabled="True" />
                         </StackPanel>
                     </controls:FASettingsExpander.Footer>
+                </controls:FASettingsExpander>
+
+                <controls:FASettingsExpander Header="自定义背景效果"
+                                             Description="自定义主界面的背景效果，仅在较新版本的 Windows 上可用，可能会产生额外性能开销。">
+                    <controls:FASettingsExpander.IconSource>
+                        <ci:FluentIconSource Glyph="{x:Static icons:FluentIcons.BlurRegular}" />
+                    </controls:FASettingsExpander.IconSource>
+                    <controls:FASettingsExpander.IsVisible>
+                        <OnPlatform Default="False">
+                            <On Options="Windows" Content="True" />
+                        </OnPlatform>
+                    </controls:FASettingsExpander.IsVisible>
+                    <controls:FASettingsExpander.Footer>
+                        <ComboBox SelectedIndex="{Binding BackgroundMaterialOverrideMode}">
+                            <ComboBoxItem>继承</ComboBoxItem>
+                            <ComboBoxItem>禁用</ComboBoxItem>
+                            <ComboBoxItem>启用</ComboBoxItem>
+                        </ComboBox>
+                    </controls:FASettingsExpander.Footer>
+                    <controls:FASettingsExpanderItem Content="材质类型">
+                        <controls:FASettingsExpanderItem.Footer>
+                            <ComboBox SelectedIndex="{Binding BackgroundMaterialType, Mode=TwoWay, Converter={x:Static ci:EnumToIntConverter.Instance}}">
+                                <ComboBoxItem>亚克力</ComboBoxItem>
+                                <ComboBoxItem>类液态玻璃</ComboBoxItem>
+                                <ComboBoxItem>云母</ComboBoxItem>
+                            </ComboBox>
+                        </controls:FASettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem>
                 </controls:FASettingsExpander>
                 
                 <!--自定义背景颜色-->

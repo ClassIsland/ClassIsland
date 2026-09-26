@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Text.Json.Serialization;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CsesSharp.Models;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -19,7 +19,6 @@ public class Profile : ObservableRecipient
     private ObservableOrderedDictionary<Guid, Subject> _subjects = new();
     private bool _isOverlayClassPlanEnabled = false;
     private Guid? _overlayClassPlanId = null;
-    private ObservableCollection<Subject> _editingSubjects = new();
     private Guid? _tempClassPlanId;
     private DateTime _tempClassPlanSetupTime = DateTime.Now;
     private ObservableOrderedDictionary<Guid, ClassPlanGroup> _classPlanGroups = new();
@@ -30,17 +29,15 @@ public class Profile : ObservableRecipient
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
     private Guid _id = Guid.NewGuid();
     private ObservableOrderedDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
+    private ObservableOrderedDictionary<Guid, ScheduleItem> _scheduleV2Items = new();
+    private ScheduleType _scheduleType = ScheduleType.Classic;
+    private List<ProfileMigration> _migrations = [];
 
     /// <summary>
     /// 实例化对象
     /// </summary>
     public Profile()
     {
-        Subjects.CollectionChanged += SubjectsOnCollectionChanged;
-        PropertyChanging += OnPropertyChanging;
-        PropertyChanged += OnPropertyChanged;
-        UpdateEditingSubjects();
-
         // 初始化课表群
         if (!ClassPlanGroups.ContainsKey(ClassPlanGroup.DefaultGroupGuid))
         {
@@ -56,23 +53,6 @@ public class Profile : ObservableRecipient
                 Name = "全局课表群",
                 IsGlobal = true
             });
-        }
-    }
-
-    private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
-    {
-        if (e.PropertyName == nameof(Subjects))
-        {
-            Subjects.CollectionChanged -= SubjectsOnCollectionChanged;
-        }
-    }
-
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(Subjects))
-        {
-            Subjects.CollectionChanged += SubjectsOnCollectionChanged;
-            UpdateEditingSubjects();
         }
     }
 
@@ -134,101 +114,6 @@ public class Profile : ObservableRecipient
             ClassPlans.Remove(i.Key);
         }
         ClassPlanGroups.Remove(id);
-    }
-
-    private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e=null)
-    {
-        if (e != null)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-        else
-        {
-            EditingSubjects.CollectionChanged -= EditingSubjectsOnCollectionChanged;
-            EditingSubjects = new ObservableCollection<Subject>(from i in Subjects select i.Value);
-            EditingSubjects.CollectionChanged += EditingSubjectsOnCollectionChanged;
-        }
-    }
-
-    private void EditingSubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        Console.WriteLine($"{e.Action} {e.NewItems} {e.OldItems}");
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                if (e.NewItems == null)
-                {
-                    break;
-                }
-                foreach (var i in e.NewItems)
-                {
-                    Subjects[Guid.NewGuid()] = (Subject)i;
-                }
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                if (e.OldItems == null)
-                {
-                    break;
-                }
-                foreach (var i in e.OldItems)
-                {
-                    foreach (var k in Subjects.Where(k => k.Value == i))
-                    {
-                        Subjects.Remove(k.Key);
-                        break;
-                    }
-                }
-
-                //Subjects = ConfigureFileHelper.CopyObject(Subjects);
-                break;
-            case NotifyCollectionChangedAction.Replace:
-                break;
-            case NotifyCollectionChangedAction.Move:
-                if (e.OldItems is not { Count: > 0 }
-                    || e.OldItems[0] is not Subject subject
-                    || e.NewStartingIndex < 0)
-                {
-                    break;
-                }
-
-                var subjectEntry = Subjects.FirstOrDefault(i => ReferenceEquals(i.Value, subject));
-                if (!ReferenceEquals(subjectEntry.Value, subject))
-                {
-                    break;
-                }
-
-                Subjects.Remove(subjectEntry.Key);
-                Subjects.Insert(e.NewStartingIndex, subjectEntry);
-                break;
-            case NotifyCollectionChangedAction.Reset:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-
-        foreach (var i in Subjects)
-        {
-            Console.WriteLine($"{i.Key} {i.Value.Name}" );
-        }
-    }
-
-    private void SubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        UpdateEditingSubjects(e);
     }
 
     internal void NotifyPropertyChanged(string propertyName)
@@ -307,20 +192,9 @@ public class Profile : ObservableRecipient
         }
     }
 
-    /// <summary>
-    /// 正在在档案编辑器编辑的科目信息
-    /// </summary>
     [JsonIgnore]
-    public ObservableCollection<Subject> EditingSubjects
-    {
-        get => _editingSubjects;
-        set
-        {
-            if (Equals(value, _editingSubjects)) return;
-            _editingSubjects = value;
-            OnPropertyChanged();
-        }
-    }
+    [Obsolete("请使用 Subjects。", false)]
+    public ObservableCollection<Subject> EditingSubjects { get; set; } = new();
 
     /// <summary>
     /// 是否启用临时层课表
@@ -487,6 +361,48 @@ public class Profile : ObservableRecipient
         {
             if (Equals(value, _orderedSchedules)) return;
             _orderedSchedules = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 课程安排
+    /// </summary>
+    public ObservableOrderedDictionary<Guid, ScheduleItem> ScheduleItems
+    {
+        get => _scheduleV2Items;
+        set
+        {
+            if (Equals(value, _scheduleV2Items)) return;
+            _scheduleV2Items = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 课程模式
+    /// </summary>
+    public ScheduleType ScheduleType
+    {
+        get => _scheduleType;
+        set
+        {
+            if (value == _scheduleType) return;
+            _scheduleType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 档案已应用的迁移。
+    /// </summary>
+    public List<ProfileMigration> Migrations
+    {
+        get => _migrations;
+        set
+        {
+            if (Equals(value, _migrations)) return;
+            _migrations = value;
             OnPropertyChanged();
         }
     }

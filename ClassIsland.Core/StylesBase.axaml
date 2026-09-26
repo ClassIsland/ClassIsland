@@ -33,6 +33,7 @@
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
     <StyleInclude Source="/Controls/Empty.axaml"/>
     <StyleInclude Source="/Controls/Shimmer.axaml"/>
+    <StyleInclude Source="/Controls/ExpressiveLoadingIndicator.axaml" />
     <StyleInclude Source="/Controls/AnimatedIconButton.axaml" />
     <StyleInclude Source="/Themes/StackPanelIntroAnimation.axaml"/>
     <StyleInclude Source="/Themes/RichTextStyles.axaml"/>
@@ -48,6 +49,8 @@
     <StyleInclude Source="/Themes/TabControlWithBarrier.axaml"/>
     <StyleInclude Source="/Themes/MyTeachingTipStyles.axaml"/>
     <StyleInclude Source="/Themes/PlatformFeedbackStyles.axaml"/>
+    <StyleInclude Source="/Themes/MyNavigationPageStyles.axaml"/>
+    <StyleInclude Source="/Themes/PopupBaseStyles.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
     <StyleInclude Source="/Controls/DrawerHost.axaml"/>
     <StyleInclude Source="/Controls/TouchDragThumb.axaml"/>
@@ -55,6 +58,7 @@
     <StyleInclude Source="/Controls/StickerControl.axaml"/>
     <StyleInclude Source="/Controls/StickyScrollViewer.axaml"/>
     <StyleInclude Source="/Controls/VerticalDrawer.axaml"/>
+    <StyleInclude Source="/Controls/Lazy.axaml"/>
     <StyleInclude Source="/Controls/IconSources/AdvacnedImageIcon.axaml"/>
     
     <themes:NativeMenuIconsStyle/>
@@ -295,11 +299,14 @@
     </Style>
     
     <Style Selector="Border.popup-bg">
-        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="12"/>
         <Setter Property="CornerRadius" Value="6"/>
+        
+        <Style Selector="^:not(.no-bg)">
+            <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"/>
+        </Style>
     </Style>
     
     <Style Selector="controls|FATeachingTip /template/ ContentPresenter#IconPresenter">
@@ -356,5 +363,15 @@
         <Setter Property="Background" Value="{x:Null}"/>
     </Style>
     
+    <Style Selector=":is(TabControl)">
+        <Setter Property="PageTransition">
+            <ci:CompositionPageTransition Duration="0:0:0.25"
+                                           SlideInEasing="0,0 0,1"
+                                           SlideOutEasing="0,0 0,1"
+                                           FadeInEasing="0,0 0,1"
+                                           FadeOutEasing="0,0 0,1"/>
+        </Setter>
+    </Style>
+
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

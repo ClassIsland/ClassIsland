@@ -37,22 +37,30 @@
         </Setter>
     </Style>
     
-    <Style Selector="Border.line-background">
+    <Style Selector="ci|MainWindowBackgroundMaterialControl.line-background">
+        <Style.Resources>
+            <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter"/>
+        </Style.Resources>
+        <Setter Property="Opacity" Value="{Binding $self.EffectiveBackgroundOpacity, Mode=OneWay}"/>
+        <Setter Property="FallbackBrush" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"/>
+        <Setter Property="CornerRadius" Value="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}"/>
+    </Style>
+    <Style Selector="ci|MainWindowBackgroundMaterialControl[(ci|MainWindowStylesAssist.IsCustomBackgroundColorEnabled)=True].line-background">
+        <Style.Resources>
+            <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
+        </Style.Resources>
+        <Setter Property="FallbackBrush" Value="{Binding $self.(ci:MainWindowStylesAssist.BackgroundColor), Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+    </Style>
+    <Style Selector="Border.line-background-frame">
         <Style.Resources>
             <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter"/>
         </Style.Resources>
         <Setter Property="Opacity" Value="{Binding $self.(ci:MainWindowStylesAssist.BackgroundOpacity), Mode=OneWay}"/>
-        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0} "/>
         <Setter Property="BoxShadow" Value="0 4 8 2 #48000000"/>
-    </Style>
-    <Style Selector="controls|MainWindowLine Border[(ci|MainWindowStylesAssist.IsCustomBackgroundColorEnabled)=True].line-background">
-        <Style.Resources>
-            <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
-        </Style.Resources>
-        <Setter Property="Background" Value="{Binding $self.(ci:MainWindowStylesAssist.BackgroundColor), Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
     </Style>
     
     <Style Selector="controls|MainWindowLine">
@@ -76,12 +84,13 @@
                     <!-- Background -->
                     <Border x:Name="BackgroundBorderWrapper"
                             IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.IsIslandSeperated)}">
-                        <Border x:Name="BackgroundBorder"
-                                Classes="docking line-background"
-                                Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                                Height="{DynamicResource IslandContainerHeight}">
-                            
-                        </Border>
+                        <Grid x:Name="BackgroundBorder"
+                              Classes="docking"
+                              Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                              Height="{DynamicResource IslandContainerHeight}">
+                            <ci:MainWindowBackgroundMaterialControl Classes="line-background"/>
+                            <Border Classes="line-background-frame" IsHitTestVisible="False"/>
+                        </Grid>
                     </Border>
                     <Border x:Name="BackgroundBorderOverlayMask"
                             Classes="docking primaryColorZone"
@@ -115,10 +124,13 @@
                                 <Grid x:Name="GridOverlay"
                                       ClipToBounds="False"
                                       Opacity="0">
-                                    <Border
+                                    <ci:MainWindowBackgroundMaterialControl
                                         Classes.line-background="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"
                                         IsHitTestVisible="False"
-                                        IsVisible="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}" />
+                                        IsVisible="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"/>
+                                    <Border Classes.line-background-frame="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"
+                                            IsHitTestVisible="False"
+                                            IsVisible="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"/>
                                     <Border ClipToBounds="True"
                                             IsHitTestVisible="False"
                                             CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0} ">
@@ -207,11 +219,14 @@
                     HorizontalAlignment="Stretch">
                     
                     <!-- Background -->
-                    <Border x:Name="BackgroundBorder"
-                            IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"
-                            Classes="docking line-background"
-                            Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                            Height="{DynamicResource IslandContainerHeight}" />
+                    <Grid x:Name="BackgroundBorder"
+                          IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"
+                          Classes="docking"
+                          Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                          Height="{DynamicResource IslandContainerHeight}">
+                        <ci:MainWindowBackgroundMaterialControl Classes="line-background"/>
+                        <Border Classes="line-background-frame" IsHitTestVisible="False"/>
+                    </Grid>
                     <Grid x:Name="ContentClipBorder" Classes="clip-host">
                         <Panel Classes="animated-resize" ClipToBounds="False">
                             <Grid x:Name="PART_GridWrapper" ClipToBounds="False"
@@ -246,7 +261,8 @@
             <Setter Property="ContentTemplate">
                 <DataTemplate>
                     <Panel Margin="-2 0">
-                        <Border Classes="line-background"/>
+                        <ci:MainWindowBackgroundMaterialControl Classes="line-background"/>
+                        <Border Classes="line-background-frame" IsHitTestVisible="False"/>
                         <Border ClipToBounds="True"
                                 MinWidth="40"
                                 CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}">

@@ -41,8 +41,9 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.8.0" />
+    <PackageReference Include="CompositionMaterial.Avalonia" Version="1.0.0" />
     <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="$(AvaloniaVersion)" />
-    <PackageReference Condition="'$(Configuration)'=='Debug'" Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
+    <PackageReference Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'" Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
     <PackageReference Include="ClassIsland.Markdown.Avalonia" Version="12.0.0" />
     <PackageReference Include="Lib.Harmony.Thin" Version="2.4.2" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
@@ -66,9 +67,8 @@
     <PackageReference Include="SoundFlow" Version="1.2.1.*" />
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Controls.ColorPicker" Version="$(AvaloniaVersion)" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-<!--    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />-->
     <PackageReference Include="FluentAvaloniaUI" Version="3.0.0" />
     <PackageReference Include="Avalonia.Labs.CommandManager" Version="12.0.2" />
   </ItemGroup>

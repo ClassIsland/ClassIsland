@@ -28,6 +28,9 @@ namespace ClassIsland.ViewModels;
 
 public partial class ProfileSettingsViewModel : ObservableRecipient
 {
+    private readonly List<IDisposable> _externalSubscriptions = [];
+    private bool _resourcesReleased;
+
     public IProfileService ProfileService { get; }
     public IManagementService ManagementService { get; }
     public SettingsService SettingsService { get; }
@@ -40,15 +43,17 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
+    public SyncDictionaryList<Guid, Subject> ScheduleItemSubjects { get; }
 
     public SyncDictionaryList<Guid, ClassPlanGroup> ClassPlanGroups { get; }
     public SyncDictionaryList<DateTime, OrderedSchedule> OrderedSchedules { get; }
+    public SyncDictionaryList<Guid, ScheduleItem> ScheduleItems { get; }
 
     public IObservableList<KeyValuePair<Guid, ClassPlan>> TempClassPlanList { get; }
 
 
     [ObservableProperty] private ObservableCollection<object> _transferNavigationViewItems = [];
-    [ObservableProperty] private object _drawerContent = new();
+    [ObservableProperty] private object? _drawerContent = new();
     [ObservableProperty] private bool _isClassPlansEditing = false;
     [ObservableProperty] private ObservableCollection<string> _profiles = new();
     [ObservableProperty] private bool _isRestartSnackbarActive = false;
@@ -59,6 +64,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isOfflineEditor = false;
     [ObservableProperty] private TimeLayoutItem? _selectedTimePoint;
     [ObservableProperty] private double _timeLineScale = 3.0;
+    [ObservableProperty] private KeyValuePair<Guid, Subject>? _selectedSubjectKvp;
     [ObservableProperty] private Subject? _selectedSubject;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
@@ -93,12 +99,15 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private ToastMessage? _currentTimePointDeleteRevertToast;
     [ObservableProperty] private ToastMessage? _currentClassPlanEditDoneToast = null;
     [ObservableProperty] private KeyValuePair<Guid, TimeLayout>? _classPlanInfoSelectedTimeLayoutKvp;
+    [ObservableProperty] private KeyValuePair<Guid, ClassPlanGroup>? _classPlanInfoSelectedClassPlanGroupKvp;
     [ObservableProperty] private HashSet<string> _currentProfileBreakNames = [];
     [ObservableProperty] private ProfileTransferProviderControlBase? _transferProviderContent;
     [ObservableProperty] private bool _isProfileTransferInvoked;
     [ObservableProperty] private ProfileTransferProviderInfo? _selectedTransferInfo;
     [ObservableProperty] private bool _isTransferring;
     [ObservableProperty] private int _selectedClassIndex2 = -1;
+    [ObservableProperty] private KeyValuePair<Guid, ScheduleItem>? _selectedScheduleItemKvp;
+    [ObservableProperty] private ScheduleItem? _selectedScheduleItem;
     
     [ObservableProperty] private ReadOnlyObservableCollection<ClassPlansTreeNode> _groupedClassPlans;
     private readonly ObservableCollection<ClassPlansTreeNode> _groupedClassPlanNodes = [];
@@ -140,10 +149,15 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);
         Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
+        ScheduleItemSubjects = new SyncDictionaryList<Guid, Subject>(
+            ProfileService.Profile.Subjects,
+            Guid.NewGuid,
+            new KeyValuePair<Guid, Subject>(Guid.Empty, new Subject { Name = "未指定科目" }));
         ClassPlanGroups =
             new SyncDictionaryList<Guid, ClassPlanGroup>(ProfileService.Profile.ClassPlanGroups, Guid.NewGuid);
         OrderedSchedules =
             new SyncDictionaryList<DateTime, OrderedSchedule>(ProfileService.Profile.OrderedSchedules, () => DateTime.MinValue);
+        ScheduleItems = new SyncDictionaryList<Guid, ScheduleItem>(ProfileService.Profile.ScheduleItems, Guid.NewGuid);
 
         TempClassPlanList = ClassPlans.List
             .ToObservableChangeSet()
@@ -153,7 +167,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         _groupedClassPlans = new ReadOnlyObservableCollection<ClassPlansTreeNode>(_groupedClassPlanNodes);
         SynchronizeClassPlanTree();
 
-        ClassPlanGroups.List
+        _externalSubscriptions.Add(ClassPlanGroups.List
             .ToObservableChangeSet()
             .Subscribe(_ =>
             {
@@ -161,9 +175,9 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
                 {
                     SynchronizeClassPlanTree();
                 }
-            });
+            }));
 
-        ClassPlans.List
+        _externalSubscriptions.Add(ClassPlans.List
             .ToObservableChangeSet()
             .Transform(pair => new ObservableKeyValuePair<Guid, ClassPlan>(pair))
             .DisposeMany()
@@ -174,15 +188,132 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
                 {
                     SynchronizeClassPlanTree();
                 }
-            });
+            }));
 
-        PropertyChanged += (sender, args) =>
+        PropertyChanged += OnViewModelPropertyChanged;
+        InitializeScheduleWeek();
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(SelectedClassPlan))
         {
-            if (args.PropertyName == nameof(SelectedClassPlan))
+            SelectClassPlanByInstance(SelectedClassPlan, true);
+        }
+    }
+
+    partial void OnSelectedSubjectKvpChanged(KeyValuePair<Guid, Subject>? value)
+    {
+        SelectedSubject = value?.Value;
+    }
+
+    partial void OnSelectedSubjectChanged(Subject? value)
+    {
+        if (value == null)
+        {
+            SelectedSubjectKvp = null;
+            return;
+        }
+
+        if (SelectedSubjectKvp is { } selected && ReferenceEquals(selected.Value, value))
+        {
+            return;
+        }
+
+        foreach (var subject in Subjects.List)
+        {
+            if (ReferenceEquals(subject.Value, value))
             {
-                SelectClassPlanByInstance(SelectedClassPlan, true);
+                SelectedSubjectKvp = subject;
+                return;
             }
-        };
+        }
+
+        SelectedSubjectKvp = null;
+    }
+
+    partial void OnSelectedScheduleItemKvpChanged(KeyValuePair<Guid, ScheduleItem>? value)
+    {
+        SelectedScheduleItemId = value?.Key;
+        SelectedScheduleItem = value?.Value;
+    }
+
+    partial void OnSelectedScheduleItemChanged(ScheduleItem? value)
+    {
+        if (value == null)
+        {
+            SelectedScheduleItemKvp = null;
+            return;
+        }
+
+        if (SelectedScheduleItemKvp is { } selected && ReferenceEquals(selected.Value, value))
+        {
+            return;
+        }
+
+        foreach (var scheduleItem in ScheduleItems.List)
+        {
+            if (ReferenceEquals(scheduleItem.Value, value))
+            {
+                SelectedScheduleItemKvp = scheduleItem;
+                return;
+            }
+        }
+
+        SelectedScheduleItemKvp = null;
+    }
+
+    public void ReleaseResources()
+    {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
+        _resourcesReleased = true;
+        PropertyChanged -= OnViewModelPropertyChanged;
+        foreach (var subscription in _externalSubscriptions)
+        {
+            subscription.Dispose();
+        }
+        _externalSubscriptions.Clear();
+        (TempClassPlanList as IDisposable)?.Dispose();
+
+        ClassPlans.Dispose();
+        TimeLayouts.Dispose();
+        Subjects.Dispose();
+        ScheduleItemSubjects.Dispose();
+        ClassPlanGroups.Dispose();
+        OrderedSchedules.Dispose();
+        ScheduleItems.Dispose();
+
+        CurrentTimePointDeleteRevertToast?.Close();
+        CurrentClassPlanEditDoneToast?.Close();
+        CurrentTimePointDeleteRevertToast = null;
+        CurrentClassPlanEditDoneToast = null;
+        DrawerContent = null;
+        (TransferProviderContent as IDisposable)?.Dispose();
+        TransferProviderContent = null;
+        SelectedTransferInfo = null;
+        SelectedTimePoint = null;
+        SelectedTimeLayout = null;
+        SelectedSubjectKvp = null;
+        SelectedSubject = null;
+        SelectedScheduleItemKvp = null;
+        SelectedScheduleItem = null;
+        SelectedClassInfo = null;
+        SelectedClassPlan = null;
+        SelectedClassPlansTreeNode = null;
+        ClassPlanInfoSelectedTimeLayoutKvp = null;
+        ClassPlanInfoSelectedClassPlanGroupKvp = null;
+
+        TransferNavigationViewItems.Clear();
+        UndoDescriptions.Clear();
+        RedoDescriptions.Clear();
+        _groupedClassPlanNodes.Clear();
+        _classPlanTreeGroupNodes.Clear();
+        _classPlanTreeGroupChildren.Clear();
+        _classPlanTreeNodes.Clear();
     }
 
     private ClassPlansTreeNode CreateClassPlanGroupNode(Guid groupId)

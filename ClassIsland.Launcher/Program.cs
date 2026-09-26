@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 
 #if Platforms_Windows
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using ClassIsland.Launcher.Helpers;
 #endif
 
 #if Platforms_Linux
@@ -27,7 +27,7 @@ else
 }
 
 var root = Path.GetFullPath(Path.GetDirectoryName(Environment.ProcessPath) ?? "");
-var installation = Directory.GetDirectories(root)
+var installations = Directory.GetDirectories(root)
     .Where(x => Path.GetFileName(x).StartsWith("app") &&
                 !(File.Exists(Path.Combine(x, ".destroy")) || File.Exists(Path.Combine(x, ".partial"))) &&
                 File.Exists(Path.Combine(x, executableName)))
@@ -53,14 +53,32 @@ var installation = Directory.GetDirectories(root)
         }
 
         return int.TryParse(split[2], out var n) ? n : 0;
-    })
-    .FirstOrDefault();
+    }).ToList();
+var installation = installations.FirstOrDefault();
 
 if (installation == null)
 {
     ShowError("找不到有效的 ClassIsland 版本，可能是安装已损坏。请在 https://classisland.tech/download 重新下载并安装 ClassIsland。");
     return 1;
 }
+
+#if Platforms_Windows
+if (File.Exists(Path.Combine(root, "Debug_MultiInstancesMode")))
+{
+    var result = TaskDialogHelper.ShowCommands(
+        installations.Select(Path.GetFileName).ToList()!,
+        title: "ClassIsland",
+        mainInstruction: "要开始了呦",
+        content: "选择要启动的 ClassIsland 实例"
+    );
+
+    if (result == null)
+    {
+        return 1;
+    }
+    installation = installations[result.Value.Index];
+}
+#endif
 
 var exePath = Path.Combine(Path.Combine(installation, executableName));
 

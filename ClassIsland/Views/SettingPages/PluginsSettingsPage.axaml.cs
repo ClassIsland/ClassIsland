@@ -52,19 +52,13 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private CancellationTokenSource DocumentLoadingCancellationTokenSource { get; set; } = new();
 
+    private IDisposable? _pluginMarketExceptionSubscription;
+
     public PluginsSettingsPage()
     {
         InitializeComponent();
         DataContext = this;
 
-        ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
-            .Subscribe(_ =>
-            {
-                if (ViewModel.PluginMarketService.Exception != null)
-                {
-                    this.ShowErrorToast("无法加载插件源", ViewModel.PluginMarketService.Exception);
-                }
-            });
         if (DateTime.Now - ViewModel.SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = ViewModel.PluginMarketService.RefreshPluginSourceAsync();
@@ -231,11 +225,11 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         var raws = new List<PluginInstallPreviewRaw>();
 
-        var deserializer = new DeserializerBuilder()
-            .IgnoreUnmatchedProperties()
-            .WithTypeConverter(new OSPlatformTypeConverter())
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .Build();
+            var deserializer = new DeserializerBuilder()
+                .IgnoreUnmatchedProperties()
+                .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
 
         foreach (var fileName in fileNames)
         {
@@ -702,8 +696,18 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private void PluginsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
+        ViewModel.Activate();
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         ViewModel.PluginMarketService.RestartRequested += OnPluginMarketServiceOnRestartRequested;
+        _pluginMarketExceptionSubscription ??= ViewModel.PluginMarketService
+            .ObservableForProperty(x => x.Exception)
+            .Subscribe(_ =>
+            {
+                if (ViewModel.PluginMarketService.Exception != null)
+                {
+                    this.ShowErrorToast("无法加载插件源", ViewModel.PluginMarketService.Exception);
+                }
+            });
     }
 
     private void OnPluginMarketServiceOnRestartRequested(object? sender, EventArgs args)
@@ -719,6 +723,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
         ViewModel.PluginMarketService.RestartRequested -= OnPluginMarketServiceOnRestartRequested;
+        _pluginMarketExceptionSubscription?.Dispose();
+        _pluginMarketExceptionSubscription = null;
+        ViewModel.Deactivate();
     }
 
     private void ButtonOpenMarket_OnClick(object sender, RoutedEventArgs e)

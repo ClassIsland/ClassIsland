@@ -12,13 +12,13 @@
         x:DataType="ui:WindowViewHost"
         EnableMicaWindow="True">
     <ci:MyWindow.Styles>
-        <Style Selector=":is(Window)">
+        <Style Selector=":is(Window):not(:closed)">
             <Setter Property="Title" Value="{Binding #NavigationPage.CurrentPage.Header, FallbackValue='ClassIsland'}"/>
             <Style Selector="^ NavigationPage#NavigationPage /template/ Border#PART_NavigationBar">
                 <Setter Property="Background" Value="{x:Null}"/>
             </Style>
         </Style>
-        <Style Selector=":is(Window):not(:mobile)">
+        <Style Selector=":is(Window):not(:mobile):not(:closed)">
             <Setter Property="Width" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.HostWidth), Mode=TwoWay}"/>
             <Setter Property="Height" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.HostHeight), Mode=TwoWay}"/>
             <Setter Property="CanResize" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.CanResize), Mode=TwoWay, FallbackValue={x:True}}"/>
@@ -108,7 +108,15 @@
             <Setter Property="Title" Value="ClassIsland Mobile"/>
         </Style>
     </ci:MyWindow.Styles>
-    <NavigationPage x:Name="NavigationPage"
-                    Popped="NavigationPage_OnPopped">
-    </NavigationPage>
+    <Grid>
+        <NavigationPage x:Name="NavigationPage"
+                        Popped="NavigationPage_OnPopped">
+        </NavigationPage>
+        <ci:ExpressiveLoadingIndicator x:Name="ContentLoadingProgressRing"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False"
+                                    IsActive="True"
+                                    IsVisible="False" />
+    </Grid>
 </ci:MyWindow>

@@ -4,7 +4,8 @@ using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Core.Abstractions.Controls;
-using ClassIsland.Core.Controls;
+using Avalonia.Controls.Documents;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 
@@ -61,13 +62,15 @@ public class NotificationChannel : INotificationSender, INotificationProvider
         var info = ChannelInfo;
         Name = info.Name;
         Description = info.Description;
-        IconElement = new FluentIcon()
+        var iconElement = new FAIconSourceElement
         {
-            Glyph = info.IconGlyph,
+            IconSource = info.IconSource,
             Width = 24,
             Height = 24,
-            FontSize = 24
+            Classes = { "repair-fontsize" }
         };
+        TextElement.SetFontSize(iconElement, 24);
+        IconElement = iconElement;
 
         __NotificationHostService.RegisterNotificationChannel(this);
 

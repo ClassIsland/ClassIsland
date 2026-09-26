@@ -10,12 +10,13 @@ namespace ClassIsland.Core.ComponentModels;
 /// <summary>
 /// 可同步字典与列表的数据类型，用于将字典绑定到前端数据上。
 /// </summary>
-public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKey : notnull
+public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged, IDisposable where TKey : notnull
 {
     private readonly IDictionary<TKey, TValue> _dictionary;
     private readonly ObservableOrderedDictionary<TKey, TValue>? _orderedDictionary;
     private readonly Func<TKey> _newKey;
     private bool _isProcessing = false;
+    private bool _isDisposed;
 
     /// <summary>
     /// 公开的用于进行绑定的列表。
@@ -92,8 +93,35 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     }
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                case NotifyCollectionChangedAction.Move:
                 case NotifyCollectionChangedAction.Reset:
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    if (e.OldItems is not { Count: 1 }
+                        || e.NewItems is not { Count: 1 }
+                        || e.OldItems[0] is not KeyValuePair<TKey, TValue> oldItem
+                        || e.NewItems[0] is not KeyValuePair<TKey, TValue> newItem
+                        || !EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(oldItem, newItem))
+                    {
+                        break;
+                    }
+
+                    var defaultValueOffset = DefaultValue == null ? 0 : 1;
+                    var oldListIndex = e.OldStartingIndex + defaultValueOffset;
+                    var newListIndex = e.NewStartingIndex + defaultValueOffset;
+                    if (oldListIndex < defaultValueOffset
+                        || oldListIndex >= List.Count
+                        || newListIndex < defaultValueOffset
+                        || newListIndex >= List.Count
+                        || !EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(
+                            List[oldListIndex], oldItem))
+                    {
+                        break;
+                    }
+
+                    if (oldListIndex != newListIndex)
+                    {
+                        List.Move(oldListIndex, newListIndex);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -167,8 +195,47 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     //Subjects = ConfigureFileHelper.CopyObject(Subjects);
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                case NotifyCollectionChangedAction.Move:
                 case NotifyCollectionChangedAction.Reset:
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    if (_orderedDictionary == null
+                        || e.OldItems is not { Count: 1 }
+                        || e.NewItems is not { Count: 1 }
+                        || e.OldItems[0] is not KeyValuePair<TKey, TValue> movedItem
+                        || e.NewItems[0] is not KeyValuePair<TKey, TValue> newItem)
+                    {
+                        break;
+                    }
+
+                    var defaultValueOffset = DefaultValue == null ? 0 : 1;
+                    var oldDictionaryIndex = e.OldStartingIndex - defaultValueOffset;
+                    var newDictionaryIndex = e.NewStartingIndex - defaultValueOffset;
+                    if (oldDictionaryIndex < 0
+                        || oldDictionaryIndex >= _orderedDictionary.Count
+                        || newDictionaryIndex < 0
+                        || newDictionaryIndex >= _orderedDictionary.Count
+                        || e.NewStartingIndex < 0
+                        || e.NewStartingIndex >= List.Count
+                        || !EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(movedItem, newItem)
+                        || !EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(
+                            List[e.NewStartingIndex], movedItem)
+                        || !EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(
+                            _orderedDictionary[oldDictionaryIndex], movedItem))
+                    {
+                        if (e.NewStartingIndex >= 0
+                            && e.NewStartingIndex < List.Count
+                            && e.OldStartingIndex >= 0
+                            && e.OldStartingIndex < List.Count)
+                        {
+                            List.Move(e.NewStartingIndex, e.OldStartingIndex);
+                        }
+                        break;
+                    }
+
+                    if (oldDictionaryIndex != newDictionaryIndex)
+                    {
+                        _orderedDictionary.Move(oldDictionaryIndex, newDictionaryIndex);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -194,5 +261,21 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
         field = value;
         OnPropertyChanged(propertyName);
         return true;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        _isDisposed = true;
+        List.CollectionChanged -= ListOnCollectionChanged;
+        if (_dictionary is INotifyCollectionChanged notifyCollectionChanged)
+        {
+            notifyCollectionChanged.CollectionChanged -= DictionaryOnCollectionChanged;
+        }
     }
 }

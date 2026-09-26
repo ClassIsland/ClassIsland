@@ -1,4 +1,6 @@
-﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.ThemesSettingsPage"
+<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.ThemesSettingsPage"
+                     Loaded="ThemesSettingsPage_OnLoaded"
+                     Unloaded="ThemesSettingsPage_OnUnloaded"
                      xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"

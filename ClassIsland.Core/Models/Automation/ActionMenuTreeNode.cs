@@ -1,13 +1,15 @@
 using System.Collections.ObjectModel;
 using AvaloniaEdit.Utils;
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
 namespace ClassIsland.Core.Models.Automation;
 
 /// <summary>
 /// 代表一个「添加行动」菜单中的菜单节点，用于构建「添加行动」层叠菜单。
 /// </summary>
 /// <param name="name">菜单节点名称。</param>
-/// <param name="iconGlyph">菜单节点图标。形如 "\ue9a8" FluentIcon Glyph 格式。支持留空。</param>
-public abstract class ActionMenuTreeNode(string name, string? iconGlyph)
+/// <param name="iconExpression">菜单节点图标表达式。支持留空。</param>
+public abstract class ActionMenuTreeNode(string name, string? iconExpression)
 {
     /// <summary>
     /// 菜单节点名称。
@@ -15,16 +17,18 @@ public abstract class ActionMenuTreeNode(string name, string? iconGlyph)
     public string Name { get; set; } = name;
 
     /// <summary>
-    /// 菜单节点图标。形如 "\ue9a8" FluentIcon Glyph 格式。支持留空。
+    /// 菜单节点图标。支持留空。
     /// </summary>
-    public string? IconGlyph { get; set; } = iconGlyph;
+    public FAIconSource? IconSource { get; set; } = string.IsNullOrEmpty(iconExpression)
+        ? null
+        : IconExpressionHelper.TryParseOrNull(iconExpression);
 }
 
 /// <inheritdoc cref="ActionMenuTreeItem{T}" />
 public class ActionMenuTreeItem : ActionMenuTreeNode
 {
     /// <inheritdoc cref="ActionMenuTreeItem{T}" />
-    public ActionMenuTreeItem(string actionItemId, string name, string? iconGlyph) : base(name, iconGlyph)
+    public ActionMenuTreeItem(string actionItemId, string name, string? iconExpression) : base(name, iconExpression)
     {
         ActionItemId = actionItemId;
     }
@@ -42,8 +46,8 @@ public class ActionMenuTreeItem<TSettings> : ActionMenuTreeItem where TSettings 
 {
     /// <inheritdoc cref="ActionMenuTreeItem{T}" />
     /// <inheritdoc cref="ActionMenuTreeNode" />
-    public ActionMenuTreeItem(string actionItemId, string name, string? iconGlyph, Action<TSettings> actionItemSettingsSetter) :
-        base(actionItemId, name, iconGlyph)
+    public ActionMenuTreeItem(string actionItemId, string name, string? iconExpression, Action<TSettings> actionItemSettingsSetter) :
+        base(actionItemId, name, iconExpression)
     {
         ActionItemSettingsSetter = actionItemSettingsSetter;
     }
@@ -62,7 +66,7 @@ public class ActionMenuTreeGroup : ActionMenuTreeNode
 {
     /// <inheritdoc cref="ActionMenuTreeGroup" />
     /// <inheritdoc cref="ActionMenuTreeNode" />
-    public ActionMenuTreeGroup(string name, string? iconGlyph = null, params ActionMenuTreeNode[] children) : base(name, iconGlyph)
+    public ActionMenuTreeGroup(string name, string? iconExpression = null, params ActionMenuTreeNode[] children) : base(name, iconExpression)
     {
         Children.AddRange(children);
     }

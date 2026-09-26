@@ -21,6 +21,9 @@ namespace ClassIsland.Controls;
 /// </summary>
 public partial class TimeRuleEditControl : UserControl
 {
+    private readonly IDisposable _timeRulePropertyObserver;
+    private bool _resourcesReleased;
+
     public static FuncValueConverter<DateOnly, DateTime> DateOnlyToDateTimeConverter { get; }
         = new(x => new DateTime(x, new TimeOnly(0, 0, 0)),
             DateOnly.FromDateTime);
@@ -31,7 +34,7 @@ public partial class TimeRuleEditControl : UserControl
     /// <inheritdoc />
     public TimeRuleEditControl()
     {
-        this.GetObservable(TimeRuleProperty)
+        _timeRulePropertyObserver = this.GetObservable(TimeRuleProperty)
             .Skip(1)
             .Subscribe(_ => TimeRulePropertyOnNext());
         InitializeComponent();
@@ -40,10 +43,12 @@ public partial class TimeRuleEditControl : UserControl
     private void TimeRulePropertyOnNext()
     {
         var newValue = TimeRule;
-        ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
-        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
-        _timeRuleObserver?.Dispose();
-        _timeRuleObserver = null;
+        ReleaseExternalSubscriptions();
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
         if (newValue != null)
         {
             UpdateViewModel(newValue);
@@ -53,6 +58,27 @@ public partial class TimeRuleEditControl : UserControl
             _timeRuleObserver = newValue.WhenAnyPropertyChanged()
                 .Subscribe(_ => UpdateViewModel(newValue));
         }
+    }
+
+    private void ReleaseExternalSubscriptions()
+    {
+        ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
+        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        _timeRuleObserver?.Dispose();
+        _timeRuleObserver = null;
+    }
+
+    public void ReleaseResources()
+    {
+        if (_resourcesReleased)
+        {
+            return;
+        }
+
+        _resourcesReleased = true;
+        _timeRulePropertyObserver.Dispose();
+        ReleaseExternalSubscriptions();
+        TimeRule = null;
     }
 
     private void UpdateViewModel(TimeRule timeRule)
@@ -80,6 +106,11 @@ public partial class TimeRuleEditControl : UserControl
                 ViewModel.WeekCountDivIndex = -1;
                 Dispatcher.UIThread.Post(() =>
                     {
+                        if (_resourcesReleased)
+                        {
+                            return;
+                        }
+
                         if (TimeRule.WeekCountDivTotal < TimeRule.WeekCountDiv)
                         {
                             ViewModel.WeekCountDivIndex = 0;
@@ -136,6 +167,11 @@ public partial class TimeRuleEditControl : UserControl
         
         Dispatcher.UIThread.Post(() =>
         {
+            if (_resourcesReleased)
+            {
+                return;
+            }
+
             WeekCountDivTotalListBox.ItemsSource = ViewModel.WeekCountDivTotalOptions;
             ViewModel.WeekCountDivTotalIndex = Math.Min(w, ViewModel.WeekCountDivTotalOptions.Count - 1);
             

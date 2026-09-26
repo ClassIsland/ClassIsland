@@ -1,1 +1,3 @@
 MessageBox
+TaskDialog
+TaskDialogIndirect

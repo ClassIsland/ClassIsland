@@ -5,6 +5,7 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Core.Services.Registry;
 using ClassIsland.Models.Plugins;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services.Management;
@@ -71,7 +72,7 @@ public class PluginService : IPluginService
 
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
-            .WithTypeConverter(new OSPlatformTypeConverter())
+            .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
@@ -124,6 +125,11 @@ public class PluginService : IPluginService
                 {
                     throw new InvalidDataException(
                         $"插件入口程序集不存在：{manifest.EntranceAssembly}");
+                }
+
+                if (File.Exists(Path.Combine(targetPath, ".disabled")))
+                {
+                    File.WriteAllText(Path.Combine(stagingPath, ".disabled"), string.Empty);
                 }
 
                 ReplacePluginDirectory(stagingPath, targetPath, manifest.Id);
@@ -270,7 +276,7 @@ public class PluginService : IPluginService
 
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
-            .WithTypeConverter(new OSPlatformTypeConverter())
+            .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
@@ -361,7 +367,17 @@ public class PluginService : IPluginService
                 if (!Directory.Exists(entranceObj.PluginConfigFolder))
                     Directory.CreateDirectory(entranceObj.PluginConfigFolder);
                 entranceObj.Info = info;
-                entranceObj.Initialize(context, services);
+                // 在插件 Initialize 期间设置当前注册插件上下文，以便组件注册时自动捕获来源
+                var previousPlugin = ComponentRegistryService.CurrentRegisteringPlugin.Value;
+                ComponentRegistryService.CurrentRegisteringPlugin.Value = info;
+                try
+                {
+                    entranceObj.Initialize(context, services);
+                }
+                finally
+                {
+                    ComponentRegistryService.CurrentRegisteringPlugin.Value = previousPlugin;
+                }
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
                 info.LoadStatus = PluginLoadStatus.Loaded;
