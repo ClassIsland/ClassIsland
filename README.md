@@ -36,7 +36,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 
 > [!TIP]
 >
-> 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech) 了解更多。
+> 您可以点击查看 [ClassIsland 文档](https://docs.classisland.tech) 了解更多。
 
 ### 课表信息显示
 
@@ -184,7 +184,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-52-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-53-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -264,6 +264,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Victory-Aogu"><img src="https://avatars.githubusercontent.com/u/294148985?v=4?s=100" width="100px;" alt="TZ^"/><br /><sub><b>TZ^</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Victory-Aogu" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://winddrift.top"><img src="https://avatars.githubusercontent.com/u/115442729?v=4?s=100" width="100px;" alt="浮笙-WindDrift"/><br /><sub><b>浮笙-WindDrift</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=WindDrift" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/HickoryTrail"><img src="https://avatars.githubusercontent.com/u/80823417?v=4?s=100" width="100px;" alt="HickoryTrail"/><br /><sub><b>HickoryTrail</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=HickoryTrail" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Senlinmu116"><img src="https://avatars.githubusercontent.com/u/218382517?v=4?s=100" width="100px;" alt="Senlinmu"/><br /><sub><b>Senlinmu</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Senlinmu116" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
