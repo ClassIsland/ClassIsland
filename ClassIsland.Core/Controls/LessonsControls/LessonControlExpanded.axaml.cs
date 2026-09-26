@@ -111,18 +111,17 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
 
     private void UpdateLiveUpdateSettings()
     {
+        if (LessonsService != null)
+        {
+            LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        }
+
         if (IsLiveUpdatingEnabled && _attachedToVisualTree)
         {
             LessonsService = IAppHost.GetService<ILessonsService>();
             ExactTimeService = IAppHost.GetService<IExactTimeService>();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        }
-        else
-        {
-            if (LessonsService != null)
-            {
-                LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
-            }
+            LessonsServiceOnPostMainTimerTicked(null, EventArgs.Empty);
         }
     }
 
@@ -159,6 +158,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
             .Subscribe(new AnonymousObserver<bool>(_ => OnIsLiveUpdatePropertyChanged()));
         this.GetObservable(CurrentTimeLayoutItemProperty).Subscribe(_ => UpdateSubject());
         this.GetObservable(ClassPlanProperty).Subscribe(_ => UpdateSubject());
+        this.GetObservable(SubjectsProperty).Subscribe(_ => UpdateSubject());
         this.GetObservable(ClassInfoProperty).Subscribe(_ =>
         {
             ClassInfo.ObservableForProperty(x => x.SubjectId)

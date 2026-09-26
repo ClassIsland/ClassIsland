@@ -3,6 +3,7 @@
                     xmlns:lessonsControls="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
                     xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:layout="using:Avalonia.Layout"
                     xmlns:ci="http://classisland.tech/schemas/xaml/core">
 
     <ControlTheme TargetType="{x:Type lessonsControls:LessonsListBox}"
@@ -28,17 +29,37 @@
                     CurrentTimeLayoutItem="{Binding Mode=OneWay}">
                 </lessonsControls:LessonControlMinimized>
             </DataTemplate>
+
+            <DataTemplate x:Key="VerticalSeparatorLessonControl">
+                <Border Height="8" BorderBrush="{DynamicResource TextFillColorSecondaryBrush}"
+                        BorderThickness="0 0 0 1" Opacity="0.4"/>
+            </DataTemplate>
+            <DataTemplate x:Key="VerticalExpandedLessonControl">
+                <lessonsControls:LessonControlExpanded Classes="vertical"
+                                                       IsLiveUpdatingEnabled="{Binding $self.(lessonsControls:LessonsListBox.IsLiveUpdatingEnabled)}"
+                                                       Subjects="{Binding $self.(lessonsControls:LessonsListBox.Subjects)}"
+                                                       CurrentTimeLayoutItem="{Binding Mode=OneWay}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="VerticalMinimizedLessonControl">
+                <lessonsControls:LessonControlVerticalMinimized
+                    Subjects="{Binding $self.(lessonsControls:LessonsListBox.Subjects)}"
+                    CurrentTimeLayoutItem="{Binding Mode=OneWay}"/>
+            </DataTemplate>
             
             <lessonsControls:LessonsListBoxItemTemplateMultiConverter
                 x:Key="LessonsListBoxItemTemplateMultiConverter"
                 SeparatorDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.SeparatorLessonControlResourceKey}}"
                 ExpandedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.ExpandedLessonControlResourceKey}}"
-                MinimizedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.MinimizedLessonControlResourceKey}}"/>
+                MinimizedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.MinimizedLessonControlResourceKey}}"
+                VerticalSeparatorDataTemplate="{StaticResource VerticalSeparatorLessonControl}"
+                VerticalExpandedDataTemplate="{StaticResource VerticalExpandedLessonControl}"
+                VerticalMinimizedDataTemplate="{StaticResource VerticalMinimizedLessonControl}"/>
             <lessonsControls:LessonsListBoxFadingStateConverter x:Key="LessonsListBoxFadingStateConverter"/>
         </ControlTheme.Resources>
         <Setter Property="lessonsControls:LessonControlBase.DefaultLessonControlSettings" Value="{Binding $self.LessonControlSettings, Mode=OneWay}"/>
         <Setter Property="lessonsControls:LessonControlBase.ClassPlan" Value="{Binding $self.ClassPlan, Mode=OneWay}"/>
         <Setter Property="Height" Value="40"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ItemsSource" Value="{Binding ClassPlan.TimeLayout.Layouts, RelativeSource={RelativeSource Self}, Mode=OneWay}"/>
         <Setter Property="ItemsPanel">
@@ -51,18 +72,26 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
-                    <Grid x:Name="_LessonsRoot">
+                    <Grid x:Name="_LessonsRoot"
+                          Classes.vertical="{Binding $parent[lessonsControls:LessonsListBox].Orientation, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static layout:Orientation.Vertical}}">
                         <Grid.Styles>
                             <Style Selector="Grid#_LessonsRoot.faded">
                                 <Setter Property="Opacity" Value="0.6"/>
+                            </Style>
+                            <Style Selector="Grid#_LessonsRoot.vertical.faded">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Style>
+                            <Style Selector="Grid#_LessonsRoot.vertical.faded Border#SubjectColorMarker">
+                                <Setter Property="Background" Value="{DynamicResource SystemFillColorSolidNeutralBrush}"/>
+                                <Setter Property="Opacity" Value="1"/>
                             </Style>
                         </Grid.Styles>
                         <Classes.faded>
                             <MultiBinding Converter="{StaticResource LessonsListBoxFadingStateConverter}"
                                           Mode="OneWay">
-                                <Binding Path="$parent[lessonsControls:LessonsListBox].FadeCompletedClasses" RelativeSource="{RelativeSource AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                <Binding Path="$parent[lessonsControls:LessonsListBox].FadeCompletedClasses" Mode="OneWay"/>
                                 <Binding/>
-                                <Binding Path="$parent[lessonsControls:LessonsListBox].SelectedItem" RelativeSource="{RelativeSource AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                <Binding Path="$parent[lessonsControls:LessonsListBox].SelectedItem" Mode="OneWay"/>
                                 <Binding Path="$parent[lessonsControls:LessonsListBox].ClassPlan.ValidTimeLayoutItems" Mode="OneWay"/>
                             </MultiBinding>
                         </Classes.faded>
@@ -84,12 +113,13 @@
                                               Mode="OneWay">
                                     <Binding Path="TimeType" Mode="OneWay"/>
                                     <Binding Path="IsHideDefault" Mode="OneWay"/>
-                                    <Binding Path="$parent[lessonsControls:LessonsListBox].SelectedItem" RelativeSource="{RelativeSource AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                    <Binding Path="$parent[lessonsControls:LessonsListBox].SelectedItem" Mode="OneWay"/>
                                     <Binding/>
                                     <Binding Path="$parent[lessonsControls:LessonsListBox].DiscardHidingDefault" Mode="OneWay"/>
                                     <Binding Path="$parent[lessonsControls:LessonsListBox].ShowCurrentTimeLayoutItemOnlyOnClass" Mode="OneWay"/>
                                     <Binding Path="$parent[lessonsControls:LessonsListBox].HideFinishedClass" Mode="OneWay"/>
                                     <Binding Path="$parent[lessonsControls:LessonsListBox].ClassPlan.ValidTimeLayoutItems" Mode="OneWay"/>
+                                    <Binding Path="$parent[lessonsControls:LessonsListBox].Orientation" Mode="OneWay"/>
                                 </MultiBinding>
                             </ContentPresenter.ContentTemplate>
                         </ContentPresenter>
@@ -104,7 +134,7 @@
                     <Setter Property="Background" Value="{DynamicResource ListViewItemBackground}" />
                     <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
                     <Setter Property="Padding" Value="0"/>
-                    <Setter Property="MaxHeight" Value="40"/>
+                    <Setter Property="MaxHeight" Value="56"/>
                     <Setter Property="MinWidth" Value="0"/>
                     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -193,9 +223,25 @@
         </Setter>
         <Setter Property="Template">
             <ControlTemplate TargetType="lessonsControls:LessonsListBox">
-                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"
+                                Margin="{TemplateBinding Padding}"/>
             </ControlTemplate>
         </Setter>
+        <Style Selector="^[Orientation=Vertical]">
+            <Setter Property="Height" Value="NaN"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FadeCompletedClasses" Value="True"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Spacing="2"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </ControlTheme>
 
     <ControlTheme TargetType="lessonsControls:LessonsListBox"

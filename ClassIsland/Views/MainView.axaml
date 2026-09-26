@@ -5,6 +5,8 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:scheduleWeek="clr-namespace:ClassIsland.Controls.ScheduleWeekEdit"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             xmlns:attachedSettings="using:ClassIsland.Core.Models.AttachedSettings"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.MainView"
              NavigationPage.HasBackButton="False"
@@ -31,7 +33,15 @@
                                HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                Padding="0" Margin="0">
             <TabItem Header="今天">
-                
+                <ci:LessonsListBox ClassPlan="{Binding $parent[views:MainView].ViewModel.LessonsService.CurrentClassPlan}"
+                                   Subjects="{Binding $parent[views:MainView].ViewModel.ProfileService.Profile.Subjects}"
+                                   SelectedIndex="{Binding $parent[views:MainView].ViewModel.LessonsService.CurrentSelectedIndex, Mode=OneWay}"
+                                   IsLiveUpdatingEnabled="True"
+                                   Orientation="Vertical">
+                    <ci:LessonsListBox.LessonControlSettings>
+                        <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
+                    </ci:LessonsListBox.LessonControlSettings>
+                </ci:LessonsListBox>
             </TabItem>
             <TabItem Header="本周">
                 <Grid RowDefinitions="Auto,*">
