@@ -472,7 +472,10 @@ Assert-True ($workerWorkflowText.Contains("-MinimumLineRate 0.8")) "The iOS work
 Assert-True (-not $workerWorkflowText.Contains("Upload platform abstraction coverage")) "Coverage must remain a validation gate without producing a second iOS artifact."
 $iosArtifactUploadCount = ([regex]::Matches($workerWorkflowText, "uses:\s+actions/upload-artifact@v4")).Count
 Assert-True ($iosArtifactUploadCount -eq 1) "The iOS worker must publish exactly one artifact containing the unsigned IPA."
-Assert-True ($workerWorkflowText.Contains("XCODE_PATH: /Applications/Xcode_26.6.app")) "The iOS worker must select an Xcode version compatible with the current .NET for iOS SDK."
+Assert-True ($workerWorkflowText.Contains("IOS_WORKLOAD_VERSION: 10.0.202")) "The iOS worker must pin the .NET workload set compatible with Xcode 26.3."
+Assert-True ($workerWorkflowText.Contains("XCODE_PATH: /Applications/Xcode_26.3.app")) "The iOS worker must select Xcode 26.3 for the pinned .NET for iOS SDK."
+Assert-True ($workerWorkflowText.Contains('dotnet-version: 10.0.202')) "The iOS worker must use the .NET SDK feature band compatible with the pinned iOS workload."
+Assert-True ($workerWorkflowText.Contains('dotnet workload restore "$IOS_PROJECT" --version "$IOS_WORKLOAD_VERSION"')) "The iOS worker must restore the pinned workload set instead of selecting the latest SDK workload."
 Assert-True ($workerWorkflowText.Contains('bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"')) "The iOS worker must normalize inherited signatures before verification."
 Assert-True ($workerWorkflowText.Contains("bash ./tools/ci/verify-ios-ipa.sh")) "The iOS worker must run the shared IPA verification script."
 Assert-True ($workerWorkflowText.Contains('REQUESTED_ARTIFACT_NAME: ${{ inputs.artifact_name }}')) "The iOS worker must preserve release artifact-name overrides."

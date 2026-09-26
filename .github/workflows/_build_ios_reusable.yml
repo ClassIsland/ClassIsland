@@ -39,8 +39,9 @@ env:
   IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
   IOS_CONFIGURATION: Release
   IOS_RUNTIME_IDENTIFIER: ios-arm64
+  IOS_WORKLOAD_VERSION: 10.0.202
   APPLICATION_ID: cn.classisland.ios
-  XCODE_PATH: /Applications/Xcode_26.6.app
+  XCODE_PATH: /Applications/Xcode_26.3.app
   IPA_PATH: ${{ github.workspace }}/out/out_app_ios_arm64_selfContained_ipa.ipa
 
 jobs:
@@ -113,7 +114,7 @@ jobs:
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 10.0.202
 
       - name: Add GitHub Packages source
         env:
@@ -127,7 +128,7 @@ jobs:
           "https://nuget.pkg.github.com/ClassIsland/index.json"
 
       - name: Restore iOS workload
-        run: dotnet workload restore "$IOS_PROJECT"
+        run: dotnet workload restore "$IOS_PROJECT" --version "$IOS_WORKLOAD_VERSION"
 
       - name: Run platform abstraction tests
         run: >-
