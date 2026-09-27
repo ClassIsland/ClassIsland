@@ -80,13 +80,9 @@ jobs:
         shell: bash
         env:
           REQUESTED_ARTIFACT_NAME: ${{ inputs.artifact_name }}
-          APPLICATION_DISPLAY_VERSION: ${{ inputs.app_version }}
-          APPLICATION_BUILD_NUMBER: ${{ steps.build_metadata.outputs.build_number }}
         run: |
           set -euo pipefail
-          if [[ "$REQUESTED_ARTIFACT_NAME" == "auto" ]]; then
-            artifact_name="ClassIsland-iOS-${APPLICATION_DISPLAY_VERSION}-build.${APPLICATION_BUILD_NUMBER}-ios-arm64-unsigned-attempt.${GITHUB_RUN_ATTEMPT}"
-          elif [[ -n "$REQUESTED_ARTIFACT_NAME" ]]; then
+          if [[ -n "$REQUESTED_ARTIFACT_NAME" ]]; then
             artifact_name="$REQUESTED_ARTIFACT_NAME"
           else
             echo "::error::The iOS artifact name must not be empty"

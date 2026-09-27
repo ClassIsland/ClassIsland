@@ -109,13 +109,8 @@ jobs:
           validate_ios_display_version "$app_version"
           checkout_ref="$(git rev-parse HEAD)"
 
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
-            artifact_name="out_app_ios_arm64_selfContained_ipa"
-            retention_days=30
-          else
-            artifact_name="auto"
-            retention_days=14
-          fi
+          artifact_name="out_app_ios_arm64_selfContained_ipa"
+          retention_days=$([[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]] && echo 30 || echo 14)
 
           echo "checkout_ref=$checkout_ref" >> "$GITHUB_OUTPUT"
           echo "app_version=$app_version" >> "$GITHUB_OUTPUT"
