@@ -7,6 +7,7 @@
              xmlns:scheduleWeek="clr-namespace:ClassIsland.Controls.ScheduleWeekEdit"
              xmlns:views="clr-namespace:ClassIsland.Views"
              xmlns:attachedSettings="using:ClassIsland.Core.Models.AttachedSettings"
+             xmlns:appControls="using:ClassIsland.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.MainView"
              NavigationPage.HasBackButton="False"
@@ -33,15 +34,58 @@
                                HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                Padding="0" Margin="0">
             <TabItem Header="今天">
-                <ci:LessonsListBox ClassPlan="{Binding $parent[views:MainView].ViewModel.LessonsService.CurrentClassPlan}"
-                                   Subjects="{Binding $parent[views:MainView].ViewModel.ProfileService.Profile.Subjects}"
-                                   SelectedIndex="{Binding $parent[views:MainView].ViewModel.LessonsService.CurrentSelectedIndex, Mode=OneWay}"
-                                   IsLiveUpdatingEnabled="True"
-                                   Orientation="Vertical">
-                    <ci:LessonsListBox.LessonControlSettings>
-                        <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
-                    </ci:LessonsListBox.LessonControlSettings>
-                </ci:LessonsListBox>
+                <Border>
+                    <Border.Styles>
+                        <Style Selector="appControls|HomeDatePicker#HomeCalendar">
+                            <Setter Property="MaxHeight" Value="{Binding #HomeContent.Bounds.Height, Converter={x:Static appControls:HomeDatePicker.AvailableHeightConverter}}"/>
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                        </Style>
+                        <Style Selector="ScrollViewer#HomeLessons">
+                            <Setter Property="Grid.Row" Value="1"/>
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                        </Style>
+                        <Style Selector="Grid#HomeContent.wide">
+                            <Setter Property="ColumnSpacing" Value="12"/>
+                            <Setter Property="Margin" Value="56,16,16,16"/>
+                        </Style>
+                        <Style Selector="Grid#HomeContent.wide > appControls|HomeDatePicker#HomeCalendar">
+                            <Setter Property="IsExpandedPermanently" Value="True"/>
+                            <Setter Property="Width" Value="300"/>
+                            <Setter Property="Grid.ColumnSpan" Value="1"/>
+                            <Setter Property="Grid.RowSpan" Value="2"/>
+                            <Setter Property="MaxHeight" Value="Infinity"/>
+                            <Setter Property="VerticalAlignment" Value="Top"/>
+                        </Style>
+                        <Style Selector="Grid#HomeContent.wide > ScrollViewer#HomeLessons">
+                            <Setter Property="Grid.Row" Value="0"/>
+                            <Setter Property="Grid.Column" Value="1"/>
+                            <Setter Property="Grid.ColumnSpan" Value="1"/>
+                            <Setter Property="Grid.RowSpan" Value="2"/>
+                        </Style>
+                    </Border.Styles>
+                    <Grid x:Name="HomeContent" RowDefinitions="Auto,*" ColumnDefinitions="Auto,*"
+                          Classes.wide="{Binding !#MainNavigation.IsNarrow}">
+                        <appControls:HomeDatePicker x:Name="HomeCalendar" DataContext="{Binding $parent[views:MainView].ViewModel}"/>
+                        <ScrollViewer x:Name="HomeLessons" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <Panel>
+                                <ci:LessonsListBox ClassPlan="{Binding $parent[views:MainView].ViewModel.DisplayedClassPlan}"
+                                                   Subjects="{Binding $parent[views:MainView].ViewModel.ProfileService.Profile.Subjects}"
+                                                   SelectedIndex="{Binding $parent[views:MainView].ViewModel.DisplayedSelectedIndex, Mode=OneWay}"
+                                                   IsLiveUpdatingEnabled="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
+                                                   FadeCompletedClasses="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
+                                                   IsVisible="{Binding $parent[views:MainView].ViewModel.HasDisplayedLessons}"
+                                                   Orientation="Vertical">
+                                    <ci:LessonsListBox.LessonControlSettings>
+                                        <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
+                                    </ci:LessonsListBox.LessonControlSettings>
+                                </ci:LessonsListBox>
+                                <TextBlock Text="这一天没有课程安排" Margin="16,32" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                           IsVisible="{Binding !$parent[views:MainView].ViewModel.HasDisplayedLessons}"/>
+                            </Panel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
             </TabItem>
             <TabItem Header="本周">
                 <Grid RowDefinitions="Auto,*">

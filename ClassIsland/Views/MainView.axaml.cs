@@ -36,10 +36,12 @@ public partial class MainView : ViewBase
         if (_scheduleWeekHost != null)
             _scheduleWeekHost.Activated += ScheduleWeekHost_OnActivated;
         RefreshScheduleWeekIfVisible();
+        UpdateHomeCalendarActivation();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        ViewModel.DeactivateCalendar();
         if (_scheduleWeekHost != null)
             _scheduleWeekHost.Activated -= ScheduleWeekHost_OnActivated;
         _scheduleWeekHost = null;
@@ -57,6 +59,7 @@ public partial class MainView : ViewBase
         if (MainNavigation.SelectedItem != item)
             MainNavigation.SelectedItem = item;
         RefreshScheduleWeekIfVisible();
+        UpdateHomeCalendarActivation();
     }
 
     private void MainNavigation_OnSelectionChanged(object? sender, FANavigationViewSelectionChangedEventArgs e)
@@ -78,7 +81,19 @@ public partial class MainView : ViewBase
         }
     }
 
-    private void ScheduleWeekHost_OnActivated(object? sender, EventArgs e) => RefreshScheduleWeekIfVisible();
+    private void ScheduleWeekHost_OnActivated(object? sender, EventArgs e)
+    {
+        RefreshScheduleWeekIfVisible();
+        ViewModel.RefreshCalendar();
+    }
+
+    private void UpdateHomeCalendarActivation()
+    {
+        if (MainViewTabs.SelectedIndex == 0 && VisualRoot != null)
+            ViewModel.ActivateCalendar();
+        else
+            ViewModel.DeactivateCalendar();
+    }
 
     private void RefreshScheduleWeekIfVisible()
     {

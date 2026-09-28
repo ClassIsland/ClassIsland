@@ -1,0 +1,198 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:local="clr-namespace:ClassIsland.Controls;assembly=ClassIsland"
+             xmlns:vm="using:ClassIsland.ViewModels"
+             xmlns:converters="using:ClassIsland.Converters"
+             x:Class="ClassIsland.Controls.HomeDatePicker"
+             x:DataType="vm:MainViewViewModel">
+    <UserControl.Resources>
+        <converters:HomeCalendarDayConverter x:Key="HomeCalendarDayConverter"/>
+        <DataTemplate x:Key="HomeDayTemplate" x:DataType="vm:HomeCalendarDay">
+            <Grid Width="40" Height="40" ToolTip.Tip="{Binding Description}">
+                <Border Margin="1" CornerRadius="20" BorderThickness="1"
+                        BorderBrush="{DynamicResource AccentFillColorDefaultBrush}"
+                        IsVisible="{Binding IsToday}"/>
+                <Border Margin="1" CornerRadius="20"
+                        Background="{DynamicResource AccentFillColorDefaultBrush}"
+                        IsVisible="{Binding IsSelected}"/>
+                <TextBlock Text="{Binding Day}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Margin="0,-2,0,0" Classes.selected="{Binding IsSelected}"/>
+                <Ellipse Width="4" Height="4" Margin="0,0,0,3" VerticalAlignment="Bottom"
+                         Fill="{DynamicResource TextFillColorPrimaryBrush}" Opacity="{Binding DotOpacity}"
+                         IsVisible="{Binding HasLessons}" Classes.selected="{Binding IsSelected}"/>
+            </Grid>
+        </DataTemplate>
+        <ControlTheme x:Key="HomeCalendarDayTheme" TargetType="CalendarDayButton"
+                      BasedOn="{StaticResource {x:Type CalendarDayButton}}">
+            <Setter Property="MinWidth" Value="40"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="ClickMode" Value="Release"/>
+            <Setter Property="AutomationProperties.Name">
+                <MultiBinding Converter="{StaticResource HomeCalendarDayConverter}" ConverterParameter="Description">
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Self}"/>
+                    <Binding Path="$parent[local:HomeDatePicker].DataContext.CalendarDays"/>
+                </MultiBinding>
+            </Setter>
+            <Setter Property="FocusAdorner">
+                <FocusAdornerTemplate>
+                    <Border Width="40" Height="40" CornerRadius="20" BorderThickness="2"
+                            BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}">
+                        <Border CornerRadius="18" BorderThickness="1"
+                                BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"/>
+                    </Border>
+                </FocusAdornerTemplate>
+            </Setter>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Panel Background="Transparent">
+                        <ContentControl Name="DayContent" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        ContentTemplate="{StaticResource HomeDayTemplate}">
+                            <ContentControl.Content>
+                                <MultiBinding Converter="{StaticResource HomeCalendarDayConverter}">
+                                    <Binding Path="DataContext" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    <Binding Path="$parent[local:HomeDatePicker].DataContext.CalendarDays"/>
+                                </MultiBinding>
+                            </ContentControl.Content>
+                        </ContentControl>
+                        <Border Name="DayFeedback" Width="40" Height="40" CornerRadius="20" IsHitTestVisible="False"/>
+                    </Panel>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover /template/ Border#DayFeedback">
+                <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}"/>
+            </Style>
+            <Style Selector="^:pressed /template/ Border#DayFeedback">
+                <Setter Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}"/>
+            </Style>
+            <Style Selector="^:pressed /template/ ContentControl#DayContent">
+                <Setter Property="RenderTransform" Value="scale(0.96)"/>
+            </Style>
+            <Style Selector="^:inactive /template/ ContentControl#DayContent">
+                <Setter Property="Opacity" Value="0.5"/>
+            </Style>
+            <Style Selector="^:disabled">
+                <Setter Property="Opacity" Value="0.4"/>
+            </Style>
+        </ControlTheme>
+        <ControlTheme x:Key="HomeCalendarItemTheme" TargetType="CalendarItem">
+            <Setter Property="DayTitleTemplate">
+                <Template>
+                    <TextBlock Text="{Binding}" FontSize="12" FontWeight="Bold" TextAlignment="Center"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,10"/>
+                </Template>
+            </Setter>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Grid.Styles>
+                            <Style Selector="CalendarDayButton">
+                                <Setter Property="Theme" Value="{StaticResource HomeCalendarDayTheme}"/>
+                            </Style>
+                        </Grid.Styles>
+                        <!-- Keep native calendar navigation parts for keyboard navigation; the shared toolbar drives paging. -->
+                        <Panel IsVisible="False">
+                            <Button Name="PART_HeaderButton"/>
+                            <Button Name="PART_PreviousButton"/>
+                            <Button Name="PART_NextButton"/>
+                        </Panel>
+                        <Grid Name="PART_MonthView" ColumnDefinitions="*,*,*,*,*,*,*"
+                              RowDefinitions="Auto,40,40,40,40,40,40"/>
+                        <Grid Name="PART_YearView" IsVisible="False" RowDefinitions="*,*,*" ColumnDefinitions="*,*,*,*"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+        <ControlTheme x:Key="HomeCalendarTheme" TargetType="Calendar" BasedOn="{StaticResource {x:Type Calendar}}">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid Name="PART_Root">
+                        <CalendarItem Name="PART_CalendarItem" Theme="{StaticResource HomeCalendarItemTheme}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Grid#DatePickerLayout">
+            <Setter Property="Margin" Value="10,10,10,0"/>
+            <Setter Property="RowSpacing" Value="10"/>
+        </Style>
+        <Style Selector="TextBlock.selected">
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+        </Style>
+        <Style Selector="Ellipse.selected">
+            <Setter Property="Fill" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+        </Style>
+        <Style Selector="Button.home-day">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="Button.home-day:pressed /template/ ContentPresenter">
+            <Setter Property="Opacity" Value="0.8"/>
+            <Setter Property="RenderTransform" Value="scale(0.96)"/>
+        </Style>
+        <Style Selector="local|HomeDatePicker[IsExpandedPermanently=True] > Grid#DatePickerLayout">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="RowSpacing" Value="0"/>
+        </Style>
+        <Style Selector="local|HomeDatePicker[IsExpandedPermanently=True] Grid#CalendarToolbar">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid x:Name="DatePickerLayout" RowDefinitions="Auto,*,Auto,Auto">
+        <Grid x:Name="CalendarToolbar" ColumnDefinitions="*,Auto,Auto,Auto">
+            <TextBlock Text="{Binding CalendarCaption}" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14"/>
+            <Button Grid.Column="1" Theme="{StaticResource TransparentButton}" Command="{Binding PreviousPeriodCommand}"
+                    ToolTip.Tip="{Binding PreviousPeriodDescription}" AutomationProperties.Name="{Binding PreviousPeriodDescription}">
+                <ci:FluentIcon Glyph="{ci:FI ChevronLeftRegular}" FontSize="16"/>
+            </Button>
+            <Button Grid.Column="2" Theme="{StaticResource TransparentButton}" Command="{Binding GoToTodayCommand}" Content="今天"/>
+            <Button Grid.Column="3" Theme="{StaticResource TransparentButton}" Command="{Binding NextPeriodCommand}"
+                    ToolTip.Tip="{Binding NextPeriodDescription}" AutomationProperties.Name="{Binding NextPeriodDescription}">
+                <ci:FluentIcon Glyph="{ci:FI ChevronRightRegular}" FontSize="16"/>
+            </Button>
+        </Grid>
+        <Panel x:Name="DateGestureArea" Grid.Row="1" Background="Transparent">
+            <StackPanel Spacing="10" IsVisible="{Binding !IsMonthCalendarVisible}">
+                <ItemsControl ItemsSource="{Binding WeekdayNames}">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="7"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" FontSize="12" FontWeight="Bold" LineHeight="16" TextAlignment="Center"/></DataTemplate></ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding WeekDays}">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="7"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:HomeCalendarDay">
+                            <Button Classes="home-day" Theme="{StaticResource TransparentButton}"
+                                    Command="{Binding $parent[local:HomeDatePicker].DataContext.SelectDateCommand}"
+                                    CommandParameter="{Binding Date}" Content="{Binding}" ContentTemplate="{StaticResource HomeDayTemplate}"
+                                    AutomationProperties.Name="{Binding Description}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <ScrollViewer x:Name="MonthScrollViewer" IsVisible="{Binding IsMonthCalendarVisible}"
+                          HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <Calendar x:Name="MonthCalendar" Theme="{StaticResource HomeCalendarTheme}"
+                      FirstDayOfWeek="Monday" SelectionMode="SingleDate" HorizontalAlignment="Stretch"
+                      SelectedDate="{Binding CalendarSelectedDate, Mode=TwoWay}"
+                      DisplayDate="{Binding CalendarDisplayDate, Mode=TwoWay}"/>
+            </ScrollViewer>
+        </Panel>
+        <Button x:Name="ExpandCalendarButton" Grid.Row="2" HorizontalAlignment="Stretch" Height="24" Padding="0"
+                IsVisible="{Binding !IsCalendarPinned}"
+                Theme="{StaticResource TransparentButton}" Command="{Binding ToggleCalendarCommand}"
+                AutomationProperties.Name="{Binding CalendarExpansionDescription}" ToolTip.Tip="{Binding CalendarExpansionDescription}">
+            <Panel>
+                <ci:FluentIcon Glyph="{ci:FI ChevronDownRegular}" FontSize="16" IsVisible="{Binding !IsCalendarExpanded}"/>
+                <ci:FluentIcon Glyph="{ci:FI ChevronUpRegular}" FontSize="16" IsVisible="{Binding IsCalendarExpanded}"/>
+            </Panel>
+        </Button>
+        <Border Grid.Row="3" Height="1" Background="{DynamicResource ControlStrokeColorDefaultBrush}" IsVisible="{Binding !IsCalendarPinned}"/>
+    </Grid>
+</UserControl>

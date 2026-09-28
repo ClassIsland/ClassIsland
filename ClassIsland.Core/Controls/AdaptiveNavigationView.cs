@@ -15,6 +15,19 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public class AdaptiveNavigationView : FANavigationView
 {
+    /// <summary>
+    /// Identifies <see cref="IsNarrow"/>.
+    /// </summary>
+    public static readonly DirectProperty<AdaptiveNavigationView, bool> IsNarrowProperty =
+        AvaloniaProperty.RegisterDirect<AdaptiveNavigationView, bool>(nameof(IsNarrow), view => view.IsNarrow, unsetValue: true);
+
+    private bool _isNarrow = true;
+
+    /// <summary>
+    /// Whether the current template presents navigation as a bottom bar instead of a side rail.
+    /// </summary>
+    public bool IsNarrow => _isNarrow;
+
     private Border? _activeIndicator;
     private Border? _navigationRail;
     private FAItemsRepeater? _menuItemsHost;
@@ -52,7 +65,12 @@ public class AdaptiveNavigationView : FANavigationView
 
     private void UpdateSelectionIndicator()
     {
-        if (_activeIndicator == null || _navigationRail == null || _menuItemsHost?.Layout is not FAStackLayout layout)
+        if (_menuItemsHost?.Layout is not FAStackLayout layout)
+            return;
+
+        SetAndRaise(IsNarrowProperty, ref _isNarrow, layout.Orientation == Orientation.Horizontal);
+
+        if (_activeIndicator == null || _navigationRail == null)
             return;
 
         if (SelectedItem == null)

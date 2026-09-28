@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;
 
-public class MainViewViewModel(
+public partial class MainViewViewModel(
     IManagementService managementService,
     IUriNavigationService uriNavigationService,
     INotificationHostService notificationHostService,
