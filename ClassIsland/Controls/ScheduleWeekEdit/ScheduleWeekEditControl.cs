@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -13,22 +15,27 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models;
+using ClassIsland.Services;
+using ClassIsland.Shared;
 
 namespace ClassIsland.Controls.ScheduleWeekEdit;
 
 /// <summary>
-/// Edits dated course projections through requests, without owning profile data or recurrence rules.
+/// Displays dated courses and sends edit requests without owning profile data or recurrence rules.
 /// </summary>
 public sealed class ScheduleWeekEditControl : TemplatedControl
 {
-    internal const double RulerWidth = 48;
-    private const double MinimumDayWidth = 54;
+    internal const double RulerWidth = 36;
+    private const double MinimumDayWidth = 40;
     private const double MinimumBlockHeight = 18;
     public static readonly StyledProperty<IEnumerable<ScheduleWeekOccurrence>?> ItemsSourceProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, IEnumerable<ScheduleWeekOccurrence>?>(nameof(ItemsSource));
     public static readonly StyledProperty<DateOnly> WeekStartProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, DateOnly>(nameof(WeekStart));
+    public static readonly StyledProperty<bool> AutoFetchScheduleItemsProperty =
+        AvaloniaProperty.Register<ScheduleWeekEditControl, bool>(nameof(AutoFetchScheduleItems), true);
     public static readonly StyledProperty<Guid?> SelectedScheduleItemIdProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, Guid?>(nameof(SelectedScheduleItemId), defaultBindingMode: BindingMode.TwoWay);
     public static readonly StyledProperty<DateOnly?> SelectedDateProperty =
@@ -36,12 +43,14 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     public static readonly StyledProperty<TimeSpan?> SelectedTimeProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, TimeSpan?>(nameof(SelectedTime), defaultBindingMode: BindingMode.TwoWay);
     public static readonly StyledProperty<double> ScaleProperty =
-        AvaloniaProperty.Register<ScheduleWeekEditControl, double>(nameof(Scale), 2, validate: value => double.IsFinite(value) && value > 0);
+        AvaloniaProperty.Register<ScheduleWeekEditControl, double>(nameof(Scale), 1, validate: value => double.IsFinite(value) && value > 0);
     public static readonly StyledProperty<bool> IsReadonlyProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, bool>(nameof(IsReadonly));
 
     public IEnumerable<ScheduleWeekOccurrence>? ItemsSource { get => GetValue(ItemsSourceProperty); set => SetValue(ItemsSourceProperty, value); }
     public DateOnly WeekStart { get => GetValue(WeekStartProperty); set => SetValue(WeekStartProperty, value); }
+    /// <summary>Fetches the displayed week's courses from the active profile when enabled.</summary>
+    public bool AutoFetchScheduleItems { get => GetValue(AutoFetchScheduleItemsProperty); set => SetValue(AutoFetchScheduleItemsProperty, value); }
     public Guid? SelectedScheduleItemId { get => GetValue(SelectedScheduleItemIdProperty); set => SetValue(SelectedScheduleItemIdProperty, value); }
     public DateOnly? SelectedDate { get => GetValue(SelectedDateProperty); set => SetValue(SelectedDateProperty, value); }
     public TimeSpan? SelectedTime { get => GetValue(SelectedTimeProperty); set => SetValue(SelectedTimeProperty, value); }
@@ -70,8 +79,12 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private ScheduleWeekRuler? _headerRuler;
     private readonly List<TextBlock> _dayHeaders = [];
     private readonly List<Run> _dayHeaderDates = [];
+    private bool? _compactHeaders;
     private readonly Dictionary<(Guid Id, DateOnly Date), ScheduleWeekBlock> _blocks = [];
+    private readonly CompositeDisposable _autoItemSubscriptions = new();
+    private IReadOnlyList<ScheduleWeekOccurrence> _autoItems = [];
     private INotifyCollectionChanged? _observedItems;
+    private bool _autoRefreshQueued;
     private DragState? _drag;
     private bool _isCommittingEdit;
     private bool _attached;
@@ -110,6 +123,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         _blocks.Clear();
         _dayHeaders.Clear();
         _dayHeaderDates.Clear();
+        _compactHeaders = null;
         _ruler = null;
         _headerRuler = null;
         _canvas = e.NameScope.Find<Canvas>("PART_Canvas");
@@ -139,6 +153,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         base.OnAttachedToVisualTree(e);
         _attached = true;
         ObserveItems();
+        if (AutoFetchScheduleItems) RefreshAutomaticItems();
         Rebuild();
     }
 
@@ -150,6 +165,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         if (_observedItems != null)
             _observedItems.CollectionChanged -= ItemsChanged;
         _observedItems = null;
+        _autoItemSubscriptions.Clear();
         base.OnDetachedFromVisualTree(e);
     }
 
@@ -158,11 +174,32 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         base.OnPropertyChanged(change);
         if (change.Property == ItemsSourceProperty)
         {
+            ObserveItems();
+            if (!AutoFetchScheduleItems)
+            {
+                CancelDrag();
+                Rebuild();
+            }
+        }
+        else if (change.Property == AutoFetchScheduleItemsProperty)
+        {
             CancelDrag();
             ObserveItems();
+            if (AutoFetchScheduleItems) RefreshAutomaticItems();
+            else
+            {
+                _autoItemSubscriptions.Clear();
+                _autoItems = [];
+            }
             Rebuild();
         }
-        else if (change.Property == WeekStartProperty || change.Property == ScaleProperty || change.Property == IsReadonlyProperty)
+        else if (change.Property == WeekStartProperty)
+        {
+            CancelDrag();
+            if (AutoFetchScheduleItems) RefreshAutomaticItems();
+            Rebuild();
+        }
+        else if (change.Property == ScaleProperty || change.Property == IsReadonlyProperty)
         {
             CancelDrag();
             Rebuild();
@@ -182,10 +219,82 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     {
         if (_observedItems != null)
             _observedItems.CollectionChanged -= ItemsChanged;
-        _observedItems = _attached ? ItemsSource as INotifyCollectionChanged : null;
+        _observedItems = _attached && !AutoFetchScheduleItems ? ItemsSource as INotifyCollectionChanged : null;
         if (_observedItems != null)
             _observedItems.CollectionChanged += ItemsChanged;
     }
+
+    private void QueueAutomaticRefresh()
+    {
+        if (!_attached || !AutoFetchScheduleItems || _autoRefreshQueued) return;
+        _autoRefreshQueued = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _autoRefreshQueued = false;
+            if (_attached && AutoFetchScheduleItems) RefreshAutomaticItems();
+        });
+    }
+
+    private void RefreshAutomaticItems()
+    {
+        if (!_attached || !AutoFetchScheduleItems) return;
+
+        _autoItemSubscriptions.Clear();
+        var profileService = IAppHost.GetService<IProfileService>();
+        var lessonsService = IAppHost.GetService<ILessonsService>();
+        var settingsService = IAppHost.GetService<SettingsService>();
+        var profile = profileService.Profile;
+        WatchProperties(profile);
+        WatchProperties(settingsService);
+        if (profileService is INotifyPropertyChanged observableProfileService) WatchProperties(observableProfileService);
+        WatchProperties(settingsService.Settings);
+        WatchCollection(settingsService.Settings.MultiWeekRotationOffset);
+        WatchCollection(profile.ScheduleItems);
+        WatchCollection(profile.Subjects);
+        foreach (var item in profile.ScheduleItems.Values)
+        {
+            WatchProperties(item);
+            WatchProperties(item.EnableRule);
+            WatchCollection(item.EnableRule.EnableDates);
+        }
+        foreach (var subject in profile.Subjects.Values) WatchProperties(subject);
+
+        var occurrences = new List<ScheduleWeekOccurrence>();
+        for (var day = 0; day < 7; day++)
+        {
+            var date = WeekStart.AddDays(day);
+            foreach (var (id, item) in lessonsService.GetScheduleItemsByDate(date))
+            {
+                profile.Subjects.TryGetValue(item.SubjectId, out var subject);
+                var name = !string.IsNullOrWhiteSpace(subject?.Name) ? subject.Name : "未指定科目";
+                occurrences.Add(new ScheduleWeekOccurrence(id, date, name, item.StartTime, item.EndTime)
+                {
+                    SubjectColorHex = subject?.ColorHex,
+                    SubjectIconExpression = subject?.Icon
+                });
+            }
+        }
+        _autoItems = occurrences;
+        if (SelectedScheduleItemId is { } selectedId && !profile.ScheduleItems.ContainsKey(selectedId))
+            SetCurrentValue(SelectedScheduleItemIdProperty, (Guid?)null);
+        Rebuild();
+    }
+
+    private void WatchProperties(INotifyPropertyChanged source)
+    {
+        PropertyChangedEventHandler handler = (_, _) => QueueAutomaticRefresh();
+        source.PropertyChanged += handler;
+        _autoItemSubscriptions.Add(Disposable.Create(() => source.PropertyChanged -= handler));
+    }
+
+    private void WatchCollection(INotifyCollectionChanged source)
+    {
+        NotifyCollectionChangedEventHandler handler = (_, _) => QueueAutomaticRefresh();
+        source.CollectionChanged += handler;
+        _autoItemSubscriptions.Add(Disposable.Create(() => source.CollectionChanged -= handler));
+    }
+
+    private IEnumerable<ScheduleWeekOccurrence> CurrentItems => AutoFetchScheduleItems ? _autoItems : ItemsSource ?? [];
 
     private void ItemsChanged(object? sender, NotifyCollectionChangedEventArgs e) { CancelDrag(); Rebuild(); }
     private void ScrollChanged(object? sender, ScrollChangedEventArgs e)
@@ -231,7 +340,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             Math.Max(0, 1440 * Scale - _scrollViewer.Viewport.Height)));
     }
 
-    private IEnumerable<ScheduleWeekOccurrence> VisibleOccurrences() => (ItemsSource ?? [])
+    private IEnumerable<ScheduleWeekOccurrence> VisibleOccurrences() => CurrentItems
         .Where(item => item.Date.DayNumber >= WeekStart.DayNumber && item.Date.DayNumber - WeekStart.DayNumber < 7);
 
     private ScheduleWeekOccurrence? SelectedOccurrence() => VisibleOccurrences()
@@ -352,6 +461,9 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         var width = _canvas.Bounds.Width;
         if (width <= RulerWidth) return;
         var columnWidth = (width - RulerWidth) / 7;
+        var compactHeaders = columnWidth < 54;
+        var headerHeight = compactHeaders ? 36 : 24;
+        _header.Height = headerHeight;
         if (_ruler == null)
         {
             _ruler = new ScheduleWeekRuler { IsHitTestVisible = false };
@@ -366,9 +478,17 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             _header.Children.Add(_headerRuler);
         }
         _headerRuler.Width = width;
-        _headerRuler.Height = _header.Bounds.Height;
+        _headerRuler.Height = headerHeight;
         string[] days = ["一", "二", "三", "四", "五", "六", "日"];
-        var items = (ItemsSource ?? []).Select(item =>
+        if (_compactHeaders != compactHeaders)
+        {
+            foreach (var header in _dayHeaders)
+                _header.Children.Remove(header);
+            _dayHeaders.Clear();
+            _dayHeaderDates.Clear();
+            _compactHeaders = compactHeaders;
+        }
+        var items = CurrentItems.Select(item =>
         {
             var display = item;
             if (_drag is { HasMoved: true } drag && drag.Item.ScheduleItemId == item.ScheduleItemId)
@@ -388,17 +508,19 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                 var label = new TextBlock { TextAlignment = TextAlignment.Center, FontSize = 12 };
                 var dateRun = new Run();
                 dateRun.Classes.Add("l2");
-                label.Inlines!.Add(new Run($"{days[day]} "));
+                label.Inlines!.Add(new Run(compactHeaders ? days[day] : $"{days[day]} "));
+                if (compactHeaders)
+                    label.Inlines.Add(new LineBreak());
                 label.Inlines.Add(dateRun);
                 _dayHeaderDates.Add(dateRun);
                 _dayHeaders.Add(label);
                 _header.Children.Add(label);
             }
             var header = _dayHeaders[day];
-            _dayHeaderDates[day].Text = $"{date:MM/dd}";
+            _dayHeaderDates[day].Text = compactHeaders ? $"{date:M/d}" : $"{date:MM/dd}";
             header.Width = columnWidth;
             Canvas.SetLeft(header, RulerWidth + day * columnWidth);
-            Canvas.SetTop(header, 4);
+            Canvas.SetTop(header, compactHeaders ? 2 : 4);
             var dayItems = items.Where(x => x.Display.Date == date).OrderBy(x => x.Display.StartTime).ThenBy(x => x.Source.ScheduleItemId).ToList();
             // Include the minimum visual hit area in collision layout so zero/short courses remain selectable.
             var group = new List<DisplayOccurrence>();
@@ -484,11 +606,13 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                 _canvas!.Children.Add(block);
             }
             block.Occurrence = item;
-            block.SubjectName = item.SubjectName;
+            block.UpdateSubjectAppearance(item);
             block.TimeText = $"{FormatTime(item.StartTime)}–{FormatTime(item.EndTime)}";
             block.Width = Math.Max(1, columnWidth / laneEnds.Count - 4);
             block.Height = Math.Max(MinimumBlockHeight, (item.EndTime - item.StartTime).TotalMinutes * Scale);
-            block.IsCompact = block.Height < 44;
+            // Labels need 50px plus 5px on each side before compact margins take over.
+            block.IsCompact = block.Height < 44 || block.Width < 60;
+            block.ShowTimeText = block.Height >= 44;
             block.IsVisible = true;
             block.Cursor = new Cursor(IsReadonly ? StandardCursorType.Arrow : StandardCursorType.SizeAll);
             var tip = $"{item.SubjectName}\n{item.Date:yyyy-MM-dd} {block.TimeText}";
@@ -507,6 +631,12 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        if (_drag != null)
+        {
+            e.PreventGestureRecognition();
+            e.Handled = true;
+            return;
+        }
         if (_canvas == null || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
         var source = e.Source as Visual;
         var block = source as ScheduleWeekBlock ?? source?.GetVisualAncestors().OfType<ScheduleWeekBlock>().FirstOrDefault();
@@ -526,6 +656,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                 Cursor = new Cursor(kind == DragKind.Move ? StandardCursorType.SizeAll : StandardCursorType.SizeNorthSouth);
                 ToolTip.SetIsOpen(block, false);
                 e.Pointer.Capture(this);
+                // The scroll viewer must not take this touch pointer after the drag begins.
+                e.PreventGestureRecognition();
                 UpdateResizeGuide();
             }
         }
@@ -563,7 +695,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                         ? StandardCursorType.SizeAll : StandardCursorType.SizeNorthSouth);
             return;
         }
-        if (_canvas == null || IsReadonly) return;
+        if (_canvas == null || IsReadonly || e.Pointer != drag.Pointer) return;
         var point = e.GetPosition(_canvas);
         if (!drag.HasMoved && Math.Abs(point.Y - drag.Origin.Y) < 3 && Math.Abs(point.X - drag.Origin.X) < 3) return;
         var wasMoving = drag.HasMoved;
@@ -593,7 +725,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-        if (_drag is not { } drag) return;
+        if (_drag is not { } drag || e.Pointer != drag.Pointer) return;
         _drag = null;
         e.Pointer.Capture(null);
         Cursor = null;
@@ -611,6 +743,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                     ScheduleItemId = preview.ScheduleItemId, OriginalDate = drag.Item.Date, Date = preview.Date,
                     StartTime = preview.StartTime, EndTime = preview.EndTime
                 });
+                if (AutoFetchScheduleItems) RefreshAutomaticItems();
                 RemapCommittedBlocks(drag);
             }
         }
@@ -626,8 +759,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     {
         var preview = drag.Preview;
         var delta = preview.Date.DayNumber - drag.Item.Date.DayNumber;
-        if (delta == 0 || ItemsSource?.Any(item => item.ScheduleItemId == preview.ScheduleItemId
-                && item.Date == preview.Date && item.StartTime == preview.StartTime && item.EndTime == preview.EndTime) != true)
+        if (delta == 0 || !CurrentItems.Any(item => item.ScheduleItemId == preview.ScheduleItemId
+                && item.Date == preview.Date && item.StartTime == preview.StartTime && item.EndTime == preview.EndTime))
             return;
         var moved = _blocks.Where(pair => pair.Key.Id == preview.ScheduleItemId).ToList();
         foreach (var (key, _) in moved) _blocks.Remove(key);
@@ -641,7 +774,11 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         }
     }
 
-    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e) { base.OnPointerCaptureLost(e); CancelDrag(); }
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        base.OnPointerCaptureLost(e);
+        if (_drag?.Pointer == e.Pointer) CancelDrag();
+    }
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);

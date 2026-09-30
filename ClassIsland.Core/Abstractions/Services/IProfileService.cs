@@ -1,4 +1,5 @@
 using ClassIsland.Shared.IPC.Abstractions.Services;
+using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Abstractions.Services;
 

@@ -19,6 +19,8 @@ public partial class RecoveryWindow : ViewBase
 
     public event EventHandler? CompleteInitialized;
 
+    internal bool OpenBackupOnStartup { get; init; }
+
     public RecoveryViewModel ViewModel { get; } = new();
 
     public RecoveryWindow()
@@ -46,8 +48,15 @@ public partial class RecoveryWindow : ViewBase
         {
             MainFrame = MainFrame
         };
-        home.Loaded += (o, args) => CompleteInitialized?.Invoke(this, EventArgs.Empty);
-        MainFrame.Content = home;
+        var initialPage = OpenBackupOnStartup
+            ? new RecoverBackupPage
+            {
+                MainFrame = MainFrame,
+                LastPage = home
+            }
+            : (Avalonia.Controls.UserControl)home;
+        initialPage.Loaded += (o, args) => CompleteInitialized?.Invoke(this, EventArgs.Empty);
+        MainFrame.Content = initialPage;
     }
 
     private void NavigationServiceOnNavigated(object sender, FANavigationEventArgs e)

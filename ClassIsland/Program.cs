@@ -48,6 +48,7 @@ public static class Program
             new Option<bool>(["--verbose", "-v"], "启用详细输出"),
             new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印"),
             new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
+            new Option<bool>(["--recover-backup"], "在恢复模式中打开备份恢复页面"),
             new Option<bool>(["--diagnostic", "-d"], "启用诊断模式(包括详细输出)，并在桌面上生成一份诊断数据"),
             new Option<bool>(["--safe", "-s"], "启用安全模式"),
             new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动"),

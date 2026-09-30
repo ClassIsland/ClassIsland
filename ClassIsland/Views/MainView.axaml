@@ -4,47 +4,134 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:scheduleWeek="clr-namespace:ClassIsland.Controls.ScheduleWeekEdit"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             xmlns:attachedSettings="using:ClassIsland.Core.Models.AttachedSettings"
+             xmlns:appControls="using:ClassIsland.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.MainView"
              NavigationPage.HasBackButton="False"
              Header="ClassIsland">
-    <StackPanel Classes="settings-container animated-intro">
-        <controls:FAInfoBar Severity="Warning" Message="早期开发中，大部分功能仍不可用，不代表最终品质。"
-                            IsOpen="True"/>
-        
-        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE699;}"
-                                     Header="编辑档案…"
-                                     IsClickEnabled="True"
-                                     Click="ButtonSettings_OnClick"/>
-        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE6A1;}"
-                                     Header="加载临时课表…"
-                                     IsClickEnabled="True"
-                                     Click="MenuItemTemporaryClassPlan_OnClick"/>
-        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE15F;}"
-                                     Header="换课…"
-                                     IsClickEnabled="True"
-                                     Click="MenuItemClassSwap_OnClick"/>
-        <Separator/>
-        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C9;}"
-                                     Header="编辑主界面…"
-                                     IsClickEnabled="True"/>
-        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xEF27;}"
-                                     Header="应用设置…"
-                                     IsClickEnabled="True"
-                                     Click="MenuItemSettings_OnClick"/>
-        <Separator/>
-        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0BD;}"
-                                     Header="重启"
-                                     IsClickEnabled="True"
-                                     Click="MenuItemRestartApp_OnClick"/>
-        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0DF;}"
-                                     Header="退出"
-                                     IsClickEnabled="True"
-                                     Click="MenuItemExitApp_OnClick"/>
-        <Separator/>
-        <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI BugRegular}}"
-                                     Header="Dev Portal"
-                                     IsClickEnabled="True"
-                                     Click="FASettingsExpanderDevPortal_OnClick"/>
-    </StackPanel>
+    <ci:ViewBase.Styles>
+        <Style Selector="TabControl#MainViewTabs /template/ ItemsPresenter#PART_ItemsPresenter">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </ci:ViewBase.Styles>
+    <ci:AdaptiveNavigationView x:Name="MainNavigation"
+                               Header="{Binding #MainViewTabs.SelectedItem.Header}">
+        <ci:AdaptiveNavigationView.MenuItems>
+            <controls:FANavigationViewItem x:Name="HomeNavigationItem"
+                                           Content="今天"
+                                           IconSource="{ci:FluentIconSource {ci:FI HomeRegular}, FontSize=22}" />
+            <controls:FANavigationViewItem x:Name="WeekNavigationItem"
+                                           Content="本周"
+                                           IconSource="{ci:FluentIconSource {ci:FI CalendarWeekStartRegular}, FontSize=22}" />
+            <controls:FANavigationViewItem x:Name="MoreNavigationItem"
+                                           Content="更多"
+                                           IconSource="{ci:FluentIconSource {ci:FI MoreHorizontalRegular}, FontSize=22}" />
+        </ci:AdaptiveNavigationView.MenuItems>
+        <ci:ReusableTabControl x:Name="MainViewTabs" SelectedIndex="0"
+                               HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                               Padding="0" Margin="0">
+            <TabItem Header="今天">
+                <Border>
+                    <Border.Styles>
+                        <Style Selector="appControls|HomeDatePicker#HomeCalendar">
+                            <Setter Property="MaxHeight" Value="{Binding #HomeContent.Bounds.Height, Converter={x:Static appControls:HomeDatePicker.AvailableHeightConverter}}"/>
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                        </Style>
+                        <Style Selector="ScrollViewer#HomeLessons">
+                            <Setter Property="Grid.Row" Value="1"/>
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                        </Style>
+                        <Style Selector="Grid#HomeContent.wide">
+                            <Setter Property="ColumnSpacing" Value="12"/>
+                            <Setter Property="Margin" Value="56,16,16,16"/>
+                        </Style>
+                        <Style Selector="Grid#HomeContent.wide > appControls|HomeDatePicker#HomeCalendar">
+                            <Setter Property="IsExpandedPermanently" Value="True"/>
+                            <Setter Property="Width" Value="300"/>
+                            <Setter Property="Grid.ColumnSpan" Value="1"/>
+                            <Setter Property="Grid.RowSpan" Value="2"/>
+                            <Setter Property="MaxHeight" Value="Infinity"/>
+                            <Setter Property="VerticalAlignment" Value="Top"/>
+                        </Style>
+                        <Style Selector="Grid#HomeContent.wide > ScrollViewer#HomeLessons">
+                            <Setter Property="Grid.Row" Value="0"/>
+                            <Setter Property="Grid.Column" Value="1"/>
+                            <Setter Property="Grid.ColumnSpan" Value="1"/>
+                            <Setter Property="Grid.RowSpan" Value="2"/>
+                        </Style>
+                    </Border.Styles>
+                    <Grid x:Name="HomeContent" RowDefinitions="Auto,*" ColumnDefinitions="Auto,*"
+                          Classes.wide="{Binding !#MainNavigation.IsNarrow}">
+                        <appControls:HomeDatePicker x:Name="HomeCalendar" DataContext="{Binding $parent[views:MainView].ViewModel}"/>
+                        <ScrollViewer x:Name="HomeLessons" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <Panel>
+                                <ci:LessonsListBox ClassPlan="{Binding $parent[views:MainView].ViewModel.DisplayedClassPlan}"
+                                                   Subjects="{Binding $parent[views:MainView].ViewModel.ProfileService.Profile.Subjects}"
+                                                   SelectedIndex="{Binding $parent[views:MainView].ViewModel.DisplayedSelectedIndex, Mode=OneWay}"
+                                                   IsLiveUpdatingEnabled="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
+                                                   FadeCompletedClasses="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
+                                                   IsVisible="{Binding $parent[views:MainView].ViewModel.HasDisplayedLessons}"
+                                                   Orientation="Vertical">
+                                    <ci:LessonsListBox.LessonControlSettings>
+                                        <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
+                                    </ci:LessonsListBox.LessonControlSettings>
+                                </ci:LessonsListBox>
+                                <TextBlock Text="这一天没有课程安排" Margin="16,32" HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                           IsVisible="{Binding !$parent[views:MainView].ViewModel.HasDisplayedLessons}"/>
+                            </Panel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </TabItem>
+            <TabItem Header="本周">
+                <Grid RowDefinitions="Auto,*">
+                    <scheduleWeek:ScheduleWeekEditControl x:Name="ScheduleWeekTest" Grid.Row="1" IsReadonly="True"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="更多">
+                <ScrollViewer>
+                    <StackPanel Classes="settings-container animated-intro">
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE699;}"
+                                                 Header="编辑档案…"
+                                                 IsClickEnabled="True"
+                                                 Click="ButtonSettings_OnClick"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE6A1;}"
+                                                 Header="加载临时课表…"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemTemporaryClassPlan_OnClick"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE15F;}"
+                                                 Header="换课…"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemClassSwap_OnClick"/>
+                        <Separator/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C9;}"
+                                                 Header="编辑主界面…"
+                                                 IsClickEnabled="True"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xEF27;}"
+                                                 Header="应用设置…"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemSettings_OnClick"/>
+                        <Separator/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0BD;}"
+                                                 Header="重启"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemRestartApp_OnClick"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0DF;}"
+                                                 Header="退出"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemExitApp_OnClick"/>
+                        <Separator/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI BugRegular}}"
+                                                 Header="Dev Portal"
+                                                 IsClickEnabled="True"
+                                                 Click="FASettingsExpanderDevPortal_OnClick"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </ci:ReusableTabControl>
+    </ci:AdaptiveNavigationView>
 </ci:ViewBase>

@@ -31,6 +31,7 @@ public class Profile : ObservableRecipient
     private ObservableOrderedDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
     private ObservableOrderedDictionary<Guid, ScheduleItem> _scheduleV2Items = new();
     private ScheduleType _scheduleType = ScheduleType.Classic;
+    private List<ProfileMigration> _migrations = [];
 
     /// <summary>
     /// 实例化对象
@@ -388,6 +389,20 @@ public class Profile : ObservableRecipient
         {
             if (value == _scheduleType) return;
             _scheduleType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 档案已应用的迁移。
+    /// </summary>
+    public List<ProfileMigration> Migrations
+    {
+        get => _migrations;
+        set
+        {
+            if (Equals(value, _migrations)) return;
+            _migrations = value;
             OnPropertyChanged();
         }
     }

@@ -7,6 +7,7 @@ using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
@@ -20,6 +21,18 @@ namespace ClassIsland.Core.Controls.LessonsControls;
 /// </summary>
 public class LessonsListBox : ListBox
 {
+    /// <summary>
+    /// Gets or sets the direction in which lessons are arranged.
+    /// </summary>
+    public static readonly StyledProperty<Orientation> OrientationProperty =
+        AvaloniaProperty.Register<LessonsListBox, Orientation>(nameof(Orientation), Orientation.Horizontal);
+
+    public Orientation Orientation
+    {
+        get => GetValue(OrientationProperty);
+        set => SetValue(OrientationProperty, value);
+    }
+
     public static string MinimizedLessonControlResourceKey { get; } = "MinimizedLessonControl";
     public static string ExpandedLessonControlResourceKey { get; } = "ExpandedLessonControl";
     public static string SeparatorLessonControlResourceKey { get; } = "SeparatorLessonControl";
