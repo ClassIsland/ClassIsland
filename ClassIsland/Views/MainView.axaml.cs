@@ -8,36 +8,26 @@ using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Helpers;
-using ClassIsland.Services;
-using ClassIsland.Services.Management;
 using ClassIsland.Shared;
+using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Views;
 
 public partial class MainView : ViewBase
 {
-    public IManagementService ManagementService { get; }
-    public IUriNavigationService UriNavigationService { get; }
-    public INotificationHostService NotificationHostService { get; }
-    public ILessonsService LessonsService { get; }
+    public MainViewViewModel ViewModel { get; } = IAppHost.GetService<MainViewViewModel>();
     public ClassChangingWindow? ClassChangingWindow { get; set; }
     private Window? _scheduleWeekHost;
     
 
-    public MainView(IManagementService managementService,
-        IUriNavigationService uriNavigationService,
-        INotificationHostService notificationHostService,
-        ILessonsService lessonsService)
+    public MainView()
     {
-        ManagementService = managementService;
-        UriNavigationService = uriNavigationService;
-        NotificationHostService = notificationHostService;
-        LessonsService = lessonsService;
         InitializeComponent();
         MainViewTabs.SelectionChanged += MainViewTabs_OnSelectionChanged;
+        MainNavigation.SelectionChanged += MainNavigation_OnSelectionChanged;
+        MainNavigation.SelectedItem = HomeNavigationItem;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -47,19 +37,64 @@ public partial class MainView : ViewBase
         if (_scheduleWeekHost != null)
             _scheduleWeekHost.Activated += ScheduleWeekHost_OnActivated;
         RefreshScheduleWeekIfVisible();
+        UpdateHomeCalendarActivation();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        ViewModel.DeactivateCalendar();
         if (_scheduleWeekHost != null)
             _scheduleWeekHost.Activated -= ScheduleWeekHost_OnActivated;
         _scheduleWeekHost = null;
         base.OnDetachedFromVisualTree(e);
     }
 
-    private void MainViewTabs_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => RefreshScheduleWeekIfVisible();
+    private void MainViewTabs_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        var item = MainViewTabs.SelectedIndex switch
+        {
+            0 => HomeNavigationItem,
+            1 => WeekNavigationItem,
+            2 => MoreNavigationItem
+        };
+        if (MainNavigation.SelectedItem != item)
+            MainNavigation.SelectedItem = item;
+        RefreshScheduleWeekIfVisible();
+        UpdateHomeCalendarActivation();
+    }
 
-    private void ScheduleWeekHost_OnActivated(object? sender, EventArgs e) => RefreshScheduleWeekIfVisible();
+    private void MainNavigation_OnSelectionChanged(object? sender, FANavigationViewSelectionChangedEventArgs e)
+    {
+        if (e.SelectedItem == HomeNavigationItem)
+        {
+            if (MainViewTabs.SelectedIndex != 0)
+                MainViewTabs.SelectedIndex = 0;
+        }
+        else if (e.SelectedItem == WeekNavigationItem)
+        {
+            if (MainViewTabs.SelectedIndex != 1)
+                MainViewTabs.SelectedIndex = 1;
+        }
+        else if (e.SelectedItem == MoreNavigationItem)
+        {
+            if (MainViewTabs.SelectedIndex != 2)
+                MainViewTabs.SelectedIndex = 2;
+        }
+    }
+
+    private void ScheduleWeekHost_OnActivated(object? sender, EventArgs e)
+    {
+        RefreshScheduleWeekIfVisible();
+        ViewModel.RefreshCalendar();
+    }
+
+    private void UpdateHomeCalendarActivation()
+    {
+        if (MainViewTabs.SelectedIndex == 0 && VisualRoot != null)
+            ViewModel.ActivateCalendar();
+        else
+            ViewModel.DeactivateCalendar();
+    }
 
     private void RefreshScheduleWeekIfVisible()
     {
@@ -84,7 +119,7 @@ public partial class MainView : ViewBase
 
     private async void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
+        if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
         {
             return;
         }
@@ -117,7 +152,7 @@ public partial class MainView : ViewBase
 
     private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
     {
-        UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/"));
+        ViewModel.UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/"));
     }
 
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
@@ -127,7 +162,7 @@ public partial class MainView : ViewBase
     
     private void MenuItemClearAllNotifications_OnClick(object sender, RoutedEventArgs e)
     {
-        NotificationHostService.CancelAllNotifications();
+        ViewModel.NotificationHostService.CancelAllNotifications();
     }
 
     private void MenuItemNotificationSettings_OnClick(object sender, RoutedEventArgs e)
@@ -142,11 +177,11 @@ public partial class MainView : ViewBase
     
     private async void OpenClassSwapWindow()
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ChangeLessonsAuthorizeLevel))
+        if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig.ChangeLessonsAuthorizeLevel))
         {
             return;
         }
-        if (LessonsService.CurrentClassPlan == null) // 如果今天没有课程，则选择临时课表
+        if (ViewModel.LessonsService.CurrentClassPlan == null) // 如果今天没有课程，则选择临时课表
         {
             var window = App.GetService<ProfileSettingsWindow>();
             window.OpenDrawer("TemporaryClassPlan");
@@ -162,7 +197,7 @@ public partial class MainView : ViewBase
         // ViewModel.IsBusy = true;
         ClassChangingWindow = new ClassChangingWindow()
         {
-            ClassPlan = LessonsService.CurrentClassPlan
+            ClassPlan = ViewModel.LessonsService.CurrentClassPlan
         };
         await ClassChangingWindow.ShowModal(this);
         ClassChangingWindow.DataContext = null;

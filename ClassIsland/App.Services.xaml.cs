@@ -111,6 +111,8 @@ public partial class App
         services.AddTransient<EditModeViewModel>();
         services.AddTransient<TutorialEditorViewModel>();
         services.AddTransient<TutorialCenterViewModel>();
+        services.AddTransient<MainViewViewModel>();
+        services.AddSingleton<ClassIsland.Models.HomeDateSelectionState>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
         services.AddTransient<ClockSettingsViewModel>();

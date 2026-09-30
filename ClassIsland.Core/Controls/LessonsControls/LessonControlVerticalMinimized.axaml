@@ -1,0 +1,50 @@
+<local:LessonControlBase x:Class="ClassIsland.Core.Controls.LessonsControls.LessonControlVerticalMinimized"
+                         xmlns="https://github.com/avaloniaui"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:local="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
+                         xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+                         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                         x:Name="LessonControlVerticalMinimizedRoot">
+    <local:LessonControlBase.Resources>
+        <converters:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
+                                                      x:Key="SubjectIdToSubjectConverter"/>
+        <converters:StringColorHexToSolidBrushConverter x:Key="SubjectColorBrushConverter"/>
+        <converters:SubjectIconSourceConverter x:Key="SubjectIconSourceConverter"/>
+        <converters:SubjectLocationDisplayConverter x:Key="SubjectLocationDisplayConverter"/>
+    </local:LessonControlBase.Resources>
+    <local:LessonControlBase.Styles>
+        <Style Selector="Border#SubjectColorMarker">
+            <Setter Property="Background" Value="{Binding ColorHex, Converter={StaticResource SubjectColorBrushConverter}}"/>
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+    </local:LessonControlBase.Styles>
+    <Grid Height="56">
+        <Grid.DataContext>
+            <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}"
+                          FallbackValue="{x:Static profile:Subject.Fallback}"
+                          TargetNullValue="{x:Static profile:Subject.Fallback}">
+                <Binding Path="#LessonControlVerticalMinimizedRoot.Subjects"/>
+                <Binding Path="#LessonControlVerticalMinimizedRoot.ClassInfo.SubjectId"/>
+            </MultiBinding>
+        </Grid.DataContext>
+        <Grid ColumnDefinitions="3,9,*" RowDefinitions="20,2,16" Margin="0 9">
+            <Border x:Name="SubjectColorMarker" Grid.RowSpan="3" Width="3" CornerRadius="6"/>
+            <Grid Grid.Column="2" ColumnDefinitions="16,4,*">
+                <controls:FAIconSourceElement Width="16" Height="16" TextElement.FontSize="16"
+                                              Classes="repair-fontsize" IsHitTestVisible="False"
+                                              IconSource="{Binding Icon, Converter={StaticResource SubjectIconSourceConverter}}"/>
+                <TextBlock Grid.Column="2" Text="{Binding Name}" FontSize="14" FontWeight="Bold"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+            </Grid>
+            <TextBlock Grid.Row="2" Grid.Column="2" FontSize="12"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis">
+                <Run Text="{Binding #LessonControlVerticalMinimizedRoot.CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:h\\:mm}'}"/>
+                <Run Text="-"/>
+                <Run Text="{Binding #LessonControlVerticalMinimizedRoot.CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:h\\:mm}'}"/>
+                <Run Text="{Binding Location, Converter={StaticResource SubjectLocationDisplayConverter}}"/>
+            </TextBlock>
+        </Grid>
+    </Grid>
+</local:LessonControlBase>
