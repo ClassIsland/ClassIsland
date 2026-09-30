@@ -63,7 +63,7 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
         <PackageReference Include="Downloader" Version="5.9.0" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
-        <PackageReference Include="Grpc.Tools" Version="2.62.0">
+        <PackageReference Include="Grpc.Tools" Version="2.84.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
