@@ -4,7 +4,6 @@
     "runtime-version": "24.08",
     "sdk": "org.freedesktop.Sdk",
     "sdk-extensions": [
-        "org.freedesktop.Sdk.Extension.dotnet8",
         "org.freedesktop.Sdk.Extension.dotnet9"
     ],
     "command": "run.sh",
@@ -45,11 +44,8 @@
             "name": "ClassIsland",
             "buildsystem": "simple",
             "build-commands": [
-                "dotnet publish -c Release --source nuget-sources --source /usr/lib/sdk/dotnet8/nuget/packages --source /usr/lib/sdk/dotnet9/nuget/packages -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj --runtime $RUNTIME --self-contained false -p:UseAppHost=false",
-                "install -Dm755 /usr/lib/sdk/dotnet8/lib/dotnet /app/lib/dotnet/dotnet",
-                "mkdir -p /app/lib/dotnet/host/fxr /app/lib/dotnet/shared/Microsoft.NETCore.App",
-                "cp -a /usr/lib/sdk/dotnet8/lib/host/fxr/. /app/lib/dotnet/host/fxr/",
-                "cp -a /usr/lib/sdk/dotnet8/lib/shared/Microsoft.NETCore.App/. /app/lib/dotnet/shared/Microsoft.NETCore.App/",
+                "dotnet publish -c Release --source nuget-sources --source /usr/lib/sdk/dotnet9/nuget/packages -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj --runtime $RUNTIME --self-contained false -p:UseAppHost=false",
+                "runtime_package=$(find nuget-sources -maxdepth 1 -name 'microsoft.netcore.app.runtime.'$RUNTIME'.*.nupkg' -print -quit); test -n \"$runtime_package\"; runtime_version=$(basename \"$runtime_package\" .nupkg | sed 's/^microsoft.netcore.app.runtime.[^.]*.//'); mkdir -p /tmp/dotnet-runtime /app/lib/dotnet/host/fxr /app/lib/dotnet/shared/Microsoft.NETCore.App/$runtime_version; install -Dm755 /usr/lib/sdk/dotnet9/lib/dotnet /app/lib/dotnet/dotnet; unzip -q \"$runtime_package\" 'runtimes/*/lib/net8.0/*' 'runtimes/*/native/*' -d /tmp/dotnet-runtime; cp -a /tmp/dotnet-runtime/runtimes/$RUNTIME/lib/net8.0/. /app/lib/dotnet/shared/Microsoft.NETCore.App/$runtime_version/; cp -a /tmp/dotnet-runtime/runtimes/$RUNTIME/native/. /app/lib/dotnet/shared/Microsoft.NETCore.App/$runtime_version/; install -Dm755 /app/lib/dotnet/shared/Microsoft.NETCore.App/$runtime_version/libhostfxr.so /app/lib/dotnet/host/fxr/$runtime_version/libhostfxr.so; rm -rf /tmp/dotnet-runtime",
                 "echo flatpak>/app/bin/PackageType",
                 "install -Dm755 run.sh /app/bin/run.sh",
                 "install -Dm644 org.classisland.ClassIsland.desktop /app/share/applications/org.classisland.ClassIsland.desktop",

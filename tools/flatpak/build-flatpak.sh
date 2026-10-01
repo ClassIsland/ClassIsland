@@ -19,7 +19,7 @@ usage() {
     cat <<EOF_USAGE
 Usage: $(basename "$0") [--help]
 
-Build a self-contained ClassIsland Flatpak bundle in tools/flatpak.
+Build a framework-dependent ClassIsland Flatpak bundle in tools/flatpak.
 EOF_USAGE
 }
 
@@ -86,7 +86,6 @@ require_ref() {
 }
 
 require_ref "org.freedesktop.Sdk//$RUNTIME_VERSION"
-require_ref "org.freedesktop.Sdk.Extension.dotnet8//$RUNTIME_VERSION"
 require_ref "org.freedesktop.Sdk.Extension.dotnet9//$RUNTIME_VERSION"
 echo "   ✓ Required Flatpak SDKs are installed"
 

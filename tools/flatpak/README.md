@@ -9,7 +9,7 @@
 - Linux 系统，以及 `flatpak`、`flatpak-builder` 和 Python 3；
 - 已配置名为 `flathub` 的 Flatpak remote；
 - `org.freedesktop.Sdk//24.08`；
-- `org.freedesktop.Sdk.Extension.dotnet8//24.08` 和 `org.freedesktop.Sdk.Extension.dotnet9//24.08`。dotnet8 扩展同时提供应用需要的 .NET 8 runtime 文件，dotnet9 扩展用于构建项目；
+- `org.freedesktop.Sdk.Extension.dotnet9//24.08`；构建时会从生成的 NuGet 源清单中提取应用需要的 .NET 8 runtime 文件；
 - 网络连接，用于恢复 NuGet 依赖和下载缺少的构建工具。
 
 例如，可以使用以下命令准备 Flathub 和 SDK（命令由用户主动执行）：
@@ -18,7 +18,6 @@
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install flathub \
   org.freedesktop.Sdk//24.08 \
-  org.freedesktop.Sdk.Extension.dotnet8//24.08 \
   org.freedesktop.Sdk.Extension.dotnet9//24.08
 ```
 
