@@ -109,11 +109,25 @@ trap 'rm -f "$temporary_sources"' EXIT
 python3 "$GENERATOR" "$temporary_sources" \
     "$REPO_DIR/ClassIsland.Desktop/ClassIsland.Desktop.csproj" \
     --dotnet 9 --runtime "$runtime"
+if ! python3 - "$temporary_sources" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+sources = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+if not sources:
+    raise SystemExit("the dependency generator produced an empty sources list")
+PY
+then
+    echo "Error: failed to generate NuGet sources. Check the Flatpak SDK and network prerequisites." >&2
+    exit 1
+fi
 mv -- "$temporary_sources" "$SOURCES"
 echo "   ✓ sources.json generated"
 
 echo "Building Flatpak package..."
 flatpak-builder \
+    --disable-rofiles-fuse \
     --force-clean \
     --repo="$REPO" \
     "$BUILD_DIR" "$MANIFEST"
