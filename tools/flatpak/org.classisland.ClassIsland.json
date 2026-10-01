@@ -12,14 +12,13 @@
         "--share=ipc",
         "--share=network",
         "--socket=x11",
-        "--socket=session-bus",
+        "--talk-name=org.freedesktop.Notifications",
         "--device=dri",
         "--filesystem=xdg-config:ro",
         "--filesystem=xdg-data:ro",
         "--filesystem=xdg-cache:ro"
         ],
     "build-options": {
-        "append-path": "/usr/lib/sdk/dotnet8/bin",
         "append-path": "/usr/lib/sdk/dotnet9/bin",
         "append-ld-library-path": "/usr/lib/sdk/dotnet9/lib",
         "prepend-pkg-config-path": "/usr/lib/sdk/dotnet9/lib/pkgconfig",
@@ -46,11 +45,16 @@
             "name": "ClassIsland",
             "buildsystem": "simple",
             "build-commands": [
-                "dotnet publish -c Release --source nuget-sources --source /usr/lib/sdk/dotnet8/nuget/packages --source /usr/lib/sdk/dotnet9/nuget/packages -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj --runtime $RUNTIME --sc",
-                "mkdir -p /app/share/applications",
-                "mkdir -p /app/share/icons/hicolor/512x512/apps",
+                "dotnet publish -c Release --source nuget-sources --source /usr/lib/sdk/dotnet8/nuget/packages --source /usr/lib/sdk/dotnet9/nuget/packages -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj --runtime $RUNTIME --self-contained false -p:UseAppHost=false",
+                "install -Dm755 /usr/lib/sdk/dotnet8/lib/dotnet /app/lib/dotnet/dotnet",
+                "mkdir -p /app/lib/dotnet/host/fxr /app/lib/dotnet/shared/Microsoft.NETCore.App",
+                "cp -a /usr/lib/sdk/dotnet8/lib/host/fxr/. /app/lib/dotnet/host/fxr/",
+                "cp -a /usr/lib/sdk/dotnet8/lib/shared/Microsoft.NETCore.App/. /app/lib/dotnet/shared/Microsoft.NETCore.App/",
                 "echo flatpak>/app/bin/PackageType",
-                "install -Dm755 run.sh /app/bin/run.sh"
+                "install -Dm755 run.sh /app/bin/run.sh",
+                "install -Dm644 org.classisland.ClassIsland.desktop /app/share/applications/org.classisland.ClassIsland.desktop",
+                "install -Dm644 org.classisland.ClassIsland.metainfo.xml /app/share/metainfo/org.classisland.ClassIsland.metainfo.xml",
+                "install -Dm644 ClassIsland/Assets/FreedesktopIcons/AppLogo@128w.png /app/share/icons/hicolor/128x128/apps/org.classisland.ClassIsland.png"
                 ],
             "sources": [
                 {
@@ -63,6 +67,16 @@
                     "type": "file",
                     "path": "run.sh",
                     "dest-filename": "run.sh"
+                },
+                {
+                    "type": "file",
+                    "path": "org.classisland.ClassIsland.desktop",
+                    "dest-filename": "org.classisland.ClassIsland.desktop"
+                },
+                {
+                    "type": "file",
+                    "path": "org.classisland.ClassIsland.metainfo.xml",
+                    "dest-filename": "org.classisland.ClassIsland.metainfo.xml"
                 }
             ]
         }

@@ -1,84 +1,132 @@
-#!/bin/bash
-# ClassIsland Flatpak构建脚本
+#!/usr/bin/env bash
+# ClassIsland Flatpak 构建脚本
 
-set -e
+set -Eeuo pipefail
 
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-FLATPAK_DOTNET_GENERATOR_URL="https://github.com/flatpak/flatpak-builder-tools/raw/refs/heads/master/dotnet/flatpak-dotnet-generator.py"
-FLATPAK_MANIFEST="org.classisland.ClassIsland.json"
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly REPO_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
+readonly APP_ID="org.classisland.ClassIsland"
+readonly RUNTIME_VERSION="24.08"
+readonly MANIFEST="$SCRIPT_DIR/$APP_ID.json"
+readonly GENERATOR="$SCRIPT_DIR/flatpak-dotnet-generator.py"
+readonly GENERATOR_URL="https://github.com/flatpak/flatpak-builder-tools/raw/74697c75b630d7330e77250fc13cb5ea688d9479/dotnet/flatpak-dotnet-generator.py"
+readonly SOURCES="$SCRIPT_DIR/sources.json"
+readonly BUILD_DIR="$SCRIPT_DIR/build"
+readonly REPO="$SCRIPT_DIR/repo"
+readonly BUNDLE="$SCRIPT_DIR/ClassIsland.flatpak"
+
+usage() {
+    cat <<EOF_USAGE
+Usage: $(basename "$0") [--help]
+
+Build a self-contained ClassIsland Flatpak bundle in tools/flatpak.
+EOF_USAGE
+}
+
+if (($# > 0)); then
+    case "$1" in
+        --help|-h)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Error: unknown argument: $1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+fi
 
 echo "ClassIsland Flatpak Build Script"
-echo "WARNING:EXPERIMENTAL: The Flatpak support is still in early stages and may not work correctly. Please report any issues you encounter."
-echo ""
+echo "WARNING: EXPERIMENTAL: Flatpak support is still in early stages."
+echo
 
-if [ "$(uname -s)" != "Linux" ]; then
-    echo "Error: This script must be run on Linux."
+if [[ "$(uname -s)" != "Linux" ]]; then
+    echo "Error: this script must be run on Linux." >&2
     exit 1
 fi
-echo "   ✓ Running on Linux"
 
-if ! command -v flatpak &>/dev/null; then
-    echo "Error: flatpak is not installed. Please install it first."
-    exit 1
-fi
-echo "   ✓ flatpak is installed"
-
-if ! command -v flatpak-builder &>/dev/null; then
-    echo "Error: flatpak-builder is not installed. Please install it first."
-    exit 1
-fi
-echo "   ✓ flatpak-builder is installed"
-
-if ! flatpak remotes | grep -q "^flathub"; then
-    echo "   Flathub remote not found. Adding flathub..."
-    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-    echo "   ✓ Flathub remote added"
-else
-    echo "   ✓ Flathub remote is configured"
-fi
-
-echo "Downloading flatpak-dotnet-generator.py..."
-cd "$SCRIPT_DIR"
-if [ -f "flatpak-dotnet-generator.py" ]; then
-    echo "   flatpak-dotnet-generator.py already exists, skipping download"
-else
-    if command -v curl &>/dev/null; then
-        curl -LO "$FLATPAK_DOTNET_GENERATOR_URL"
-    elif command -v wget &>/dev/null; then
-        wget "$FLATPAK_DOTNET_GENERATOR_URL"
-    else
-        echo "Error: Neither curl nor wget is available to download the script."
+for command in flatpak flatpak-builder python3; do
+    if ! command -v "$command" >/dev/null 2>&1; then
+        echo "Error: $command is not installed. Install the Flatpak build prerequisites and run this script again." >&2
         exit 1
     fi
-    chmod +x flatpak-dotnet-generator.py
-    echo "   ✓ flatpak-dotnet-generator.py downloaded"
-fi
+done
+echo "   ✓ Required tools are installed"
 
-case $(uname -m) in
+case "$(uname -m)" in
     x86_64)
-    RUNTIME="linux-x64"
-    ;;
+        runtime="linux-x64"
+        flatpak_arch="x86_64"
+        ;;
     aarch64|arm64)
-    RUNTIME="linux-arm64"
-    ;;
+        runtime="linux-arm64"
+        flatpak_arch="aarch64"
+        ;;
     *)
-    echo "Unsupported Runtime.Exiting..."
-    exit 1
-    ;;
+        echo "Error: unsupported architecture: $(uname -m)" >&2
+        exit 1
+        ;;
 esac
 
-echo "Generating Nuget source file for $RUNTIME..."
-python3 flatpak-dotnet-generator.py sources.json "$SCRIPT_DIR/../../ClassIsland.Desktop/ClassIsland.Desktop.csproj" -d 9 -r $RUNTIME
+if ! flatpak remotes --columns=name | grep -Fxq flathub; then
+    echo "Error: the Flathub remote is not configured." >&2
+    echo "Run: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo" >&2
+    exit 1
+fi
+echo "   ✓ Flathub remote is configured"
+
+require_ref() {
+    local ref="$1"
+    if ! flatpak info "$ref" >/dev/null 2>&1; then
+        echo "Error: required Flatpak SDK is not installed: $ref" >&2
+        echo "Install it manually with: flatpak install flathub $ref" >&2
+        exit 1
+    fi
+}
+
+require_ref "org.freedesktop.Sdk//$RUNTIME_VERSION"
+require_ref "org.freedesktop.Sdk.Extension.dotnet8//$RUNTIME_VERSION"
+require_ref "org.freedesktop.Sdk.Extension.dotnet9//$RUNTIME_VERSION"
+echo "   ✓ Required Flatpak SDKs are installed"
+
+cd "$SCRIPT_DIR"
+if [[ ! -f "$GENERATOR" ]]; then
+    echo "Downloading flatpak-dotnet-generator.py..."
+    if command -v curl >/dev/null 2>&1; then
+        curl --fail --location --retry 3 --output "$GENERATOR" "$GENERATOR_URL"
+    elif command -v wget >/dev/null 2>&1; then
+        wget --quiet --output-document="$GENERATOR" "$GENERATOR_URL"
+    else
+        echo "Error: curl or wget is required to download the dependency generator." >&2
+        exit 1
+    fi
+    chmod +x "$GENERATOR"
+fi
+
+echo "Generating NuGet sources for $runtime..."
+temporary_sources="$(mktemp "$SCRIPT_DIR/sources.json.XXXXXX")"
+trap 'rm -f "$temporary_sources"' EXIT
+python3 "$GENERATOR" "$temporary_sources" \
+    "$REPO_DIR/ClassIsland.Desktop/ClassIsland.Desktop.csproj" \
+    --dotnet 9 --runtime "$runtime"
+mv -- "$temporary_sources" "$SOURCES"
 echo "   ✓ sources.json generated"
 
 echo "Building Flatpak package..."
-flatpak-builder --install-deps-from=flathub --force-clean --repo=repo build "$FLATPAK_MANIFEST"
+flatpak-builder \
+    --force-clean \
+    --repo="$REPO" \
+    "$BUILD_DIR" "$MANIFEST"
 echo "   ✓ Flatpak build completed"
 
 echo "Exporting Flatpak bundle..."
-flatpak build-bundle repo ClassIsland.flatpak org.classisland.ClassIsland
-echo "   ✓ Flatpak bundle created: ClassIsland.flatpak"
+flatpak build-bundle \
+    --arch="$flatpak_arch" \
+    --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo \
+    "$REPO" "$BUNDLE" "$APP_ID"
+echo "   ✓ Flatpak bundle created: $BUNDLE"
 
-echo ""
+echo
 echo "Done!"
-echo "Flatpak bundle location: $SCRIPT_DIR/ClassIsland.flatpak"
+echo "Flatpak bundle location: $BUNDLE"

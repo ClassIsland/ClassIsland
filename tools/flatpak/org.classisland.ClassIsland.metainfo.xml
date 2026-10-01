@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.classisland.ClassIsland</id>
+  <name>ClassIsland</name>
+  <summary>ClassIsland 大屏课表显示工具</summary>
+  <description>
+    <p>ClassIsland 是一个面向课堂场景的可定制课表和信息展示工具。</p>
+  </description>
+  <developer id="tech.classisland">
+    <name>ClassIsland</name>
+  </developer>
+  <project_license>GPL-3.0-or-later</project_license>
+  <metadata_license>CC0-1.0</metadata_license>
+  <url type="homepage">https://classisland.tech</url>
+  <url type="bugtracker">https://github.com/ClassIsland/ClassIsland/issues</url>
+  <launchable type="desktop-id">org.classisland.ClassIsland.desktop</launchable>
+  <content_rating type="oars-1.1" />
+</component>
