@@ -45,6 +45,11 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     public bool IsWeatherRefreshed { get; set; } = false;
 
+    /// <summary>
+    /// 最近一次获取到的天气信息。
+    /// </summary>
+    public WeatherInfo LastWeatherInfo => Settings.LastWeatherInfo;
+
     public bool IsPosUpdated { get; set; } = false;
 
     public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService, ILocationService locationService)
