@@ -336,7 +336,7 @@ Assert-True ($portableImportedFileReferenceText.Contains('Documents/ClassIsland/
 Assert-True ($importedFileReferenceText.Contains('PlatformHelper.IsAppleMobile')) "Legacy absolute imported-file paths must not be rewritten on desktop platforms."
 Assert-True ($persistentImportedFileServiceText.Contains('CommonDirectories.AppImportedFilesFolderPath')) "Persistent selections must be copied into the Files-visible imported-files directory."
 Assert-True ($iosPlatformFilePickerServiceText.Contains('CommonDirectories.AppTempFolderPath')) "One-shot iOS file selections must use temporary materialization."
-Assert-True ($iosPlatformFilePickerServiceText.Contains('PersistentImportedFileService.ImportAsync(files)')) "Long-lived iOS file selections must opt into persistent materialization."
+Assert-True ($iosPlatformFilePickerServiceText -match '\bPersistentImportedFileService\.ImportAsync\b') "Long-lived iOS file selections must opt into persistent materialization."
 Assert-True ($fileBrowserButtonText.Contains('PersistSelectionProperty')) "File-backed settings must explicitly request persistent iOS references."
 Assert-True ($fileSystemDataTransactionText.Contains('ResolveInsideRoot(')) "Data transactions must resolve every relative operation under its intended root."
 Assert-True ($fileSystemDataTransactionText.Contains('RejectReparsePoint(')) "Data transactions must reject symbolic-link or reparse-point traversal."

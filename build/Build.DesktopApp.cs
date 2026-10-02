@@ -89,6 +89,8 @@ public partial class Build
                         .SetProperty("GeneratePackageOnBuild", false)
                         .SetProperty("WarningsAsErrors", "CA1416")
                         .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
+                        // Release 默认使用 AOT；发布包显式启用解释器，与本地调试的托管执行模式一致。
+                        .SetProperty("UseInterpreter", true)
                         .SetProperty("ArchiveOnBuild", enableCodeSigning)
                         .SetProperty("BuildIpa", true)
                         .SetProperty("EnableCodeSigning", enableCodeSigning)

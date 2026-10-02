@@ -156,6 +156,16 @@ jobs:
           enableCodeSigning: 'false'
         run: ./build.sh PublishApp
 
+      - name: Verify iOS interpreter mode
+        run: |
+          set -euo pipefail
+          runtime_entry="ClassIsland.iOS/obj/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/main.arm64.mm"
+          if ! grep -Eq '^[[:space:]]*mono_jit_set_aot_mode[[:space:]]*\([[:space:]]*MONO_AOT_MODE_INTERP[[:space:]]*\)[[:space:]]*;' "$runtime_entry"; then
+            echo "::error::The iOS build must enable the Mono interpreter"
+            exit 1
+          fi
+          echo "Verified Mono interpreter mode for $IOS_CONFIGURATION / $IOS_RUNTIME_IDENTIFIER"
+
       - name: Normalize unsigned IPA
         run: bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"
 
