@@ -6,19 +6,25 @@ script_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_directory/ios-build-number.sh"
 source "$script_directory/ios-display-version.sh"
 
-if [[ "$#" -ne 5 ]]; then
-  echo "Usage: $0 <ipa-path> <application-id> <runtime-identifier> <display-version> <build-number>" >&2
+if [[ "$#" -lt 5 || "$#" -gt 6 ]]; then
+  echo "Usage: $0 <ipa-path> <application-id> <runtime-identifier> <display-version> <build-number> [Sideload|AppStore]" >&2
   exit 64
 fi
 
 readonly ipa_path="$1"
 readonly application_id="$2"
 readonly runtime_identifier="$3"
-readonly expected_display_version="$4"
-readonly expected_build_number="$5"
+readonly ipa_expected_display_version="$4"
+readonly ipa_expected_build_number="$5"
+readonly ios_distribution="${6:-AppStore}"
+case "$ios_distribution" in
+  Sideload) readonly expected_display_name="ClassIsland (Sideload)" ;;
+  AppStore) readonly expected_display_name="ClassIsland" ;;
+  *) echo "::error::The iOS distribution must be Sideload or AppStore" >&2; exit 64 ;;
+esac
 
-validate_ios_display_version "$expected_display_version" || exit $?
-validate_ios_build_number "$expected_build_number" || exit $?
+validate_ios_display_version "$ipa_expected_display_version" || exit $?
+validate_ios_build_number "$ipa_expected_build_number" || exit $?
 
 if [[ ! -f "$ipa_path" ]]; then
   echo "::error::Unsigned IPA was not produced at $ipa_path"
@@ -153,12 +159,12 @@ if [[ "$extension_bundle_id" != "$application_id.LiveActivityExtension" ]]; then
   echo "::error::The extension bundle ID is $extension_bundle_id, expected $application_id.LiveActivityExtension"
   exit 1
 fi
-assert_ios_bundle_display_version "app" "$app_display_version" "$expected_display_version" || exit $?
-assert_ios_bundle_display_version "Live Activity extension" "$extension_display_version" "$expected_display_version" || exit $?
-assert_ios_bundle_build_number "app" "$app_build_number" "$expected_build_number" || exit $?
-assert_ios_bundle_build_number "Live Activity extension" "$extension_build_number" "$expected_build_number" || exit $?
-if [[ "$app_display_name" != "ClassIsland" ]]; then
-  echo "::error::The app display name is $app_display_name, expected ClassIsland"
+assert_ios_bundle_display_version "app" "$app_display_version" "$ipa_expected_display_version" || exit $?
+assert_ios_bundle_display_version "Live Activity extension" "$extension_display_version" "$ipa_expected_display_version" || exit $?
+assert_ios_bundle_build_number "app" "$app_build_number" "$ipa_expected_build_number" || exit $?
+assert_ios_bundle_build_number "Live Activity extension" "$extension_build_number" "$ipa_expected_build_number" || exit $?
+if [[ "$app_display_name" != "$expected_display_name" ]]; then
+  echo "::error::The app display name is $app_display_name, expected $expected_display_name"
   exit 1
 fi
 if [[ "$(/usr/libexec/PlistBuddy -c 'Print :UIFileSharingEnabled' "$app_bundle/Info.plist")" != "true" ]]; then

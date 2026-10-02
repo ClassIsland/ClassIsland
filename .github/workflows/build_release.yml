@@ -47,8 +47,8 @@ env:
   MACOS_XCODE_PATH: /Applications/Xcode_26.6.app/Contents/Developer
 
 jobs:
-  build_ios:
-    name: build_ios (${{ matrix.arch }})
+  build_ios_sideload:
+    name: build_ios_sideload (${{ matrix.arch }})
     if: >-
       ${{
         github.event_name == 'pull_request' ||
@@ -67,7 +67,7 @@ jobs:
       matrix:
         arch: ['arm64']
     concurrency:
-      group: ios-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}-${{ matrix.arch }}
+      group: ios-Sideload-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}-${{ matrix.arch }}
       cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: '1'
@@ -79,9 +79,9 @@ jobs:
       IOS_WORKLOAD_VERSION: 10.0.202
       APPLICATION_ID: cn.classisland.ios.sideload
       XCODE_PATH: /Applications/Xcode_26.3.app
-      artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa
+      artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_Sideload
       IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_Sideload.ipa
-    steps:
+    steps: &ios_build_steps
       - name: Checkout iOS version source
         uses: actions/checkout@v4
         with:
@@ -231,6 +231,7 @@ jobs:
           "$IOS_RUNTIME_IDENTIFIER"
           "${{ steps.metadata.outputs.app_version }}"
           "${{ steps.build_metadata.outputs.build_number }}"
+          "$IOS_DISTRIBUTION"
 
       - name: Upload unsigned IPA artifact
         uses: actions/upload-artifact@v4
@@ -242,6 +243,42 @@ jobs:
           if-no-files-found: error
           overwrite: true
           retention-days: ${{ steps.metadata.outputs.retention_days }}
+
+  build_ios_store:
+    name: build_ios_store (${{ matrix.arch }})
+    if: >-
+      ${{
+        github.event_name == 'pull_request' ||
+        github.event_name == 'workflow_dispatch' ||
+        github.ref == 'refs/heads/master' ||
+        github.ref == 'refs/heads/develop/v2/ios' ||
+        github.ref == 'refs/heads/develop/v2/misha-alpha' ||
+        startsWith(github.ref, 'refs/tags/ios-v')
+      }}
+    runs-on: macos-26
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      matrix:
+        arch: ['arm64']
+    concurrency:
+      group: ios-AppStore-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}-${{ matrix.arch }}
+      cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
+      IOS_CONFIGURATION: Release
+      IOS_DISTRIBUTION: AppStore
+      IOS_RUNTIME_IDENTIFIER: ios-${{ matrix.arch }}
+      IOS_WORKLOAD_VERSION: 10.0.202
+      APPLICATION_ID: cn.classisland.ios
+      XCODE_PATH: /Applications/Xcode_26.3.app
+      artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_AppStore
+      IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_AppStore.ipa
+    steps: *ios_build_steps
 
   build_app:
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-26' || 'windows-2022' ) }}
@@ -740,11 +777,12 @@ jobs:
         needs.pack_app.result == 'success' &&
         needs.build_nupkg.result == 'success' &&
         needs.build_android.result == 'success' &&
-        needs.build_ios.result == 'success' &&
+        needs.build_ios_sideload.result == 'success' &&
+        needs.build_ios_store.result == 'success' &&
         github.event.inputs.release_tag &&
         github.event_name != 'pull_request'
       }}
-    needs: [ pack_app, build_nupkg, build_android, build_ios ]
+    needs: [ pack_app, build_nupkg, build_android, build_ios_sideload, build_ios_store ]
     concurrency:
       group: "publish-public"
     environment:
@@ -766,14 +804,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          artifact_directory="./out_artifacts/out_app_ios_arm64_selfContained_ipa"
-          ipa_name="out_app_ios_arm64_selfContained_ipa.ipa"
-          test -f "$artifact_directory/$ipa_name"
-          test -f "$artifact_directory/$ipa_name.sha256"
-          (
-            cd "$artifact_directory"
-            sha256sum --check "$ipa_name.sha256"
-          )
+          for distribution in Sideload AppStore; do
+            artifact_directory="./out_artifacts/out_app_ios_arm64_selfContained_ipa_$distribution"
+            ipa_name="out_app_ios_arm64_selfContained_ipa_$distribution.ipa"
+            test -f "$artifact_directory/$ipa_name"
+            test -f "$artifact_directory/$ipa_name.sha256"
+            (
+              cd "$artifact_directory"
+              sha256sum --check "$ipa_name.sha256"
+            )
+          done
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
