@@ -4,6 +4,8 @@ using ClassIsland.Core;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Platforms.Abstraction.Stubs.Services;
+using ClassIsland.Shared;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.iOS.Services.Platform;
 
@@ -38,26 +40,46 @@ internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFile
         return CreateTemporaryMaterializer().MaterializeFilesAsync(files);
     }
 
-    public override async Task<List<string>> OpenFilesPickerAsync(
+    public override Task<List<string>> OpenFilesPickerAsync(
         FilePickerOpenOptions options,
         TopLevel root)
     {
-        ArgumentNullException.ThrowIfNull(options);
-        ArgumentNullException.ThrowIfNull(root);
-
-        var files = await root.StorageProvider.OpenFilePickerAsync(options);
-        return await MaterializeFilesAsync(files);
+        return OpenAndMaterializeFilesAsync(options, root, MaterializeFilesAsync);
     }
 
-    public async Task<List<string>> OpenPersistentFilesPickerAsync(
+    public Task<List<string>> OpenPersistentFilesPickerAsync(
         FilePickerOpenOptions options,
         TopLevel root)
+    {
+        return OpenAndMaterializeFilesAsync(options, root, PersistentImportedFileService.ImportAsync);
+    }
+
+    private static async Task<List<string>> OpenAndMaterializeFilesAsync(
+        FilePickerOpenOptions options,
+        TopLevel root,
+        Func<IReadOnlyList<IStorageFile>, Task<List<string>>> materializeAsync)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(root);
 
-        var files = await root.StorageProvider.OpenFilePickerAsync(options);
-        return await PersistentImportedFileService.ImportAsync(files);
+        var logger = IAppHost.TryGetService<ILogger<IosPlatformFilePickerService>>();
+        var stage = "Opening picker";
+        try
+        {
+            logger?.LogInformation("iOS file import: opening picker");
+            var files = await IosDocumentImportPicker.OpenAsync(options, root, logger);
+            logger?.LogInformation("iOS file import: picker returned {FileCount} files", files.Count);
+
+            stage = "Materializing selected files";
+            var paths = await materializeAsync(files);
+            logger?.LogInformation("iOS file import: materialized {FileCount} files", paths.Count);
+            return paths;
+        }
+        catch (Exception exception)
+        {
+            logger?.LogError(exception, "iOS file import failed at {Stage}", stage);
+            throw;
+        }
     }
 
     public async Task<List<string>> OpenPersistentFoldersPickerAsync(
