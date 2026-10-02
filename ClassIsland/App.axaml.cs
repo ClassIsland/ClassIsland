@@ -1276,24 +1276,28 @@ public partial class App : AppBase, IAppHost
     /// </summary>
     public override void Stop()
     {
-        if (PlatformHelper.IsAppleMobile)
-        {
-            PrepareForAppleMobileManualTermination();
-            return;
-        }
-
         if (CurrentLifetime == ClassIsland.Core.Enums.ApplicationLifetime.Stopping)
         {
             return;
         }
-        _ = Dispatcher.UIThread.InvokeAsync(() =>
+        _ = Dispatcher.UIThread.InvokeAsync(async () =>
         {
+            if (CurrentLifetime == Core.Enums.ApplicationLifetime.Stopping)
+            {
+                return;
+            }
+
             // 档案加载失败时，主服务尚未初始化，退出时不能为执行清理而创建它们。
             var partial = CurrentLifetime < Core.Enums.ApplicationLifetime.StartingOnline || _isProfileLoadFailed;
             CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Stopping;
             Logger?.LogInformation("正在停止应用");
             try
             {
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    await EndAppleMobileLiveActivityAsync();
+                }
+
                 if (IAppHost.TryGetService<IManagementService>() is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
                 {
                     connection.LogAuditEvent(AuditEvents.AppExited, new Empty());
@@ -1302,11 +1306,16 @@ public partial class App : AppBase, IAppHost
                 if (!partial)
                 {
                     IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
-                    IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
+                    var stoppingTask = IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
                     IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
                     IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
                     IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
                     IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
+                    // iOS 会直接结束进程，必须给后台服务完成清理的机会。
+                    if (PlatformHelper.IsAppleMobile && stoppingTask != null)
+                    {
+                        await stoppingTask;
+                    }
                 }
                 if (PlatformServices.WindowPlatformService is IDisposable d)
                 {
@@ -1364,7 +1373,7 @@ public partial class App : AppBase, IAppHost
         if (PlatformHelper.IsAppleMobile)
         {
             PlatformServices.AppLifetimeService.Restart(parameters, restartToLauncher);
-            PrepareForAppleMobileManualTermination();
+            Dispatcher.UIThread.Post(async () => await ShowAppleMobileTerminationInstructionsAsync());
             return;
         }
 
@@ -1379,42 +1388,20 @@ public partial class App : AppBase, IAppHost
             return;
         }
 
-        Logger?.LogInformation("iOS 不允许应用主动终止，已保存状态并提示用户从 App 切换器手动结束。");
-        SaveStateBeforeAppleMobileTermination();
-        Dispatcher.UIThread.Post(async () => await ShowAppleMobileTerminationInstructionsAsync());
+        Stop();
     }
 
     private void HandleStartupAbort(string reason)
     {
         if (PlatformHelper.IsAppleMobile)
         {
-            Trace.TraceWarning($"iOS 启动已中止：{reason}。应用将等待用户从 App 切换器手动结束。");
-            Logger?.LogWarning("iOS 启动已中止：{Reason}。应用将等待用户从 App 切换器手动结束。", reason);
+            Trace.TraceWarning($"iOS 启动已中止：{reason}。应用将自动退出。");
+            Logger?.LogWarning("iOS 启动已中止：{Reason}。应用将自动退出。", reason);
             PrepareForAppleMobileManualTermination();
             return;
         }
 
         Environment.Exit(0);
-    }
-
-    private void SaveStateBeforeAppleMobileTermination()
-    {
-        if (CurrentLifetime < Core.Enums.ApplicationLifetime.StartingOnline)
-        {
-            return;
-        }
-
-        try
-        {
-            IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("用户将在 iOS App 切换器中手动结束应用。");
-            IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("用户将在 iOS App 切换器中手动结束应用。");
-            IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
-            IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
-        }
-        catch (Exception exception)
-        {
-            Logger?.LogError(exception, "在 iOS 手动结束前保存应用状态失败。");
-        }
     }
 
     private async Task ShowAppleMobileTerminationInstructionsAsync()
@@ -1427,40 +1414,29 @@ public partial class App : AppBase, IAppHost
         _isShowingAppleMobileTerminationInstructions = true;
         try
         {
-            await EndAppleMobileLiveActivityAsync();
-            var result = await new FATaskDialog
+            await new FATaskDialog
             {
-                Header = "需要从 App 切换器结束应用",
-                Content = "iOS 不允许 ClassIsland 自行退出或重新启动。" +
-                          "请打开 App 切换器，向上滑动 ClassIsland 卡片以结束应用；" +
-                          "如果本次操作需要重启，请随后从主屏幕重新打开。" +
-                          "若不再需要结束应用，请点击“取消本次关闭”恢复实时活动。",
+                Header = "退出后请重新打开应用",
+                Content = "ClassIsland 将保存数据并自动退出。" +
+                          "iOS 无法自动重新打开应用，请随后点击主屏幕上的 ClassIsland 图标，完成重启。",
                 XamlRoot = GetRootWindow(),
                 Buttons =
                 [
-                    new FATaskDialogButton("取消本次关闭", true),
-                    new FATaskDialogButton("我知道了", false)
+                    new FATaskDialogButton("保存并退出", true)
                     {
                         IsDefault = true
                     }
                 ]
             }.ShowAsync();
-            if (Equals(result, true))
-            {
-                PlatformServices.AppLifetimeService
-                    .ResumeAfterManualTerminationCanceled();
-                Logger?.LogInformation("用户取消了 iOS 手动结束操作，已恢复平台资源。");
-            }
         }
         catch (Exception exception)
         {
             Logger?.LogError(exception, "无法显示 iOS 手动重新打开提示。");
-            PlatformServices.AppLifetimeService
-                .ResumeAfterManualTerminationCanceled();
         }
         finally
         {
             _isShowingAppleMobileTerminationInstructions = false;
+            Stop();
         }
     }
 
@@ -1473,7 +1449,7 @@ public partial class App : AppBase, IAppHost
         }
         catch (Exception exception)
         {
-            Logger?.LogError(exception, "在 iOS 手动结束前关闭实时活动时发生异常。");
+            Logger?.LogError(exception, "在 iOS 退出前关闭实时活动时发生异常。");
         }
     }
 
@@ -1491,5 +1467,3 @@ public partial class App : AppBase, IAppHost
         Stop();
     }
 }
-
-

@@ -12,14 +12,14 @@ internal sealed class IosAppLifetimeService(
 {
     public void Shutdown()
     {
-        // iOS 应用的进程生命周期由用户和系统管理。调用方需要提示用户
-        // 从 App 切换器手动结束应用，不能在这里主动终止进程。
+        // 调用方已完成数据保存和实时活动清理，再结束进程。
+        Environment.Exit(0);
     }
 
     public void Restart(string[] parameters, bool restartToLauncher)
     {
-        // Apple 不允许应用主动终止后重新启动；保存一次性参数，待用户
-        // 手动结束并重新打开后由 AppDelegate 消费。
+        // iOS 没有重新拉起自身进程的公开接口；保存一次性参数，
+        // 待用户重新打开后由 AppDelegate 消费。
         IosPendingLaunchArgumentsStore.Save(parameters);
     }
 
