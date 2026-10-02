@@ -74,12 +74,13 @@ jobs:
       DOTNET_NOLOGO: '1'
       IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
       IOS_CONFIGURATION: Release
+      IOS_DISTRIBUTION: Sideload
       IOS_RUNTIME_IDENTIFIER: ios-${{ matrix.arch }}
       IOS_WORKLOAD_VERSION: 10.0.202
-      APPLICATION_ID: cn.classisland.ios
+      APPLICATION_ID: cn.classisland.ios.sideload
       XCODE_PATH: /Applications/Xcode_26.3.app
       artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa
-      IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa.ipa
+      IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_Sideload.ipa
     steps:
       - name: Checkout iOS version source
         uses: actions/checkout@v4
@@ -205,13 +206,14 @@ jobs:
           appVersion: ${{ steps.metadata.outputs.app_version }}
           brandType: Production
           DeveloperPreview: ${{ steps.metadata.outputs.developer_preview }}
+          IosDistribution: ${{ env.IOS_DISTRIBUTION }}
           enableCodeSigning: 'false'
         run: ./build.sh PublishApp
 
       - name: Verify iOS interpreter mode
         run: |
           set -euo pipefail
-          runtime_entry="ClassIsland.iOS/obj/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/main.arm64.mm"
+          runtime_entry="ClassIsland.iOS/obj/$IOS_DISTRIBUTION/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/main.arm64.mm"
           if ! grep -Eq '^[[:space:]]*mono_jit_set_aot_mode[[:space:]]*\([[:space:]]*MONO_AOT_MODE_INTERP[[:space:]]*\)[[:space:]]*;' "$runtime_entry"; then
             echo "::error::The iOS build must enable the Mono interpreter"
             exit 1

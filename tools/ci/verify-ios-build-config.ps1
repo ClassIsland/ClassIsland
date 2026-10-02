@@ -25,12 +25,14 @@ function Read-RepositoryFile {
 
 $iosProjectText = Read-RepositoryFile "ClassIsland.iOS/ClassIsland.iOS.csproj"
 $iosProject = [xml]$iosProjectText
+$directoryBuildProps = [xml](Read-RepositoryFile "Directory.Build.props")
 $iosAssemblyInfoText = Read-RepositoryFile "ClassIsland.iOS/AssemblyInfo.cs"
 $privacyManifestText = Read-RepositoryFile "ClassIsland.iOS/PrivacyInfo.xcprivacy"
 $privacyManifest = [xml]$privacyManifestText
 $nativeProjectText = Read-RepositoryFile "ClassIsland.iOS.Native/ClassIsland.iOS.Native.xcodeproj/project.pbxproj"
 $infoPlistText = Read-RepositoryFile "ClassIsland.iOS/Info.plist"
 $infoPlist = [xml]$infoPlistText
+$pluginInfoPlist = [xml](Read-RepositoryFile "ClassIsland.iOS/PluginInfo.plist")
 $releaseWorkflowText = Read-RepositoryFile ".github/workflows/build_release.yml"
 $iosJob = [regex]::Match($releaseWorkflowText, '(?ms)^  build_ios:\r?\n.*?(?=^  [A-Za-z0-9_-]+:|\z)')
 Assert-True ($iosJob.Success) "The unified Build workflow must contain the build_ios matrix job."
@@ -146,8 +148,13 @@ Assert-True ($null -ne $runtimeValidationTarget) "The iOS project must explicitl
 $runtimeValidationConditions = @($runtimeValidationTarget.Error) | ForEach-Object { $_.Condition }
 Assert-True ($runtimeValidationConditions -contains "'`$(RuntimeIdentifier)' != 'ios-arm64'") "Single-RID validation must allow only ios-arm64."
 Assert-True (($runtimeValidationConditions -join "`n").Contains("Copy('`$(RuntimeIdentifiers)').Contains('iossimulator-')")) "Multi-RID validation must reject iossimulator-* entries."
-$abstractionsReference = $iosProject.SelectSingleNode('/Project/ItemGroup/ProjectReference[contains(@Include, "ClassIsland.Platforms.Abstractions")]')
-Assert-True ($abstractionsReference.AdditionalProperties -eq "ClassIslandReferencedByMobile=true") "The direct abstractions reference must share the mobile project-graph properties."
+foreach ($referencePath in @("ClassIsland.Platforms.Abstractions", "ClassIsland\ClassIsland.csproj")) {
+    $reference = $iosProject.SelectSingleNode("/Project/ItemGroup/ProjectReference[contains(@Include, '$referencePath')]")
+    Assert-True ($null -ne $reference) "The iOS project must reference $referencePath."
+    $referenceProperties = @($reference.AdditionalProperties -split ';' | ForEach-Object { $_.Trim() })
+    Assert-True ($referenceProperties -contains "ClassIslandReferencedByMobile=true") "The $referencePath reference must share the mobile project-graph properties."
+    Assert-True ($referenceProperties -contains 'ClassIslandIosDistribution=$(ClassIslandIosDistribution)') "The $referencePath reference must propagate the iOS distribution."
+}
 
 $releaseSymbolGroup = @($iosProject.Project.PropertyGroup) |
     Where-Object {
@@ -159,7 +166,9 @@ $releaseSymbolGroup = @($iosProject.Project.PropertyGroup) |
 Assert-True ($null -ne $releaseSymbolGroup) "The iOS Release project must disable debug symbols after shared props imports."
 
 $derivedData = $iosProject.SelectSingleNode("/Project/PropertyGroup/ClassIslandLiveActivityDerivedData").InnerText
-Assert-True ($derivedData -like '*$(MSBuildProjectDirectory)/obj/*') "Xcode DerivedData must be stored under ClassIsland.iOS/obj."
+Assert-True ($derivedData.StartsWith('$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)')) "Xcode DerivedData must use the distribution-specific intermediate directory."
+$distributionIntermediatePath = $directoryBuildProps.SelectSingleNode('/Project/PropertyGroup/BaseIntermediateOutputPath')
+Assert-True ($distributionIntermediatePath.InnerText -eq 'obj/$(ClassIslandIosDistribution)/') "Distribution-specific build intermediates must remain under obj."
 Assert-True (-not $iosProjectText.Contains('$(IntermediateOutputPath)xcode-live-activity-extension')) "DerivedData must not depend on an early IntermediateOutputPath evaluation."
 
 $soundFlowTarget = $iosProject.SelectSingleNode('/Project/Target[@Name="CreateSoundFlowIosResolverAlias"]')
@@ -200,7 +209,12 @@ Assert-True (-not ($plistKeys -contains "CFBundleDisplayName")) "Info.plist must
 $exportedTypeDeclarations = $infoPlist.SelectSingleNode('/plist/dict/key[.="UTExportedTypeDeclarations"]/following-sibling::array[1]')
 Assert-True ($null -ne $exportedTypeDeclarations) "Info.plist must export custom file types used by the iOS file picker."
 $exportedTypesByIdentifier = @{}
-foreach ($typeDeclaration in @($exportedTypeDeclarations.dict)) {
+$pluginTypeDeclarations = $pluginInfoPlist.SelectSingleNode('/plist/dict/key[.="UTImportedTypeDeclarations"]/following-sibling::array[1]')
+Assert-True ($null -ne $pluginTypeDeclarations) "PluginInfo.plist must declare the plugin package type for sideload builds."
+Assert-True (-not $infoPlistText.Contains('cn.classisland.plugin-package')) "The shared Info.plist must not register plugin packages for App Store builds."
+$pluginManifest = $iosProject.SelectSingleNode('/Project/ItemGroup/PartialAppManifest[@Include="PluginInfo.plist"]')
+Assert-True ($null -ne $pluginManifest -and $pluginManifest.Condition -eq "'`$(ClassIslandIosDistribution)' == 'Sideload'") "PluginInfo.plist must only be included in sideload builds."
+foreach ($typeDeclaration in (@($exportedTypeDeclarations.dict) + @($pluginTypeDeclarations.dict))) {
     $identifier = $typeDeclaration.SelectSingleNode('key[.="UTTypeIdentifier"]/following-sibling::string[1]')
     if ($null -ne $identifier) {
         $exportedTypesByIdentifier[$identifier.InnerText] = $typeDeclaration
@@ -209,7 +223,7 @@ foreach ($typeDeclaration in @($exportedTypeDeclarations.dict)) {
 foreach ($expectedType in @(
     @{ Identifier = "cn.classisland.data"; Extension = "cidata" },
     @{ Identifier = "cn.classisland.plugin-package"; Extension = "cipx" })) {
-    Assert-True ($exportedTypesByIdentifier.ContainsKey($expectedType.Identifier)) "Info.plist must export $($expectedType.Identifier)."
+    Assert-True ($exportedTypesByIdentifier.ContainsKey($expectedType.Identifier)) "The iOS manifests must declare $($expectedType.Identifier)."
     $typeDeclaration = $exportedTypesByIdentifier[$expectedType.Identifier]
     $extensions = @($typeDeclaration.SelectNodes('key[.="UTTypeTagSpecification"]/following-sibling::dict[1]/key[.="public.filename-extension"]/following-sibling::array[1]/string') | ForEach-Object { $_.InnerText })
     $conformingTypes = @($typeDeclaration.SelectNodes('key[.="UTTypeConformsTo"]/following-sibling::array[1]/string') | ForEach-Object { $_.InnerText })
@@ -387,8 +401,8 @@ Assert-True ($windowRuleHandler.Value.Contains('if (PlatformHelper.IsAppleMobile
 Assert-True (-not $windowRuleHandler.Value.Contains('PlatformHelper.IsMobile')) "The window-rule handler must not reject Android as an unsupported platform."
 $pluginsSettingsRegistration = [regex]::Match(
     $appServicesText,
-    '(?s)if\s*\(\s*!PlatformHelper\.IsAppleMobile\s*\)\s*\{\s*services\.AddSettingsPage<PluginsSettingsPage>\(\);\s*\}')
-Assert-True ($pluginsSettingsRegistration.Success) "The plugins settings page must be hidden only on iOS/iPadOS."
+    '(?s)if\s*\(\s*PluginSupport\.IsEnabled\s*\)\s*\{\s*services\.AddSettingsPage<PluginsSettingsPage>\(\);\s*\}')
+Assert-True ($pluginsSettingsRegistration.Success) "The plugins settings page must follow the distribution's plugin capability."
 Assert-True ($appServicesText.Contains('System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux()')) "Bundled desktop tutorials must not be registered on mobile platforms."
 Assert-True ($welcomeWindowText.Contains('if (!isOnboarding || PlatformHelper.IsAppleMobile)')) "The iOS onboarding flow must omit the desktop system-integration page."
 Assert-True ($finishWelcomePageText.Contains('DesktopTrayTutorial.IsVisible = false') -and
@@ -469,7 +483,10 @@ Assert-True ($iosWorkflowText.Contains("if (( build_number < 1 )); then") -and $
 Assert-True ($iosWorkflowText.Contains("bash ./tools/ci/test-ios-build-number.sh")) "The iOS matrix job must run build-number validation tests."
 Assert-True ($iosWorkflowText.Contains("bash ./tools/ci/test-ios-display-version.sh")) "The iOS matrix job must run display-version validation tests."
 Assert-True (-not $iosWorkflowText.Contains('ClassIsland-iOS-${APPLICATION_DISPLAY_VERSION}')) "iOS artifacts must not use the legacy display-version/build-number naming scheme."
-Assert-True ($iosWorkflowText.Contains('IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa.ipa')) "The iOS IPA path must follow the matrix artifact name."
+Assert-True ($iosWorkflowText.Contains('IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_Sideload.ipa')) "The iOS IPA path must include the sideload distribution suffix produced by NUKE."
+Assert-True ($iosWorkflowText.Contains('IOS_DISTRIBUTION: Sideload') -and $iosWorkflowText.Contains('IosDistribution: ${{ env.IOS_DISTRIBUTION }}')) "The iOS job must explicitly pass its sideload distribution to NUKE."
+Assert-True ($iosWorkflowText.Contains('APPLICATION_ID: cn.classisland.ios.sideload')) "IPA verification must expect the sideload bundle identifier."
+Assert-True ($iosWorkflowText.Contains('ClassIsland.iOS/obj/$IOS_DISTRIBUTION/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/main.arm64.mm')) "Interpreter verification must use the distribution-specific intermediate directory."
 Assert-True (-not $iosWorkflowText.Contains("buildNumber:")) "The iOS matrix job must not duplicate NUKE's Git-derived ApplicationVersion logic."
 Assert-True (-not $releaseWorkflowText.Contains("build_number: `${{ format('{0}', github.run_number) }}")) "The unified caller must not use github.run_number as the iOS ApplicationVersion."
 Assert-True ($androidBuildText.Contains('SetProperty("ApplicationVersion", Math.Max(GitCommitCount, 1))')) "Android ApplicationVersion must remain based on GitCommitCount."
