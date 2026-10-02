@@ -79,6 +79,7 @@ $storageSettingsPageText = Read-RepositoryFile "ClassIsland/Views/SettingPages/S
 $fileBrowserButtonText = Read-RepositoryFile "ClassIsland/Controls/FileBrowserButton.cs"
 $safeChildDirectoryPathText = Read-RepositoryFile "ClassIsland.Platforms.Abstractions/Services/SafeChildDirectoryPath.cs"
 $appText = Read-RepositoryFile "ClassIsland/App.axaml.cs"
+$iosAppLifetimeServiceText = Read-RepositoryFile "ClassIsland.iOS/Services/Platform/IosAppLifetimeService.cs"
 $appServicesText = Read-RepositoryFile "ClassIsland/App.Services.xaml.cs"
 $pluginLoadContextText = Read-RepositoryFile "ClassIsland/PluginLoadContext.cs"
 $pluginServiceAbstractionText = Read-RepositoryFile "ClassIsland.Core/Abstractions/Services/IPluginService.cs"
@@ -393,7 +394,20 @@ Assert-True ($welcomeWindowText.Contains('if (!isOnboarding || PlatformHelper.Is
 Assert-True ($finishWelcomePageText.Contains('DesktopTrayTutorial.IsVisible = false') -and
              $finishWelcomePageText.Contains('DesktopProfileTutorial.IsVisible = false') -and
              $finishWelcomePageText.Contains('Carousel.SelectedIndex = 2')) "The iOS onboarding finish page must skip desktop-only tray tutorials."
-Assert-True ($appText.Contains('if (Equals(result, true))')) "Manual-termination resources must resume only after the user explicitly cancels the iOS close request."
+$stopMethod = [regex]::Match($appText, '(?s)public override void Stop\(\).*?(?=\n    public override bool IsAssetsTrimmed)')
+Assert-True ($stopMethod.Success) "The application shutdown method could not be validated."
+$liveActivityEndIndex = $stopMethod.Value.IndexOf('await EndAppleMobileLiveActivityAsync();', [StringComparison]::Ordinal)
+$saveSettingsIndex = $stopMethod.Value.IndexOf('?.SaveSettings(', [StringComparison]::Ordinal)
+$saveProfileIndex = $stopMethod.Value.IndexOf('?.SaveProfile();', [StringComparison]::Ordinal)
+$shutdownIndex = $stopMethod.Value.IndexOf('PlatformServices.AppLifetimeService.Shutdown();', [StringComparison]::Ordinal)
+Assert-True ($liveActivityEndIndex -ge 0 -and $shutdownIndex -gt $liveActivityEndIndex) "iOS shutdown must await Live Activity cleanup before ending the process."
+Assert-True ($saveSettingsIndex -ge 0 -and $saveProfileIndex -ge 0 -and $shutdownIndex -gt $saveSettingsIndex -and $shutdownIndex -gt $saveProfileIndex) "Application settings and profile data must be saved before platform shutdown."
+Assert-True (-not $stopMethod.Value.Contains('PrepareForAppleMobileManualTermination();')) "iOS shutdown must not return to the manual-termination flow."
+Assert-True ([regex]::IsMatch($stopMethod.Value, 'finally\s*\{\s*PlatformServices\.AppLifetimeService\.Shutdown\(\);')) "Platform shutdown must still run if cleanup fails."
+Assert-True ([regex]::IsMatch($iosAppLifetimeServiceText, '(?s)public void Shutdown\(\)\s*\{[^}]*Environment\.Exit\(0\);')) "The iOS lifetime service must terminate the process when shutdown completes."
+Assert-True ($iosAppLifetimeServiceText.Contains('IosPendingLaunchArgumentsStore.Save(parameters);') -and $appDelegateText.Contains('IosPendingLaunchArgumentsStore.Consume()')) "iOS restart arguments must survive process termination and be consumed on the next launch."
+$restartInstructionsMethod = [regex]::Match($appText, '(?s)private async Task ShowAppleMobileTerminationInstructionsAsync\(\).*?(?=\n    private async Task EndAppleMobileLiveActivityAsync)')
+Assert-True ($restartInstructionsMethod.Success -and [regex]::IsMatch($restartInstructionsMethod.Value, 'finally\s*\{[^}]*Stop\(\);')) "The iOS restart notice must finish by stopping the application, even if the notice cannot be shown."
 
 Assert-True (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot ".github/workflows/build_ios.yml"))) "The split Build iOS workflow must remain removed."
 Assert-True ($releaseWorkflowText.Contains("pull_request:")) "The unified Build workflow must validate iOS changes on pull requests."
