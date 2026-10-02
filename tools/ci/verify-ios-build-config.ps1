@@ -496,7 +496,18 @@ Assert-True ($releaseWorkflowText.Contains("build_ios_unsigned:")) "The release 
 Assert-True ($releaseWorkflowText.Contains("needs: resolve_ios_metadata")) "The iOS build must consume the unified metadata job."
 Assert-True ($releaseWorkflowText.Contains('version_source="$DISPATCH_RELEASE_TAG"')) "The release iOS build must derive its display version from the Android release tag."
 Assert-True ($releaseWorkflowText.Contains('artifact_name="out_app_ios_arm64_selfContained_ipa"')) "The release iOS artifact must use the release collector naming convention."
-Assert-True ($releaseWorkflowText.Contains("retention_days=30")) "The release iOS artifact must use the extended release retention period."
+# 验证实际结果，避免等价的 Shell 表达式因文本写法不同而被误报。
+$retentionAssignments = [regex]::Matches($releaseWorkflowText, '(?m)^[ \t]+retention_days=[^\r\n]+')
+Assert-True ($retentionAssignments.Count -eq 1) "The iOS metadata job must define one artifact retention expression."
+$retentionScript = 'GITHUB_EVENT_NAME="$1"' + "`n" + $retentionAssignments[0].Value.Trim() + "`n" + 'printf "%s" "$retention_days"'
+foreach ($retentionCase in @(
+    @{ Event = "workflow_dispatch"; Days = "30" },
+    @{ Event = "push"; Days = "14" },
+    @{ Event = "pull_request"; Days = "14" })) {
+    $retentionDays = & bash -e -u -o pipefail -c $retentionScript -- $retentionCase.Event
+    Assert-True ($LASTEXITCODE -eq 0) "The iOS artifact retention expression failed for $($retentionCase.Event)."
+    Assert-True (($retentionDays -join "`n") -ceq $retentionCase.Days) "The iOS artifact retention must be $($retentionCase.Days) days for $($retentionCase.Event)."
+}
 Assert-True ($releaseWorkflowText.Contains("needs: [ pack_app, build_nupkg, build_android, build_ios_unsigned ]")) "Publishing must wait for Android and unsigned iOS artifacts."
 Assert-True ($releaseWorkflowText.Contains("sha256sum --check")) "Publishing must verify the downloaded iOS checksum."
 Assert-True ($releaseWorkflowText.Contains("./out/*.ipa,./out/*.sha256")) "The release draft must include the unsigned IPA and checksum."
