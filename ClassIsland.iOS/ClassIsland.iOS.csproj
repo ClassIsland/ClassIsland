@@ -92,6 +92,19 @@
            Text="ClassIsland iOS cannot use iossimulator-* in RuntimeIdentifiers because SoundFlow 1.2.1 provides only an ios-arm64 device framework." />
   </Target>
 
+  <Target Name="RefreshIosInterpreterAssemblies"
+          BeforeTargets="_ComputeResolvedFilesToPublishTypes"
+          Condition="'$(UseInterpreter)' == 'true' Or '$(MtouchInterpreter)' != ''">
+    <ItemGroup>
+      <!-- 从 AOT 切换到解释器时，NuGet 原文件可能比包内已移除 IL 的副本更旧。
+           必须比较文件差异，避免 PreserveNewest 留下无法解释执行的旧 DLL。 -->
+      <ResolvedFileToPublish Update="@(ResolvedFileToPublish)"
+                             Condition="'%(ResolvedFileToPublish.Extension)' == '.dll' And '%(ResolvedFileToPublish.CopyToPublishDirectory)' == 'PreserveNewest'">
+        <CopyToPublishDirectory>IfDifferent</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
   <Target Name="BuildClassIslandLiveActivityExtension"
           BeforeTargets="_ExtendAppExtensionReferences"
           Condition="$([MSBuild]::IsOSPlatform('osx'))">
