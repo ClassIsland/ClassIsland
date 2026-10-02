@@ -44,6 +44,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
     protected override AppBuilder CreateAppBuilder()
     {
+        IosStartupDiagnostics.Write("Creating Avalonia app builder");
         if (!IosSoundFlowNativeBootstrap.TryInitialize(out var soundFlowException))
         {
             Console.Error.WriteLine(
@@ -62,11 +63,15 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
         var launchArguments = new List<string> { "--mobile" };
         launchArguments.AddRange(IosPendingLaunchArgumentsStore.Consume());
+        IosStartupDiagnostics.Write("Starting shared AppEntry");
         var buildApp = Program.AppEntry(launchArguments.ToArray());
+        IosStartupDiagnostics.Write("Shared AppEntry completed");
         return AppBuilder.Configure<App>(() =>
             {
+                IosStartupDiagnostics.Write("Constructing shared App");
                 var app = buildApp();
                 app.OperatingSystem = "ios";
+                IosStartupDiagnostics.Write("Shared App constructed");
                 return app;
             })
             .UseiOS(this)
@@ -88,6 +93,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     {
         return builder.AfterSetup(appBuilder =>
         {
+            IosStartupDiagnostics.Write("Avalonia setup completed; creating mobile host");
             if (appBuilder.Instance is not App app ||
                 app.ApplicationLifetime is not ISingleViewApplicationLifetime lifetime)
             {
@@ -118,9 +124,12 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
                 _lessonPreparationTimeline);
             _lessonsNotificationCoordinator.Start();
 
-#if DEVELOPER_PREVIEW
             Dispatcher.UIThread.Post(async () =>
             {
+                // 启动检查可能立即显示对话框，必须先准备好共享根窗口。
+                app.PhonyRootWindow = await GetTopLevelAsync(viewHost);
+                IosStartupDiagnostics.Write("Mobile host ready; starting App.Init");
+#if DEVELOPER_PREVIEW
                 try
                 {
                     await ShowDeveloperPreviewWarningAsync(viewHost);
@@ -133,10 +142,10 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
                 {
                     app.Init();
                 }
-            });
 #else
-            Dispatcher.UIThread.Post(app.Init);
+                app.Init();
 #endif
+            });
         });
     }
 
@@ -161,6 +170,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
     private void OnAppStarted(object? sender, EventArgs e)
     {
+        IosStartupDiagnostics.Write("App startup completed");
         _isAppNavigationReady = true;
         if (_pendingNavigationUri is not { } uri)
         {
@@ -218,6 +228,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         }.ShowAsync();
     }
 
+#endif
+
     private static async Task<TopLevel> GetTopLevelAsync(Control control)
     {
         var topLevel = TopLevel.GetTopLevel(control);
@@ -250,7 +262,6 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
         return await completionSource.Task;
     }
-#endif
 
     protected override void Dispose(bool disposing)
     {
