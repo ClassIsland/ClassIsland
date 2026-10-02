@@ -595,23 +595,27 @@ public partial class App : AppBase, IAppHost
 
 #if RELEASE
         // TODO: 退出 DP 后记得删
-        await new FATaskDialog()
+        // iOS 入口已根据 DeveloperPreview 构建标记显示提示，避免共享初始化重复弹窗。
+        if (!PlatformHelper.IsAppleMobile)
         {
-            Title = "ClassIsland",
-            Header = "欢迎使用 2.2-Misha Developer Preview",
-            Content = "此版本仅供开发人员进行早期预览，稳定性欠佳，不适用于生产环境或日常使用。如果您在使用的过程中遇到问题，欢迎前往 GitHub issues 上提交 issue！",
-            IconSource = new AdvancedImageIconSource()
+            await new FATaskDialog()
             {
-                Uri = "avares://ClassIsland/Assets/HoYoStickers/米沙_欢迎光临.png"
-            },
-            XamlRoot = GetRootWindow(),
-            Buttons = [
-                new FATaskDialogButton("确定", true)
+                Title = "ClassIsland",
+                Header = "欢迎使用 2.2-Misha Developer Preview",
+                Content = "此版本仅供开发人员进行早期预览，稳定性欠佳，不适用于生产环境或日常使用。如果您在使用的过程中遇到问题，欢迎前往 GitHub issues 上提交 issue！",
+                IconSource = new AdvancedImageIconSource()
                 {
-                    IsDefault = true
-                }
-            ]
-        }.ShowAsync();
+                    Uri = "avares://ClassIsland/Assets/HoYoStickers/米沙_欢迎光临.png"
+                },
+                XamlRoot = GetRootWindow(),
+                Buttons = [
+                    new FATaskDialogButton("确定", true)
+                    {
+                        IsDefault = true
+                    }
+                ]
+            }.ShowAsync();
+        }
 #endif
 
         // 检测临时目录
