@@ -60,10 +60,18 @@ internal sealed partial class IosLiveActivityService : ILiveActivityService
             content.CompactText,
             FormatDate(content.HasProgress ? content.StartTime : null),
             FormatDate(content.HasProgress ? content.EndTime : null),
-            content.DeepLink);
+            content.DeepLink,
+            content.Details);
         var json = JsonSerializer.Serialize(
             payload,
             LiveActivityJsonContext.Default.NativeLessonLiveActivityPayload);
+
+        if (Encoding.UTF8.GetByteCount(json) > MaximumPayloadBytes && payload.Details?.IconPngBase64 != null)
+        {
+            // 优先保留课程内容；图标不能让整个实时活动超过系统的大小限制。
+            payload = payload with { Details = payload.Details with { IconPngBase64 = null } };
+            json = JsonSerializer.Serialize(payload, LiveActivityJsonContext.Default.NativeLessonLiveActivityPayload);
+        }
 
         if (Encoding.UTF8.GetByteCount(json) > MaximumPayloadBytes)
         {

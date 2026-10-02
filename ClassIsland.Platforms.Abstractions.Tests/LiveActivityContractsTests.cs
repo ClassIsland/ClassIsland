@@ -8,6 +8,26 @@ namespace ClassIsland.Platforms.Abstractions.Tests;
 public sealed class LiveActivityContractsTests
 {
     [Fact]
+    public void Details_PreserveCourseIconAndLocationWhenAligningPreparationTime()
+    {
+        var start = new DateTimeOffset(2026, 10, 1, 15, 10, 0, TimeSpan.FromHours(8));
+        var details = new LessonLiveActivityDetails("物理", "A301", "15:10–15:55", "14:55–15:10", "aWNvbg==");
+        var content = CreateContent(start.AddMinutes(-15), start) with
+        {
+            Phase = LessonLiveActivityPhase.None,
+            IsUpcomingLesson = true,
+            Details = details
+        };
+
+        var aligned = LessonLiveActivityPublicationPolicy.AlignUpcomingProgressStart(content, start.AddMinutes(-5));
+
+        Assert.Equal(details, aligned.Details);
+        Assert.Equal(start.AddMinutes(-5), aligned.StartTime);
+        Assert.Equal(start, aligned.EndTime);
+        Assert.Null(CreateContent().Details);
+    }
+
+    [Fact]
     public void Content_HasProgress_RequiresCompleteIncreasingRange()
     {
         var start = new DateTimeOffset(2026, 7, 12, 8, 0, 0, TimeSpan.FromHours(8));

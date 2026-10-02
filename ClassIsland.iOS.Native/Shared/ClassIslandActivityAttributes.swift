@@ -1,6 +1,16 @@
 import ActivityKit
 import Foundation
 
+/// C# 提供的展示数据，扩展不解析课表和课程图标表达式。
+@available(iOS 16.1, *)
+public struct ClassIslandLessonDetails: Codable, Hashable {
+    public let lessonName: String
+    public let location: String
+    public let timeText: String
+    public let intervalTimeText: String
+    public let iconPngBase64: String?
+}
+
 /// 与托管层 `LessonLiveActivityPhase` 数值保持一致。
 @available(iOS 16.1, *)
 public enum ClassIslandActivityPhase: Int, Codable, Hashable {
@@ -22,6 +32,7 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
         public let startTime: Date?
         public let endTime: Date?
         public let deepLink: String
+        public let details: ClassIslandLessonDetails?
 
         public init(
             phase: ClassIslandActivityPhase,
@@ -31,7 +42,8 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
             compactText: String,
             startTime: Date?,
             endTime: Date?,
-            deepLink: String
+            deepLink: String,
+            details: ClassIslandLessonDetails? = nil
         ) {
             self.phase = phase
             self.title = title
@@ -41,6 +53,7 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
             self.startTime = startTime
             self.endTime = endTime
             self.deepLink = deepLink
+            self.details = details
         }
     }
 

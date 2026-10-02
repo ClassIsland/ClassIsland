@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models.LiveActivities;
+using ClassIsland.Platforms.Abstraction.Models.LiveActivities;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
 
@@ -96,7 +97,11 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                 ReferenceEquals(item, TimeLayoutItem.Empty)
                     ? string.Empty
                     : FormatTimeRange(item),
-                "???");
+                "???")
+            {
+                ActivityDetails = isClass ? CreateDetails(LessonsService.CurrentSubject, item) : null,
+                LessonIconExpression = isClass ? LessonsService.CurrentSubject?.Icon ?? "" : ""
+            };
         }
 
         var totalSeconds = (int)Math.Clamp(
@@ -150,7 +155,11 @@ internal sealed class LessonsLiveActivitySnapshotFactory
             progressPercent,
             remainingText,
             GetAbsoluteTime(now, absoluteNow, item.StartTime),
-            GetAbsoluteTime(now, absoluteNow, item.EndTime));
+            GetAbsoluteTime(now, absoluteNow, item.EndTime))
+        {
+            ActivityDetails = isClass ? CreateDetails(LessonsService.CurrentSubject, item) : null,
+            LessonIconExpression = isClass ? LessonsService.CurrentSubject?.Icon ?? "" : ""
+        };
     }
 
     private LessonsLiveActivitySnapshot CreateUpcomingClassSnapshot(
@@ -204,7 +213,17 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                 remainingText,
                 GetAbsoluteTime(now, absoluteNow, stableStartTime),
                 GetAbsoluteTime(now, absoluteNow, nextItem.StartTime),
-                IsUpcomingLesson: true);
+                IsUpcomingLesson: true)
+            {
+                ActivityDetails = CreateDetails(LessonsService.NextClassSubject, nextItem) with
+                {
+                    IntervalTimeText = currentState == TimeState.Breaking &&
+                                       !ReferenceEquals(LessonsService.CurrentTimeLayoutItem, TimeLayoutItem.Empty)
+                        ? FormatTimeRange(LessonsService.CurrentTimeLayoutItem)
+                        : string.Empty
+                },
+                LessonIconExpression = LessonsService.NextClassSubject?.Icon ?? ""
+            };
         }
 
         return new LessonsLiveActivitySnapshot(
@@ -215,6 +234,10 @@ internal sealed class LessonsLiveActivitySnapshotFactory
             string.Empty,
             "");
     }
+
+    private static LessonLiveActivityDetails CreateDetails(Subject? subject, TimeLayoutItem item) =>
+        new(GetSubjectName(subject, "未命名课程"), subject?.Location?.Trim() ?? "",
+            ReferenceEquals(item, TimeLayoutItem.Empty) ? "" : FormatTimeRange(item), "");
 
     private string CreateNextClassText(bool includeStartTime)
     {

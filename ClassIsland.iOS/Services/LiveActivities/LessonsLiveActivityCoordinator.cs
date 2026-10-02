@@ -33,6 +33,7 @@ internal sealed class LessonsLiveActivityCoordinator(
 
     private readonly CancellationTokenSource _cancellation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
+    private readonly LiveActivityLessonIconRenderer _iconRenderer = new();
     private readonly object _refreshTimerLock = new();
     private NSObject? _backgroundObserver;
     private NSObject? _foregroundObserver;
@@ -432,7 +433,7 @@ internal sealed class LessonsLiveActivityCoordinator(
         Console.Error.WriteLine(exception == null ? message : $"{message}\n{exception}");
     }
 
-    private static LessonLiveActivityContent CreateContent(
+    private LessonLiveActivityContent CreateContent(
         LessonsLiveActivitySnapshot snapshot)
     {
         var subtitle = RemoveRenderedCountdown(snapshot.Content, snapshot.RemainingText);
@@ -455,7 +456,12 @@ internal sealed class LessonsLiveActivityCoordinator(
             compactText,
             snapshot.StartTime,
             snapshot.EndTime,
-            IsUpcomingLesson: snapshot.IsUpcomingLesson);
+            IsUpcomingLesson: snapshot.IsUpcomingLesson)
+        {
+            Details = snapshot.ActivityDetails is { } details
+                ? details with { IconPngBase64 = _iconRenderer.Render(snapshot.LessonIconExpression) }
+                : null
+        };
     }
 
     private static string RemoveRenderedCountdown(string content, string remainingText)

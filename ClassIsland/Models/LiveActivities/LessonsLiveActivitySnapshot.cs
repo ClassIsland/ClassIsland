@@ -1,4 +1,5 @@
 using System;
+using ClassIsland.Platforms.Abstraction.Models.LiveActivities;
 using ClassIsland.Shared.Enums;
 
 namespace ClassIsland.Models.LiveActivities;
@@ -18,6 +19,10 @@ internal sealed record LessonsLiveActivitySnapshot(
     DateTimeOffset? EndTime = null,
     bool IsUpcomingLesson = false)
 {
+    public LessonLiveActivityDetails? ActivityDetails { get; init; }
+
+    public string LessonIconExpression { get; init; } = "";
+
     public bool HasProgress => ProgressMax > 0;
 
     public int RemainingSeconds => HasProgress

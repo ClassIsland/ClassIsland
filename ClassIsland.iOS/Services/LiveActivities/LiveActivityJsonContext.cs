@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using ClassIsland.Platforms.Abstraction.Models.LiveActivities;
 
 namespace ClassIsland.iOS.Services.LiveActivities;
 
@@ -17,4 +18,5 @@ internal sealed record NativeLessonLiveActivityPayload(
     string CompactText,
     string? StartTime,
     string? EndTime,
-    string DeepLink);
+    string DeepLink,
+    LessonLiveActivityDetails? Details);

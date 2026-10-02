@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1000000000000000000000B /* ClassIslandBrand.png in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* ClassIslandBrand.png */; };
 		A10000000000000000000001 /* ClassIslandActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* ClassIslandActivityAttributes.swift */; };
 		A10000000000000000000002 /* ClassIslandLiveActivityBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* ClassIslandLiveActivityBridge.swift */; };
 		A10000000000000000000003 /* ClassIslandLiveActivityBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* ClassIslandLiveActivityBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A2000000000000000000000D /* ClassIslandBrand.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Resources/ClassIslandBrand.png; sourceTree = "<group>"; };
 		A20000000000000000000001 /* ClassIslandActivityAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandActivityAttributes.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* ClassIslandLiveActivityBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandLiveActivityBridge.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* ClassIslandLiveActivityBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassIslandLiveActivityBridge.h; sourceTree = "<group>"; };
@@ -87,6 +89,7 @@
 		A40000000000000000000004 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				A2000000000000000000000D /* ClassIslandBrand.png */,
 				A20000000000000000000004 /* ClassIslandLiveActivityBundle.swift */,
 				A20000000000000000000005 /* ClassIslandLiveActivityWidget.swift */,
 				A20000000000000000000006 /* Info.plist */,
@@ -212,6 +215,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1000000000000000000000B /* ClassIslandBrand.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

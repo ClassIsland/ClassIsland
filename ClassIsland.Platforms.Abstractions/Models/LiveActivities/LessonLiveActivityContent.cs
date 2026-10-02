@@ -26,6 +26,11 @@ public sealed record LessonLiveActivityContent(
     bool IsUpcomingLesson = false)
 {
     /// <summary>
+    /// 可选的结构化展示信息；不改变既有构造函数和发布时机。
+    /// </summary>
+    public LessonLiveActivityDetails? Details { get; init; }
+
+    /// <summary>
     /// 当前内容是否包含可由系统持续渲染的时间进度。
     /// </summary>
     public bool HasProgress => StartTime is { } start && EndTime is { } end && end > start;
