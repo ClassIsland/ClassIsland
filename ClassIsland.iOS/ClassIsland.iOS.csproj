@@ -18,6 +18,12 @@
     <DefineConstants Condition="'$(DeveloperPreview)' == 'true'">$(DefineConstants);DEVELOPER_PREVIEW</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(ClassIslandIosDistribution)' == 'Sideload'">
+    <UseInterpreter>true</UseInterpreter>
+    <!-- 外部插件可能引用宿主未静态调用的 API，不能按宿主引用图裁剪。 -->
+    <TrimMode>copy</TrimMode>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(BrandType)' == 'Production'">
     <ApplicationId>cn.classisland.ios</ApplicationId>
     <ApplicationTitle>ClassIsland</ApplicationTitle>
@@ -33,12 +39,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj">
-      <AdditionalProperties>ClassIslandReferencedByMobile=true</AdditionalProperties>
+      <AdditionalProperties>ClassIslandReferencedByMobile=true;ClassIslandIosDistribution=$(ClassIslandIosDistribution)</AdditionalProperties>
     </ProjectReference>
     <ProjectReference Include="..\ClassIsland\ClassIsland.csproj">
-      <AdditionalProperties>ClassIslandReferencedByMobile=true</AdditionalProperties>
+      <AdditionalProperties>ClassIslandReferencedByMobile=true;ClassIslandIosDistribution=$(ClassIslandIosDistribution)</AdditionalProperties>
     </ProjectReference>
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(ClassIslandIosDistribution)' == 'Sideload'">
+    <ApplicationId>$(ApplicationId).sideload</ApplicationId>
+    <ApplicationTitle>$(ApplicationTitle) (Sideload)</ApplicationTitle>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
@@ -46,6 +57,7 @@
 
   <ItemGroup>
     <BundleResource Include="PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
+    <PartialAppManifest Include="PluginInfo.plist" Condition="'$(ClassIslandIosDistribution)' == 'Sideload'" />
     <ImageAsset Include="..\ClassIsland.Desktop\Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo_512x512_2x.png">
       <Link>Assets.xcassets\AppIcon.appiconset\AppIcon.png</Link>
     </ImageAsset>
@@ -57,7 +69,7 @@
     <ClassIslandNativeConfiguration>Release</ClassIslandNativeConfiguration>
     <ClassIslandNativeConfiguration Condition="$([System.String]::Copy('$(Configuration)').StartsWith('Debug'))">Debug</ClassIslandNativeConfiguration>
     <ClassIslandLiveActivitySdk>iphoneos</ClassIslandLiveActivitySdk>
-    <ClassIslandLiveActivityDerivedData>$(MSBuildProjectDirectory)/obj/xcode-live-activity-extension/$(Configuration)-$(RuntimeIdentifier)</ClassIslandLiveActivityDerivedData>
+    <ClassIslandLiveActivityDerivedData>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)xcode-live-activity-extension/$(Configuration)-$(RuntimeIdentifier)</ClassIslandLiveActivityDerivedData>
     <ClassIslandLiveActivityProducts>$(ClassIslandLiveActivityDerivedData)/Build/Products/$(ClassIslandNativeConfiguration)-$(ClassIslandLiveActivitySdk)</ClassIslandLiveActivityProducts>
     <ClassIslandLiveActivityCompiledEntitlements>$(ClassIslandLiveActivityDerivedData)/ClassIslandLiveActivityExtension.xcent</ClassIslandLiveActivityCompiledEntitlements>
     <ClassIslandLiveActivityCodesignArguments>CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO</ClassIslandLiveActivityCodesignArguments>
@@ -86,6 +98,10 @@
 
   <Target Name="ValidateIosDeviceRuntime"
           BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(ClassIslandIosDistribution)' != 'Sideload' And '$(ClassIslandIosDistribution)' != 'AppStore'"
+           Text="ClassIslandIosDistribution must be Sideload or AppStore." />
+    <Error Condition="'$(ClassIslandIosDistribution)' == 'Sideload' And ('$(UseInterpreter)' != 'true' Or '$(PublishAot)' == 'true' Or '$(TrimMode)' != 'copy')"
+           Text="Sideload plugins require UseInterpreter=true, TrimMode=copy and PublishAot=false." />
     <Error Condition="'$(RuntimeIdentifier)' != 'ios-arm64'"
            Text="ClassIsland iOS currently supports only the ios-arm64 device RID. SoundFlow 1.2.1 does not provide native assets for iossimulator-* RIDs." />
     <Error Condition="$([System.String]::Copy('$(RuntimeIdentifiers)').Contains('iossimulator-'))"

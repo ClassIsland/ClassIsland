@@ -2,13 +2,50 @@
 
 ClassIsland 的 iPhone 与 iPad 主界面由 Avalonia 统一实现。Swift 代码只存在于 ActivityKit bridge 和 Widget Extension 中；业务代码通过 `ClassIsland.Platforms.Abstraction` 提供的纯 C# API 调用实时活动与灵动岛。
 
+## 侧载版与 App Store 版
+
+通过 MSBuild 属性 `ClassIslandIosDistribution` 选择发行版，默认值为 `Sideload`。发行版与 `Debug` / `Release`、`BrandType` 相互独立。
+
+| 项目 | `Sideload` | `AppStore` |
+| --- | --- | --- |
+| 插件市场、安装、更新与执行 | 开启 | 禁用 |
+| 插件设置及异常插件选项 | 显示 | 隐藏 |
+| `.cipx` 文件类型声明 | 注册 | 不注册 |
+| 正式 Bundle ID | `cn.classisland.ios.sideload` | `cn.classisland.ios` |
+| 正式显示名称 | `ClassIsland (Sideload)` | `ClassIsland` |
+| 托管代码裁剪 | `copy`，保留插件可能调用的宿主 API | Release 使用 `partial` |
+
+Beta 和 Dev 的 Bundle ID 同样在原有 ID 后附加 `.sideload`。两种发行版可以共存，各自使用独立沙盒；从旧版 `cn.classisland.ios` 切换到侧载版不会自动迁移数据，需要先导出再导入。Live Activity Extension 跟随宿主 Bundle ID 构建，签名时需要为实际的宿主及 Extension ID 配置描述文件。
+
+侧载版使用 Mono 解释器执行托管插件，沿用现有 `.cipx` 格式与插件 API。安装或更新后，按应用提示手动结束并重新打开应用。插件应声明支持 `iOS`；Android 专用 API、运行时补丁、插件自带原生库和后台常驻能力不保证兼容，仍受 iOS 运行时及系统限制。不得将侧载版改为 Native AOT 或裁剪宿主 API。
+
+App Store 版在编译时移除插件加载器，并关闭安装处理、插件初始化、市场下载与刷新；复制插件到沙盒、恢复旧设置或打开插件链接都不会启用它。解释器本身可以用于应用内置代码，不代表开启外部插件功能。
+
+普通编译验证（需要与 .NET iOS SDK 匹配的 Xcode）：
+
+```sh
+dotnet build ClassIsland.iOS/ClassIsland.iOS.csproj -c Debug -p:ClassIslandIosDistribution=Sideload -p:EnableCodeSigning=false -m:1
+dotnet build ClassIsland.iOS/ClassIsland.iOS.csproj -c Release -p:ClassIslandIosDistribution=AppStore -p:EnableCodeSigning=false -m:1
+```
+
+NUKE 的 `PublishApp` 使用 `--IosDistribution Sideload|AppStore` 选择相同模式（默认 `Sideload`）。其它发布与签名参数不变，IPA 文件名附加发行版名称，避免混淆。托管构建产物分别存放在各项目的 `bin/<发行版>/` 与 `obj/<发行版>/` 下，Extension 的 Xcode 构建目录也按发行版隔离。不要仅通过修改 Bundle ID 把侧载包作为上架包。
+
+无需 iOS 真机即可运行的插件回归测试：
+
+```sh
+dotnet test ClassIsland.Plugin.Tests/ClassIsland.Plugin.Tests.csproj -p:ClassIslandIosDistribution=Sideload -m:1
+dotnet test ClassIsland.Plugin.Tests/ClassIsland.Plugin.Tests.csproj -p:ClassIslandIosDistribution=AppStore -m:1
+```
+
+这些测试覆盖待安装插件包的处理、上架版市场禁用、加载器是否包含在产物中，以及 Mono 路径下的托管插件加载与宿主 API 共享。它们不能替代 Release IPA 真机验证：还需要在侧载版安装带 Avalonia 设置页的插件，检查页面、依赖、重开生效和更新；在上架版确认入口隐藏、恢复插件目录及插件链接均无法启用插件。
+
 ## 使用 GitHub Actions 构建 unsigned IPA
 
 工作流位于 `.github/workflows/build_ios.yml`，不需要 Apple 证书、provisioning profile 或 GitHub Environment Secrets。
 
 - Pull Request、`master` 与 `develop/v2/ios` 的相关提交会通过仓库统一的 NUKE `PublishApp` 目标构建 Release `ios-arm64` 真机版本。
 - 工作流运行平台抽象测试，并构建 Avalonia 主程序、Swift bridge 和 Live Activity Extension。
-- 主程序使用正式 Bundle ID `cn.classisland.ios`，Extension 使用 `cn.classisland.ios.LiveActivityExtension`。
+- 主程序 Bundle ID 由发行版决定，Extension 在宿主 ID 后附加 `.LiveActivityExtension`。
 - 构建结果封装为标准 `Payload/ClassIsland.iOS.app` IPA，并生成 SHA-256 文件。
 - 上传前会重新解包，检查 arm64、minimum OS、Swift back-deployment runtime、ActivityKit weak link、Extension 和 bridge，并确认没有签名与 provisioning profile。
 - Artifact 保留 14 天，名称格式为 `ClassIsland-iOS-unsigned-<run number>-<run attempt>`。

@@ -224,6 +224,10 @@
 	  </AvaloniaXaml>
 	</ItemGroup>
 
+    <ItemGroup Condition="'$(ClassIslandIosDistribution)' == 'AppStore'">
+        <Compile Remove="PluginLoadContext.cs" />
+    </ItemGroup>
+
     <Target Name="PrintConstants" AfterTargets="Build">
 		<Message Text="Constants: $(DefineConstants)" Importance="high" />
 		<Message Text="IsMsix: $(IsMsix)" Importance="high" />

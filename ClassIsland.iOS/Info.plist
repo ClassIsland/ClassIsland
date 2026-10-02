@@ -55,23 +55,6 @@
         </array>
       </dict>
     </dict>
-    <dict>
-      <key>UTTypeIdentifier</key>
-      <string>cn.classisland.plugin-package</string>
-      <key>UTTypeDescription</key>
-      <string>ClassIsland 插件包</string>
-      <key>UTTypeConformsTo</key>
-      <array>
-        <string>public.data</string>
-      </array>
-      <key>UTTypeTagSpecification</key>
-      <dict>
-        <key>public.filename-extension</key>
-        <array>
-          <string>cipx</string>
-        </array>
-      </dict>
-    </dict>
   </array>
   <key>ITSAppUsesNonExemptEncryption</key>
   <false/>

@@ -60,6 +60,13 @@ public class UriNavigationService : IUriNavigationService
 
     public void Navigate(Uri uri)
     {
+        if (!PluginSupport.IsEnabled && uri.Scheme == IUriNavigationService.UriScheme &&
+            (uri.Host == IUriNavigationService.UriDomainPlugins ||
+             (uri.Host == "app" && uri.AbsolutePath.TrimEnd('/').Equals(
+                 "/settings/classisland.plugins", StringComparison.OrdinalIgnoreCase))))
+        {
+            return;
+        }
         Dispatcher.UIThread.Invoke(() =>
         {
             if (uri.Scheme == IUriNavigationService.UriScheme)

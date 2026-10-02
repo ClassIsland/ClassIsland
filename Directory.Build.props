@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <ClassIslandIosDistribution Condition="'$(MSBuildProjectName)' == 'ClassIsland.iOS' And '$(ClassIslandIosDistribution)' == ''">Sideload</ClassIslandIosDistribution>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(ClassIslandIosDistribution)' != ''">
+    <!-- 两种发行版必须隔离 NuGet、编译和链接产物，避免切换后复用另一版的插件能力。 -->
+    <BaseIntermediateOutputPath>obj/$(ClassIslandIosDistribution)/</BaseIntermediateOutputPath>
+    <BaseOutputPath>bin/$(ClassIslandIosDistribution)/</BaseOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj/**;bin/**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>

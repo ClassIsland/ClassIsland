@@ -22,6 +22,7 @@ public partial class Build
             {
                 DotNetRestore(s => s
                     .SetProjectFile(IosAppEntryProject)
+                    .SetProperty("ClassIslandIosDistribution", IosDistribution)
                     .SetProperty("PublishBuilding", true)
                     .SetProperty("PublishPlatform", OsName)
                     .SetProperty("ClassIsland_PlatformTarget", Arch)
@@ -49,6 +50,7 @@ public partial class Build
             {
                 DotNetClean(s => s
                     .SetProject(IosAppEntryProject)
+                    .SetProperty("ClassIslandIosDistribution", IosDistribution)
                     .SetProperty("PublishBuilding", true)
                     .SetProperty("PublishPlatform", OsName)
                     .SetProperty("ClassIsland_PlatformTarget", Arch)
@@ -79,6 +81,7 @@ public partial class Build
                     var enableCodeSigning = EnableCodeSigning ? "true" : "false";
                     settings = settings
                         .SetProject(IosAppEntryProject)
+                        .SetProperty("ClassIslandIosDistribution", IosDistribution)
                         // iOS 的多层项目引用会以不同全局属性重复构建 Avalonia 项目；
                         // 串行执行可避免它们同时写入同一个 obj/Avalonia/resources 文件。
                         .SetProcessAdditionalArguments("-m:1")

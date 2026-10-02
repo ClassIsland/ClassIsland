@@ -178,7 +178,7 @@ public partial class App
         {
             services.AddSettingsPage<UpdateSettingsPage>();
         }
-        if (!PlatformHelper.IsAppleMobile)
+        if (PluginSupport.IsEnabled)
         {
             services.AddSettingsPage<PluginsSettingsPage>();
         }
@@ -340,7 +340,7 @@ public partial class App
             services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.getStarted.json"));
         }
         // Plugins
-        if (!PlatformHelper.IsAppleMobile &&
+        if (PluginSupport.IsEnabled &&
             !ApplicationCommand.Safe &&
             string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) &&
             string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))

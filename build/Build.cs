@@ -39,6 +39,8 @@ partial class Build : NukeBuild
     [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
     [Parameter] readonly string AppVersion;
     [Parameter] readonly string BrandType;
+    [Parameter("iOS distribution: Sideload (plugins enabled) or AppStore (external plugins disabled).")]
+    readonly string IosDistribution = "Sideload";
     [Parameter] readonly string CodesignKey;
     [Parameter] readonly string CodesignProvision;
     [Parameter] readonly string ClassIslandLiveActivityCodesignProvision;
@@ -87,6 +89,14 @@ partial class Build : NukeBuild
             };
             RuntimeIdentifier = $"{osRid}-{Arch}";
             PublishArtifactName = $"out_{BuildName}_{OsName}_{Arch}_{BuildType}_{Package}";
+            if (IsIosBuild)
+            {
+                if (IosDistribution is not ("Sideload" or "AppStore"))
+                {
+                    throw new InvalidOperationException("IosDistribution must be Sideload or AppStore.");
+                }
+                PublishArtifactName += $"_{IosDistribution}";
+            }
             IsSecretFilled = !(string.IsNullOrEmpty(ApiSigningKey) || string.IsNullOrEmpty(ApiSigningKeyPs));
             AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             IosPublishArtifactPath = AppOutputPath / PublishArtifactName + ".ipa";

@@ -333,7 +333,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private async Task ProcessInstallFiles(IEnumerable<string> filePaths)
     {
-        if (ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
+        if (!PluginSupport.IsEnabled || ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
             return;
 
         var paths = filePaths
@@ -745,4 +745,3 @@ public partial class PluginsSettingsPage : SettingsPageBase
         Dispatcher.UIThread.InvokeAsync(() => OpenDrawer("PluginUpdateSettingsDrawer"));
     }
 }
-

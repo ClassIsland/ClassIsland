@@ -67,7 +67,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         PluginService = pluginService;
         Logger = logger;
 
-        if (DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
+        if (PluginSupport.IsEnabled && DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = RefreshPluginSourceAsync();
         }
@@ -110,6 +110,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
 
     public async Task RefreshPluginSourceAsync()
     {
+#if !CLASSISLAND_APP_STORE
         if (IsLoadingPluginSource)
             return;
         IsLoadingPluginSource = true;
@@ -219,6 +220,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         Logger.LogInformation("插件源刷新成功。");
         SettingsService.Settings.LastRefreshPluginSourceTime = DateTime.Now;
         IsLoadingPluginSource = false;
+#endif
     }
 
     public IEnumerable<PluginIndexInfo> GetIndexInfos()
@@ -238,6 +240,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
 
     public void UpdateAllPlugins(bool discardDisabled = false)
     {
+#if !CLASSISLAND_APP_STORE
         var toUpdate = MergedPlugins
             .Where(x => x.Value is { IsUpdateAvailable: true, RestartRequired: false }
                         && (x.Value.DownloadProgress == null || x.Value.DownloadProgress.IsDownloading == false)
@@ -298,6 +301,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         {
             RequestDownloadPlugin(id);
         }
+#endif
     }
 
     public PluginIndexItem? ResolveMarketPlugin(string id)
@@ -345,6 +349,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
 
     public async void RequestDownloadPlugin(string id)
     {
+#if !CLASSISLAND_APP_STORE
         var item = ResolveMarketPlugin(id);
         var transaction = SentrySdk.StartTransaction("Download Plugin", "plugin.download");
         transaction.SetTag("plugin.id", id);
@@ -446,6 +451,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         }
         task.IsDownloading = false;
         DownloadTasks.Remove(id);
+#endif
     }
 
     private DownloadConfiguration CreateDownloadConfiguration(
@@ -642,6 +648,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
 
     public void LoadPluginSource()
     {
+#if !CLASSISLAND_APP_STORE
         Logger.LogInformation("正在加载插件源");
         Directory.CreateDirectory(Services.PluginService.PluginsIndexPath);
         RecoverInterruptedPluginIndexInstalls();
@@ -722,6 +729,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         SettingsService.Settings.OfficialIndexMirrors = ConfigureFileHelper.CopyObject(
             defaultIndex.DownloadMirrors);
         BindDownloadTasks();
+#endif
     }
 
     private void BindDownloadTasks()

@@ -49,7 +49,9 @@ public class PluginService : IPluginService
 
     public static List<PluginInfo> PluginLoadedStatus { get; internal set; } =new();
 
+#if !CLASSISLAND_APP_STORE
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
+#endif
 
     internal static List<PluginManifest> InstalledPlugins { get; } = [];
     
@@ -60,6 +62,7 @@ public class PluginService : IPluginService
     /// </summary>
     public static void ProcessPluginsInstall()
     {
+#if !CLASSISLAND_APP_STORE
         if (!Directory.Exists(PluginsPkgRootPath))
         {
             Directory.CreateDirectory(PluginsPkgRootPath);
@@ -160,6 +163,7 @@ public class PluginService : IPluginService
                 Console.WriteLine(installed ? "完成!" : "安装失败!");
             }
         }
+#endif
     }
 
     private static void RecoverInterruptedPluginInstalls()
@@ -269,6 +273,7 @@ public class PluginService : IPluginService
     /// </summary>
     public static void InitializePlugins(HostBuilderContext context, IServiceCollection services)
     {
+#if !CLASSISLAND_APP_STORE
         if (!Directory.Exists(PluginsRootPath))
         {
             Directory.CreateDirectory(PluginsRootPath);
@@ -394,6 +399,7 @@ public class PluginService : IPluginService
         }
         
         AppBase.Current.AppStarted += CurrentOnAppStarted;
+#endif
     }
 
     private static void CurrentOnAppStarted(object? sender, EventArgs e)
