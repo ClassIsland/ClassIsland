@@ -47,8 +47,8 @@ env:
   MACOS_XCODE_PATH: /Applications/Xcode_26.6.app/Contents/Developer
 
 jobs:
-  resolve_ios_metadata:
-    name: Resolve iOS build metadata
+  build_ios:
+    name: build_ios (${{ matrix.arch }})
     if: >-
       ${{
         github.event_name == 'pull_request' ||
@@ -58,20 +58,34 @@ jobs:
         github.ref == 'refs/heads/develop/v2/misha-alpha' ||
         startsWith(github.ref, 'refs/tags/ios-v')
       }}
-    runs-on: ubuntu-24.04
+    runs-on: macos-26
+    timeout-minutes: 90
     permissions:
       contents: read
-    outputs:
-      checkout_ref: ${{ steps.metadata.outputs.checkout_ref }}
-      app_version: ${{ steps.metadata.outputs.app_version }}
-      developer_preview: ${{ steps.metadata.outputs.developer_preview }}
-      artifact_name: ${{ steps.metadata.outputs.artifact_name }}
-      retention_days: ${{ steps.metadata.outputs.retention_days }}
+      packages: read
+    strategy:
+      matrix:
+        arch: ['arm64']
+    concurrency:
+      group: ios-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}-${{ matrix.arch }}
+      cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
+      IOS_CONFIGURATION: Release
+      IOS_RUNTIME_IDENTIFIER: ios-${{ matrix.arch }}
+      IOS_WORKLOAD_VERSION: 10.0.202
+      APPLICATION_ID: cn.classisland.ios
+      XCODE_PATH: /Applications/Xcode_26.3.app
+      artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa
+      IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa.ipa
     steps:
       - name: Checkout iOS version source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: recursive
           ref: >-
             ${{
               github.event_name == 'workflow_dispatch' && inputs.release_tag ||
@@ -107,47 +121,125 @@ jobs:
           fi
           app_version="$(resolve_ios_display_version "$version_source")"
           validate_ios_display_version "$app_version"
-          checkout_ref="$(git rev-parse HEAD)"
-
-          artifact_name="out_app_ios_arm64_selfContained_ipa"
           retention_days=$([[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]] && echo 30 || echo 14)
 
-          echo "checkout_ref=$checkout_ref" >> "$GITHUB_OUTPUT"
           echo "app_version=$app_version" >> "$GITHUB_OUTPUT"
           echo "developer_preview=$developer_preview" >> "$GITHUB_OUTPUT"
-          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
           echo "retention_days=$retention_days" >> "$GITHUB_OUTPUT"
 
-  build_ios_unsigned:
-    name: Build unsigned iOS IPA
-    needs: resolve_ios_metadata
-    if: >-
-      ${{
-        always() &&
-        needs.resolve_ios_metadata.result == 'success' &&
-        (
-          github.event_name == 'pull_request' ||
-          github.event_name == 'workflow_dispatch' ||
-          github.ref == 'refs/heads/master' ||
-          github.ref == 'refs/heads/develop/v2/ios' ||
-          github.ref == 'refs/heads/develop/v2/misha-alpha' ||
-          startsWith(github.ref, 'refs/tags/ios-v')
-        )
-      }}
-    permissions:
-      contents: read
-      packages: read
-    concurrency:
-      group: ios-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}
-      cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
-    uses: ./.github/workflows/_build_ios_reusable.yml
-    with:
-      checkout_ref: ${{ needs.resolve_ios_metadata.outputs.checkout_ref }}
-      app_version: ${{ needs.resolve_ios_metadata.outputs.app_version }}
-      brand_type: Production
-      developer_preview: ${{ needs.resolve_ios_metadata.outputs.developer_preview == 'true' }}
-      artifact_name: ${{ needs.resolve_ios_metadata.outputs.artifact_name }}
-      retention_days: ${{ fromJSON(needs.resolve_ios_metadata.outputs.retention_days) }}
+      - name: Resolve application build number
+        id: build_metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          build_number="$(git rev-list --count HEAD)"
+          if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
+            echo "::error::Unable to derive the iOS build number from Git history"
+            exit 1
+          fi
+          if (( build_number < 1 )); then
+            build_number=1
+          fi
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
+
+      - name: Test iOS build-number validation
+        run: bash ./tools/ci/test-ios-build-number.sh
+
+      - name: Test iOS display-version validation
+        run: bash ./tools/ci/test-ios-display-version.sh
+
+      - name: Verify iOS build configuration
+        shell: pwsh
+        run: ./tools/ci/verify-ios-build-config.ps1
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+          xcodebuild -showsdks
+          xcodebuild -project ClassIsland.iOS.Native/ClassIsland.iOS.Native.xcodeproj -list
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.202
+
+      - name: Add GitHub Packages source
+        env:
+          NUGET_AUTH_TOKEN: ${{ github.token }}
+        run: >-
+          dotnet nuget add source
+          --username github-actions
+          --password "$NUGET_AUTH_TOKEN"
+          --store-password-in-clear-text
+          --name github
+          "https://nuget.pkg.github.com/ClassIsland/index.json"
+
+      - name: Restore iOS workload
+        run: dotnet workload restore "$IOS_PROJECT" --version "$IOS_WORKLOAD_VERSION"
+
+      - name: Run platform abstraction tests
+        run: >-
+          dotnet test
+          ClassIsland.Platforms.Abstractions.Tests/ClassIsland.Platforms.Abstractions.Tests.csproj
+          -c Release
+          --collect:"XPlat Code Coverage"
+          --settings ClassIsland.Platforms.Abstractions.Tests/coverlet.runsettings
+          --results-directory "$RUNNER_TEMP/ios-tests"
+
+      - name: Verify platform abstraction coverage
+        shell: pwsh
+        run: >-
+          ./tools/ci/verify-cobertura-coverage.ps1
+          -ResultsDirectory "${{ runner.temp }}/ios-tests"
+          -MinimumLineRate 0.8
+
+      - name: Build unsigned iOS IPA through NUKE
+        env:
+          osName: ios
+          arch: ${{ matrix.arch }}
+          package: ipa
+          buildType: selfContained
+          buildName: app
+          configuration: ${{ env.IOS_CONFIGURATION }}
+          appVersion: ${{ steps.metadata.outputs.app_version }}
+          brandType: Production
+          DeveloperPreview: ${{ steps.metadata.outputs.developer_preview }}
+          enableCodeSigning: 'false'
+        run: ./build.sh PublishApp
+
+      - name: Verify iOS interpreter mode
+        run: |
+          set -euo pipefail
+          runtime_entry="ClassIsland.iOS/obj/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/main.arm64.mm"
+          if ! grep -Eq '^[[:space:]]*mono_jit_set_aot_mode[[:space:]]*\([[:space:]]*MONO_AOT_MODE_INTERP[[:space:]]*\)[[:space:]]*;' "$runtime_entry"; then
+            echo "::error::The iOS build must enable the Mono interpreter"
+            exit 1
+          fi
+          echo "Verified Mono interpreter mode for $IOS_CONFIGURATION / $IOS_RUNTIME_IDENTIFIER"
+
+      - name: Normalize unsigned IPA
+        run: bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"
+
+      - name: Verify unsigned IPA
+        run: >-
+          bash ./tools/ci/verify-ios-ipa.sh
+          "$IPA_PATH"
+          "$APPLICATION_ID"
+          "$IOS_RUNTIME_IDENTIFIER"
+          "${{ steps.metadata.outputs.app_version }}"
+          "${{ steps.build_metadata.outputs.build_number }}"
+
+      - name: Upload unsigned IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.artifact_name }}
+          path: |
+            ${{ env.IPA_PATH }}
+            ${{ env.IPA_PATH }}.sha256
+          if-no-files-found: error
+          overwrite: true
+          retention-days: ${{ steps.metadata.outputs.retention_days }}
 
   build_app:
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-26' || 'windows-2022' ) }}
@@ -646,11 +738,11 @@ jobs:
         needs.pack_app.result == 'success' &&
         needs.build_nupkg.result == 'success' &&
         needs.build_android.result == 'success' &&
-        needs.build_ios_unsigned.result == 'success' &&
+        needs.build_ios.result == 'success' &&
         github.event.inputs.release_tag &&
         github.event_name != 'pull_request'
       }}
-    needs: [ pack_app, build_nupkg, build_android, build_ios_unsigned ]
+    needs: [ pack_app, build_nupkg, build_android, build_ios ]
     concurrency:
       group: "publish-public"
     environment:
