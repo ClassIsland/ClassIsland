@@ -420,13 +420,21 @@ public partial class App : AppBase, IAppHost
 
         var plugins = DiagnosticService.GetPluginsByStacktrace(e);
         var disabled = DiagnosticService.DisableCorruptPlugins(plugins);
-        var managementService = IAppHost.TryGetService<IManagementService>();
-        if (managementService is IManagementService { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+        try
         {
-            connection.LogAuditEvent(AuditEvents.AppCrashed, new AppCrashed()
+            // 启动失败时解析服务可能再次抛异常，审计失败不能阻断崩溃界面。
+            var managementService = IAppHost.TryGetService<IManagementService>();
+            if (managementService is IManagementService { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
             {
-                Stacktrace = e.ToString()
-            });
+                connection.LogAuditEvent(AuditEvents.AppCrashed, new AppCrashed()
+                {
+                    Stacktrace = e.ToString()
+                });
+            }
+        }
+        catch (Exception auditException)
+        {
+            Logger?.LogError(auditException, "无法记录崩溃审计事件");
         }
         if (!safe)
         {

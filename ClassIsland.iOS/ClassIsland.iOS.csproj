@@ -113,6 +113,19 @@
            Text="ClassIsland iOS cannot use iossimulator-* in RuntimeIdentifiers because SoundFlow 1.2.1 provides only an ios-arm64 device framework." />
   </Target>
 
+  <Target Name="PreserveSideloadManagedAssemblies"
+          BeforeTargets="PrepareForILLink"
+          Condition="'$(ClassIslandIosDistribution)' == 'Sideload'">
+    <ItemGroup>
+      <!-- 全局 TrimMode 不能替代逐程序集的操作设置；反射创建配置和外部插件
+           都可能使用宿主静态引用图以外的成员，不能让这些程序集继续使用 link。 -->
+      <ManagedAssemblyToLink Update="@(ManagedAssemblyToLink)"
+                             Condition="'%(ManagedAssemblyToLink.TrimMode)' != 'skip'">
+        <TrimMode>copy</TrimMode>
+      </ManagedAssemblyToLink>
+    </ItemGroup>
+  </Target>
+
   <Target Name="RefreshIosInterpreterAssemblies"
           BeforeTargets="_ComputeResolvedFilesToPublishTypes"
           Condition="'$(UseInterpreter)' == 'true' Or '$(MtouchInterpreter)' != ''">

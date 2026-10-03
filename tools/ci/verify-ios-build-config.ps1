@@ -150,6 +150,8 @@ $runtimeValidationTarget = $iosProject.SelectSingleNode('/Project/Target[@Name="
 Assert-True ($iosProject.SelectNodes('/Project/PropertyGroup[contains(@Condition, "Sideload")]/ApplicationTitle').Count -eq 0) "Sideload must retain the same display name as the corresponding App Store brand."
 $sideloadEntryRoot = $iosProject.SelectSingleNode('/Project/ItemGroup[contains(@Condition, "Sideload")]/TrimmerRootAssembly[@Include="$(AssemblyName)"]')
 Assert-True ($sideloadEntryRoot.RootMode -eq 'All') "Sideload must preserve the entry assembly, including native startup callbacks."
+$sideloadPreservation = $iosProject.SelectSingleNode('/Project/Target[@Name="PreserveSideloadManagedAssemblies"]')
+Assert-True ($sideloadPreservation.BeforeTargets -eq 'PrepareForILLink' -and $sideloadPreservation.ItemGroup.ManagedAssemblyToLink.TrimMode -eq 'copy') "Sideload must explicitly preserve each managed assembly before linking."
 Assert-True ($null -ne $runtimeValidationTarget) "The iOS project must explicitly reject Simulator RIDs."
 $runtimeValidationConditions = @($runtimeValidationTarget.Error) | ForEach-Object { $_.Condition }
 Assert-True ($runtimeValidationConditions -contains "'`$(RuntimeIdentifier)' != 'ios-arm64'") "Single-RID validation must allow only ios-arm64."
@@ -497,7 +499,8 @@ Assert-True ($iosWorkflowText.Contains('IOS_DISTRIBUTION: ${{ matrix.distributio
 Assert-True ($iosWorkflowText.Contains("APPLICATION_ID: `${{ matrix.distribution == 'Sideload' && 'cn.classisland.ios.sideload' || 'cn.classisland.ios' }}")) "IPA verification must expect the distribution's bundle identifier."
 Assert-True ($iosWorkflowText.Contains('"$IOS_DISTRIBUTION"')) "IPA verification must receive the distribution to validate the display name."
 Assert-True ($iosWorkflowText.Contains('ClassIsland.iOS/obj/$IOS_DISTRIBUTION/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/main.arm64.mm')) "Interpreter verification must use the distribution-specific intermediate directory."
-Assert-True ($ipaVerificationText.Contains('dotnet run --file "$script_directory/verify-ios-entry.cs" -- "$app_bundle/ClassIsland.iOS.dll"')) "CI must verify startup methods in the final IPA assembly."
+Assert-True ($ipaVerificationText.Contains('dotnet run --file "$script_directory/verify-ios-entry.cs" -- "${entry_verifier_args[@]}"') -and $ipaVerificationText.Contains('ClassIsland.Shared.IPC ClassIsland.Platforms.Abstractions')) "CI must verify startup methods and preserved host APIs in the final IPA assemblies."
+Assert-True ($ipaVerificationText.Contains('dotnet run --file "$script_directory/verify-ios-config.cs" -- "$app_bundle"')) "CI must exercise configuration creation and serialization using the packaged shared library."
 Assert-True (-not $iosWorkflowText.Contains("buildNumber:")) "The iOS matrix job must not duplicate NUKE's Git-derived ApplicationVersion logic."
 Assert-True (-not $releaseWorkflowText.Contains("build_number: `${{ format('{0}', github.run_number) }}")) "The unified caller must not use github.run_number as the iOS ApplicationVersion."
 Assert-True ($androidBuildText.Contains('SetProperty("ApplicationVersion", Math.Max(GitCommitCount, 1))')) "Android ApplicationVersion must remain based on GitCommitCount."
