@@ -23,12 +23,13 @@ struct ClassIslandLiveActivityWidget: Widget {
                     ClassIslandIslandTimer(state: context.state, isStale: context.classIslandIsStale)
                         .font(.system(size: 18, weight: .semibold, design: .rounded))
                         .foregroundStyle(activityAccent)
+                        .frame(width: 72, alignment: .trailing)
                 }
                 DynamicIslandExpandedRegion(.center) {
                     HStack(spacing: 7) {
                         ClassIslandLessonIcon(encodedImage: context.state.details?.iconPngBase64, size: 22)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(context.state.lessonName).font(.headline).lineLimit(1)
+                            Text(context.state.lessonName).font(.headline).lineLimit(1).minimumScaleFactor(0.75)
                             Text(context.state.phase.displayName).font(.caption).foregroundStyle(activityAccent)
                         }
                     }
@@ -43,7 +44,7 @@ struct ClassIslandLiveActivityWidget: Widget {
                             Spacer(minLength: 8)
                             Text(context.state.details?.timeText ?? context.state.detail).monospacedDigit()
                         }
-                        .font(.caption).foregroundStyle(activitySecondary)
+                        .font(.caption).foregroundStyle(activitySecondary).lineLimit(1)
                         if context.classIslandIsStale {
                             ClassIslandStaleNotice()
                         } else {
@@ -51,15 +52,19 @@ struct ClassIslandLiveActivityWidget: Widget {
                         }
                     }
                     .foregroundStyle(.white)
+                    .padding(.bottom, 8)
                 }
             } compactLeading: {
                 HStack(spacing: 4) {
                     ClassIslandLessonIcon(encodedImage: context.state.details?.iconPngBase64, size: 17)
                     Text(context.state.compactText).font(.caption2).lineLimit(1).foregroundStyle(.white)
+                        .frame(maxWidth: 36, alignment: .leading)
                 }
             } compactTrailing: {
                 ClassIslandIslandTimer(state: context.state, isStale: context.classIslandIsStale)
                     .font(.caption.monospacedDigit()).foregroundStyle(activityAccent)
+                    // 系统倒计时会占满提议宽度，需要在灵动岛区域内限制宽度。
+                    .frame(width: 52, alignment: .trailing)
             } minimal: {
                 if context.classIslandIsStale {
                     Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
