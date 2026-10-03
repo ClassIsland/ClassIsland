@@ -14,13 +14,12 @@ ClassIsland 的 iPhone 与 iPad 主界面由 Avalonia 统一实现。Swift 代�
 | 正式 Bundle ID | `cn.classisland.ios.sideload` | `cn.classisland.ios` |
 | 正式显示名称 | `ClassIsland` | `ClassIsland` |
 | 托管代码裁剪 | `copy`，保留插件可能调用的宿主 API | Release 使用 `partial` |
-| Objective-C 注册器 | `static` | SDK 默认值 |
 
 Beta 和 Dev 的 Bundle ID 同样在原有 ID 后附加 `.sideload`。两种发行版可以共存，各自使用独立沙盒；从旧版 `cn.classisland.ios` 切换到侧载版不会自动迁移数据，需要先导出再导入。Live Activity Extension 跟随宿主 Bundle ID 构建，签名时需要为实际的宿主及 Extension ID 配置描述文件。
 
 侧载版使用 Mono 解释器执行托管插件，沿用现有 `.cipx` 格式与插件 API。安装或更新后，按应用提示手动结束并重新打开应用。插件应声明支持 `iOS`；Android 专用 API、运行时补丁、插件自带原生库和后台常驻能力不保证兼容，仍受 iOS 运行时及系统限制。不得将侧载版改为 Native AOT 或裁剪宿主 API。
 
-侧载版显式使用 `Registrar=static`，避开当前工具链为泛型 `AvaloniaAppDelegate<App>` 生成的 managed-static 构造回调。CI 会检查生成的原生注册代码，防止构建属性被覆盖后重新使用该路径；启动行为仍需真机验证。
+侧载版使用 `TrimmerRootAssembly` 显式保留整个 iOS 入口程序集。仅设置 `TrimMode=copy` 不足以保护入口程序集：默认链接根只有 `Main`，可能删除由原生系统调用的 `AppDelegate` 构造函数和启动回调，导致系统转而调用泛型父类并在启动时崩溃。CI 会解包最终 IPA，检查入口构造函数、启动回调及其 IL；不能只凭 Debug 编译或注册器模式检查判断启动正常。
 
 App Store 版在编译时移除插件加载器，并关闭安装处理、插件初始化、市场下载与刷新；复制插件到沙盒、恢复旧设置或打开插件链接都不会启用它。解释器本身可以用于应用内置代码，不代表开启外部插件功能。
 

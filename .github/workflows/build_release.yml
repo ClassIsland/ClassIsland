@@ -226,13 +226,6 @@ jobs:
             exit 1
           fi
           echo "Verified Mono interpreter mode for $IOS_CONFIGURATION / $IOS_RUNTIME_IDENTIFIER"
-          if [[ "$IOS_DISTRIBUTION" == "Sideload" ]]; then
-            registrar="ClassIsland.iOS/obj/$IOS_DISTRIBUTION/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/registrar.mm"
-            if ! grep -q 'native_to_managed_trampoline_' "$registrar" || grep -q 'xamarin_registrar_dlsym' "$registrar"; then
-              echo "::error::The sideload build must use the static registrar"
-              exit 1
-            fi
-          fi
 
       - name: Normalize unsigned IPA
         run: bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"

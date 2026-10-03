@@ -43,6 +43,7 @@ if [[ "${#app_bundles[@]}" -ne 1 ]]; then
 fi
 
 app_bundle="${app_bundles[0]}"
+dotnet run --file "$script_directory/verify-ios-entry.cs" -- "$app_bundle/ClassIsland.iOS.dll"
 extension_bundle="$app_bundle/PlugIns/ClassIslandLiveActivityExtension.appex"
 bridge_bundle="$app_bundle/Frameworks/ClassIslandLiveActivityBridge.framework"
 bridge_binary="$bridge_bundle/ClassIslandLiveActivityBridge"
