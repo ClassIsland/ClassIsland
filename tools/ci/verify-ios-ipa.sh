@@ -18,8 +18,7 @@ readonly ipa_expected_display_version="$4"
 readonly ipa_expected_build_number="$5"
 readonly ios_distribution="${6:-AppStore}"
 case "$ios_distribution" in
-  Sideload) readonly expected_display_name="ClassIsland (Sideload)" ;;
-  AppStore) readonly expected_display_name="ClassIsland" ;;
+  Sideload|AppStore) readonly expected_display_name="ClassIsland" ;;
   *) echo "::error::The iOS distribution must be Sideload or AppStore" >&2; exit 64 ;;
 esac
 

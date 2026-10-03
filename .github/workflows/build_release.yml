@@ -47,8 +47,8 @@ env:
   MACOS_XCODE_PATH: /Applications/Xcode_26.6.app/Contents/Developer
 
 jobs:
-  build_ios_sideload:
-    name: build_ios_sideload (${{ matrix.arch }})
+  build_ios:
+    name: build_ios (${{ matrix.arch }}, ${{ matrix.distribution }})
     if: >-
       ${{
         github.event_name == 'pull_request' ||
@@ -64,24 +64,26 @@ jobs:
       contents: read
       packages: read
     strategy:
+      fail-fast: false
       matrix:
         arch: ['arm64']
+        distribution: ['Sideload', 'AppStore']
     concurrency:
-      group: ios-Sideload-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}-${{ matrix.arch }}
+      group: ios-${{ matrix.distribution }}-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}-${{ matrix.arch }}
       cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: '1'
       DOTNET_NOLOGO: '1'
       IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
       IOS_CONFIGURATION: Release
-      IOS_DISTRIBUTION: Sideload
+      IOS_DISTRIBUTION: ${{ matrix.distribution }}
       IOS_RUNTIME_IDENTIFIER: ios-${{ matrix.arch }}
       IOS_WORKLOAD_VERSION: 10.0.202
-      APPLICATION_ID: cn.classisland.ios.sideload
+      APPLICATION_ID: ${{ matrix.distribution == 'Sideload' && 'cn.classisland.ios.sideload' || 'cn.classisland.ios' }}
       XCODE_PATH: /Applications/Xcode_26.3.app
-      artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_Sideload
-      IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_Sideload.ipa
-    steps: &ios_build_steps
+      artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}
+      IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}.ipa
+    steps:
       - name: Checkout iOS version source
         uses: actions/checkout@v4
         with:
@@ -195,6 +197,11 @@ jobs:
           -ResultsDirectory "${{ runner.temp }}/ios-tests"
           -MinimumLineRate 0.8
 
+      - name: Test plugin distribution behavior
+        run: >-
+          dotnet test ClassIsland.Plugin.Tests/ClassIsland.Plugin.Tests.csproj
+          -c Release -p:ClassIslandIosDistribution="$IOS_DISTRIBUTION" -m:1
+
       - name: Build unsigned iOS IPA through NUKE
         env:
           osName: ios
@@ -219,6 +226,13 @@ jobs:
             exit 1
           fi
           echo "Verified Mono interpreter mode for $IOS_CONFIGURATION / $IOS_RUNTIME_IDENTIFIER"
+          if [[ "$IOS_DISTRIBUTION" == "Sideload" ]]; then
+            registrar="ClassIsland.iOS/obj/$IOS_DISTRIBUTION/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/registrar.mm"
+            if ! grep -q 'native_to_managed_trampoline_' "$registrar" || grep -q 'xamarin_registrar_dlsym' "$registrar"; then
+              echo "::error::The sideload build must use the static registrar"
+              exit 1
+            fi
+          fi
 
       - name: Normalize unsigned IPA
         run: bash ./tools/ci/normalize-ios-ipa.sh "$IPA_PATH"
@@ -243,42 +257,6 @@ jobs:
           if-no-files-found: error
           overwrite: true
           retention-days: ${{ steps.metadata.outputs.retention_days }}
-
-  build_ios_store:
-    name: build_ios_store (${{ matrix.arch }})
-    if: >-
-      ${{
-        github.event_name == 'pull_request' ||
-        github.event_name == 'workflow_dispatch' ||
-        github.ref == 'refs/heads/master' ||
-        github.ref == 'refs/heads/develop/v2/ios' ||
-        github.ref == 'refs/heads/develop/v2/misha-alpha' ||
-        startsWith(github.ref, 'refs/tags/ios-v')
-      }}
-    runs-on: macos-26
-    timeout-minutes: 90
-    permissions:
-      contents: read
-      packages: read
-    strategy:
-      matrix:
-        arch: ['arm64']
-    concurrency:
-      group: ios-AppStore-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}-${{ matrix.arch }}
-      cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
-    env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
-      DOTNET_NOLOGO: '1'
-      IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
-      IOS_CONFIGURATION: Release
-      IOS_DISTRIBUTION: AppStore
-      IOS_RUNTIME_IDENTIFIER: ios-${{ matrix.arch }}
-      IOS_WORKLOAD_VERSION: 10.0.202
-      APPLICATION_ID: cn.classisland.ios
-      XCODE_PATH: /Applications/Xcode_26.3.app
-      artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_AppStore
-      IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_AppStore.ipa
-    steps: *ios_build_steps
 
   build_app:
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-26' || 'windows-2022' ) }}
@@ -777,12 +755,11 @@ jobs:
         needs.pack_app.result == 'success' &&
         needs.build_nupkg.result == 'success' &&
         needs.build_android.result == 'success' &&
-        needs.build_ios_sideload.result == 'success' &&
-        needs.build_ios_store.result == 'success' &&
+        needs.build_ios.result == 'success' &&
         github.event.inputs.release_tag &&
         github.event_name != 'pull_request'
       }}
-    needs: [ pack_app, build_nupkg, build_android, build_ios_sideload, build_ios_store ]
+    needs: [ pack_app, build_nupkg, build_android, build_ios ]
     concurrency:
       group: "publish-public"
     environment:

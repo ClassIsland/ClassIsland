@@ -22,6 +22,9 @@
     <UseInterpreter>true</UseInterpreter>
     <!-- 外部插件可能引用宿主未静态调用的 API，不能按宿主引用图裁剪。 -->
     <TrimMode>copy</TrimMode>
+    <!-- managed-static 为泛型 AvaloniaAppDelegate 生成的构造桥接会在启动时抛错。
+         使用传统静态注册器，保留解释器与动态插件所需的托管 API。 -->
+    <Registrar>static</Registrar>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(BrandType)' == 'Production'">
@@ -48,7 +51,6 @@
 
   <PropertyGroup Condition="'$(ClassIslandIosDistribution)' == 'Sideload'">
     <ApplicationId>$(ApplicationId).sideload</ApplicationId>
-    <ApplicationTitle>$(ApplicationTitle) (Sideload)</ApplicationTitle>
   </PropertyGroup>
 
   <ItemGroup>
@@ -100,8 +102,8 @@
           BeforeTargets="PrepareForBuild">
     <Error Condition="'$(ClassIslandIosDistribution)' != 'Sideload' And '$(ClassIslandIosDistribution)' != 'AppStore'"
            Text="ClassIslandIosDistribution must be Sideload or AppStore." />
-    <Error Condition="'$(ClassIslandIosDistribution)' == 'Sideload' And ('$(UseInterpreter)' != 'true' Or '$(PublishAot)' == 'true' Or '$(TrimMode)' != 'copy')"
-           Text="Sideload plugins require UseInterpreter=true, TrimMode=copy and PublishAot=false." />
+    <Error Condition="'$(ClassIslandIosDistribution)' == 'Sideload' And ('$(UseInterpreter)' != 'true' Or '$(PublishAot)' == 'true' Or '$(TrimMode)' != 'copy' Or '$(Registrar)' != 'static')"
+           Text="Sideload plugins require UseInterpreter=true, TrimMode=copy, Registrar=static and PublishAot=false." />
     <Error Condition="'$(RuntimeIdentifier)' != 'ios-arm64'"
            Text="ClassIsland iOS currently supports only the ios-arm64 device RID. SoundFlow 1.2.1 does not provide native assets for iossimulator-* RIDs." />
     <Error Condition="$([System.String]::Copy('$(RuntimeIdentifiers)').Contains('iossimulator-'))"

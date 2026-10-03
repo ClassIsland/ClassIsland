@@ -36,15 +36,10 @@ $infoPlistText = Read-RepositoryFile "ClassIsland.iOS/Info.plist"
 $infoPlist = [xml]$infoPlistText
 $pluginInfoPlist = [xml](Read-RepositoryFile "ClassIsland.iOS/PluginInfo.plist")
 $releaseWorkflowText = Read-RepositoryFile ".github/workflows/build_release.yml"
-$iosJobName = if ($IosDistribution -eq "Sideload") { "build_ios_sideload" } else { "build_ios_store" }
+$iosJobName = "build_ios"
 $iosJob = [regex]::Match($releaseWorkflowText, "(?ms)^  ${iosJobName}:\r?\n.*?(?=^  [A-Za-z0-9_-]+:|\z)")
 Assert-True ($iosJob.Success) "The unified Build workflow must contain the $iosJobName job."
 $iosWorkflowText = $iosJob.Value
-if ($IosDistribution -eq "AppStore") {
-    $sharedSteps = [regex]::Match($releaseWorkflowText, '(?ms)^    steps: &ios_build_steps\r?\n.*?(?=^  [A-Za-z0-9_-]+:|\z)')
-    Assert-True ($sharedSteps.Success -and $iosWorkflowText.Contains('steps: *ios_build_steps')) "Both iOS jobs must reuse the shared build steps."
-    $iosWorkflowText = $iosWorkflowText.Replace('    steps: *ios_build_steps', $sharedSteps.Value.TrimEnd())
-}
 $ipaNormalizationText = Read-RepositoryFile "tools/ci/normalize-ios-ipa.sh"
 $ipaVerificationText = Read-RepositoryFile "tools/ci/verify-ios-ipa.sh"
 $iosBuildNumberText = Read-RepositoryFile "tools/ci/ios-build-number.sh"
@@ -152,6 +147,9 @@ Assert-True (-not $pluginLoadContextText.Contains('[SupportedOSPlatform("macos")
 $runtimeIdentifier = $iosProject.SelectSingleNode("/Project/PropertyGroup/RuntimeIdentifier").InnerText
 Assert-True ($runtimeIdentifier -eq "ios-arm64") "The iOS project must default to the ios-arm64 device RID."
 $runtimeValidationTarget = $iosProject.SelectSingleNode('/Project/Target[@Name="ValidateIosDeviceRuntime"]')
+Assert-True ($iosProject.SelectNodes('/Project/PropertyGroup[contains(@Condition, "Sideload")]/ApplicationTitle').Count -eq 0) "Sideload must retain the same display name as the corresponding App Store brand."
+$sideloadRegistrar = $iosProject.SelectSingleNode('/Project/PropertyGroup[contains(@Condition, "Sideload")]/Registrar')
+Assert-True ($sideloadRegistrar.InnerText -eq 'static') "Sideload must use the static registrar for the generic Avalonia app delegate."
 Assert-True ($null -ne $runtimeValidationTarget) "The iOS project must explicitly reject Simulator RIDs."
 $runtimeValidationConditions = @($runtimeValidationTarget.Error) | ForEach-Object { $_.Condition }
 Assert-True ($runtimeValidationConditions -contains "'`$(RuntimeIdentifier)' != 'ios-arm64'") "Single-RID validation must allow only ios-arm64."
@@ -451,12 +449,12 @@ Assert-True ($releaseWorkflowText.Contains("developer_preview=false")) "Release 
 Assert-True ($releaseWorkflowText.Contains("developer_preview=true")) "PR and branch iOS builds must enable DeveloperPreview."
 Assert-True ($releaseWorkflowText.Contains("DISPATCH_RELEASE_TAG: `${{ inputs.release_tag }}")) "A release dispatch must expose the Android release tag to iOS version resolution."
 Assert-True (-not $releaseWorkflowText.Contains("github.event.pull_request.head.sha")) "Pull-request iOS builds must use GitHub's tested merge commit instead of bypassing it with the head commit."
-Assert-True ($iosWorkflowText.Contains('artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_' + $IosDistribution)) "Each iOS job must upload a distinct distribution artifact."
+Assert-True ($iosWorkflowText.Contains('artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}')) "Each iOS matrix entry must upload a distinct distribution artifact."
 Assert-True (([regex]::Matches($iosWorkflowText, "uses:\s+actions/checkout@")).Count -eq 1) "The iOS matrix must resolve metadata and build from the same checkout."
 Assert-True ($iosWorkflowText.Contains('name: ${{ env.artifact_name }}')) "The iOS upload must use the matrix artifact name."
 Assert-True ($iosWorkflowText.Contains('retention-days: ${{ steps.metadata.outputs.retention_days }}')) "The iOS upload must use the retention period resolved in the same job."
 Assert-True (-not $releaseWorkflowText.Contains("github.event.pull_request.head.repo.full_name == github.repository")) "Approved fork pull requests must be eligible for the same read-only iOS validation as repository pull requests."
-Assert-True ($iosWorkflowText.Contains("group: ios-$IosDistribution-`${{ github.workflow }}-`${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}")) "The iOS job must isolate both its distribution and release dispatch from branch concurrency."
+Assert-True ($iosWorkflowText.Contains('group: ios-${{ matrix.distribution }}-${{ github.workflow }}-${{ github.event_name == ''workflow_dispatch'' && inputs.release_tag || github.ref }}')) "The iOS job must isolate both its distribution and release dispatch from branch concurrency."
 Assert-True ($releaseWorkflowText.Contains("cancel-in-progress: `${{ github.event_name != 'workflow_dispatch' }}")) "Release iOS builds must not be cancelled by a later branch push."
 
 foreach ($jobName in @("build_app", "build_android", "build_launcher", "build_nupkg")) {
@@ -480,7 +478,10 @@ Assert-True ($releaseWorkflowText.Contains("needs.build_app.result == 'success'"
 
 Assert-True (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot ".github/workflows/_build_ios_reusable.yml"))) "The obsolete reusable iOS workflow must remain removed."
 Assert-True ($iosWorkflowText.Contains("matrix:") -and $iosWorkflowText.Contains("arch: ['arm64']")) "The iOS matrix must include the supported arm64 device build."
-Assert-True ($iosWorkflowText.Contains('name: ' + $iosJobName + ' (${{ matrix.arch }})')) "The iOS job name must identify its distribution."
+Assert-True ($iosWorkflowText.Contains('name: build_ios (${{ matrix.arch }}, ${{ matrix.distribution }})')) "The iOS matrix job name must identify its distribution."
+Assert-True ($iosWorkflowText.Contains("distribution: ['Sideload', 'AppStore']")) "The iOS matrix must build both distributions."
+Assert-True ($iosWorkflowText.Contains('ClassIsland.Plugin.Tests/ClassIsland.Plugin.Tests.csproj')) "Both distributions must run plugin behavior tests."
+Assert-True ($iosWorkflowText.Contains('group: ios-${{ matrix.distribution }}-')) "The iOS matrix entries must not cancel each other."
 Assert-True ($iosWorkflowText.Contains('IOS_RUNTIME_IDENTIFIER: ios-${{ matrix.arch }}')) "The iOS runtime identifier must follow the matrix architecture."
 Assert-True ($iosWorkflowText.Contains('arch: ${{ matrix.arch }}')) "NUKE must receive the matrix architecture."
 Assert-True (-not $iosWorkflowText.Contains("description: Monotonic application build number")) "The iOS build number must be derived from Git instead of supplied by the caller."
@@ -491,12 +492,12 @@ Assert-True ($iosWorkflowText.Contains("if (( build_number < 1 )); then") -and $
 Assert-True ($iosWorkflowText.Contains("bash ./tools/ci/test-ios-build-number.sh")) "The iOS matrix job must run build-number validation tests."
 Assert-True ($iosWorkflowText.Contains("bash ./tools/ci/test-ios-display-version.sh")) "The iOS matrix job must run display-version validation tests."
 Assert-True (-not $iosWorkflowText.Contains('ClassIsland-iOS-${APPLICATION_DISPLAY_VERSION}')) "iOS artifacts must not use the legacy display-version/build-number naming scheme."
-Assert-True ($iosWorkflowText.Contains('IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_' + $IosDistribution + '.ipa')) "The iOS IPA path must include the distribution suffix produced by NUKE."
-Assert-True ($iosWorkflowText.Contains('IOS_DISTRIBUTION: ' + $IosDistribution) -and $iosWorkflowText.Contains('IosDistribution: ${{ env.IOS_DISTRIBUTION }}')) "Each iOS job must explicitly pass its distribution to NUKE."
-$expectedApplicationId = if ($IosDistribution -eq "Sideload") { "cn.classisland.ios.sideload" } else { "cn.classisland.ios" }
-Assert-True ([regex]::IsMatch($iosWorkflowText, '(?m)^\s+APPLICATION_ID: ' + [regex]::Escape($expectedApplicationId) + '\r?$')) "IPA verification must expect the distribution's bundle identifier."
+Assert-True ($iosWorkflowText.Contains('IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}.ipa')) "The iOS IPA path must include the distribution suffix produced by NUKE."
+Assert-True ($iosWorkflowText.Contains('IOS_DISTRIBUTION: ${{ matrix.distribution }}') -and $iosWorkflowText.Contains('IosDistribution: ${{ env.IOS_DISTRIBUTION }}')) "Each iOS matrix entry must explicitly pass its distribution to NUKE."
+Assert-True ($iosWorkflowText.Contains("APPLICATION_ID: `${{ matrix.distribution == 'Sideload' && 'cn.classisland.ios.sideload' || 'cn.classisland.ios' }}")) "IPA verification must expect the distribution's bundle identifier."
 Assert-True ($iosWorkflowText.Contains('"$IOS_DISTRIBUTION"')) "IPA verification must receive the distribution to validate the display name."
 Assert-True ($iosWorkflowText.Contains('ClassIsland.iOS/obj/$IOS_DISTRIBUTION/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/main.arm64.mm')) "Interpreter verification must use the distribution-specific intermediate directory."
+Assert-True ($iosWorkflowText.Contains('native_to_managed_trampoline_') -and $iosWorkflowText.Contains('xamarin_registrar_dlsym')) "CI must verify the generated sideload registrar, not only its project property."
 Assert-True (-not $iosWorkflowText.Contains("buildNumber:")) "The iOS matrix job must not duplicate NUKE's Git-derived ApplicationVersion logic."
 Assert-True (-not $releaseWorkflowText.Contains("build_number: `${{ format('{0}', github.run_number) }}")) "The unified caller must not use github.run_number as the iOS ApplicationVersion."
 Assert-True ($androidBuildText.Contains('SetProperty("ApplicationVersion", Math.Max(GitCommitCount, 1))')) "Android ApplicationVersion must remain based on GitCommitCount."
@@ -535,8 +536,8 @@ Assert-True ($ipaNormalizationText.Contains('mv -f "$repacked_ipa" "$ipa_path"')
 Assert-True ($coverageVerificationText.Contains('GetAttribute("line-rate")')) "Coverage verification must read the Cobertura root line rate."
 Assert-True ($coverageVerificationText.Contains('$lineRate -lt $MinimumLineRate')) "Coverage verification must fail below the requested threshold."
 
-Assert-True (-not [regex]::IsMatch($releaseWorkflowText, '(?m)^  build_ios:')) "The old combined iOS job must be replaced by distribution jobs."
-Assert-True ($releaseWorkflowText.Contains("needs.build_ios_sideload.result == 'success'") -and $releaseWorkflowText.Contains("needs.build_ios_store.result == 'success'")) "Publishing must require both iOS distributions to succeed."
+Assert-True (-not [regex]::IsMatch($releaseWorkflowText, '(?m)^  build_ios_(sideload|store):')) "Both iOS distributions must use the shared matrix job."
+Assert-True ($releaseWorkflowText.Contains("needs.build_ios.result == 'success'")) "Publishing must require the entire iOS matrix to succeed."
 Assert-True ($releaseWorkflowText.Contains('version_source="$DISPATCH_RELEASE_TAG"')) "The release iOS build must derive its display version from the Android release tag."
 Assert-True ($releaseWorkflowText.Contains('for distribution in Sideload AppStore; do') -and $releaseWorkflowText.Contains('artifact_directory="./out_artifacts/out_app_ios_arm64_selfContained_ipa_$distribution"')) "Release publishing must collect both distribution artifacts."
 # 验证实际结果，避免等价的 Shell 表达式因文本写法不同而被误报。
@@ -551,7 +552,7 @@ foreach ($retentionCase in @(
     Assert-True ($LASTEXITCODE -eq 0) "The iOS artifact retention expression failed for $($retentionCase.Event)."
     Assert-True (($retentionDays -join "`n") -ceq $retentionCase.Days) "The iOS artifact retention must be $($retentionCase.Days) days for $($retentionCase.Event)."
 }
-Assert-True ($releaseWorkflowText.Contains("needs: [ pack_app, build_nupkg, build_android, build_ios_sideload, build_ios_store ]")) "Publishing must wait for Android and both unsigned iOS artifacts."
+Assert-True ($releaseWorkflowText.Contains("needs: [ pack_app, build_nupkg, build_android, build_ios ]")) "Publishing must wait for Android and the iOS matrix."
 Assert-True ($releaseWorkflowText.Contains("sha256sum --check")) "Publishing must verify the downloaded iOS checksum."
 Assert-True ($releaseWorkflowText.Contains("./out/*.ipa,./out/*.sha256")) "The release draft must include the unsigned IPA and checksum."
 
