@@ -48,6 +48,18 @@ internal sealed class SharedDocumentsLauncherService(
         return OpenRequiredAsync(uri, $"系统无法打开链接：{uri}");
     }
 
+    public Task LaunchAppLink(string url)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(url);
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+            uri.Scheme is "file" or "javascript" or "data" or "about" or "blob" or "shareddocuments")
+        {
+            throw new ArgumentException("请输入目标 App 提供的完整链接，不能使用文件路径。", nameof(url));
+        }
+
+        return OpenRequiredAsync(uri, "无法打开 App 链接，请确认已安装目标 App，并检查链接是否正确。");
+    }
+
     internal static Uri CreateFilesAppUri(string fullPath)
     {
         var fileUriBuilder = new UriBuilder

@@ -279,10 +279,7 @@ public partial class App
         services.AddRule<SunRiseSetRuleSettings, SunRiseSetRuleSettingsControl>("classisland.weather.sunRiseSet", "是否日出/日落", "\uE150");
         // 行动提供方
         services.AddAction<SignalTriggerSettings, BroadcastSignalActionSettingsControl>("classisland.broadcastSignal", "广播信号", "\uE561");
-        if (!PlatformHelper.IsAppleMobile)
-        {
-            services.AddAction<RunAction, RunActionSettingsControl>();
-        }
+        services.AddAction<RunAction, RunActionSettingsControl>();
         services.AddAction<NotificationAction, NotificationActionSettingsControl>();
         services.AddAction<SleepAction, SleepActionSettingsControl>();
         services.AddAction<ModifyAppSettingsAction, ModifyAppSettingsActionSettingsControl>();

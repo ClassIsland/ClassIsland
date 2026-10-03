@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Models.Automation;
 using ClassIsland.Core.Helpers;
+using ClassIsland.Core.Icons;
 using ClassIsland.Models.Actions;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Automation;
@@ -218,7 +219,20 @@ public class ActionService : IActionService
         ));
 
 
-        if (!PlatformHelper.IsAppleMobile)
+        if (PlatformHelper.IsAppleMobile)
+        {
+            ActionMenuTree.Add(
+                new ActionMenuTreeGroup("打开", FluentIcons.OpenRegular,
+                    new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "网页链接", FluentIcons.GlobeRegular,
+                        s => s.RunType = RunActionSettings.RunActionRunType.Url),
+                    new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件夹", FluentIcons.FolderOpenRegular,
+                        s => s.RunType = RunActionSettings.RunActionRunType.Folder),
+                    new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件预览", FluentIcons.DocumentRegular,
+                        s => s.RunType = RunActionSettings.RunActionRunType.File),
+                    new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "App 链接", FluentIcons.AppGenericRegular,
+                        s => s.RunType = RunActionSettings.RunActionRunType.AppLink)));
+        }
+        else
         {
             ActionMenuTree.Add(
                 new ActionMenuTreeGroup("运行", "\uec2e",

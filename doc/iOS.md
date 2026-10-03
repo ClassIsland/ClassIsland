@@ -68,6 +68,21 @@ iOS 最多保留 64 条 pending local notifications。ClassIsland 为其它系�
 
 `DispatcherTimer` 在应用被 iOS 挂起后不会继续执行，上述短期 background task 也不是周期任务，因此滚动窗口不会在无限期后台状态中自行补充。用户重新打开或切回 ClassIsland 后会自动补齐，无需手动操作。需要长期完全不启动应用仍持续更新计划时，必须增加服务端 push 或合适的 iOS BackgroundTasks 方案，但系统仍不保证后台任务准点执行。
 
+## 自动化中的打开行动
+
+iOS/iPadOS 的自动化“打开”菜单提供网页链接、文件夹、文件预览和 App 链接：
+
+- 网页链接支持 HTTP(S)，省略协议时使用 HTTPS。
+- 文件夹会在“文件”App 中打开 ClassIsland 内的目录。通过选择器选取外部文件夹时，会将其复制到应用内，之后打开的是副本。
+- 文件选择使用持久导入，运行时通过系统 Quick Look 预览，也可使用预览中的分享功能。导入内容不会随临时缓存清理而删除；文件格式是否支持预览取决于系统。
+- App 链接接受目标 App 提供的 URL Scheme 或 Universal Link，需安装对应 App；Universal Link 也可能由系统交给浏览器。打开失败会记录在行动的错误详情中。
+
+旧配置中的程序路径和终端命令不会在 iOS 上执行，编辑器会提示改选支持的行动；新建 App 链接使用独立类型，保留原配置含义。退出和重启行动仍不开放。
+
+这些行动在应用运行时执行。切到其他 App 或进入后台后，iOS 可能挂起 ClassIsland，后续行动不保证继续或准时执行；文件预览需要 ClassIsland 位于前台。
+
+回归测试分别运行 `dotnet test ClassIsland.Platforms.Abstractions.Tests/ClassIsland.Platforms.Abstractions.Tests.csproj` 和 `dotnet test ClassIsland.Automation.Tests/ClassIsland.Automation.Tests.csproj`。真机验证应覆盖：重启后仍能预览已选文件、关闭预览后再次打开、从“文件”App 返回、目标 App 未安装时的错误提示，以及导入程序路径和终端命令后的不支持提示。
+
 ## 通过 Files App 查看应用文件
 
 iOS 与 iPadOS 版本已启用文件共享和原位打开，应用数据保存在可见的 `Documents/ClassIsland/Data` 目录。安装并至少启动一次 ClassIsland 后，可在 Files App 的“在我的 iPhone/iPad 上 > ClassIsland”中查看配置、课表、日志等文件。

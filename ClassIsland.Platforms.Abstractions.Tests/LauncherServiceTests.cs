@@ -254,4 +254,121 @@ public sealed class LauncherServiceTests
         Assert.Contains("https://classisland.tech/", exception.Message);
         Assert.Same(systemException, exception.InnerException);
     }
+
+    [Fact]
+    public async Task DefaultFileLaunch_PreservesExistingPlatformPathBehavior()
+    {
+        var legacy = new LegacyLauncherService();
+        ILauncherService service = legacy;
+
+        await service.LaunchFile("bookmark:test.pdf");
+
+        Assert.Equal("bookmark:test.pdf", legacy.Path);
+    }
+
+    [Fact]
+    public async Task DefaultAppLinkLaunch_PreservesExistingPlatformUrlBehavior()
+    {
+        var legacy = new LegacyLauncherService();
+        ILauncherService service = legacy;
+
+        await service.LaunchAppLink("exampleapp://document/42");
+
+        Assert.Equal("exampleapp://document/42", legacy.Url);
+    }
+
+    [Theory]
+    [InlineData("exampleapp://document/42?title=hello%20world")]
+    [InlineData("https://example.com/app/document/42")]
+    [InlineData("http://example.com/app")]
+    [InlineData("mailto:test@example.com")]
+    [InlineData("tel:+861234567890")]
+    public async Task SharedDocumentsService_OpensAppLink(string link)
+    {
+        Uri? capturedUri = null;
+        var service = new SharedDocumentsLauncherService(
+            () => Path.GetTempPath(),
+            uri =>
+            {
+                capturedUri = uri;
+                return Task.FromResult(true);
+            });
+
+        await service.LaunchAppLink(link);
+
+        Assert.Equal(link, capturedUri?.AbsoluteUri);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("example.com/app")]
+    [InlineData("C:\\Program Files\\app.exe")]
+    [InlineData("/private/var/mobile/document.pdf")]
+    [InlineData("file:///private/var/mobile/document.pdf")]
+    [InlineData("FILE:///private/var/mobile/document.pdf")]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("data:text/plain,hello")]
+    [InlineData("about:blank")]
+    [InlineData("blob:https://example.com/id")]
+    [InlineData("shareddocuments:///private/var/mobile")]
+    public async Task SharedDocumentsService_RejectsInvalidAppLinkWithoutOpening(string link)
+    {
+        var openCalled = false;
+        var service = new SharedDocumentsLauncherService(
+            () => Path.GetTempPath(),
+            _ =>
+            {
+                openCalled = true;
+                return Task.FromResult(true);
+            });
+
+        await Assert.ThrowsAsync<ArgumentException>(() => service.LaunchAppLink(link));
+
+        Assert.False(openCalled);
+    }
+
+    [Fact]
+    public async Task SharedDocumentsService_ReportsUnavailableApp()
+    {
+        var service = new SharedDocumentsLauncherService(
+            () => Path.GetTempPath(), _ => Task.FromResult(false));
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => service.LaunchAppLink("exampleapp://document/42"));
+
+        Assert.Contains("安装", exception.Message);
+    }
+
+    [Fact]
+    public async Task SharedDocumentsService_PreservesAppLinkOpenFailureForDiagnostics()
+    {
+        var systemException = new InvalidOperationException("System opener failed.");
+        var service = new SharedDocumentsLauncherService(
+            () => Path.GetTempPath(), _ => Task.FromException<bool>(systemException));
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => service.LaunchAppLink("exampleapp://document/42"));
+
+        Assert.Contains("检查链接", exception.Message);
+        Assert.Same(systemException, exception.InnerException);
+    }
+
+    private sealed class LegacyLauncherService : ILauncherService
+    {
+        public string? Path { get; private set; }
+        public string? Url { get; private set; }
+
+        public Task LaunchPath(string path)
+        {
+            Path = path;
+            return Task.CompletedTask;
+        }
+
+        public Task LaunchUrl(string url)
+        {
+            Url = url;
+            return Task.CompletedTask;
+        }
+    }
 }
