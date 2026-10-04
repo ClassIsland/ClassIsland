@@ -65,11 +65,14 @@ public partial class ProfileSettingsWindow : MyWindow
 
     public ProfileSettingsViewModel ViewModel { get; } = IAppHost.GetService<ProfileSettingsViewModel>();
 
+    public ProfileSettingsReorderDropHandler ReorderDropHandler { get; }
+
     private ILogger<ProfileSettingsWindow> Logger => ViewModel.Logger;
     public static ICommand RemoveSelectedTimeLayoutItemCommand { get; } = new RoutedCommand(nameof(RemoveSelectedTimeLayoutItemCommand));
 
     public ProfileSettingsWindow()
     {
+        ReorderDropHandler = new ProfileSettingsReorderDropHandler(ViewModel);
         DataContext = this;
         if (ViewModel.ManagementService.Policy.DisableProfileEditing)
         {

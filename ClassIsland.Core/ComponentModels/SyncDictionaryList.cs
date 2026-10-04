@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using ClassIsland.Shared.ComponentModels;
 // ReSharper disable UsageOfDefaultStructEquality
 
 namespace ClassIsland.Core.ComponentModels;
@@ -18,7 +19,7 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
     /// <summary>
     /// 公开的用于进行绑定的列表。
     /// </summary>
-    public ObservableCollection<KeyValuePair<TKey, TValue>> List { get; } = [];
+    public ObservableCollection<KeyValuePair<TKey, TValue>> List { get; }
     
     /// <summary>
     /// 要向列表中添加的默认值。此默认值不会同步回字典。
@@ -33,6 +34,7 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
         _dictionary = dictionary;
         _newKey = newKey;
         DefaultValue = defaultValue;
+        List = new SyncCollection(this);
 
         if (DefaultValue != null)
         {
@@ -86,7 +88,19 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     }
                     break;
                 case NotifyCollectionChangedAction.Replace:
+                    if (e.NewItems == null)
+                        break;
+                    foreach (var item in e.NewItems.OfType<KeyValuePair<TKey, TValue>>())
+                    {
+                        var index = List.ToList().FindIndex(pair => pair.Key.Equals(item.Key));
+                        if (index >= 0)
+                            List[index] = item;
+                    }
+                    break;
                 case NotifyCollectionChangedAction.Move:
+                    var offset = DefaultValue.HasValue ? 1 : 0;
+                    List.Move(e.OldStartingIndex + offset, e.NewStartingIndex + offset);
+                    break;
                 case NotifyCollectionChangedAction.Reset:
                     break;
                 default:
@@ -146,7 +160,11 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     //Subjects = ConfigureFileHelper.CopyObject(Subjects);
                     break;
                 case NotifyCollectionChangedAction.Replace:
+                    break;
                 case NotifyCollectionChangedAction.Move:
+                    var offset = DefaultValue.HasValue ? 1 : 0;
+                    ((ObservableDictionary<TKey, TValue>)_dictionary).Move(e.OldStartingIndex - offset, e.NewStartingIndex - offset);
+                    break;
                 case NotifyCollectionChangedAction.Reset:
                     break;
                 default:
@@ -156,6 +174,25 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
         finally
         {
             _isProcessing = false;
+        }
+    }
+
+    private sealed class SyncCollection(SyncDictionaryList<TKey, TValue> owner) : ObservableCollection<KeyValuePair<TKey, TValue>>
+    {
+        protected override void MoveItem(int oldIndex, int newIndex)
+        {
+            if (oldIndex < 0 || oldIndex >= Count)
+                throw new ArgumentOutOfRangeException(nameof(oldIndex));
+            if (newIndex < 0 || newIndex >= Count)
+                throw new ArgumentOutOfRangeException(nameof(newIndex));
+            if (!owner._isProcessing)
+            {
+                if (owner._dictionary is not ObservableDictionary<TKey, TValue>)
+                    throw new NotSupportedException("底层字典不支持排序。");
+                if (owner.DefaultValue.HasValue && (oldIndex == 0 || newIndex == 0))
+                    throw new InvalidOperationException("默认项目不能参与排序。");
+            }
+            base.MoveItem(oldIndex, newIndex);
         }
     }
 

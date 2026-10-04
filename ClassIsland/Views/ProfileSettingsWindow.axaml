@@ -34,6 +34,48 @@
     </input:CommandManager.CommandBindings>
     <ci:MyWindow.DataTemplates>
     </ci:MyWindow.DataTemplates>
+    <ci:MyWindow.Styles>
+        <Style Selector="TreeView#ClassPlansTreeView TreeViewItem">
+            <Setter Property="Interaction.Behaviors">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <ci:AdvancedManagedContextDragBehavior AllowDragFromDragThumbOnly="True"
+                                                               DataFormat="ClassIsland.ProfileReorder">
+                            <ci:AdvancedManagedContextDragBehavior.IsEnabled>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="!IsGroup" />
+                                    <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing" Converter="{StaticResource InvertBooleanConverter}" />
+                                    <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileEditing" Converter="{StaticResource InvertBooleanConverter}" />
+                                </MultiBinding>
+                            </ci:AdvancedManagedContextDragBehavior.IsEnabled>
+                        </ci:AdvancedManagedContextDragBehavior>
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="ci|TouchDragThumb.profile-reorder-handle">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Margin" Value="0 0 4 0" />
+            <Setter Property="IsCompact" Value="True" />
+            <Setter Property="IsExplicitVisible" Value="True" />
+            <Setter Property="Cursor" Value="SizeAll" />
+            <Setter Property="ToolTip.Tip" Value="拖动调整顺序" />
+        </Style>
+        <Style Selector="Panel.profile-reorder-item > Border.profile-reorder-indicator">
+            <Setter Property="Height" Value="2" />
+            <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Panel.profile-reorder-item.insert-before > Border.profile-reorder-indicator, ListBox#TimeLayoutsListBox ListBoxItem.insert-before Panel.profile-reorder-item > Border.profile-reorder-indicator">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style Selector="Panel.profile-reorder-item.insert-after > Border.profile-reorder-indicator, ListBox#TimeLayoutsListBox ListBoxItem.insert-after Panel.profile-reorder-item > Border.profile-reorder-indicator">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+        </Style>
+    </ci:MyWindow.Styles>
     <ci:MyWindow.Resources>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
                                               x:Key="SubjectIdToSubjectConverter"/>
@@ -553,7 +595,11 @@
                                         <TreeView.ItemTemplate>
                                             <TreeDataTemplate x:DataType="profile2:ClassPlansTreeNode"
                                                               ItemsSource="{Binding SubPlans}">
-                                                <Panel Background="Transparent">
+                                                <Panel Background="Transparent" Classes="profile-reorder-item">
+                                                    <Interaction.Behaviors>
+                                                        <ManagedContextDropBehavior AcceptDataFormat="ClassIsland.ProfileReorder"
+                                                                                    Handler="{Binding $parent[views:ProfileSettingsWindow].ReorderDropHandler}" />
+                                                    </Interaction.Behaviors>
                                                     <StackPanel Orientation="Horizontal">
                                                         <StackPanel.Styles>
                                                             <Style Selector="Border.ClassPlanTag">
@@ -582,6 +628,9 @@
                                                         </StackPanel.Styles>
                                                         
                                                         <!-- 名称 -->
+                                                        <ci:TouchDragThumb Classes="profile-reorder-handle"
+                                                                           IsVisible="{Binding !IsGroup}"
+                                                                           IsEnabled="{Binding !$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}" />
                                                         <ci:FluentIcon Glyph="{ci:FI GroupRegular}" Margin="0 0 4 0"
                                                                        IsVisible="{Binding IsGroup}" />
                                                         <Panel IsVisible="{Binding IsGroup}">
@@ -696,6 +745,7 @@
                                                             </StackPanel>
                                                         </Border>
                                                     </StackPanel>
+                                                    <Border Classes="profile-reorder-indicator" />
                                                 </Panel>
                                             </TreeDataTemplate>
                                         </TreeView.ItemTemplate>
@@ -1107,18 +1157,45 @@
 
                             <!-- 时间表 -->
                             <ci:TutorialBarrier Grid.Row="1">
-                                <ListBox SelectionMode="Single"
+                                <ListBox x:Name="TimeLayoutsListBox" SelectionMode="Single"
                                          ItemsSource="{Binding ViewModel.TimeLayouts.List, Mode=OneWay}"
                                          SelectedValue="{Binding ViewModel.SelectedTimeLayout, Mode=TwoWay}"
                                          SelectedValueBinding="{Binding Value}">
+                                    <!-- 容器主题在列表项复用时保留行为，避免普通样式失效后拖放行为被清空。 -->
+                                    <ListBox.ItemContainerTheme>
+                                        <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                            <Setter Property="Interaction.Behaviors">
+                                                <BehaviorCollectionTemplate>
+                                                    <BehaviorCollection>
+                                                        <ci:AdvancedManagedContextDragBehavior AllowDragFromDragThumbOnly="True"
+                                                                                               DataFormat="ClassIsland.ProfileReorder">
+                                                            <ci:AdvancedManagedContextDragBehavior.IsEnabled>
+                                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                                    <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing" Converter="{StaticResource InvertBooleanConverter}" />
+                                                                    <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileEditing" Converter="{StaticResource InvertBooleanConverter}" />
+                                                                </MultiBinding>
+                                                            </ci:AdvancedManagedContextDragBehavior.IsEnabled>
+                                                        </ci:AdvancedManagedContextDragBehavior>
+                                                        <ManagedContextDropBehavior AcceptDataFormat="ClassIsland.ProfileReorder"
+                                                                                    Handler="{Binding $parent[views:ProfileSettingsWindow].ReorderDropHandler}" />
+                                                    </BehaviorCollection>
+                                                </BehaviorCollectionTemplate>
+                                            </Setter>
+                                        </ControlTheme>
+                                    </ListBox.ItemContainerTheme>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid HorizontalAlignment="Stretch">
-                                                <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left" />
-                                                <ci:FluentIcon Glyph="&#xE4D2;" HorizontalAlignment="Right"
-                                                               ToolTip.Tip="此时间表正在活动。"
-                                                               IsVisible="{Binding Value.IsActivated, Mode=OneWay}" />
-                                            </Grid>
+                                            <Panel Background="Transparent" Classes="profile-reorder-item">
+                                                <Grid HorizontalAlignment="Stretch" ColumnDefinitions="Auto,*,Auto">
+                                                    <ci:TouchDragThumb Classes="profile-reorder-handle"
+                                                                       IsEnabled="{Binding !$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing}" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding Value.Name}" HorizontalAlignment="Left" />
+                                                    <ci:FluentIcon Grid.Column="2" Glyph="&#xE4D2;" HorizontalAlignment="Right"
+                                                                   ToolTip.Tip="此时间表正在活动。"
+                                                                   IsVisible="{Binding Value.IsActivated, Mode=OneWay}" />
+                                                </Grid>
+                                                <Border Classes="profile-reorder-indicator" />
+                                            </Panel>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
