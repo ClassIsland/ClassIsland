@@ -74,7 +74,7 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     public ICollection<TKey> Keys => new OrderedCollection<TKey>(this, pair => pair.Key, _inner.ContainsKey);
 
     /// <inheritdoc/>
-    public ICollection<TValue> Values => new OrderedCollection<TValue>(this, pair => pair.Value, value => _inner.Values.Contains(value));
+    public ICollection<TValue> Values => new OrderedCollection<TValue>(this, pair => pair.Value, _inner.ContainsValue);
 
     bool IDictionary.IsFixedSize => ((IDictionary)_inner).IsFixedSize;
 
