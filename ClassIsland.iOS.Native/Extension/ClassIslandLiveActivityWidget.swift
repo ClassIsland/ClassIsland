@@ -122,7 +122,7 @@ struct ClassIslandLockScreenView: View {
                     VStack(spacing: 0) {
                         Label(state.details == nil ? "当前时段剩余" : "距离上课还有", systemImage: "clock")
                             .font(.system(size: 11)).foregroundStyle(activitySecondary)
-                        ClassIslandIslandTimer(state: state, isStale: false)
+                        ClassIslandIslandTimer(state: state, isStale: false, textAlignment: .center)
                             .font(.system(size: 26, weight: .semibold, design: .rounded))
                             .foregroundStyle(activityAccent)
                     }
@@ -242,12 +242,13 @@ private struct ClassIslandProgressView: View {
 private struct ClassIslandIslandTimer: View {
     let state: ClassIslandActivityAttributes.ContentState
     let isStale: Bool
+    var textAlignment: TextAlignment = .trailing
     var body: some View {
         if isStale {
             Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
         } else if let range = state.progressRange {
             Text(timerInterval: range, countsDown: true, showsHours: false)
-                .monospacedDigit().multilineTextAlignment(.trailing).lineLimit(1).minimumScaleFactor(0.75)
+                .monospacedDigit().multilineTextAlignment(textAlignment).lineLimit(1).minimumScaleFactor(0.75)
         } else {
             Text(state.compactText).font(.caption2).lineLimit(1)
         }
