@@ -21,6 +21,8 @@ internal sealed record LessonsLiveActivitySnapshot(
 {
     public LessonLiveActivityDetails? ActivityDetails { get; init; }
 
+    public string LessonInitial { get; init; } = "";
+
     public string LessonIconExpression { get; init; } = "";
 
     public bool HasProgress => ProgressMax > 0;

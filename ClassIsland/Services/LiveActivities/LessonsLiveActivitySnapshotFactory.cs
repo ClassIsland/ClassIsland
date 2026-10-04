@@ -100,6 +100,7 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                 "???")
             {
                 ActivityDetails = isClass ? CreateDetails(LessonsService.CurrentSubject, item) : null,
+                LessonInitial = isClass ? LessonsService.CurrentSubject?.Initial ?? "" : "",
                 LessonIconExpression = isClass ? LessonsService.CurrentSubject?.Icon ?? "" : ""
             };
         }
@@ -158,6 +159,7 @@ internal sealed class LessonsLiveActivitySnapshotFactory
             GetAbsoluteTime(now, absoluteNow, item.EndTime))
         {
             ActivityDetails = isClass ? CreateDetails(LessonsService.CurrentSubject, item) : null,
+            LessonInitial = isClass ? LessonsService.CurrentSubject?.Initial ?? "" : "",
             LessonIconExpression = isClass ? LessonsService.CurrentSubject?.Icon ?? "" : ""
         };
     }
@@ -222,6 +224,7 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                         ? FormatTimeRange(LessonsService.CurrentTimeLayoutItem)
                         : string.Empty
                 },
+                LessonInitial = LessonsService.NextClassSubject?.Initial ?? "",
                 LessonIconExpression = LessonsService.NextClassSubject?.Icon ?? ""
             };
         }

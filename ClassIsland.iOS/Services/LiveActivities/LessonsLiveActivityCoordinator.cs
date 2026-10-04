@@ -440,6 +440,14 @@ internal sealed class LessonsLiveActivityCoordinator(
         var compactText = snapshot.Title.Contains('·')
             ? snapshot.Title[(snapshot.Title.IndexOf('·') + 1)..].Trim()
             : snapshot.Title;
+        if (snapshot.State == TimeState.Breaking)
+        {
+            compactText = "休";
+        }
+        else if (!string.IsNullOrWhiteSpace(snapshot.LessonInitial))
+        {
+            compactText = snapshot.LessonInitial.Trim();
+        }
 
         return new LessonLiveActivityContent(
             snapshot.IntervalKey,
