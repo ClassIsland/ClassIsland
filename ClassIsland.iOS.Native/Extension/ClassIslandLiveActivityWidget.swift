@@ -7,6 +7,16 @@ import WidgetKit
 private let activityAccent = Color(red: 0.54, green: 0.83, blue: 1)
 private let activitySecondary = Color(red: 0.64, green: 0.69, blue: 0.74)
 
+private enum ActivityLayout {
+    static let contentHorizontalPadding: CGFloat = 14
+    static let contentVerticalPadding: CGFloat = 10
+    static let sectionSpacing: CGFloat = 10
+    static let rowSpacing: CGFloat = 8
+    static let timerCardHorizontalPadding: CGFloat = 12
+    static let timerCardVerticalPadding: CGFloat = 8
+    static let timerCardCornerRadius: CGFloat = 16
+}
+
 struct ClassIslandLiveActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ClassIslandActivityAttributes.self) { context in
@@ -34,10 +44,11 @@ struct ClassIslandLiveActivityWidget: Widget {
                         }
                     }
                     .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, alignment: .center)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
+                    VStack(alignment: .leading, spacing: ActivityLayout.rowSpacing) {
+                        HStack(alignment: .firstTextBaseline) {
                             if let location = context.state.details?.location, !location.isEmpty {
                                 Label(location, systemImage: "mappin.and.ellipse")
                             }
@@ -53,7 +64,7 @@ struct ClassIslandLiveActivityWidget: Widget {
                         }
                     }
                     .foregroundStyle(.white)
-                    .padding(.bottom, 8)
+                    .padding(.vertical, 4)
                 }
             } compactLeading: {
                 HStack(spacing: 4) {
@@ -84,7 +95,7 @@ struct ClassIslandLockScreenView: View {
     let isStale: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: state.phase == .onClass ? 12 : 8) {
+        VStack(alignment: .leading, spacing: ActivityLayout.sectionSpacing) {
             HStack(spacing: 8) {
                 ClassIslandBrandIcon(size: 24)
                 Text("ClassIsland").font(.system(size: 15, weight: .semibold))
@@ -104,7 +115,7 @@ struct ClassIslandLockScreenView: View {
                 if isStale {
                     ClassIslandStaleNotice()
                 } else {
-                    VStack(spacing: 8) {
+                    VStack(spacing: ActivityLayout.rowSpacing) {
                         ClassIslandProgressView(state: state)
                         ClassIslandRemainingTimeView(state: state)
                     }
@@ -122,12 +133,16 @@ struct ClassIslandLockScreenView: View {
                             .foregroundStyle(activityAccent)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 14).padding(.vertical, 5)
-                    .background(Color.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 18))
+                    .padding(.horizontal, ActivityLayout.timerCardHorizontalPadding)
+                    .padding(.vertical, ActivityLayout.timerCardVerticalPadding)
+                    .background(
+                        Color.white.opacity(0.045),
+                        in: RoundedRectangle(cornerRadius: ActivityLayout.timerCardCornerRadius))
                 }
             }
         }
-        .padding(.horizontal, 16).padding(.vertical, state.phase == .onClass ? 10 : 7)
+        .padding(.horizontal, ActivityLayout.contentHorizontalPadding)
+        .padding(.vertical, ActivityLayout.contentVerticalPadding)
         .foregroundStyle(.white)
     }
 
@@ -147,7 +162,7 @@ struct ClassIslandLockScreenView: View {
             }
             ClassIslandInfoColumn(label: "时间", value: state.details?.timeText ?? state.detail, symbol: "clock")
         }
-        .frame(minHeight: 38)
+        .frame(minHeight: 40)
     }
 
     private var upcomingLesson: some View {
