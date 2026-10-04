@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
@@ -148,34 +149,11 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             .Filter(x => !x.Value.IsOverlay)
             .AsObservableList();
 
-        var classPlansSourceList = new SourceList<KeyValuePair<Guid, ClassPlan>>();
-        foreach (var kvp in ProfileService.Profile.ClassPlans)
-        {
-            classPlansSourceList.Add(kvp);
-        }
+        var reorderClassPlans = ClassPlans.List.ObserveCollectionChanges()
+            .Where(change => change.EventArgs.Action == NotifyCollectionChangedAction.Move)
+            .Select(_ => Unit.Default);
 
-        ProfileService.Profile.ClassPlans
-            .ToObservableChangeSet<ObservableDictionary<Guid, ClassPlan>, KeyValuePair<Guid, ClassPlan>>()
-            .Subscribe(changeSet =>
-            {
-                foreach (var change in changeSet)
-                {
-                    switch (change.Reason)
-                    {
-                        case ListChangeReason.Add:
-                            classPlansSourceList.Add(change.Item.Current);
-                            break;
-                        case ListChangeReason.Remove:
-                            classPlansSourceList.Remove(change.Item.Current);
-                            break;
-                        case ListChangeReason.Replace:
-                            classPlansSourceList.Replace(change.Item.Previous.Value, change.Item.Current);
-                            break;
-                    }
-                }
-            });
-        
-        classPlansSourceList.Connect()
+        ClassPlans.List.ToObservableChangeSet()
             .Transform(pair => new ObservableKeyValuePair<Guid, ClassPlan>(pair))
             .AutoRefresh(pair => pair.Value.AssociatedGroup)
             .GroupOn(pair => pair.Value.AssociatedGroup)
@@ -183,6 +161,10 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             {
                 group.List
                     .Connect()
+                    .Sort(Comparer<ObservableKeyValuePair<Guid, ClassPlan>>.Create((left, right) =>
+                        ClassPlans.List.IndexOf(new KeyValuePair<Guid, ClassPlan>(left.Key, left.Value))
+                            .CompareTo(ClassPlans.List.IndexOf(new KeyValuePair<Guid, ClassPlan>(right.Key, right.Value)))),
+                        resort: reorderClassPlans)
                     .Transform(kv =>
                     {
                         var node = new ClassPlansTreeNode()
