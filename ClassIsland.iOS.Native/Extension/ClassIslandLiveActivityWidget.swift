@@ -49,6 +49,7 @@ struct ClassIslandLiveActivityWidget: Widget {
                             ClassIslandStaleNotice()
                         } else {
                             ClassIslandProgressView(state: context.state)
+                            ClassIslandRemainingTimeView(state: context.state)
                         }
                     }
                     .foregroundStyle(.white)
@@ -105,13 +106,7 @@ struct ClassIslandLockScreenView: View {
                 } else {
                     VStack(spacing: 8) {
                         ClassIslandProgressView(state: state)
-                        HStack(spacing: 8) {
-                            Image(systemName: "hourglass").foregroundStyle(activityAccent)
-                            Text("剩余时间").foregroundStyle(activitySecondary)
-                            Spacer(minLength: 8)
-                            ClassIslandIslandTimer(state: state, isStale: false)
-                        }
-                        .font(.system(size: 12, weight: .medium))
+                        ClassIslandRemainingTimeView(state: state)
                     }
                 }
             } else {
@@ -233,9 +228,28 @@ private struct ClassIslandProgressView: View {
     var body: some View {
         if let range = state.progressRange {
             // 系统刷新 C# 提供的时间区间，扩展不自行推进课程状态。
-            ProgressView(timerInterval: range, countsDown: false).labelsHidden().tint(activityAccent)
-                .scaleEffect(x: 1, y: 1.5).frame(height: 6)
+            // 显式移除默认的已过时长，避免文字溢出进度条的固定高度。
+            ProgressView(timerInterval: range, countsDown: false) {
+                EmptyView()
+            } currentValueLabel: {
+                EmptyView()
+            }
+            .tint(activityAccent)
+            .scaleEffect(x: 1, y: 1.5).frame(height: 6)
         }
+    }
+}
+
+private struct ClassIslandRemainingTimeView: View {
+    let state: ClassIslandActivityAttributes.ContentState
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "hourglass").foregroundStyle(activityAccent)
+            Text("剩余时间").foregroundStyle(activitySecondary)
+            Spacer(minLength: 8)
+            ClassIslandIslandTimer(state: state, isStale: false)
+        }
+        .font(.system(size: 12, weight: .medium))
     }
 }
 
