@@ -277,6 +277,7 @@ public partial class App
 
         // 认证提供方
         services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
+        services.AddAuthorizeProvider<GesturePasswordAuthorizeProvider>();
         // 语音提供方
         if (System.OperatingSystem.IsWindows()) {
             services.AddSpeechProvider<SystemSpeechService>();
