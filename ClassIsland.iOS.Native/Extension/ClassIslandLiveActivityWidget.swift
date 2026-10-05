@@ -45,8 +45,10 @@ struct ClassIslandLiveActivityWidget: Widget {
                     HStack(spacing: 7) {
                         ClassIslandLessonIcon(encodedImage: context.state.details?.iconPngBase64, size: 22)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(context.state.lessonName).font(.headline).lineLimit(1).minimumScaleFactor(0.75)
-                            Text(context.state.phase.displayName).font(.caption).foregroundStyle(activityAccent)
+                            Text(context.state.phase == .breaking ? context.state.phase.displayName : context.state.lessonName)
+                                .font(.headline).lineLimit(1).minimumScaleFactor(0.75)
+                            Text(context.state.phase == .breaking ? "下节课：\(context.state.lessonName)" : context.state.phase.displayName)
+                                .font(.caption).foregroundStyle(activityAccent).lineLimit(1).minimumScaleFactor(0.75)
                         }
                     }
                     .foregroundStyle(.white)
