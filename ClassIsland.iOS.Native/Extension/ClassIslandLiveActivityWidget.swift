@@ -15,6 +15,8 @@ private enum ActivityLayout {
     static let timerCardHorizontalPadding: CGFloat = 12
     static let timerCardVerticalPadding: CGFloat = 8
     static let timerCardCornerRadius: CGFloat = 16
+    static let islandHorizontalPadding: CGFloat = 8
+    static let islandVerticalPadding: CGFloat = 8
 }
 
 struct ClassIslandLiveActivityWidget: Widget {
@@ -28,12 +30,16 @@ struct ClassIslandLiveActivityWidget: Widget {
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     ClassIslandBrandIcon(size: 26)
+                        .padding(.leading, ActivityLayout.islandHorizontalPadding)
+                        .padding(.top, ActivityLayout.islandVerticalPadding)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     ClassIslandIslandTimer(state: context.state, isStale: context.classIslandIsStale)
                         .font(.system(size: 18, weight: .semibold, design: .rounded))
                         .foregroundStyle(activityAccent)
                         .frame(width: 72, alignment: .trailing)
+                        .padding(.trailing, ActivityLayout.islandHorizontalPadding)
+                        .padding(.top, ActivityLayout.islandVerticalPadding)
                 }
                 DynamicIslandExpandedRegion(.center) {
                     HStack(spacing: 7) {
@@ -64,7 +70,8 @@ struct ClassIslandLiveActivityWidget: Widget {
                         }
                     }
                     .foregroundStyle(.white)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, ActivityLayout.islandHorizontalPadding)
+                    .padding(.vertical, ActivityLayout.islandVerticalPadding)
                 }
             } compactLeading: {
                 HStack(spacing: 4) {
