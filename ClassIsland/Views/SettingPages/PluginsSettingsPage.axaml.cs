@@ -72,10 +72,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
             ViewModel.ReadmeDocument = "";
             return;
         }
-        var path = System.IO.Path.Combine(ViewModel.SelectedPluginInfo.PluginFolderPath,
-            ViewModel.SelectedPluginInfo.Manifest.Readme);
-        var uri = new Uri(path, UriKind.RelativeOrAbsolute);
-
         string document;
         try
         {
@@ -83,13 +79,23 @@ public partial class PluginsSettingsPage : SettingsPageBase
             await DocumentLoadingCancellationTokenSource.CancelAsync();
             DocumentLoadingCancellationTokenSource = new();
             ViewModel.IsLoadingDocument = true;
-            document = uri.Scheme switch
+            var path = Path.Combine(ViewModel.SelectedPluginInfo.PluginFolderPath,
+                ViewModel.SelectedPluginInfo.Manifest.Readme);
+            var uri = new Uri(path, UriKind.RelativeOrAbsolute);
+            // Unix 绝对文件路径也可能被解析为相对 URI，读取 Scheme 前必须先判断。
+            if (!uri.IsAbsoluteUri || uri.IsFile)
             {
-                "https" or "http" => await new HttpClient().GetStringAsync(uri,
-                    DocumentLoadingCancellationTokenSource.Token),
-                "file" => await File.ReadAllTextAsync(path, DocumentLoadingCancellationTokenSource.Token),
-                _ => ""
-            };
+                document = await File.ReadAllTextAsync(path, DocumentLoadingCancellationTokenSource.Token);
+            }
+            else if (uri.Scheme is "https" or "http")
+            {
+                using var client = new HttpClient();
+                document = await client.GetStringAsync(uri, DocumentLoadingCancellationTokenSource.Token);
+            }
+            else
+            {
+                document = "";
+            }
         }
         catch (TaskCanceledException)
         {
