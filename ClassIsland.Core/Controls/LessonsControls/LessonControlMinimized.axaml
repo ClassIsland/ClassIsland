@@ -8,6 +8,7 @@
                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
                    xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+                   xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    x:Name="LessonControlMinimizedRoot"
@@ -23,6 +24,7 @@
     </local:LessonControlBase.Styles>
     
     <local:LessonControlBase.Resources>
+        <converters:SubjectIconSourceConverter x:Key="SubjectIconSourceConverter"/>
         <converters:CustomKeyDictionaryValueConverter 
             x:TypeArguments="system:Guid, profile:Subject" x:Key="SubjectIdToSubjectConverter" />
     </local:LessonControlBase.Resources>
@@ -47,9 +49,46 @@
             </Grid.DataContext>
             
             <controls:HighlightBox x:Name="TextHighlightBox">
-                <TextBlock VerticalAlignment="Center"
-                           FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
-                           Text="{Binding Initial}" />
+                <Panel>
+                    <LayoutTransformControl>
+                        <LayoutTransformControl.LayoutTransform>
+                            <ScaleTransform>
+                                <ScaleTransform.ScaleX>
+                                    <Binding Path="$parent[local:LessonsListBox].SubjectIconScale">
+                                        <Binding.FallbackValue>
+                                            <x:Double>1.0</x:Double>        
+                                        </Binding.FallbackValue>
+                                    </Binding>
+                                </ScaleTransform.ScaleX>
+                                <ScaleTransform.ScaleY>
+                                    <Binding Path="$parent[local:LessonsListBox].SubjectIconScale">
+                                        <Binding.FallbackValue>
+                                            <x:Double>1.0</x:Double>        
+                                        </Binding.FallbackValue>
+                                    </Binding>
+                                </ScaleTransform.ScaleY>
+                            </ScaleTransform>
+                        </LayoutTransformControl.LayoutTransform>
+                        <fa:FAIconSourceElement x:Name="SubjectIcon"
+                                                Width="{DynamicResource MainWindowEmphasizedFontSize}"
+                                                Height="{DynamicResource MainWindowEmphasizedFontSize}"
+                                                TextElement.FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                                                VerticalAlignment="Center" Classes="repair-fontsize"
+                                                IsHitTestVisible="False" AutomationProperties.Name="{Binding Name}"
+                                                IconSource="{Binding Icon, Converter={StaticResource SubjectIconSourceConverter}}">
+                            <fa:FAIconSourceElement.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}" FallbackValue="{StaticResource FalseValue}">
+                                    <Binding Path="$parent[local:LessonsListBox].ShowSubjectIconWhenMinimized" FallbackValue="{StaticResource FalseValue}"/>
+                                    <Binding Path="$self.IconSource" Converter="{x:Static ObjectConverters.IsNotNull}"/>
+                                </MultiBinding>
+                            </fa:FAIconSourceElement.IsVisible>
+                        </fa:FAIconSourceElement>
+                    </LayoutTransformControl>
+                    <TextBlock VerticalAlignment="Center"
+                               FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                               IsVisible="{Binding !#SubjectIcon.IsVisible}"
+                               Text="{Binding Initial}" />
+                </Panel>
             </controls:HighlightBox>
         </Grid>
 

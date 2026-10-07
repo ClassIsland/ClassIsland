@@ -77,8 +77,43 @@
                 <!--     </MultiBinding> -->
                 <!-- </Grid.DataContext> -->
                 <controls:HighlightBox x:Name="TextHighlightBox">
-                    <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
-                               FontWeight="Bold" Text="{Binding DisplayingSubject.Name, Mode=OneWay}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <LayoutTransformControl>
+                            <LayoutTransformControl.LayoutTransform>
+                                <ScaleTransform>
+                                    <ScaleTransform.ScaleX>
+                                        <Binding Path="$parent[local:LessonsListBox].SubjectIconScale">
+                                            <Binding.FallbackValue>
+                                                <x:Double>1.0</x:Double>        
+                                            </Binding.FallbackValue>
+                                        </Binding>
+                                    </ScaleTransform.ScaleX>
+                                    <ScaleTransform.ScaleY>
+                                        <Binding Path="$parent[local:LessonsListBox].SubjectIconScale">
+                                            <Binding.FallbackValue>
+                                                <x:Double>1.0</x:Double>        
+                                            </Binding.FallbackValue>
+                                        </Binding>
+                                    </ScaleTransform.ScaleY>
+                                </ScaleTransform>
+                            </LayoutTransformControl.LayoutTransform>
+                            <fa:FAIconSourceElement Width="{DynamicResource MainWindowEmphasizedFontSize}"
+                                                    Height="{DynamicResource MainWindowEmphasizedFontSize}"
+                                                    TextElement.FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                                                    VerticalAlignment="Center" Margin="0 0 6 0" Classes="repair-fontsize"
+                                                    IsHitTestVisible="False"
+                                                    IconSource="{Binding DisplayingSubject.Icon, Converter={StaticResource SubjectIconSourceConverter}}">
+                                <fa:FAIconSourceElement.IsVisible>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}" FallbackValue="{StaticResource FalseValue}">
+                                        <Binding Path="$parent[local:LessonsListBox].ShowSubjectIconWhenExpanded" FallbackValue="{StaticResource FalseValue}"/>
+                                        <Binding Path="$self.IconSource" Converter="{x:Static ObjectConverters.IsNotNull}"/>
+                                    </MultiBinding>
+                                </fa:FAIconSourceElement.IsVisible>
+                            </fa:FAIconSourceElement>
+                        </LayoutTransformControl>
+                        <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                                   FontWeight="Bold" Text="{Binding DisplayingSubject.Name, Mode=OneWay}"/>
+                    </StackPanel>
                 </controls:HighlightBox>
             </Grid>
             
