@@ -317,6 +317,16 @@ public partial class App
             Url = "https://github.com/ClassIsland/ClassIsland",
             VerticalSafeAreaPx = 20
         });
+        services.AddXamlTheme(new Uri("avares://ClassIsland/XamlThemes/RectanglesTheme/Styles.axaml"), new ThemeManifest()
+        {
+            Id = "classisland.rectangles",
+            Name = "Rectangles",
+            Description = "一次大胆的尝试",
+            Banner = "avares://ClassIsland/Assets/XamlThemePreviews/classisland.rectangles.png",
+            Author = "ClassIsland",
+            Url = "https://github.com/ClassIsland/ClassIsland",
+            VerticalSafeAreaPx = 10
+        });
         // 教程
         if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux())
         {

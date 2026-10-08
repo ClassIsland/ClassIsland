@@ -1,0 +1,203 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Controls"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:classIsland="using:ClassIsland">
+    <Styles.Resources>
+        <ci:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
+        <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
+        <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
+        <system:Double x:Key="IslandContainerHeight">40</system:Double>
+    </Styles.Resources>
+
+    <StyleInclude Source="/Controls/MainWindowLine.axaml" />
+
+    <Style Selector="ItemsControl#RootMainWindowLinesItemsControl">
+        <Setter Property="ClipToBounds" Value="False" />
+    </Style>
+
+    <Style Selector=":is(Control).clip-host[(ci|MainWindowStylesAssist.IsIslandSeperated)=False], :is(Control).clip-host.clip-enforcing">
+        <Setter Property="Clip">
+            <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                <Binding Path="BackgroundWidth"
+                         RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
+                <Binding Path="Bounds.Width" RelativeSource="{RelativeSource Self}" />
+                <Binding Path="Bounds.Height" RelativeSource="{RelativeSource Self}" />
+                <Binding Path="WindowDockingLocation"
+                         RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
+                <Binding Path="(ci:MainWindowStylesAssist.CornerRadius)" RelativeSource="{RelativeSource Self}" />
+                <Binding Path="(ci:MainWindowStylesAssist.CornerRadius)" RelativeSource="{RelativeSource Self}" />
+            </MultiBinding>
+        </Setter>
+    </Style>
+
+    <Style Selector="ci|MainWindowBackgroundMaterialControl.line-background, ci|MainWindowBackgroundMaterialControl.rectangles-notification-material">
+        <Setter Property="Opacity" Value="{Binding $self.EffectiveBackgroundOpacity, Mode=OneWay}" />
+        <Setter Property="FallbackBrush" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}" />
+    </Style>
+    <Style Selector="ci|MainWindowBackgroundMaterialControl.line-background">
+        <Setter Property="CornerRadius"
+                Value="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}" />
+    </Style>
+    <Style Selector="ci|MainWindowBackgroundMaterialControl[(ci|MainWindowStylesAssist.IsCustomBackgroundColorEnabled)=True].line-background, ci|MainWindowBackgroundMaterialControl[(ci|MainWindowStylesAssist.IsCustomBackgroundColorEnabled)=True].rectangles-notification-material">
+        <Setter Property="FallbackBrush"
+                Value="{Binding $self.(ci:MainWindowStylesAssist.BackgroundColor), Converter={StaticResource ColorToColorPickerBrushConverter}}" />
+    </Style>
+    <Style Selector="ci|MainWindowBackgroundMaterialControl.rectangles-mask-material">
+        <Setter Property="Opacity" Value="{Binding $self.EffectiveBackgroundOpacity, Mode=OneWay}" />
+        <Setter Property="FallbackBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+    </Style>
+    <Style Selector="Border.rectangles-dim">
+        <Setter Property="Background" Value="#4D000000" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="Opacity"
+                Value="{Binding RevealProgress, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:RectanglesNotificationPanel}, FallbackValue=0}" />
+        <Setter Property="CornerRadius"
+                Value="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}" />
+    </Style>
+
+    <Style Selector="controls|MainWindowLine">
+        <Setter Property="NotificationExitDuration" Value="0:0:0.167" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:MainWindowLine">
+                <controls:RectanglesNotificationPanel x:Name="GridRoot"
+                                                     ClipToBounds="False"
+                                                     WindowDockingLocation="{Binding WindowDockingLocation, RelativeSource={RelativeSource TemplatedParent}}"
+                                                     WindowWidth="{Binding Bounds.Width, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
+                                                     MainWindowScale="{Binding ViewModel.Settings.Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}">
+                    <Grid x:Name="PART_GridWrapper"
+                          Height="{DynamicResource IslandContainerHeight}"
+                          ClipToBounds="False">
+                        <Canvas IsHitTestVisible="False"
+                                IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.IsIslandSeperated)}">
+                            <Border Width="{Binding #PART_GridWrapper.Bounds.Width}"
+                                    Height="{DynamicResource IslandContainerHeight}"
+                                    ClipToBounds="False">
+                                <Grid x:Name="BackgroundBorder"
+                                      Classes="docking"
+                                      Width="{Binding BackgroundWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Height="{DynamicResource IslandContainerHeight}"
+                                      ClipToBounds="False">
+                                    <ci:MainWindowBackgroundMaterialControl Classes="line-background" />
+                                </Grid>
+                            </Border>
+                        </Canvas>
+                        <Grid x:Name="ContentClipBorder"
+                              Classes="clip-host"
+                              ClipToBounds="False">
+                            <Grid x:Name="GridContentRoot"
+                                  MinWidth="20"
+                                  Margin="12 0">
+                                <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </Grid>
+                            <Border Classes="rectangles-dim" IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"/>
+                        </Grid>
+                    </Grid>
+
+                    <LayoutTransformControl x:Name="PART_NotificationWrapper"
+                                            ClipToBounds="False"
+                                            IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}">
+                        <controls:RectanglesNotificationBubble x:Name="NotificationBubble"
+                                                              CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius)}">
+                            <Grid Opacity="{Binding #GridRoot.OverlayProgress}">
+                                <ci:MainWindowBackgroundMaterialControl Classes="rectangles-notification-material"
+                                                                        ClipToBounds="False"
+                                                                        Clip="{Binding #NotificationBubble.Clip}" />
+                            </Grid>
+                            <Grid Opacity="{Binding #GridRoot.OverlayProgress, Converter={x:Static controls:RectanglesNotificationBubble.InverseProgressConverter}}">
+                                <ci:MainWindowBackgroundMaterialControl Classes="rectangles-mask-material"
+                                                                        ClipToBounds="False"
+                                                                        Clip="{Binding #NotificationBubble.Clip}" />
+                            </Grid>
+                            <Border ClipToBounds="True"
+                                    Opacity="{Binding #GridRoot.OverlayProgress, Converter={x:Static controls:RectanglesNotificationBubble.InverseProgressConverter}}"
+                                    TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}">
+                                <ContentPresenter x:Name="OverlayMaskContent"
+                                                  Content="{Binding MaskContent.Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  ContentTemplate="{Binding MaskContent.ContentTemplate, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </Border>
+                            <Grid ClipToBounds="True"
+                                  Opacity="{Binding #GridRoot.OverlayProgress}">
+                                <Canvas x:Name="ProgressContainer"
+                                        VerticalAlignment="Bottom"
+                                        Height="{Binding #OverlayTimeProgressBar.Bounds.Height}">
+                                    <ProgressBar x:Name="OverlayTimeProgressBar"
+                                                 VerticalAlignment="Bottom"
+                                                 Width="{Binding #ProgressContainer.Bounds.Width}"
+                                                 Maximum="1"
+                                                 Height="2"
+                                                 MinWidth="0"
+                                                 Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource TemplatedParent}}">
+                                        <ProgressBar.Transitions>
+                                            <Transitions>
+                                                <DoubleTransition Property="Value"
+                                                                  Duration="0:0:0.05"
+                                                                  Easing="LinearEasing" />
+                                            </Transitions>
+                                        </ProgressBar.Transitions>
+                                    </ProgressBar>
+                                </Canvas>
+                                <ContentPresenter x:Name="OverlayContent"
+                                                  Margin="12 0"
+                                                  Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  ContentTemplate="{Binding OverlayContent.ContentTemplate, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </Grid>
+                        </controls:RectanglesNotificationBubble>
+                    </LayoutTransformControl>
+                </controls:RectanglesNotificationPanel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^ ci|ComponentPresenter[IsRootComponent=True]">
+            <Setter Property="ContentTemplate">
+                <DataTemplate>
+                    <Panel>
+                        <ContentPresenter Content="{Binding}" />
+                    </Panel>
+                </DataTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="^ ci|ComponentPresenter[IsRootComponent=True][(ci|MainWindowStylesAssist.IsIslandSeperated)=True]">
+            <Setter Property="ContentTemplate">
+                <DataTemplate>
+                    <Panel Margin="-2 0">
+                        <ci:MainWindowBackgroundMaterialControl Classes="line-background" />
+                        <Border ClipToBounds="True"
+                                MinWidth="40"
+                                CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}">
+                            <ContentPresenter Content="{Binding}" Margin="16 0" />
+                        </Border>
+                        <Border Classes="rectangles-dim" />
+                    </Panel>
+                </DataTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="^[(ci|ComponentPresenter.IsMainWindowLoaded)=True]">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.100" />
+                    <DoubleTransition Property="BackgroundWidth"
+                                      Duration="0:0:0.300"
+                                      Easing="0.65,0,0.35,1" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="^[IsNotificationEnabled=True][(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">
+            <Style Selector="^:mask-anim /template/ controls|RectanglesNotificationPanel, ^:overlay-in /template/ controls|RectanglesNotificationPanel">
+                <Setter Property="IsOpened" Value="True" />
+            </Style>
+            <Style Selector="^:overlay-in /template/ controls|RectanglesNotificationPanel">
+                <Setter Property="IsOverlay" Value="True" />
+            </Style>
+            <Style Selector="^:mask-in /template/ controls|RectanglesNotificationPanel">
+                <Setter Property="IsOverlay" Value="False" />
+            </Style>
+            <Style Selector="^:overlay-out /template/ controls|RectanglesNotificationPanel">
+                <Setter Property="IsOpened" Value="False" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>
