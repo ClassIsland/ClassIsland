@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
@@ -84,58 +83,9 @@ public class RectanglesNotificationBubble : Panel
 
         var content = Children[overlay ? 3 : 2];
         var padding = overlay ? 0 : ContentPadding * 2;
-        // Star columns and trimmed text must report their natural width before the bubble applies its cap.
+        // Measure natural content width before the bubble applies its cap.
         content.Measure(new Size(double.PositiveInfinity, BodyHeight));
-        return GetPreferredContentWidth(content) + padding;
-    }
-
-    private static double GetPreferredContentWidth(Control control)
-    {
-        if (!control.IsVisible || double.IsFinite(control.Width))
-        {
-            return control.DesiredSize.Width;
-        }
-
-        var children = control.GetVisualChildren().OfType<Control>()
-            .Where(child => child.IsVisible)
-            .Select(child => (Control: child, Width: GetPreferredContentWidth(child)))
-            .ToArray();
-        var extraWidths = children.Select(child => Math.Max(0, child.Width - child.Control.DesiredSize.Width));
-        var extraWidth = control is StackPanel { Orientation: Orientation.Horizontal }
-            ? extraWidths.Sum()
-            : extraWidths.DefaultIfEmpty(0).Max();
-        var width = control.DesiredSize.Width + extraWidth;
-
-        if (control is Grid { ColumnDefinitions.Count: > 0 } grid &&
-            children.All(child => Grid.GetColumnSpan(child.Control) == 1))
-        {
-            var columns = grid.ColumnDefinitions;
-            var columnWidths = columns.Select(column => Math.Clamp(
-                column.Width.IsAbsolute ? column.Width.Value : column.MinWidth,
-                column.MinWidth, column.MaxWidth)).ToArray();
-            foreach (var child in children)
-            {
-                var index = Math.Min(Grid.GetColumn(child.Control), columns.Count - 1);
-                var column = columns[index];
-                if (!column.Width.IsAbsolute)
-                {
-                    columnWidths[index] = Math.Clamp(Math.Max(columnWidths[index], Math.Ceiling(child.Width)),
-                        column.MinWidth, column.MaxWidth);
-                }
-            }
-
-            // Infinite measurement treats star columns as auto; finite layout must still honor their ratios.
-            var starUnit = columns.Select((column, index) => column.Width.IsStar && column.Width.Value > 0
-                ? columnWidths[index] / column.Width.Value
-                : 0).DefaultIfEmpty(0).Max();
-            var requiredWidth = columns.Select((column, index) => column.Width.IsStar
-                ? Math.Clamp(starUnit * column.Width.Value, column.MinWidth, column.MaxWidth)
-                : columnWidths[index]).Sum();
-            requiredWidth += grid.ColumnSpacing * (columns.Count - 1) + grid.Margin.Left + grid.Margin.Right;
-            width = Math.Max(control.DesiredSize.Width, requiredWidth);
-        }
-
-        return Math.Min(width, control.MaxWidth + control.Margin.Left + control.Margin.Right);
+        return content.DesiredSize.Width + padding;
     }
 
     protected override Size MeasureOverride(Size availableSize)

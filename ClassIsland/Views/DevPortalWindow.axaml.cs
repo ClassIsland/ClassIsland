@@ -75,6 +75,28 @@ public partial class DevPortalWindow : ViewBase
         ViewModel.IsTargetTimeLoaded = true;
     }
 
+    private void ButtonJumpToPreparingNotification_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var target = ViewModel.GetPreparingNotificationTargetTime(
+            IAppHost.GetService<ILessonsService>(), IAppHost.GetService<IProfileService>());
+        if (target == null)
+        {
+            this.ShowToast(new ToastMessage
+            {
+                Title = "无法跳转",
+                Message = "当天没有可触发即将上课提醒的课程。请检查课表、提醒开关和提前提醒时间。"
+            });
+            return;
+        }
+
+        ViewModel.IsTargetDateLoaded = ViewModel.IsTargetTimeLoaded = false;
+        ViewModel.SettingsService.Settings.DebugTimeOffsetSeconds +=
+            (target.Value - ViewModel.ExactTimeService.GetCurrentLocalDateTime()).TotalSeconds;
+        ViewModel.TargetDate = target.Value.Date;
+        ViewModel.TargetTime = target.Value.TimeOfDay;
+        ViewModel.IsTargetDateLoaded = ViewModel.IsTargetTimeLoaded = true;
+    }
+
     private void TimePicker_OnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)
     {
         if (!ViewModel.IsTargetDateTimeLoaded) return;
