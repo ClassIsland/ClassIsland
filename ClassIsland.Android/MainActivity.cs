@@ -7,10 +7,12 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using ClassIsland.Android.Controls.UI;
 using ClassIsland.Android.Services;
+using ClassIsland.Android.Services.Platform;
 using ClassIsland.Android.Services.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.UI;
 using ClassIsland.Core.Enums;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
 using ClassIsland.Views;
 
@@ -75,6 +77,30 @@ public class MainActivity : AvaloniaMainActivity
                 var mv = IAppHost.GetService<MainView>();
                 mv.Show();
             });
+        }
+
+        HandleNotificationIntent(Intent);
+    }
+
+    protected override void OnNewIntent(Intent? intent)
+    {
+        base.OnNewIntent(intent);
+        Intent = intent;
+        HandleNotificationIntent(intent);
+    }
+
+    private static void HandleNotificationIntent(Intent? intent)
+    {
+        var notificationId = intent?.GetStringExtra(DesktopToastService.NotificationIdExtra);
+        var actionId = intent?.GetStringExtra(DesktopToastService.ActionIdExtra);
+        intent?.RemoveExtra(DesktopToastService.NotificationIdExtra);
+        intent?.RemoveExtra(DesktopToastService.ActionIdExtra);
+
+        if (Guid.TryParse(notificationId, out var notificationGuid) &&
+            Guid.TryParse(actionId, out var actionGuid) &&
+            PlatformServices.DesktopToastService is DesktopToastService service)
+        {
+            service.QueueActivation(notificationGuid, actionGuid);
         }
     }
 
