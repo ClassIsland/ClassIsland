@@ -33,6 +33,8 @@ Before editing:
 3. Explain the planned changes.
 4. Only then modify files.
 Avoid speculative refactoring.
+- Generated code must follow the repository's formatting settings; do not generate minified or compressed code.
+- Keep implementations and fixes as small and concise as possible, without affecting other behavior. If effects on other behavior are unavoidable, inform the user before making the change.
 When requirements are unclear:
 - Ask the user when changes affect architecture, behavior, compatibility, or public APIs.
 - For minor implementation details, follow existing project patterns.
