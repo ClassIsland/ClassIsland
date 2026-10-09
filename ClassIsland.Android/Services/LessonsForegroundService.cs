@@ -434,7 +434,7 @@ public class LessonsForegroundService : Service
     private Notification CreateNotification(NotificationSnapshot snapshot)
     {
         var builder = new NotificationCompat.Builder(this, NotificationChannelId);
-        builder.SetSmallIcon(ResourceConstant.Drawable.ic_logo_monochrome);
+        builder.SetSmallIcon(ResourceConstant.Drawable.ic_logo_monochrome_notification);
         builder.SetContentTitle(snapshot.Title);
         builder.SetContentText(snapshot.Content);
         builder.SetOngoing(true);

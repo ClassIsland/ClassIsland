@@ -102,7 +102,7 @@ public class DesktopToastService : IDesktopToastService, IDisposable
         try
         {
             using var builder = new NotificationCompat.Builder(_context, NotificationChannelId);
-            builder.SetSmallIcon(ResourceConstant.Drawable.ic_logo_monochrome);
+            builder.SetSmallIcon(ResourceConstant.Drawable.ic_logo_monochrome_notification);
             builder.SetContentTitle(content.Title);
             builder.SetContentText(content.Body);
             builder.SetPriority(NotificationCompat.PriorityDefault);
