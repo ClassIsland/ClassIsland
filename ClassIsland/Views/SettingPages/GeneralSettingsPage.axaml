@@ -258,8 +258,10 @@
                                 <CheckBox Content="上课时"
                                           IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnClass}"/>
                                 <CheckBox Content="前台是最大化窗口时"
+                                          IsEnabled="{OnPlatform Default=True, Android=False}"
                                           IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnMaxWindow}" />
                                 <CheckBox Content="前台是全屏窗口时"
+                                          IsEnabled="{OnPlatform Default=True, Android=False}"
                                           IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnFullscreen}" />
                             </StackPanel>
                         </TabItem>

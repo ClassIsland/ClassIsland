@@ -324,6 +324,14 @@ public class RectanglesNotificationPanel : Panel
                                     } window
             ? ReserveWindowRenderSize(window)
             : null;
+        var hostReservation = renderSizeReservation == null && CanAnimate && IsCentered &&
+                              Math.Abs(RevealProgress - target) >= 0.01
+            ? this.GetVisualAncestors().OfType<INotificationRenderSizeHost>().FirstOrDefault()
+                ?.ReserveRenderHeight(IsOpened
+                    ? (RectanglesNotificationBubble.BodyHeight + RectanglesNotificationBubble.TipLength) *
+                      (1 - Math.Clamp(RevealProgress, 0, 1)) * MainWindowScale
+                    : 0)
+            : null;
         var suppressed = CanAnimate && WindowDockingLocation == 1 && Math.Abs(RevealProgress - target) >= 0.01
             ? SuppressFollowingRowAnimations()
             : [];
@@ -335,7 +343,7 @@ public class RectanglesNotificationPanel : Panel
         }
         finally
         {
-            if (suppressed.Count > 0 || renderSizeReservation != null)
+            if (suppressed.Count > 0 || renderSizeReservation != null || hostReservation != null)
             {
                 // Restore after the final layout update; overlapping reminders keep their own suspension.
                 Dispatcher.UIThread.Post(() =>
@@ -350,6 +358,7 @@ public class RectanglesNotificationPanel : Panel
                         }
                     }
                     renderSizeReservation?.Invoke();
+                    hostReservation?.Dispose();
                 }, DispatcherPriority.Background);
             }
         }

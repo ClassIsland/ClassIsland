@@ -28,6 +28,10 @@ public class MainActivity : AvaloniaMainActivity
 
     public static WeakReference<MainActivity>? Current { get; set; }
 
+    internal static event EventHandler? Resumed;
+
+    internal bool IsForeground { get; private set; }
+
     public event EventHandler? Destroy;
 
     private AndroidViewHost? ViewHost { get; set; }
@@ -117,6 +121,19 @@ public class MainActivity : AvaloniaMainActivity
 #pragma warning restore CA1416
     }
     
+    protected override void OnResume()
+    {
+        base.OnResume();
+        IsForeground = true;
+        Resumed?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected override void OnPause()
+    {
+        IsForeground = false;
+        base.OnPause();
+    }
+
     protected override void OnDestroy()
     {
         if (ViewHost != null)

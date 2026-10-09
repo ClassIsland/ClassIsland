@@ -87,7 +87,8 @@
                         </ci:Field>
                     </Grid>
                     <!-- 显示器 -->
-                    <ci:Field Label="显示器" Margin="0 16 0 0">
+                    <ci:Field Label="显示器" Margin="0 16 0 0"
+                              IsVisible="{OnPlatform Default=True, Android=False}">
                         <ComboBox ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
                             <ComboBox.SelectedIndex>
                                 <Binding Path="ViewModel.SettingsService.Settings.WindowDockingMonitorIndex"/>
@@ -115,11 +116,13 @@
                         </ComboBox></ci:Field>
 
                     <Button Margin="0 8 0 0" Theme="{StaticResource TransparentButton}"
+                            IsVisible="{OnPlatform Default=True, Android=False}"
                             HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
                         <ci:IconText Glyph="&#xE0B5;" Text="刷新显示器列表" />
                     </Button>
 
                     <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
+                               IsVisible="{OnPlatform Default=True, Android=False}"
                                Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。" 
                                Classes="l-instructive"/>
                     <!--<TextBlock Text="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Mode=OneWay}"/>-->
@@ -136,10 +139,20 @@
                                IsClosable="False"
                                IsOpen="True"
                                IsVisible="{Binding ViewModel.SettingsService.Settings.UseRawInput}"/>
-
+            
+            <controls1:FASettingsExpander Header="显示悬浮主界面"
+                                          IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                          Description="在其他应用上方显示组件和提醒，触摸会穿透到背后的内容。需要允许 ClassIsland 显示在其他应用上层；未授权时不会显示，关闭后重新开启可再次授权。"
+                                          IsVisible="{OnPlatform Default=False, Android=True}">
+                <controls1:FASettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsAndroidOverlayEnabled, Mode=TwoWay}"/>
+                </controls1:FASettingsExpander.Footer>
+            </controls1:FASettingsExpander>
+            
             <!-- 窗口层级 -->
             <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xEA2F;}"
                                         Header="窗口层级"
+                                        IsVisible="{OnPlatform Default=True, Android=False}"
                                         Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。"
                                         IsExpanded="True">
                 <controls1:FASettingsExpander.Footer>
@@ -217,6 +230,7 @@
             <!-- 指针移入淡化 -->
             <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xE5C3;}"
                                         Header="指针移入淡化"
+                                        IsVisible="{OnPlatform Default=True, Android=False}"
                                         Description="启用后，在鼠标移入或触屏点击主界面区域时，将淡化主界面。"
                                         IsExpanded="{Binding ViewModel.SettingsService.Settings.IsMouseInFadingEnabled, Mode=OneWay}">
                 <controls1:FASettingsExpander.Footer>
@@ -274,6 +288,7 @@
             <!-- 录制模式 -->
             <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xF405;}"
                                         Header="录制模式"
+                                        IsVisible="{OnPlatform Default=True, Android=False}"
                                         Description="启用后，ClassIsland 将调整窗口属性以便被录屏软件录制。这会导致主界面窗口显示在任务栏中且主界面窗口只会在一个虚拟桌面上显示，如您没有录制 ClassIsland 窗口的需求，请勿开启此选项。">
                 <controls1:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsScreenRecordingModeEnabled, Mode=TwoWay}"/>

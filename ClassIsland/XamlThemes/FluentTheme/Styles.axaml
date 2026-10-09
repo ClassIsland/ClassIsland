@@ -26,12 +26,12 @@
                              RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
                     <Binding Path="Bounds.Width" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
                     <Binding Path="Bounds.Height" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
-                    <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
-                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                    <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
-                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                    <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
-                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                    <Binding Path="WindowDockingLocation" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
+                    <Binding Path="SettingsService.Settings.RadiusX" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
+                    <Binding Path="SettingsService.Settings.RadiusX" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
                 </MultiBinding>
             </Setter.Value>
         </Setter>

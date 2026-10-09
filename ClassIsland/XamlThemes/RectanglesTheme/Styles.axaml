@@ -64,8 +64,8 @@
                 <controls:RectanglesNotificationPanel x:Name="GridRoot"
                                                      ClipToBounds="False"
                                                      WindowDockingLocation="{Binding WindowDockingLocation, RelativeSource={RelativeSource TemplatedParent}}"
-                                                     WindowWidth="{Binding Bounds.Width, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
-                                                     MainWindowScale="{Binding ViewModel.Settings.Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}">
+                                                     WindowWidth="{Binding Bounds.Width, RelativeSource={RelativeSource FindAncestor, AncestorType=TopLevel}}"
+                                                     MainWindowScale="{Binding SettingsService.Settings.Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}">
                     <Grid x:Name="PART_GridWrapper"
                           Height="{DynamicResource IslandContainerHeight}"
                           ClipToBounds="False">
