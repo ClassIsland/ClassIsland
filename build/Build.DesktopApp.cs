@@ -4,19 +4,33 @@ using System.Linq;
 using Microsoft.Build.Tasks;
 using Nuke.Common;
 using Nuke.Common.IO;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-public partial class Build 
+public partial class Build
 {
     Target RestoreDesktopApp => _ => _
         .Before(CompileApp)
         .DependsOn(GenerateMetadata)
         .Executes(() =>
         {
+            if (IsIosBuild)
+            {
+                DotNetRestore(s => s
+                    .SetProjectFile(IosAppEntryProject)
+                    .SetProperty("ClassIslandIosDistribution", IosDistribution)
+                    .SetProperty("PublishBuilding", true)
+                    .SetProperty("PublishPlatform", OsName)
+                    .SetProperty("ClassIsland_PlatformTarget", Arch)
+                    .SetProperty("GeneratePackageOnBuild", false)
+                    .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
+                return;
+            }
+
             DotNetRestore(s => s
                 .SetProjectFile(DesktopAppEntryProject)
                 .SetProperty("PublishBuilding", true)
@@ -24,7 +38,7 @@ public partial class Build
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch));
         });
-    
+
     Target CleanDesktopApp => _ => _
         .Before(CompileApp)
         .DependsOn(CleanOutputDir)
@@ -32,6 +46,19 @@ public partial class Build
         .DependsOn(RestoreDesktopApp)
         .Executes(() =>
         {
+            if (IsIosBuild)
+            {
+                DotNetClean(s => s
+                    .SetProject(IosAppEntryProject)
+                    .SetProperty("ClassIslandIosDistribution", IosDistribution)
+                    .SetProperty("PublishBuilding", true)
+                    .SetProperty("PublishPlatform", OsName)
+                    .SetProperty("ClassIsland_PlatformTarget", Arch)
+                    .SetProperty("GeneratePackageOnBuild", false)
+                    .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
+                return;
+            }
+
             DotNetClean(s => s
                 .SetProject(DesktopAppEntryProject)
                 .SetProperty("PublishBuilding", true)
@@ -43,9 +70,64 @@ public partial class Build
     Target CompileApp => t => t
         .DependsOn(GenerateSecrets)
         .DependsOn(GenerateMetadata)
+        .DependsOn(PopulateGitVersion)
         .DependsOn(CleanDesktopApp)
         .Executes(() =>
         {
+            if (IsIosBuild)
+            {
+                DotNetPublish(settings =>
+                {
+                    var enableCodeSigning = EnableCodeSigning ? "true" : "false";
+                    settings = settings
+                        .SetProject(IosAppEntryProject)
+                        .SetProperty("ClassIslandIosDistribution", IosDistribution)
+                        // iOS 的多层项目引用会以不同全局属性重复构建 Avalonia 项目；
+                        // 串行执行可避免它们同时写入同一个 obj/Avalonia/resources 文件。
+                        .SetProcessAdditionalArguments("-m:1")
+                        .SetConfiguration(Configuration)
+                        .SetProperty("PublishBuilding", true)
+                        .SetProperty("PublishPlatform", OsName)
+                        .SetProperty("ClassIsland_PlatformTarget", Arch)
+                        .SetProperty("GeneratePackageOnBuild", false)
+                        .SetProperty("WarningsAsErrors", "CA1416")
+                        .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
+                        // Release 默认使用 AOT；发布包显式启用解释器，与本地调试的托管执行模式一致。
+                        .SetProperty("UseInterpreter", true)
+                        .SetProperty("ArchiveOnBuild", enableCodeSigning)
+                        .SetProperty("BuildIpa", true)
+                        .SetProperty("EnableCodeSigning", enableCodeSigning)
+                        .SetProperty("BrandType", BrandType)
+                        .SetProperty("ApplicationDisplayVersion", AppVersion)
+                        .SetProperty("ApplicationVersion", Math.Max(GitCommitCount, 1))
+                        .SetProperty("IpaPackagePath", IosPublishArtifactPath);
+
+                    if (string.Equals(
+                            (string)Configuration,
+                            "Release",
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Global.props 默认开启符号；通过全局 MSBuild 属性同时约束
+                        // iOS 主项目及所有 ProjectReference，避免 PDB 进入发布 IPA。
+                        settings = settings
+                            .SetProperty("DebugType", "none")
+                            .SetProperty("DebugSymbols", false);
+                    }
+
+                    if (!EnableCodeSigning)
+                    {
+                        return settings;
+                    }
+
+                    return settings
+                        .SetProperty("CodesignKey", CodesignKey)
+                        .SetProperty("CodesignProvision", CodesignProvision)
+                        .SetProperty("ClassIslandLiveActivityCodesignProvision", ClassIslandLiveActivityCodesignProvision)
+                        .SetProperty("ClassIslandDevelopmentTeam", ClassIslandDevelopmentTeam);
+                });
+                return;
+            }
+
             var createDeb = Package == "deb";
             var isSelfContained = BuildType == "selfContained";
             DotNetPublish(s => s
@@ -73,7 +155,7 @@ public partial class Build
     Target GenerateAppZipArchive => _ => _
         .Produces(AppPublishArtifactPath)
         .DependsOn(CompileApp)
-        .OnlyWhenDynamic(() => Package != "deb" && Package != "pkg")
+        .OnlyWhenDynamic(() => Package != "deb" && Package != "pkg" && Package != "ipa")
         .Executes(() =>
         {
             AppPublishPath.ZipTo(AppPublishArtifactPath);

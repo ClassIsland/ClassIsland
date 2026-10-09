@@ -703,14 +703,15 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void ProcessLessons()
     {
         LoadCurrentClassPlan();
-        // Deactivate
+        // 直接设置最终激活状态，避免每轮先停用再启用，反复触发日历刷新和通知同步。
+        var currentTimeLayout = CurrentClassPlan?.TimeLayout;
         foreach (var i in Profile.TimeLayouts.Where(i => !i.Value.IsActivatedManually))
         {
-            i.Value.IsActivated = false;
+            i.Value.IsActivated = ReferenceEquals(i.Value, currentTimeLayout);
         }
         foreach (var i in Profile.ClassPlans)
         {
-            i.Value.IsActivated = false;
+            i.Value.IsActivated = currentTimeLayout != null && ReferenceEquals(i.Value, CurrentClassPlan);
         }
 
         // 预定所有需要更新的信息

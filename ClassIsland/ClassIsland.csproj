@@ -27,7 +27,7 @@
     </PropertyGroup>
     <PropertyGroup>
         <ClassIslandBundleAssetsInAssembly Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">true</ClassIslandBundleAssetsInAssembly>
-        <ClassIslandBundleAssetsInAssembly Condition="'$(ClassIslandReferencedByAndroid)'=='true' And '$(Configuration)'=='Release'">true</ClassIslandBundleAssetsInAssembly>
+        <ClassIslandBundleAssetsInAssembly Condition="('$(ClassIslandReferencedByAndroid)'=='true' Or '$(ClassIslandReferencedByMobile)'=='true') And '$(Configuration)'=='Release'">true</ClassIslandBundleAssetsInAssembly>
         <ClassIslandBundleAssetsInAssembly Condition="'$(ClassIslandBundleAssetsInAssembly)'==''">false</ClassIslandBundleAssetsInAssembly>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX' Or '$(Configuration)'=='Release_MSIX'">
@@ -223,6 +223,10 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </AvaloniaXaml>
 	</ItemGroup>
+
+    <ItemGroup Condition="'$(ClassIslandIosDistribution)' == 'AppStore'">
+        <Compile Remove="PluginLoadContext.cs" />
+    </ItemGroup>
 
     <Target Name="PrintConstants" AfterTargets="Build">
 		<Message Text="Constants: $(DefineConstants)" Importance="high" />

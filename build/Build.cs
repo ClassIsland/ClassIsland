@@ -38,10 +38,20 @@ partial class Build : NukeBuild
     [Parameter("API_SIGNING_KEY")] readonly string ApiSigningKey;
     [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
     [Parameter] readonly string AppVersion;
+    [Parameter] readonly string BrandType;
+    [Parameter("iOS distribution: Sideload (plugins enabled) or AppStore (external plugins disabled).")]
+    readonly string IosDistribution = "Sideload";
+    [Parameter] readonly string CodesignKey;
+    [Parameter] readonly string CodesignProvision;
+    [Parameter] readonly string ClassIslandLiveActivityCodesignProvision;
+    [Parameter] readonly string ClassIslandDevelopmentTeam;
+    [Parameter("Whether the iOS IPA should be code signed. Disable only when producing an unsigned artifact for external signing.")]
+    readonly bool EnableCodeSigning = true;
     
     string PublishArtifactName;
 
     readonly AbsolutePath DesktopAppEntryProject = RootDirectory / "ClassIsland.Desktop" / "ClassIsland.Desktop.csproj";
+    readonly AbsolutePath IosAppEntryProject = RootDirectory / "ClassIsland.iOS" / "ClassIsland.iOS.csproj";
     readonly AbsolutePath AndroidAppEntryProject = RootDirectory / "ClassIsland.Android" / "ClassIsland.Android.csproj";
     readonly AbsolutePath LauncherEntryProject = RootDirectory / "ClassIsland.Launcher" / "ClassIsland.Launcher.csproj";
     readonly AbsolutePath PluginDevAppPath = RootDirectory / "out" / "ClassIsland_Dev";
@@ -51,6 +61,8 @@ partial class Build : NukeBuild
     readonly AbsolutePath AppPublishPath = RootDirectory / "out" / "ClassIsland";
     readonly AbsolutePath LauncherPublishPath = RootDirectory / "out" / "Launcher";
     readonly AbsolutePath AppSecretsPath = RootDirectory / "ClassIsland" / "secrets.g.cs";
+
+    bool IsIosBuild => OsName == "ios";
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = Configuration.Release ;
@@ -71,20 +83,62 @@ partial class Build : NukeBuild
                 "windows" => "win",
                 "linux" => "linux", 
                 "macos" => "osx",
+                "ios" => "ios",
                 "android" => "android",
                 _ => throw new InvalidOperationException($"不支持的平台：{OsName}")
             };
             RuntimeIdentifier = $"{osRid}-{Arch}";
             PublishArtifactName = $"out_{BuildName}_{OsName}_{Arch}_{BuildType}_{Package}";
+            if (IsIosBuild)
+            {
+                if (IosDistribution is not ("Sideload" or "AppStore"))
+                {
+                    throw new InvalidOperationException("IosDistribution must be Sideload or AppStore.");
+                }
+                PublishArtifactName += $"_{IosDistribution}";
+            }
             IsSecretFilled = !(string.IsNullOrEmpty(ApiSigningKey) || string.IsNullOrEmpty(ApiSigningKeyPs));
             AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
+            IosPublishArtifactPath = AppOutputPath / PublishArtifactName + ".ipa";
             LauncherPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
+
+            if (IsIosBuild)
+            {
+                if (Package != "ipa" || Arch != "arm64")
+                {
+                    throw new InvalidOperationException("iOS 发布仅支持 --Package ipa --Arch arm64。");
+                }
+
+                var missingBuildParameter = new[]
+                {
+                    AppVersion,
+                    BrandType
+                }.Any(string.IsNullOrWhiteSpace);
+                if (missingBuildParameter)
+                {
+                    throw new InvalidOperationException("iOS IPA publishing requires appVersion and brandType.");
+                }
+
+                var missingSigningParameter = EnableCodeSigning && new[]
+                {
+                    CodesignKey,
+                    CodesignProvision,
+                    ClassIslandLiveActivityCodesignProvision,
+                    ClassIslandDevelopmentTeam
+                }.Any(string.IsNullOrWhiteSpace);
+                if (missingSigningParameter)
+                {
+                    throw new InvalidOperationException("Signed iOS IPA publishing requires signing parameters for both the app and Live Activity extension.");
+                }
+            }
             
             Log.Information("AppVersion = {AppVersion}", AppVersion);
             Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
+            Log.Information("EnableCodeSigning = {EnableCodeSigning}", EnableCodeSigning);
             Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
             Log.Information("PublishArtifactName = {PublishArtifactName}", PublishArtifactName);
             Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", AppPublishArtifactPath);
+            Log.Information("IosPublishArtifactPath = {IosPublishArtifactPath}", IosPublishArtifactPath);
             Log.Information("LauncherPublishArtifactPath = {LauncherPublishArtifactPath}", LauncherPublishArtifactPath);
         });
     

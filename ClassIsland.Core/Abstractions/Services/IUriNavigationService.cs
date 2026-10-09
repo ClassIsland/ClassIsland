@@ -36,10 +36,4 @@ public interface IUriNavigationService : IPublicUriNavigationService
     /// <param name="onNavigated">导航处理程序</param>
     public void HandlePluginsNavigation(string path, Action<UriNavigationEventArgs> onNavigated);
 
-    /// <summary>
-    /// 导航到指定 Uri，但在抛出异常时自动捕获，并显示错误提示。
-    /// </summary>
-    /// <param name="uri">要导航的 Uri</param>
-    /// <param name="exception">导航时产生的异常（如有）</param>
-    void NavigateWrapped(Uri uri, out Exception? exception);
 }

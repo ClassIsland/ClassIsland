@@ -45,6 +45,11 @@ public partial class RunActionSettings : ObservableRecipient
         /// <summary>
         /// Url 链接
         /// </summary>
-        Url
+        Url,
+
+        /// <summary>
+        /// App 链接
+        /// </summary>
+        AppLink
     }
 }

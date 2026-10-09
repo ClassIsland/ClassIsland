@@ -11,6 +11,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
@@ -24,15 +25,27 @@ namespace ClassIsland.Views.SettingPages;
 [SettingsPageInfo("window", "窗口", "\uf485", "\uf484", SettingsPageCategory.Internal)]
 public partial class WindowSettingsPage : SettingsPageBase
 {
-    private readonly DispatcherTimer _taskbarTimer;
-
-    public WindowSettingsViewModel ViewModel { get; } = IAppHost.GetService<WindowSettingsViewModel>();
+    public WindowSettingsViewModel ViewModel { get; private set; } = null!;
+    private DispatcherTimer? _taskbarTimer;
+    private bool _isSettingsSubscribed;
 
     public WindowSettingsPage()
     {
         InitializeComponent();
-        DataContext = this;
 
+        if (PlatformHelper.IsAppleMobile)
+        {
+            Content = new TextBlock
+            {
+                Text = "该系统不支持",
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+            };
+            return;
+        }
+
+        ViewModel = IAppHost.GetService<WindowSettingsViewModel>();
+        DataContext = this;
         _taskbarTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -69,13 +82,30 @@ public partial class WindowSettingsPage : SettingsPageBase
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
+        if (_taskbarTimer == null || _isSettingsSubscribed)
+        {
+            return;
+        }
+
         _taskbarTimer.Start();
         ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        _isSettingsSubscribed = true;
     }
 
     private void Control_OnUnloaded(object? sender, RoutedEventArgs e)
     {
-        _taskbarTimer.Stop();
+        if (!_isSettingsSubscribed)
+        {
+            return;
+        }
+
         ViewModel.SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        _isSettingsSubscribed = false;
+        if (_taskbarTimer != null)
+        {
+            _taskbarTimer.Stop();
+            _taskbarTimer.Tick -= TaskbarTimer_Tick;
+            _taskbarTimer = null;
+        }
     }
 }

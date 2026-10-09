@@ -8,6 +8,7 @@ using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
@@ -73,7 +74,7 @@ public partial class MainView : ViewBase
         {
             if (MainViewTabs.SelectedIndex != 1)
                 MainViewTabs.SelectedIndex = 1;
-        } 
+        }
         else if (e.SelectedItem == MoreNavigationItem)
         {
             if (MainViewTabs.SelectedIndex != 2)
@@ -120,6 +121,12 @@ public partial class MainView : ViewBase
     {
         if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
         {
+            return;
+        }
+
+        if (PlatformHelper.IsAppleMobile)
+        {
+            ((App)AppBase.Current).PrepareForAppleMobileManualTermination();
             return;
         }
         
