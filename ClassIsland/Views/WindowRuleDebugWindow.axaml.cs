@@ -63,7 +63,7 @@ public partial class WindowRuleDebugWindow : ViewBase
             var pid = PlatformServices.WindowPlatformService.GetWindowPid(hWnd);
             if (pid != 0)
             {
-                var process = Process.GetProcessById(pid);
+                using var process = Process.GetProcessById(pid);
                 ViewModel.ForegroundWindowProcessName = process.ProcessName;
             }
             else

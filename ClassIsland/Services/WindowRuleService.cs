@@ -53,7 +53,7 @@ public class WindowRuleService : IWindowRuleService
         }
         try
         {
-            var process = Process.GetProcessById((int)pid);
+            using var process = Process.GetProcessById((int)pid);
             return s.IsMatching(process.ProcessName);
         }
         catch (Exception e)
@@ -114,7 +114,6 @@ public class WindowRuleService : IWindowRuleService
         }
         var pid = PlatformServices.WindowPlatformService.GetWindowPid(PlatformServices.WindowPlatformService
             .ForegroundWindowHandle);
-        var process = Process.GetProcessById(pid);
-        return process.Id == Environment.ProcessId;
+        return pid == Environment.ProcessId;
     }
 }
