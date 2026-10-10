@@ -27,6 +27,11 @@ public class WindowRuleService : IWindowRuleService
     {
         Logger = logger;
         RulesetService = rulesetService;
+
+        if (OperatingSystem.IsAndroid())
+        {
+            return;
+        }
         
         ForegroundWindowChanged += ((_, _) => RulesetService.NotifyStatusChanged());
         PlatformServices.WindowPlatformService.RegisterForegroundWindowChangedEvent((_, e) => ForegroundWindowChanged?.Invoke(this, e));
@@ -103,6 +108,10 @@ public class WindowRuleService : IWindowRuleService
 
     public unsafe bool IsForegroundWindowClassIsland()
     {
+        if (OperatingSystem.IsAndroid())
+        {
+            return false;
+        }
         var pid = PlatformServices.WindowPlatformService.GetWindowPid(PlatformServices.WindowPlatformService
             .ForegroundWindowHandle);
         return pid == Environment.ProcessId;

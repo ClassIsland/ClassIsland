@@ -71,7 +71,7 @@
             android:max="100"
             android:progress="0" />
 
-        <TextView
+        <Chronometer
             android:id="@+id/notification_remaining"
             style="@style/TextAppearance.Compat.Notification.Line2"
             android:layout_width="match_parent"

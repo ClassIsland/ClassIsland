@@ -877,7 +877,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, Topmost);
     }
 
-    private void OldWindowPosUpdateImpl(bool updateEffectWindow)
+    private void OldWindowPosUpdateImpl(bool updateEffectWindow, bool useRequestedHeight = false)
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
@@ -906,21 +906,29 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
         var safeT = Math.Max(dockingTop ? Math.Min(verticalSafeAreaPx, oy) : verticalSafeAreaPx, 0) * scale;
         var safeB = Math.Max(dockingTop ? verticalSafeAreaPx : Math.Min(verticalSafeAreaPx, -oy), 0) * scale;
+        var contentHeight = RootLayoutTransformControl.Bounds.Height + safeT + safeB;
+        var renderSizeReserved = MainWindowStylesAssist.GetIsWindowRenderSizeReserved(this);
+        var renderHeight = renderSizeReserved ? Height : contentHeight;
         var x = screen.WorkingArea.X + ox;
         // 和 WPF 不同，Avalonia 定位窗口用的基于物理屏幕的像素坐标，而非逻辑坐标，无需 dpi 转换。
         var y = dockingTop 
             ? offsetAreaTop + oy - safeT
-            : offsetAreaBottom - ah + oy + safeB;
+            : offsetAreaBottom - (useRequestedHeight ? renderHeight * dpiY : ah) + oy + safeB;
         var clientBoundsRelative = new PixelRect(0, (int)(safeT * dpiY), (int)aw, (int)ah)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
         if (LayoutContainerGrid != null)
         {
             LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
-            LayoutContainerGrid.Height = Height = RootLayoutTransformControl.Bounds.Height + safeT + safeB;
+            Height = contentHeight;
+            LayoutContainerGrid.Height = renderSizeReserved
+                ? Height
+                : contentHeight;
         }
         ViewModel.ActualRootOffsetX = 0;
-        ViewModel.ActualRootOffsetY = 0;
+        ViewModel.ActualRootOffsetY = !dockingTop && renderSizeReserved
+            ? Math.Max(0, renderHeight - contentHeight)
+            : 0;
         var newPos = new PixelPoint((int)x, (int)y);
         if (Position != newPos)
         {
@@ -1008,7 +1016,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         LayoutContainerGrid.Height = height;
     }
     
-    private void UpdateWindowPos(bool updateEffectWindow=false)
+    private void UpdateWindowPos(bool updateEffectWindow = false, bool useRequestedHeight = false)
     {
         if (ViewModel.IsEditMode)
         {
@@ -1016,7 +1024,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
         else
         {
-            OldWindowPosUpdateImpl(updateEffectWindow);
+            OldWindowPosUpdateImpl(updateEffectWindow, useRequestedHeight);
         }
     }
     
@@ -1042,7 +1050,25 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        //UpdateWindowPos();
+        if (MainWindowStylesAssist.GetIsWindowRenderSizeReserved(this))
+        {
+            UpdateWindowPos(useRequestedHeight: true);
+        }
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == MainWindowStylesAssist.IsWindowRenderSizeReservedProperty &&
+            RootLayoutTransformControl != null && ViewModel is { IsClosing: false })
+        {
+            UpdateNotificationRenderSize();
+        }
+    }
+
+    internal void UpdateNotificationRenderSize()
+    {
+        UpdateWindowPos(useRequestedHeight: true);
     }
 
     private void MainWindow_OnActivated(object? sender, EventArgs e)

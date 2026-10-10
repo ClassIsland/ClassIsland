@@ -25,7 +25,7 @@
             android:ellipsize="end"
             android:maxLines="1" />
 
-        <TextView
+        <Chronometer
             android:id="@+id/notification_remaining"
             style="@style/TextAppearance.Compat.Notification.Info"
             android:layout_width="wrap_content"

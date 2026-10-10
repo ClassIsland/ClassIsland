@@ -10,6 +10,22 @@ namespace ClassIsland.Core.Assists;
 /// </summary>
 public class MainWindowStylesAssist
 {
+    /// <summary>
+    /// 指示主窗口正在预留渲染高度。配合临时固定窗口高度使用，使底部停靠的内容保持原有屏幕位置。
+    /// </summary>
+    public static readonly AttachedProperty<bool> IsWindowRenderSizeReservedProperty =
+        AvaloniaProperty.RegisterAttached<MainWindowStylesAssist, Window, bool>("IsWindowRenderSizeReserved");
+
+    /// <summary>
+    /// 设置主窗口是否正在预留渲染高度。
+    /// </summary>
+    public static void SetIsWindowRenderSizeReserved(Window obj, bool value) => obj.SetValue(IsWindowRenderSizeReservedProperty, value);
+
+    /// <summary>
+    /// 获取主窗口是否正在预留渲染高度。
+    /// </summary>
+    public static bool GetIsWindowRenderSizeReserved(Window obj) => obj.GetValue(IsWindowRenderSizeReservedProperty);
+
     public static readonly AttachedProperty<bool> IsIslandSeperatedProperty =
         AvaloniaProperty.RegisterAttached<MainWindowStylesAssist, Control, bool>("IsIslandSeperated", inherits:true);
 

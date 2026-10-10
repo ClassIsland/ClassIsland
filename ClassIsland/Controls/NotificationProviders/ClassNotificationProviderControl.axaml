@@ -16,10 +16,10 @@
         <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
 
         <!-- 准备上课 -->
-        <Grid x:Key="ClassPrepareNotifyOverlay" ColumnDefinitions="*,*" >
+        <UniformGrid x:Key="ClassPrepareNotifyOverlay" Rows="1" Columns="2">
 
             <!-- 倒计时 -->
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"
                        Margin="12 0">
                 <Run Text="距上课还剩" Classes="l-instructive"/>
                 <Run Text="{Binding LessonsService.OnClassLeftTime, Converter={StaticResource TimeSpanToTotalSecondsConverter}, Mode=OneWay}" 
@@ -28,7 +28,7 @@
             </TextBlock>
 
             <!-- 科目信息 -->
-            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
                         Margin="12 0">
                 <TextBlock VerticalAlignment="Center" Text="下节课是：" Classes="l-instructive"/>
                 <TextBlock Text="{Binding LessonsService.NextClassSubject.Name}" FontWeight="Bold" FontSize="{DynamicResource MainWindowLargeFontSize}" VerticalAlignment="Center"/>
@@ -43,7 +43,7 @@
                     </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndTime, StringFormat={}{0:hh\\:mm}}"/>
                 </TextBlock>
             </StackPanel>
-        </Grid>
+        </UniformGrid>
 
 
         <!-- 下课遮罩 -->

@@ -7,10 +7,12 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using ClassIsland.Android.Controls.UI;
 using ClassIsland.Android.Services;
+using ClassIsland.Android.Services.Platform;
 using ClassIsland.Android.Services.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.UI;
 using ClassIsland.Core.Enums;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
 using ClassIsland.Views;
 
@@ -27,6 +29,10 @@ public class MainActivity : AvaloniaMainActivity
     private const int NotificationPermissionRequestCode = 13280;
 
     public static WeakReference<MainActivity>? Current { get; set; }
+
+    internal static event EventHandler? Resumed;
+
+    internal bool IsForeground { get; private set; }
 
     public event EventHandler? Destroy;
 
@@ -71,6 +77,30 @@ public class MainActivity : AvaloniaMainActivity
                 var mv = IAppHost.GetService<MainView>();
                 mv.Show();
             });
+        }
+
+        HandleNotificationIntent(Intent);
+    }
+
+    protected override void OnNewIntent(Intent? intent)
+    {
+        base.OnNewIntent(intent);
+        Intent = intent;
+        HandleNotificationIntent(intent);
+    }
+
+    private static void HandleNotificationIntent(Intent? intent)
+    {
+        var notificationId = intent?.GetStringExtra(DesktopToastService.NotificationIdExtra);
+        var actionId = intent?.GetStringExtra(DesktopToastService.ActionIdExtra);
+        intent?.RemoveExtra(DesktopToastService.NotificationIdExtra);
+        intent?.RemoveExtra(DesktopToastService.ActionIdExtra);
+
+        if (Guid.TryParse(notificationId, out var notificationGuid) &&
+            Guid.TryParse(actionId, out var actionGuid) &&
+            PlatformServices.DesktopToastService is DesktopToastService service)
+        {
+            service.QueueActivation(notificationGuid, actionGuid);
         }
     }
 
@@ -117,6 +147,19 @@ public class MainActivity : AvaloniaMainActivity
 #pragma warning restore CA1416
     }
     
+    protected override void OnResume()
+    {
+        base.OnResume();
+        IsForeground = true;
+        Resumed?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected override void OnPause()
+    {
+        IsForeground = false;
+        base.OnPause();
+    }
+
     protected override void OnDestroy()
     {
         if (ViewHost != null)

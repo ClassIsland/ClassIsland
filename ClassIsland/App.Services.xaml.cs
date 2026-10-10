@@ -255,10 +255,13 @@ public partial class App
         // 规则
         services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
         services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
-        services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.className", "前台窗口类名", "\uF4A2");
-        services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.text", "前台窗口标题", "\uF26B");
-        services.AddRule<WindowStatusRuleSettings, WindowStatusRuleSettingsControl>("classisland.windows.status", "前台窗口状态是", "\uEC83");
-        services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.processName", "前台窗口进程", "\uF488");
+        if (!System.OperatingSystem.IsAndroid())
+        {
+            services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.className", "前台窗口类名", "\uF4A2");
+            services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.text", "前台窗口标题", "\uF26B");
+            services.AddRule<WindowStatusRuleSettings, WindowStatusRuleSettingsControl>("classisland.windows.status", "前台窗口状态是", "\uEC83");
+            services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.processName", "前台窗口进程", "\uF488");
+        }
         services.AddRule<CurrentSubjectRuleSettings, CurrentSubjectRuleSettingsControl>("classisland.lessons.currentSubject", "科目是", "\uE215");
         services.AddRule<CurrentSubjectRuleSettings, CurrentSubjectRuleSettingsControl>("classisland.lessons.nextSubject", "下节课科目是", "\uE217");
         services.AddRule<CurrentSubjectRuleSettings, CurrentSubjectRuleSettingsControl>("classisland.lessons.previousSubject", "上节课科目是", "\uE226");
@@ -316,6 +319,16 @@ public partial class App
             Author = "ClassIsland",
             Url = "https://github.com/ClassIsland/ClassIsland",
             VerticalSafeAreaPx = 20
+        });
+        services.AddXamlTheme(new Uri("avares://ClassIsland/XamlThemes/RectanglesTheme/Styles.axaml"), new ThemeManifest()
+        {
+            Id = "classisland.rectangles",
+            Name = "Rectangles",
+            Description = "一次大胆的尝试",
+            Banner = "avares://ClassIsland/Assets/XamlThemePreviews/classisland.rectangles.png",
+            Author = "ClassIsland",
+            Url = "https://github.com/ClassIsland/ClassIsland",
+            VerticalSafeAreaPx = 10
         });
         // 教程
         if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux())

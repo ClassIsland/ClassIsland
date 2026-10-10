@@ -8,6 +8,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Graphics.Drawable;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
@@ -38,6 +39,7 @@ public class LessonsForegroundService : Service
     private bool _isWaitingForAppStart;
     private bool _isWorkStarted;
     private NotificationSnapshot? _lastPostedSnapshot;
+    private AndroidOverlayService? _overlayService;
 
     private ILessonsService? LessonsService { get; set; }
     private IExactTimeService? ExactTimeService { get; set; }
@@ -118,6 +120,13 @@ public class LessonsForegroundService : Service
         _isSubscribedToAppStopping = true;
         _isWorkStarted = true;
         RefreshNotification();
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (_isWorkStarted && _isSubscribedToAppStopping)
+            {
+                _overlayService ??= new AndroidOverlayService(this);
+            }
+        });
     }
 
     private static string GetDeltaString(DateTime now, TimeSpan target)
@@ -134,6 +143,7 @@ public class LessonsForegroundService : Service
 
     private void CurrentOnAppStopping(object? sender, EventArgs e)
     {
+        StopOverlay();
         if (_isSubscribedToAppStopping)
         {
             AppBase.Current.AppStopping -= CurrentOnAppStopping;
@@ -355,6 +365,7 @@ public class LessonsForegroundService : Service
 
     public override void OnDestroy()
     {
+        StopOverlay();
         if (_isWaitingForAppStart)
         {
             AppBase.Current.AppStarted -= CurrentOnAppStarted;
@@ -379,6 +390,20 @@ public class LessonsForegroundService : Service
         ExactTimeService = null;
 
         base.OnDestroy();
+    }
+
+    private void StopOverlay()
+    {
+        var overlay = _overlayService;
+        _overlayService = null;
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            overlay?.Dispose();
+        }
+        else
+        {
+            Dispatcher.UIThread.Post(() => overlay?.Dispose());
+        }
     }
 
     public override IBinder? OnBind(Intent? intent)
@@ -409,7 +434,7 @@ public class LessonsForegroundService : Service
     private Notification CreateNotification(NotificationSnapshot snapshot)
     {
         var builder = new NotificationCompat.Builder(this, NotificationChannelId);
-        builder.SetSmallIcon(ResourceConstant.Drawable.ic_logo_monochrome);
+        builder.SetSmallIcon(ResourceConstant.Drawable.ic_logo_monochrome_notification);
         builder.SetContentTitle(snapshot.Title);
         builder.SetContentText(snapshot.Content);
         builder.SetOngoing(true);

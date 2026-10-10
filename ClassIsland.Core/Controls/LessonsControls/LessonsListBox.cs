@@ -76,6 +76,39 @@ public class LessonsListBox : ListBox
         set => SetValue(HighlightChangedClassProperty, value);
     }
 
+    /// <summary>
+    /// 是否在横版折叠状态下用科目图标替代简称。
+    /// </summary>
+    public static readonly StyledProperty<bool> ShowSubjectIconWhenMinimizedProperty =
+        AvaloniaProperty.Register<LessonsListBox, bool>(nameof(ShowSubjectIconWhenMinimized), false);
+
+    public bool ShowSubjectIconWhenMinimized
+    {
+        get => GetValue(ShowSubjectIconWhenMinimizedProperty);
+        set => SetValue(ShowSubjectIconWhenMinimizedProperty, value);
+    }
+
+    /// <summary>
+    /// 是否在横版展开状态下显示科目图标。
+    /// </summary>
+    public static readonly StyledProperty<bool> ShowSubjectIconWhenExpandedProperty =
+        AvaloniaProperty.Register<LessonsListBox, bool>(nameof(ShowSubjectIconWhenExpanded), false);
+
+    public static readonly StyledProperty<double> SubjectIconScaleProperty = AvaloniaProperty.Register<LessonsListBox, double>(
+        nameof(SubjectIconScale), 1.0);
+
+    public double SubjectIconScale
+    {
+        get => GetValue(SubjectIconScaleProperty);
+        set => SetValue(SubjectIconScaleProperty, value);
+    }
+
+    public bool ShowSubjectIconWhenExpanded
+    {
+        get => GetValue(ShowSubjectIconWhenExpandedProperty);
+        set => SetValue(ShowSubjectIconWhenExpandedProperty, value);
+    }
+
     public static readonly StyledProperty<ILessonControlSettings> LessonControlSettingsProperty =
         AvaloniaProperty.Register<LessonsListBox, ILessonControlSettings>(
             nameof(LessonControlSettings));

@@ -66,9 +66,14 @@
                     <ci:FluentIconSource Glyph="{x:Static icons:FluentIcons.BlurRegular}" />
                 </controls:FASettingsExpander.IconSource>
                 <controls:FASettingsExpander.IsVisible>
-                    <OnPlatform Default="False">
-                        <On Options="Windows" Content="{Binding $parent[ci:ComponentAdvancedSettingsControl].IsRootComponent}" />
-                    </OnPlatform>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="$parent[ci:ComponentAdvancedSettingsControl].IsRootComponent" />
+                        <Binding>
+                            <Binding.Source>
+                                <OnPlatform x:TypeArguments="x:Boolean" Default="False" Windows="True" />
+                            </Binding.Source>
+                        </Binding>
+                    </MultiBinding>
                 </controls:FASettingsExpander.IsVisible>
                 <controls:FASettingsExpander.Footer>
                     <ComboBox SelectedIndex="{Binding BackgroundMaterialOverrideMode}">

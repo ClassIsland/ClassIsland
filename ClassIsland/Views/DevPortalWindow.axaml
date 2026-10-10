@@ -37,6 +37,9 @@
                                         Loaded="TargetTime_OnLoaded"
                                         UseSeconds="True"/>
                             <Button Content="重置" Click="ButtonReset_OnClick"/>
+                            <Button Content="跳转到即将上课提醒"
+                                    ToolTip.Tip="跳到下一次即将上课提醒前 1 秒；当天没有后续提醒时，跳到当天首次提醒前。"
+                                    Click="ButtonJumpToPreparingNotification_OnClick"/>
                         </StackPanel>
                     </ci:Field>
                     <ci:Field Label="测试选择器解析">
