@@ -15,6 +15,8 @@ public class ClassNotificationSettings : ObservableRecipient, IClassNotification
     private bool _isSpeechEnabledOnClassOn = true;
     private bool _isSpeechEnabledOnClassOff = true;
     private bool _showTeacherName = false;
+    private bool _showClassTime = true;
+    private bool _showLocation = false;
     private string _classOnPreparingMaskText = "即将上课";
     private string _outdoorClassOnPreparingMaskText = "即将上课";
     private string _classOnMaskText = "上课";
@@ -193,6 +195,28 @@ public class ClassNotificationSettings : ObservableRecipient, IClassNotification
         {
             if (value == _showTeacherName) return;
             _showTeacherName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowClassTime
+    {
+        get => _showClassTime;
+        set
+        {
+            if (value == _showClassTime) return;
+            _showClassTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowLocation
+    {
+        get => _showLocation;
+        set
+        {
+            if (value == _showLocation) return;
+            _showLocation = value;
             OnPropertyChanged();
         }
     }

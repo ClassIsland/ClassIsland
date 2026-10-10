@@ -14,6 +14,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
+        <converters1:SubjectLocationDisplayConverter x:Key="SubjectLocationDisplayConverter" />
 
         <!-- 准备上课 -->
         <UniformGrid x:Key="ClassPrepareNotifyOverlay" Rows="1" Columns="2">
@@ -37,11 +38,14 @@
                            IsVisible="{Binding ShowTeacherName}"
                            Classes="l-secondary"/>
                 <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom" Margin="2 0 0 0"
-                           Classes="l-secondary">
+                           Classes="l-secondary" IsVisible="{Binding ShowClassTime}">
                     <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartTime, StringFormat={}{0:hh\\:mm}}">
                     </Run><Run Text="-">
                     </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndTime, StringFormat={}{0:hh\\:mm}}"/>
                 </TextBlock>
+                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
+                           Text="{Binding LessonsService.NextClassSubject.Location, Converter={StaticResource SubjectLocationDisplayConverter}}"
+                           Classes="l-secondary" IsVisible="{Binding ShowLocation}"/>
             </StackPanel>
         </UniformGrid>
 
@@ -77,11 +81,14 @@
                            Classes="l-secondary"
                            IsVisible="{Binding ShowTeacherName}"/>
                 <TextBlock Margin="2 0 0 0" FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
-                           Classes="l-secondary">
+                           Classes="l-secondary" IsVisible="{Binding ShowClassTime}">
                     <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartTime, StringFormat={}{0:hh\\:mm}}">
                     </Run><Run Text="-">
                     </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndTime, StringFormat={}{0:hh\\:mm}}"/>
                 </TextBlock>
+                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
+                           Text="{Binding LessonsService.NextClassSubject.Location, Converter={StaticResource SubjectLocationDisplayConverter}}"
+                           Classes="l-secondary" IsVisible="{Binding ShowLocation}"/>
             </StackPanel>
         </Grid>
     </UserControl.Resources>

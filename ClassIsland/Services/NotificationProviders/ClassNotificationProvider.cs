@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,6 +37,26 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
     {
         var name = subject.GetFirstName();
         return string.IsNullOrWhiteSpace(name) ? string.Empty : $"由{name}老师任教";
+    }
+
+    private string GetNextClassSpeechContent(IClassNotificationSettings settingsSource)
+    {
+        var subject = LessonsService.NextClassSubject;
+        var parts = new List<string> { $"下节课是：{subject.Name}" };
+        if (settingsSource.ShowTeacherName)
+        {
+            var teacher = FormatTeacher(subject);
+            if (!string.IsNullOrWhiteSpace(teacher))
+                parts.Add(teacher);
+        }
+        if (settingsSource.ShowClassTime)
+        {
+            var timeLayoutItem = LessonsService.NextClassTimeLayoutItem;
+            parts.Add($"上课时间为{timeLayoutItem.StartTime:hh\\:mm}至{timeLayoutItem.EndTime:hh\\:mm}");
+        }
+        if (settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(subject.Location))
+            parts.Add($"上课地点为{subject.Location}");
+        return $"{string.Join("，", parts)}。";
     }
 
     private NotificationRequest? _onClassNotificationRequest;
@@ -145,10 +165,12 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             OverlayContent = new NotificationContent(new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
             {
                 Message = message,
-                ShowTeacherName = Settings.ShowTeacherName
+                ShowClassTime = settingsSource.ShowClassTime,
+                ShowTeacherName = settingsSource.ShowTeacherName && !string.IsNullOrWhiteSpace(LessonsService.NextClassSubject.TeacherName),
+                ShowLocation = settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(LessonsService.NextClassSubject.Location)
             })
             {
-                SpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name}{(Settings.ShowTeacherName ? $"，{FormatTeacher(LessonsService.NextClassSubject)}" : "")}。",
+                SpeechContent = $"{message} {GetNextClassSpeechContent(settingsSource)}",
                 EndTime = new DateTime(DateOnly.FromDateTime(ExactTimeService.GetCurrentLocalDateTime()), TimeOnly.FromTimeSpan(LessonsService.NextClassTimeLayoutItem.StartTime)),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             },
@@ -199,6 +221,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
     private void OnBreakingTime(object? sender, EventArgs e)
     {
         var settings = GetAttachedSettings();
+        IClassNotificationSettings settingsSource = settings?.IsAttachSettingsEnabled == true ? settings : Settings;
         var settingsIsClassOffNotificationEnabled = settings?.IsAttachSettingsEnabled == true ?
             settings.IsClassOffNotificationEnabled
             : Settings.IsClassOffNotificationEnabled;
@@ -214,10 +237,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         var isNextClassEmpty = LessonsService.NextClassSubject == Subject.Fallback;
         Channel(OnBreakingChannelId).ShowNotification(new NotificationRequest()
         {
-            MaskContent = new NotificationContent(new ClassNotificationProviderControl("ClassOffNotification")
-            {
-                ShowTeacherName = Settings.ShowTeacherName
-            })
+            MaskContent = new NotificationContent(new ClassNotificationProviderControl("ClassOffNotification"))
             {
                 Duration = isNextClassEmpty? TimeSpan.FromSeconds(5) : TimeSpan.FromSeconds(2),
                 SpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
@@ -225,12 +245,14 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             },
             OverlayContent = isNextClassEmpty ? null : new NotificationContent(new ClassNotificationProviderControl("ClassOffOverlay")
             {
-                ShowTeacherName = Settings.ShowTeacherName,
+                ShowClassTime = settingsSource.ShowClassTime,
+                ShowTeacherName = settingsSource.ShowTeacherName && !string.IsNullOrWhiteSpace(LessonsService.NextClassSubject.TeacherName),
+                ShowLocation = settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(LessonsService.NextClassSubject.Location),
                 Message = overlayText
             })
             {
                 Duration = showOverlayText ? TimeSpan.FromSeconds(20) : TimeSpan.FromSeconds(10),
-                SpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name}{(Settings.ShowTeacherName ? $"，{FormatTeacher(LessonsService.NextClassSubject)}" : "")}。{overlayText}",
+                SpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，{GetNextClassSpeechContent(settingsSource)}{overlayText}",
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
             }
         });

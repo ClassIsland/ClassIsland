@@ -18,6 +18,9 @@ public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedS
     private string _classOnMaskText = "上课";
     private string _classOffMaskText = "课间休息";
     private string _classOffOverlayText = "";
+    private bool _showClassTime = true;
+    private bool _showTeacherName = false;
+    private bool _showLocation = false;
 
     public bool IsClassOnNotificationEnabled
     {
@@ -147,6 +150,39 @@ public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedS
         {
             if (value == _isAttachSettingsEnabled) return;
             _isAttachSettingsEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowClassTime
+    {
+        get => _showClassTime;
+        set
+        {
+            if (value == _showClassTime) return;
+            _showClassTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowTeacherName
+    {
+        get => _showTeacherName;
+        set
+        {
+            if (value == _showTeacherName) return;
+            _showTeacherName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowLocation
+    {
+        get => _showLocation;
+        set
+        {
+            if (value == _showLocation) return;
+            _showLocation = value;
             OnPropertyChanged();
         }
     }
