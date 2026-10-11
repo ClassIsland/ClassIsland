@@ -11,6 +11,50 @@ public struct ClassIslandLessonDetails: Codable, Hashable {
     public let iconPngBase64: String?
 }
 
+@available(iOS 16.1, *)
+public struct ClassIslandActivityComponent: Codable, Hashable {
+    public let kind: String
+    public let text: String
+    public let secondaryText: String
+    public let symbolName: String
+    public let extraText: String
+    public let targetTime: Double?
+    public let showProgress: Bool
+
+    public init(
+        kind: String,
+        text: String = "",
+        secondaryText: String = "",
+        symbolName: String = "",
+        extraText: String = "",
+        targetTime: Double? = nil,
+        showProgress: Bool = true
+    ) {
+        self.kind = kind
+        self.text = text
+        self.secondaryText = secondaryText
+        self.symbolName = symbolName
+        self.extraText = extraText
+        self.targetTime = targetTime
+        self.showProgress = showProgress
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case kind, text, secondaryText, symbolName, extraText, targetTime, showProgress
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try container.decode(String.self, forKey: .kind)
+        text = try container.decodeIfPresent(String.self, forKey: .text) ?? ""
+        secondaryText = try container.decodeIfPresent(String.self, forKey: .secondaryText) ?? ""
+        symbolName = try container.decodeIfPresent(String.self, forKey: .symbolName) ?? ""
+        extraText = try container.decodeIfPresent(String.self, forKey: .extraText) ?? ""
+        targetTime = try container.decodeIfPresent(Double.self, forKey: .targetTime)
+        showProgress = try container.decodeIfPresent(Bool.self, forKey: .showProgress) ?? true
+    }
+}
+
 /// 与托管层 `LessonLiveActivityPhase` 数值保持一致。
 @available(iOS 16.1, *)
 public enum ClassIslandActivityPhase: Int, Codable, Hashable {
@@ -33,6 +77,7 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
         public let endTime: Date?
         public let deepLink: String
         public let details: ClassIslandLessonDetails?
+        public let components: [ClassIslandActivityComponent]?
 
         public init(
             phase: ClassIslandActivityPhase,
@@ -43,7 +88,8 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
             startTime: Date?,
             endTime: Date?,
             deepLink: String,
-            details: ClassIslandLessonDetails? = nil
+            details: ClassIslandLessonDetails? = nil,
+            components: [ClassIslandActivityComponent]? = nil
         ) {
             self.phase = phase
             self.title = title
@@ -54,6 +100,7 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
             self.endTime = endTime
             self.deepLink = deepLink
             self.details = details
+            self.components = components
         }
     }
 

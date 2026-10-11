@@ -3,6 +3,7 @@ using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
+using ClassIsland.Models;
 using ClassIsland.Models.LiveActivities;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models.LiveActivities;
@@ -38,6 +39,10 @@ internal sealed class LessonsLiveActivityCoordinator(
     private NSObject? _backgroundObserver;
     private NSObject? _foregroundObserver;
     private ILessonsService? _lessonsService;
+    private SettingsService? _settingsService;
+    private Settings? _subscribedSettings;
+    private IExactTimeService? _exactTimeService;
+    private IWeatherService? _weatherService;
     private LessonsLiveActivitySnapshotFactory? _snapshotFactory;
     private IosLessonNotificationScheduleFactory? _notificationScheduleFactory;
     private ILogger<LessonsLiveActivityCoordinator>? _logger;
@@ -95,8 +100,11 @@ internal sealed class LessonsLiveActivityCoordinator(
         }
 
         _lessonsService = IAppHost.GetService<ILessonsService>();
+        _settingsService = IAppHost.GetService<SettingsService>();
         _logger = IAppHost.TryGetService<ILogger<LessonsLiveActivityCoordinator>>();
         var exactTimeService = IAppHost.GetService<IExactTimeService>();
+        _exactTimeService = exactTimeService;
+        _weatherService = IAppHost.GetService<IWeatherService>();
         _snapshotFactory = new LessonsLiveActivitySnapshotFactory(
             _lessonsService,
             exactTimeService);
@@ -109,6 +117,8 @@ internal sealed class LessonsLiveActivityCoordinator(
             lessonPreparationTimeline);
         _lessonsService.CurrentTimeStateChanged += OnLessonsStateChanged;
         _lessonsService.PropertyChanged += OnLessonsPropertyChanged;
+        _settingsService.PropertyChanged += OnSettingsServicePropertyChanged;
+        SubscribeToSettings();
         lessonPreparationTimeline.PublicationTimeChanged +=
             OnPreparationPublicationTimeChanged;
         PlatformServices.SystemEventsService.TimeChanged += OnSystemTimeChanged;
@@ -138,6 +148,41 @@ internal sealed class LessonsLiveActivityCoordinator(
         {
             QueueLessonsRefresh();
         }
+    }
+
+    private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(Settings.LiveActivityComponents) or
+            nameof(Settings.IsLiveActivityLayoutCustomized) or nameof(Settings.LastWeatherInfo))
+        {
+            QueueLessonsRefresh();
+        }
+    }
+
+    private void OnSettingsServicePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SettingsService.Settings))
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (Volatile.Read(ref _isStopping) == 0)
+                {
+                    SubscribeToSettings();
+                    QueueLessonsRefresh();
+                }
+            });
+        }
+    }
+
+    private void SubscribeToSettings()
+    {
+        if (_subscribedSettings != null)
+        {
+            _subscribedSettings.PropertyChanged -= OnSettingsPropertyChanged;
+        }
+
+        _subscribedSettings = _settingsService!.Settings;
+        _subscribedSettings.PropertyChanged += OnSettingsPropertyChanged;
     }
 
     private void OnPreparationPublicationTimeChanged(object? sender, EventArgs e) =>
@@ -269,7 +314,7 @@ internal sealed class LessonsLiveActivityCoordinator(
 
             if (_activityStateKnown &&
                 _hasVisibleActivity &&
-                content == _lastRequestedContent)
+                content.HasSameDisplayContent(_lastRequestedContent))
             {
                 return;
             }
@@ -468,8 +513,27 @@ internal sealed class LessonsLiveActivityCoordinator(
         {
             Details = snapshot.ActivityDetails is { } details
                 ? details with { IconPngBase64 = _iconRenderer.Render(snapshot.LessonIconExpression) }
-                : null
+                : null,
+            Components = LiveActivityComponentSnapshotFactory.Create(
+                _settingsService!.Settings,
+                snapshot,
+                _exactTimeService!.GetCurrentLocalDateTime(),
+                _weatherService!.GetWeatherTextByCode(_settingsService.Settings.LastWeatherInfo.Current.Weather),
+                CreateNextLessonDetails())
         };
+    }
+
+    private LessonLiveActivityDetails? CreateNextLessonDetails()
+    {
+        var subject = _lessonsService?.NextClassSubject;
+        var item = _lessonsService?.NextClassTimeLayoutItem;
+        if (subject == null || item == null || item.EndTime <= item.StartTime)
+        {
+            return null;
+        }
+
+        return new LessonLiveActivityDetails(subject.Name, subject.Location,
+            $"{item.StartTime:hh\\:mm}–{item.EndTime:hh\\:mm}", "");
     }
 
     private static string RemoveRenderedCountdown(string content, string remainingText)
@@ -583,6 +647,15 @@ internal sealed class LessonsLiveActivityCoordinator(
         {
             _lessonsService.CurrentTimeStateChanged -= OnLessonsStateChanged;
             _lessonsService.PropertyChanged -= OnLessonsPropertyChanged;
+        }
+        if (_settingsService != null)
+        {
+            _settingsService.PropertyChanged -= OnSettingsServicePropertyChanged;
+        }
+        if (_subscribedSettings != null)
+        {
+            _subscribedSettings.PropertyChanged -= OnSettingsPropertyChanged;
+            _subscribedSettings = null;
         }
 
         lessonPreparationTimeline.PublicationTimeChanged -=

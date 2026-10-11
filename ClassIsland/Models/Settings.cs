@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Avalonia.Media;
@@ -26,6 +27,7 @@ using ClassIsland.Shared.ComponentModels;
 using System.Runtime.InteropServices;
 using ClassIsland.Models.Refreshing;
 using ClassIsland.Services;
+using ClassIsland.Models.LiveActivities;
 
 namespace ClassIsland.Models;
 
@@ -161,6 +163,10 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _updateArtifactHash = "";
     private ObservableCollection<string> _excludedWeatherAlerts = new();
     private string _currentComponentConfig = "Default";
+    private ObservableCollection<LiveActivityComponentSettings> _liveActivityComponents =
+        LiveActivityComponentSettings.CreateDefault();
+    private readonly HashSet<LiveActivityComponentSettings> _subscribedLiveActivityComponents = [];
+    private bool _isLiveActivityLayoutCustomized;
     private bool _isAutomationEnabled = false;
     private bool _isAutomationWarningVisible = true;
     private string _currentAutomationConfig = "Default";
@@ -225,6 +231,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isNonExactCountdownEnabled = false;
     private bool _showDetailedStatusOnSplash = false;
 
+    public Settings()
+    {
+        _liveActivityComponents.CollectionChanged += LiveActivityComponentsOnCollectionChanged;
+        UpdateLiveActivityComponentSubscriptions();
+    }
+
     public void NotifyPropertyChanged(string propertyName)
     {
         OnPropertyChanged(propertyName);
@@ -263,6 +275,56 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
+
+    public ObservableCollection<LiveActivityComponentSettings> LiveActivityComponents
+    {
+        get => _liveActivityComponents;
+        set
+        {
+            if (ReferenceEquals(value, _liveActivityComponents))
+            {
+                return;
+            }
+
+            _liveActivityComponents.CollectionChanged -= LiveActivityComponentsOnCollectionChanged;
+            _liveActivityComponents = LiveActivityComponentSettings.Normalize(value);
+            _liveActivityComponents.CollectionChanged += LiveActivityComponentsOnCollectionChanged;
+            UpdateLiveActivityComponentSubscriptions();
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsLiveActivityLayoutCustomized
+    {
+        get => _isLiveActivityLayoutCustomized;
+        set => SetProperty(ref _isLiveActivityLayoutCustomized, value);
+    }
+
+    private void LiveActivityComponentsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateLiveActivityComponentSubscriptions();
+        OnPropertyChanged(nameof(LiveActivityComponents));
+    }
+
+    private void UpdateLiveActivityComponentSubscriptions()
+    {
+        foreach (var component in _subscribedLiveActivityComponents)
+        {
+            component.PropertyChanged -= LiveActivityComponentOnPropertyChanged;
+        }
+
+        _subscribedLiveActivityComponents.Clear();
+        foreach (var component in _liveActivityComponents)
+        {
+            if (component != null && _subscribedLiveActivityComponents.Add(component))
+            {
+                component.PropertyChanged += LiveActivityComponentOnPropertyChanged;
+            }
+        }
+    }
+
+    private void LiveActivityComponentOnPropertyChanged(object? sender, PropertyChangedEventArgs e) =>
+        OnPropertyChanged(nameof(LiveActivityComponents));
 
     [JsonPropertyName("SettingsOverlay")] // ClassIsland 1.x 名称
     public Dictionary<string, OrderedDictionary> SettingsOverlays

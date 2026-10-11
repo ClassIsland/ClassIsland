@@ -55,25 +55,36 @@ struct ClassIslandLiveActivityWidget: Widget {
                     .frame(maxWidth: .infinity, alignment: .center)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack(alignment: .leading, spacing: ActivityLayout.rowSpacing) {
-                        HStack(alignment: .firstTextBaseline) {
-                            if let location = context.state.details?.location, !location.isEmpty {
-                                Label(location, systemImage: "mappin.and.ellipse")
+                    if let components = context.state.components {
+                        if !components.isEmpty {
+                            ClassIslandExpandedComponents(
+                                components: components,
+                                state: context.state,
+                                isStale: context.classIslandIsStale)
+                                .padding(.horizontal, ActivityLayout.islandHorizontalPadding)
+                                .padding(.vertical, ActivityLayout.islandVerticalPadding)
+                        }
+                    } else {
+                        VStack(alignment: .leading, spacing: ActivityLayout.rowSpacing) {
+                            HStack(alignment: .firstTextBaseline) {
+                                if let location = context.state.details?.location, !location.isEmpty {
+                                    Label(location, systemImage: "mappin.and.ellipse")
+                                }
+                                Spacer(minLength: 8)
+                                Text(context.state.details?.timeText ?? context.state.detail).monospacedDigit()
                             }
-                            Spacer(minLength: 8)
-                            Text(context.state.details?.timeText ?? context.state.detail).monospacedDigit()
+                            .font(.caption).foregroundStyle(activitySecondary).lineLimit(1)
+                            if context.classIslandIsStale {
+                                ClassIslandStaleNotice()
+                            } else {
+                                ClassIslandProgressView(state: context.state)
+                                ClassIslandRemainingTimeView(state: context.state)
+                            }
                         }
-                        .font(.caption).foregroundStyle(activitySecondary).lineLimit(1)
-                        if context.classIslandIsStale {
-                            ClassIslandStaleNotice()
-                        } else {
-                            ClassIslandProgressView(state: context.state)
-                            ClassIslandRemainingTimeView(state: context.state)
-                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, ActivityLayout.islandHorizontalPadding)
+                        .padding(.vertical, ActivityLayout.islandVerticalPadding)
                     }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, ActivityLayout.islandHorizontalPadding)
-                    .padding(.vertical, ActivityLayout.islandVerticalPadding)
                 }
             } compactLeading: {
                 HStack(spacing: 4) {
@@ -95,6 +106,167 @@ struct ClassIslandLiveActivityWidget: Widget {
             }
             .widgetURL(context.state.deepLinkURL)
             .keylineTint(activityAccent)
+        }
+    }
+}
+
+private struct ClassIslandExpandedComponents: View {
+    let components: [ClassIslandActivityComponent]
+    let state: ClassIslandActivityAttributes.ContentState
+    let isStale: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ForEach(Array(visibleRows.enumerated()), id: \.offset) { _, row in
+                HStack(alignment: .center, spacing: 12) {
+                    ForEach(Array(row.enumerated()), id: \.offset) { _, component in
+                        componentView(component)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+            }
+            if isStale && !components.isEmpty {
+                Label("课程状态可能已变化，请打开 App 更新", systemImage: "exclamationmark.triangle.fill")
+                    .font(.system(size: 10)).foregroundStyle(.orange).lineLimit(1)
+            }
+        }
+        .foregroundStyle(.white)
+    }
+
+    private var visibleRows: [[ClassIslandActivityComponent]] {
+        var rows: [[ClassIslandActivityComponent]] = []
+        let supportedKinds = ["schedule", "date", "clock", "weather", "countdown", "text", "separator"]
+        for component in components.prefix(6) where supportedKinds.contains(component.kind) {
+            if !isFullWidth(component), let last = rows.last, last.count == 1,
+               let previous = last.first, !isFullWidth(previous) {
+                rows[rows.count - 1].append(component)
+            } else {
+                rows.append([component])
+            }
+        }
+
+        // 展开态高度由系统限制；保留前面的组件，避免高密度配置裁切。
+        let heightBudget: CGFloat = isStale ? 82 : 100
+        var usedHeight: CGFloat = 0
+        return rows.prefix { row in
+            let rowHeight = row.map(estimatedHeight).max() ?? 0
+            let nextHeight = usedHeight + (usedHeight > 0 ? 4 : 0) + rowHeight
+            guard nextHeight <= heightBudget else { return false }
+            usedHeight = nextHeight
+            return true
+        }.map { $0 }
+    }
+
+    private func isFullWidth(_ component: ClassIslandActivityComponent) -> Bool {
+        ["schedule", "text", "separator"].contains(component.kind)
+    }
+
+    private func estimatedHeight(_ component: ClassIslandActivityComponent) -> CGFloat {
+        switch component.kind {
+        case "separator": return 1
+        case "schedule":
+            return 16 + (component.secondaryText.isEmpty ? 0 : 14)
+                + (component.showProgress && !isStale && state.progressRange != nil ? 8 : 0)
+        default: return 16
+        }
+    }
+
+    @ViewBuilder
+    private func componentView(_ component: ClassIslandActivityComponent) -> some View {
+        switch component.kind {
+        case "separator":
+            Divider().overlay(Color.white.opacity(0.16))
+        case "schedule":
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    componentIcon(component)
+                    if state.details != nil {
+                        Text(state.phase == .onClass ? "当前" : "下一节")
+                            .foregroundStyle(activitySecondary)
+                    }
+                    Text(component.text).fontWeight(.semibold)
+                    if !component.extraText.isEmpty {
+                        Spacer(minLength: 4)
+                        Text(component.extraText)
+                            .font(.system(size: 10)).foregroundStyle(activitySecondary)
+                    }
+                }
+                .font(.system(size: 11)).lineLimit(1).minimumScaleFactor(0.75)
+                if !component.secondaryText.isEmpty {
+                    Text(component.secondaryText)
+                        .font(.system(size: 10)).foregroundStyle(activitySecondary).lineLimit(1)
+                }
+                if component.showProgress && !isStale {
+                    ClassIslandProgressView(state: state).padding(.top, 2)
+                }
+            }
+        case "countdown":
+            HStack(spacing: 6) {
+                componentIcon(component)
+                Text(component.text.isEmpty ? "剩余" : component.text)
+                    .font(.system(size: 10)).foregroundStyle(activitySecondary).lineLimit(1)
+                countdownValue(component)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(activityAccent).layoutPriority(1)
+            }
+        case "clock":
+            HStack(spacing: 6) {
+                componentIcon(component)
+                if let targetTime = component.targetTime {
+                    let start = Date(timeIntervalSince1970: targetTime)
+                    let end = Calendar.current.date(byAdding: .day, value: 1, to: start) ?? start.addingTimeInterval(86400)
+                    Text(timerInterval: start...end, countsDown: false, showsHours: true)
+                        .font(.system(size: 11)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.75)
+                        .multilineTextAlignment(.leading)
+                } else {
+                    Text(component.text).font(.system(size: 11)).monospacedDigit().lineLimit(1)
+                }
+            }
+        case "date", "weather", "text":
+            HStack(spacing: 6) {
+                componentIcon(component)
+                Text(component.text).font(.system(size: 11)).lineLimit(1).minimumScaleFactor(0.75)
+                if !component.secondaryText.isEmpty {
+                    Text(component.secondaryText)
+                        .font(.system(size: 10)).foregroundStyle(activitySecondary).lineLimit(1)
+                }
+            }
+        default:
+            EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func countdownValue(_ component: ClassIslandActivityComponent) -> some View {
+        if let targetTime = component.targetTime {
+            let targetDate = Date(timeIntervalSince1970: targetTime)
+            if targetDate > Date() {
+                Text(timerInterval: Date()...targetDate,
+                     countsDown: true, showsHours: true)
+                    .monospacedDigit().lineLimit(1).minimumScaleFactor(0.65)
+                    .multilineTextAlignment(.leading)
+            } else {
+                Text("已到日期")
+            }
+        } else if isStale {
+            Text("待更新")
+        } else if let range = state.progressRange {
+            Text(timerInterval: range, countsDown: true, showsHours: false)
+                .monospacedDigit().lineLimit(1).minimumScaleFactor(0.75)
+                .multilineTextAlignment(.leading)
+        } else {
+            Text(component.secondaryText.isEmpty ? "暂无课程" : component.secondaryText)
+                .lineLimit(1)
+        }
+    }
+
+    @ViewBuilder
+    private func componentIcon(_ component: ClassIslandActivityComponent) -> some View {
+        if !component.symbolName.isEmpty {
+            Image(systemName: component.symbolName)
+                .font(.system(size: 12))
+                .foregroundStyle(activityAccent)
+                .frame(width: 16)
         }
     }
 }
@@ -340,9 +512,23 @@ struct ClassIslandLiveActivityPreviews: PreviewProvider {
             ClassIslandLockScreenView(state: fixture(.onClass), isStale: false)
             ClassIslandLockScreenView(state: fixture(.breaking), isStale: false)
             ClassIslandLockScreenView(state: fixture(.onClass), isStale: true)
+            ClassIslandExpandedComponents(components: components, state: fixture(.onClass), isStale: false)
+                .padding(8)
+            ClassIslandExpandedComponents(components: components, state: fixture(.breaking), isStale: true)
+                .padding(8)
         }
         .frame(width: 380).background(Color.black).previewLayout(.sizeThatFits)
     }
+    static let components: [ClassIslandActivityComponent] = [
+        .init(kind: "schedule", text: "高等数学", secondaryText: "A301 · 14:10–14:55",
+              symbolName: "book.closed.fill", extraText: "下一节：物理 · 15:10–15:55"),
+        .init(kind: "date", text: "10月11日 星期日", symbolName: "calendar"),
+        .init(kind: "weather", text: "24 ℃", secondaryText: "多云", symbolName: "cloud.sun.fill"),
+        .init(kind: "countdown", text: "课程剩余", symbolName: "hourglass"),
+        .init(kind: "countdown", text: "期末考试", symbolName: "calendar.badge.clock",
+              targetTime: Date().addingTimeInterval(86400 * 20).timeIntervalSince1970),
+        .init(kind: "text", text: "认真学习，按时休息", symbolName: "text.alignleft")
+    ]
     static func fixture(_ phase: ClassIslandActivityPhase) -> ClassIslandActivityAttributes.ContentState {
         .init(phase: phase, title: "高等数学", subtitle: "", detail: "14:10–14:55", compactText: "数学",
               startTime: Date().addingTimeInterval(-1800), endTime: Date().addingTimeInterval(900),

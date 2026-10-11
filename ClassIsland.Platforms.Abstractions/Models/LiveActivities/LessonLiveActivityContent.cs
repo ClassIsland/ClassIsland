@@ -31,6 +31,21 @@ public sealed record LessonLiveActivityContent(
     public LessonLiveActivityDetails? Details { get; init; }
 
     /// <summary>
+    /// 灵动岛展开态的轻量组件摘要；为空时使用原有固定布局。
+    /// </summary>
+    public LessonLiveActivityComponent[]? Components { get; init; }
+
+    /// <summary>
+    /// 比较展示内容，按值比较组件，避免重新生成数组触发无意义的发布。
+    /// </summary>
+    internal bool HasSameDisplayContent(LessonLiveActivityContent? other) =>
+        other != null &&
+        (this with { Components = null }) == (other with { Components = null }) &&
+        (Components == null
+            ? other.Components == null
+            : other.Components != null && Components.SequenceEqual(other.Components));
+
+    /// <summary>
     /// 当前内容是否包含可由系统持续渲染的时间进度。
     /// </summary>
     public bool HasProgress => StartTime is { } start && EndTime is { } end && end > start;

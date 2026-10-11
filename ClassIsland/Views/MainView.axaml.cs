@@ -116,6 +116,11 @@ public partial class MainView : ViewBase
         App.GetService<SettingsWindowNew>().Open();
     }
 
+    private void MenuItemLiveActivitySettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<SettingsWindowNew>().Open("live-activity");
+    }
+
 
     private async void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
     {

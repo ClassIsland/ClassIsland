@@ -47,6 +47,7 @@ private enum ClassIslandLiveActivityInputError: LocalizedError {
     case incompleteProgressRange
     case invalidProgressRange
     case invalidDeepLink
+    case invalidComponentTargetTime
     case payloadTooLarge(Int)
     case invalidDismissalPolicy(Int32)
 
@@ -64,6 +65,8 @@ private enum ClassIslandLiveActivityInputError: LocalizedError {
             return "endTime must be later than startTime."
         case .invalidDeepLink:
             return "deepLink must be an absolute URL."
+        case .invalidComponentTargetTime:
+            return "targetTime must be a valid Unix timestamp."
         case let .payloadTooLarge(size):
             return "The ActivityKit payload is \(size) bytes; the maximum is 4096 bytes."
         case let .invalidDismissalPolicy(value):
@@ -84,6 +87,7 @@ private struct ClassIslandLiveActivityRequest: Decodable {
     let endTime: String?
     let deepLink: String
     let details: ClassIslandLessonDetails?
+    let components: [ClassIslandActivityComponent]?
 
     func makePayload() throws -> ClassIslandLiveActivityPayload {
         guard !intervalId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -110,6 +114,14 @@ private struct ClassIslandLiveActivityRequest: Decodable {
             throw ClassIslandLiveActivityInputError.invalidDeepLink
         }
 
+        for component in components ?? [] {
+            if let targetTime = component.targetTime,
+               !targetTime.isFinite || targetTime < Date.distantPast.timeIntervalSince1970
+                   || targetTime > Date.distantFuture.timeIntervalSince1970 {
+                throw ClassIslandLiveActivityInputError.invalidComponentTargetTime
+            }
+        }
+
         let payload = ClassIslandLiveActivityPayload(
             attributes: ClassIslandActivityAttributes(intervalId: intervalId),
             state: ClassIslandActivityAttributes.ContentState(
@@ -121,7 +133,8 @@ private struct ClassIslandLiveActivityRequest: Decodable {
                 startTime: parsedStartTime,
                 endTime: parsedEndTime,
                 deepLink: deepLink,
-                details: details
+                details: details,
+                components: components.map { Array($0.prefix(6)) }
             )
         )
         try payload.validateSize()
@@ -283,7 +296,7 @@ private actor ClassIslandLiveActivityCoordinator {
             switch activity.activityState {
             case .active, .stale:
                 return true
-            case .dismissed, .ended:
+            case .dismissed, .ended, .pending:
                 return false
             @unknown default:
                 return false
@@ -292,7 +305,7 @@ private actor ClassIslandLiveActivityCoordinator {
             switch activity.activityState {
             case .active:
                 return true
-            case .dismissed, .ended:
+            case .dismissed, .ended, .pending, .stale:
                 return false
             @unknown default:
                 return false

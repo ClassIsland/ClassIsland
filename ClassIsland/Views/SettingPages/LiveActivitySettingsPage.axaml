@@ -1,0 +1,154 @@
+<ci:SettingsPageBase xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                    xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                    xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+                    x:Class="ClassIsland.Views.SettingPages.LiveActivitySettingsPage"
+                    Loaded="OnLoaded"
+                    Unloaded="OnUnloaded">
+    <ScrollViewer>
+        <StackPanel Classes="settings-container" MaxWidth="720">
+            <controls:FAInfoBar IsOpen="True"
+                                IsClosable="False"
+                                Severity="Informational"
+                                Message="开启后，自选组件将显示在灵动岛展开态。课程信息和天气会在应用更新时刷新；倒计时由系统持续显示。" />
+
+            <controls:FASettingsExpander Header="自定义展开态组件"
+                                         IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                         Description="关闭后使用原有课程布局，已设置的组件会保留。">
+                <controls:FASettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsLiveActivityLayoutCustomized, Mode=TwoWay}" />
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
+
+            <TextBlock Text="组件顺序"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Margin="0 12 0 4" />
+            <TextBlock Text="最多添加 6 个组件。拖动左侧手柄或使用箭头调整顺序；空间不足时优先显示靠前的组件，长文本会缩短显示。"
+                       Classes="l-instructive"
+                       TextWrapping="Wrap" />
+
+            <ListBox ItemsSource="{Binding ViewModel.Components}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                     Margin="0 12 0 0">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate><StackPanel /></ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerTheme>
+                    <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Interaction.Behaviors">
+                            <BehaviorCollectionTemplate>
+                                <BehaviorCollection>
+                                    <ci:AdvancedItemDragBehavior Orientation="Vertical"
+                                                                AllowDragFromDragThumbOnly="True" />
+                                </BehaviorCollection>
+                            </BehaviorCollectionTemplate>
+                        </Setter>
+                    </ControlTheme>
+                </ListBox.ItemContainerTheme>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="10"
+                                Margin="0 0 0 8">
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+                                  RowDefinitions="Auto,Auto">
+                                <ci:TouchDragThumb Grid.Column="0" Width="24" IsCompact="True"
+                                                   IsExplicitVisible="True" Classes="in-listbox" />
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding DisplayName}"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Description}"
+                                               Classes="l-instructive"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="2"
+                                              IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+                                              VerticalAlignment="Top"
+                                              Margin="12 0 0 0" />
+                                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Top">
+                                <Button
+                                        Tag="{Binding}"
+                                        Click="MoveUp_OnClick"
+                                        Content="{ci:FluentIcon {ci:FI ArrowUpRegular}}"
+                                        AutomationProperties.Name="上移组件"
+                                        ToolTip.Tip="上移"
+                                        Theme="{StaticResource TransparentButton}"
+                                        VerticalAlignment="Top" />
+                                <Button
+                                        Tag="{Binding}"
+                                        Click="MoveDown_OnClick"
+                                        Content="{ci:FluentIcon {ci:FI ArrowDownRegular}}"
+                                        AutomationProperties.Name="下移组件"
+                                        ToolTip.Tip="下移"
+                                        Theme="{StaticResource TransparentButton}"
+                                        VerticalAlignment="Top" />
+                                <Button
+                                        Tag="{Binding}"
+                                        Click="Remove_OnClick"
+                                        Content="{ci:FluentIcon {ci:FI DeleteRegular}}"
+                                        AutomationProperties.Name="移除组件"
+                                        ToolTip.Tip="移除"
+                                        Theme="{StaticResource TransparentButton}"
+                                        VerticalAlignment="Top" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Spacing="6" Margin="0 8 0 0">
+                                    <TextBox Text="{Binding Text, Mode=TwoWay}"
+                                             IsVisible="{Binding IsTextComponent}"
+                                             PlaceholderText="输入展开态要显示的短文本"
+                                             MaxLength="500"
+                                             AutomationProperties.Name="文本组件内容" />
+                                    <StackPanel IsVisible="{Binding IsScheduleComponent}" Spacing="4">
+                                        <CheckBox Content="显示下一节课程" IsChecked="{Binding ShowNextLesson, Mode=TwoWay}" />
+                                        <CheckBox Content="显示课程进度" IsChecked="{Binding ShowProgress, Mode=TwoWay}" />
+                                    </StackPanel>
+                                    <StackPanel IsVisible="{Binding IsCountdownComponent}" Spacing="6">
+                                        <CheckBox Content="倒计时到自定义日期"
+                                                  IsChecked="{Binding UseCustomCountdown, Mode=TwoWay}" />
+                                        <TextBlock Text="未启用时显示当前课程或课间的剩余时间。" Classes="l-instructive"
+                                                   IsVisible="{Binding !UseCustomCountdown}" TextWrapping="Wrap" />
+                                        <StackPanel IsVisible="{Binding UseCustomCountdown}" Spacing="6">
+                                            <TextBox Text="{Binding CountdownName, Mode=TwoWay}" PlaceholderText="倒计时名称"
+                                                     MaxLength="80" AutomationProperties.Name="倒计时名称" />
+                                            <CalendarDatePicker SelectedDate="{Binding TargetDate, Mode=TwoWay}"
+                                                                AutomationProperties.Name="倒计时目标日期" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <controls:FASettingsExpander Header="添加组件"
+                                         IconSource="{ci:FluentIconSource {ci:FI AddRegular}}"
+                                         IsExpanded="True"
+                                         Margin="0 8 0 0">
+                <ItemsControl ItemsSource="{Binding ViewModel.AvailableKinds}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Tag="{Binding Kind}"
+                                    Click="AddComponent_OnClick"
+                                    Content="{Binding DisplayName}"
+                                    IsEnabled="{Binding $parent[local:LiveActivitySettingsPage].ViewModel.CanAddComponent}"
+                                    Margin="0 0 8 8" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </controls:FASettingsExpander>
+            <Button Content="恢复默认组件" Click="RestoreDefaults_OnClick" HorizontalAlignment="Left" />
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

@@ -15,7 +15,8 @@ namespace ClassIsland.iOS.Services.LiveActivities;
 [SupportedOSPlatform("ios15.0")]
 internal sealed partial class IosLiveActivityService : ILiveActivityService
 {
-    private const int MaximumPayloadBytes = 4 * 1024;
+    // 预留原生桥 attributes/state 包装与编码差异，ActivityKit 总上限仍是 4 KB。
+    private const int MaximumPayloadBytes = 3800;
     private static readonly TimeSpan NativeOperationTimeout = TimeSpan.FromSeconds(15);
     private const string NativeLibrary =
         "@rpath/ClassIslandLiveActivityBridge.framework/ClassIslandLiveActivityBridge";
@@ -51,27 +52,11 @@ internal sealed partial class IosLiveActivityService : ILiveActivityService
                 ErrorMessage: availability.ErrorMessage));
         }
 
-        var payload = new NativeLessonLiveActivityPayload(
-            content.IntervalId,
-            (int)content.Phase,
-            content.Title,
-            content.Subtitle,
-            content.Detail,
-            content.CompactText,
-            FormatDate(content.HasProgress ? content.StartTime : null),
-            FormatDate(content.HasProgress ? content.EndTime : null),
-            content.DeepLink,
-            content.Details);
-        var json = JsonSerializer.Serialize(
-            payload,
-            LiveActivityJsonContext.Default.NativeLessonLiveActivityPayload);
-
-        if (Encoding.UTF8.GetByteCount(json) > MaximumPayloadBytes && payload.Details?.IconPngBase64 != null)
-        {
-            // 优先保留课程内容；图标不能让整个实时活动超过系统的大小限制。
-            payload = payload with { Details = payload.Details with { IconPngBase64 = null } };
-            json = JsonSerializer.Serialize(payload, LiveActivityJsonContext.Default.NativeLessonLiveActivityPayload);
-        }
+        content = LessonLiveActivityPayloadBudget.Fit(
+            content,
+            value => Encoding.UTF8.GetByteCount(SerializeContent(value)),
+            MaximumPayloadBytes);
+        var json = SerializeContent(content);
 
         if (Encoding.UTF8.GetByteCount(json) > MaximumPayloadBytes)
         {
@@ -102,6 +87,21 @@ internal sealed partial class IosLiveActivityService : ILiveActivityService
 
     private static string? FormatDate(DateTimeOffset? value) =>
         value?.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture);
+
+    private static string SerializeContent(LessonLiveActivityContent content) =>
+        JsonSerializer.Serialize(new NativeLessonLiveActivityPayload(
+                content.IntervalId,
+                (int)content.Phase,
+                content.Title,
+                content.Subtitle,
+                content.Detail,
+                content.CompactText,
+                FormatDate(content.HasProgress ? content.StartTime : null),
+                FormatDate(content.HasProgress ? content.EndTime : null),
+                content.DeepLink,
+                content.Details,
+                content.Components),
+            LiveActivityJsonContext.Default.NativeLessonLiveActivityPayload);
 
     private static AvailabilityCheck GetAvailability()
     {

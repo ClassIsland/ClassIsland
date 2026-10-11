@@ -111,6 +111,11 @@
                         <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C9;}"
                                                  Header="编辑主界面…"
                                                  IsClickEnabled="True"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                                 Header="设置灵动岛展开态…"
+                                                 IsVisible="{OnPlatform Default=False, iOS=True}"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemLiveActivitySettings_OnClick"/>
                         <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xEF27;}"
                                                  Header="应用设置…"
                                                  IsClickEnabled="True"
