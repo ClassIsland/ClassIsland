@@ -114,7 +114,6 @@
                              ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0BD;}"/>
             <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"
                              ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0DF;}"/>
-            <NativeMenuItemSeparator IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}"/>
             <NativeMenuItem Header="dev__Debug" IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE2C8;}">
                 <NativeMenu>
