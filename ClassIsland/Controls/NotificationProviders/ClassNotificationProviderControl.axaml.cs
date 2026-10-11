@@ -16,6 +16,8 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     private string _message = "";
     private int _slideIndex = 0;
     private bool _showTeacherName = false;
+    private bool _showClassTime = true;
+    private bool _showLocation = false;
     private string _maskMessage = "";
 
     public object? Element
@@ -71,6 +73,18 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
             _maskMessage = value;
             OnPropertyChanged();
         }
+    }
+
+    public bool ShowClassTime
+    {
+        get => _showClassTime;
+        set => SetField(ref _showClassTime, value);
+    }
+
+    public bool ShowLocation
+    {
+        get => _showLocation;
+        set => SetField(ref _showLocation, value);
     }
 
     private string _key = "";
