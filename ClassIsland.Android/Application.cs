@@ -28,6 +28,7 @@ public class Application : AvaloniaAndroidApplication<App>
         PlatformServices.AppLifetimeService = new AndroidAppLifetimeService();
         PlatformServices.LauncherService = new LauncherService();
         PlatformServices.DesktopToastService = new DesktopToastService();
+        PlatformServices.LocationService = new LocationService();
 
         var restartParameters = MainActivity.Current?.TryGetTarget(out var mainActivity) == true
             ? mainActivity.Intent?.GetStringArrayExtra(AndroidAppLifetimeService.RestartParametersExtra)

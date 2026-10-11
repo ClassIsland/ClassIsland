@@ -27,6 +27,9 @@ public class MainActivity : AvaloniaMainActivity
     private const string NotificationPermissionPreferencesName = "notification_permissions";
     private const string NotificationPermissionRequestedKey = "post_notifications_requested";
     private const int NotificationPermissionRequestCode = 13280;
+    private const int LocationPermissionRequestCode = 13281;
+
+    private TaskCompletionSource<bool>? _locationPermissionRequest;
 
     public static WeakReference<MainActivity>? Current { get; set; }
 
@@ -147,6 +150,51 @@ public class MainActivity : AvaloniaMainActivity
 #pragma warning restore CA1416
     }
     
+    internal Task<bool> RequestLocationPermissionAsync()
+    {
+        if (_locationPermissionRequest != null)
+        {
+            return _locationPermissionRequest.Task;
+        }
+
+        if (!IsForeground || IsFinishing || IsDestroyed)
+        {
+            return Task.FromResult(false);
+        }
+
+        var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _locationPermissionRequest = completion;
+        try
+        {
+            RequestPermissions(
+                [global::Android.Manifest.Permission.AccessCoarseLocation,
+                    global::Android.Manifest.Permission.AccessFineLocation],
+                LocationPermissionRequestCode);
+        }
+        catch
+        {
+            _locationPermissionRequest = null;
+            throw;
+        }
+
+        return completion.Task;
+    }
+
+    public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+    {
+        base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != LocationPermissionRequestCode)
+        {
+            return;
+        }
+
+        var completion = _locationPermissionRequest;
+        _locationPermissionRequest = null;
+        completion?.TrySetResult(grantResults.Length > 0 &&
+            (CheckSelfPermission(global::Android.Manifest.Permission.AccessCoarseLocation) == Permission.Granted ||
+             CheckSelfPermission(global::Android.Manifest.Permission.AccessFineLocation) == Permission.Granted));
+    }
+
     protected override void OnResume()
     {
         base.OnResume();
@@ -162,6 +210,10 @@ public class MainActivity : AvaloniaMainActivity
 
     protected override void OnDestroy()
     {
+        IsForeground = false;
+        _locationPermissionRequest?.TrySetResult(false);
+        _locationPermissionRequest = null;
+
         if (ViewHost != null)
         {
             ActivityViewHostProvider.Instance.ViewHosts.Remove(ViewHost);
