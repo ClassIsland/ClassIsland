@@ -46,6 +46,11 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     public bool IsWeatherRefreshed { get; set; } = false;
 
+    /// <summary>
+    /// 最近一次获取到的天气信息。
+    /// </summary>
+    public WeatherInfo LastWeatherInfo => Settings.LastWeatherInfo;
+
     public bool IsPosUpdated { get; set; } = false;
 
     public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService, ILocationService locationService)
@@ -239,12 +244,18 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         var result = new WeatherQueryResult();
         if (!IsPosUpdated && Settings.AutoRefreshWeatherLocation)
         {
-            IsPosUpdated = true;
             try
             {
                 var pos = await LocationService.GetLocationAsync();
+                if (!double.IsFinite(pos.Longitude) || !double.IsFinite(pos.Latitude) ||
+                    pos.Longitude is < -180 or > 180 || pos.Latitude is < -90 or > 90)
+                {
+                    throw new InvalidOperationException("获取的位置信息无效");
+                }
+
                 Settings.WeatherLongitude = Math.Round(pos.Longitude, 4);
                 Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
+                IsPosUpdated = true;
             }
             catch (Exception exception)
             {
@@ -379,6 +390,20 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
                     Logger.LogInformation("已丢弃旧预警：（{}，{}）{}", a.Title, a.PubTime, a.Detail);
             }
             info.Alerts = latest.Values.ToList();
+
+            if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+            {
+                foreach (var alert in info.Alerts)
+                {
+                    if (alert.Images is not null &&
+                        alert.Images.TryGetValue("icon", out var icon) &&
+                        !string.IsNullOrWhiteSpace(icon) &&
+                        icon.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        alert.Images["icon"] = "https://" + icon[7..];
+                    }
+                }
+            }
 
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;

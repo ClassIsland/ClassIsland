@@ -57,6 +57,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             ResumeAfterManualTerminationCanceled);
         PlatformServices.FilePickerService = new IosPlatformFilePickerService();
         PlatformServices.LauncherService = new IosLauncherService();
+        PlatformServices.LocationService = new IosLocationService();
         PlatformServices.LiveActivityService = new IosLiveActivityService();
         _systemEventsService = new IosSystemEventsService();
         PlatformServices.SystemEventsService = _systemEventsService;
