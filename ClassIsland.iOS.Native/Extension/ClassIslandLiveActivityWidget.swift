@@ -146,7 +146,7 @@ private struct ClassIslandExpandedComponents: View {
         }
 
         // 展开态高度由系统限制；保留前面的组件，避免高密度配置裁切。
-        let heightBudget: CGFloat = isStale ? 82 : 100
+        let heightBudget: CGFloat = isStale ? 72 : 86
         var usedHeight: CGFloat = 0
         return rows.prefix { row in
             let rowHeight = row.map(estimatedHeight).max() ?? 0
@@ -158,15 +158,14 @@ private struct ClassIslandExpandedComponents: View {
     }
 
     private func isFullWidth(_ component: ClassIslandActivityComponent) -> Bool {
-        ["schedule", "text", "separator"].contains(component.kind)
+        ["schedule", "text"].contains(component.kind)
     }
 
     private func estimatedHeight(_ component: ClassIslandActivityComponent) -> CGFloat {
         switch component.kind {
-        case "separator": return 1
+        case "separator": return 14
         case "schedule":
-            return 16 + (component.secondaryText.isEmpty ? 0 : 14)
-                + (component.showProgress && !isStale && state.progressRange != nil ? 8 : 0)
+            return 18 + (component.showProgress && !isStale && state.progressRange != nil ? 7 : 0)
         default: return 16
         }
     }
@@ -175,30 +174,24 @@ private struct ClassIslandExpandedComponents: View {
     private func componentView(_ component: ClassIslandActivityComponent) -> some View {
         switch component.kind {
         case "separator":
-            Divider().overlay(Color.white.opacity(0.16))
+            Rectangle().fill(Color.white.opacity(0.16)).frame(width: 1, height: 14)
         case "schedule":
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    componentIcon(component)
-                    if state.details != nil {
-                        Text(state.phase == .onClass ? "当前" : "下一节")
-                            .foregroundStyle(activitySecondary)
-                    }
-                    Text(component.text).fontWeight(.semibold)
-                    if !component.extraText.isEmpty {
-                        Spacer(minLength: 4)
-                        Text(component.extraText)
-                            .font(.system(size: 10)).foregroundStyle(activitySecondary)
-                    }
-                }
-                .font(.system(size: 11)).lineLimit(1).minimumScaleFactor(0.75)
+            HStack(spacing: 6) {
+                componentIcon(component)
+                Text(component.text).fontWeight(.semibold)
                 if !component.secondaryText.isEmpty {
                     Text(component.secondaryText)
-                        .font(.system(size: 10)).foregroundStyle(activitySecondary).lineLimit(1)
+                        .foregroundStyle(activitySecondary)
                 }
-                if component.showProgress && !isStale {
-                    ClassIslandProgressView(state: state).padding(.top, 2)
+                if !component.extraText.isEmpty {
+                    Spacer(minLength: 4)
+                    Text(component.extraText)
+                        .foregroundStyle(activitySecondary)
                 }
+            }
+            .font(.system(size: 10)).lineLimit(1).minimumScaleFactor(0.65)
+            if component.showProgress && !isStale {
+                ClassIslandProgressView(state: state).padding(.top, 1)
             }
         case "countdown":
             HStack(spacing: 6) {
