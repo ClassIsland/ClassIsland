@@ -12,9 +12,20 @@ namespace ClassIsland.iOS.Services.Platform;
 internal sealed class IosLocationService : ILocationService
 {
     private static readonly TimeSpan LocationTimeout = TimeSpan.FromSeconds(10);
+    private readonly TaskCompletionSource<bool> _applicationReady =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    /// <summary>
+    /// 标记 Avalonia 根视图已经显示，可以安全弹出系统授权对话框。
+    /// </summary>
+    public void SetApplicationReady()
+    {
+        _applicationReady.TrySetResult(true);
+    }
 
     public async Task<LocationCoordinate> GetLocationAsync()
     {
+        await _applicationReady.Task.ConfigureAwait(false);
         var request = new LocationRequest();
         UIApplication.SharedApplication.BeginInvokeOnMainThread(request.Start);
 

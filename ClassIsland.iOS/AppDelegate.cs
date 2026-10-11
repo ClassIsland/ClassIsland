@@ -38,6 +38,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private IActivatableLifetime? _activatableLifetime;
     private readonly IosNotificationAuthorizationService _notificationAuthorizationService = new();
     private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
+    private IosLocationService? _locationService;
     private App? _app;
     private Uri? _pendingNavigationUri;
     private bool _isAppNavigationReady;
@@ -57,7 +58,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             ResumeAfterManualTerminationCanceled);
         PlatformServices.FilePickerService = new IosPlatformFilePickerService();
         PlatformServices.LauncherService = new IosLauncherService();
-        PlatformServices.LocationService = new IosLocationService();
+        _locationService = new IosLocationService();
+        PlatformServices.LocationService = _locationService;
         PlatformServices.LiveActivityService = new IosLiveActivityService();
         _systemEventsService = new IosSystemEventsService();
         PlatformServices.SystemEventsService = _systemEventsService;
@@ -172,6 +174,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private void OnAppStarted(object? sender, EventArgs e)
     {
         IosStartupDiagnostics.Write("App startup completed");
+        _locationService?.SetApplicationReady();
         _isAppNavigationReady = true;
         if (_pendingNavigationUri is not { } uri)
         {
