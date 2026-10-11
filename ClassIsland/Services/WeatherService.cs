@@ -380,6 +380,18 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             }
             info.Alerts = latest.Values.ToList();
 
+            if (OperatingSystem.IsAndroid())
+            {
+                foreach (var alert in info.Alerts)
+                {
+                    if (alert.Images.TryGetValue("icon", out var icon) &&
+                        icon.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        alert.Images["icon"] = "https://" + icon[7..];
+                    }
+                }
+            }
+
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
             result.IsSuccess = true;
