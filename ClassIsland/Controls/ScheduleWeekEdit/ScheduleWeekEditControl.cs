@@ -19,6 +19,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls.ScheduleWeekEdit;
 
@@ -244,19 +245,20 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         var lessonsService = IAppHost.GetService<ILessonsService>();
         var settingsService = IAppHost.GetService<SettingsService>();
         var profile = profileService.Profile;
-        WatchProperties(profile);
+        PropertyChangedEventHandler profileChanged = (_, args) =>
+        {
+            if (string.IsNullOrEmpty(args.PropertyName) || args.PropertyName == nameof(Profile.Subjects))
+                QueueAutomaticRefresh();
+        };
+        profile.PropertyChanged += profileChanged;
+        _autoItemSubscriptions.Add(Disposable.Create(() => profile.PropertyChanged -= profileChanged));
+        lessonsService.ScheduleItemsInvalidated += ScheduleItemsInvalidated;
+        _autoItemSubscriptions.Add(Disposable.Create(() => lessonsService.ScheduleItemsInvalidated -= ScheduleItemsInvalidated));
         WatchProperties(settingsService);
         if (profileService is INotifyPropertyChanged observableProfileService) WatchProperties(observableProfileService);
         WatchProperties(settingsService.Settings);
         WatchCollection(settingsService.Settings.MultiWeekRotationOffset);
-        WatchCollection(profile.ScheduleItems);
         WatchCollection(profile.Subjects);
-        foreach (var item in profile.ScheduleItems.Values)
-        {
-            WatchProperties(item);
-            WatchProperties(item.EnableRule);
-            WatchCollection(item.EnableRule.EnableDates);
-        }
         foreach (var subject in profile.Subjects.Values) WatchProperties(subject);
 
         var occurrences = new List<ScheduleWeekOccurrence>();
@@ -278,6 +280,23 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         if (SelectedScheduleItemId is { } selectedId && !profile.ScheduleItems.ContainsKey(selectedId))
             SetCurrentValue(SelectedScheduleItemIdProperty, (Guid?)null);
         Rebuild();
+    }
+
+    private void ScheduleItemsInvalidated(object? sender, Predicate<DateOnly> isDateAffected)
+    {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(() => ScheduleItemsInvalidated(sender, isDateAffected));
+            return;
+        }
+        if (!_attached || !AutoFetchScheduleItems) return;
+
+        for (var day = 0; day < 7; day++)
+        {
+            if (!isDateAffected(WeekStart.AddDays(day))) continue;
+            QueueAutomaticRefresh();
+            break;
+        }
     }
 
     private void WatchProperties(INotifyPropertyChanged source)

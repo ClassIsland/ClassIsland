@@ -93,58 +93,8 @@
             <TabItem Header="">
                 <StackPanel Spacing="2" >
                     <TextBlock Text="当今天是以下任意日期："/>
-                    <ListBox ItemsSource="{Binding $parent[controls:TimeRuleEditControl].TimeRule.EnableDates}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <DockPanel >
-                                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0"
-                                                DockPanel.Dock="Right">
-                                        
-                                        <Button Theme="{StaticResource TransparentButton}"
-                                                ToolTip.Tip="编辑"
-                                                Command="{Binding $parent[controls:TimeRuleEditControl].PreEditSelectedDateCommand}"
-                                                CommandParameter="{Binding}">
-                                            <Button.Flyout>
-                                                <Flyout Placement="Top">
-                                                    <StackPanel Spacing="8">
-                                                        <TextBlock Text="修改日期" FontWeight="Bold"/>
-                                                        <CalendarDatePicker SelectedDate="{Binding $parent[controls:TimeRuleEditControl].ViewModel.NewDateTime}"/>
-                                                        <Button Content="确定" Classes="accent"
-                                                                Tag="{Binding}"
-                                                                Command="{Binding $parent[controls:TimeRuleEditControl].CommitEditSelectedDateCommand}"
-                                                                CommandParameter="{Binding $self}"/>
-                                                    </StackPanel>
-                                                </Flyout>
-                                            </Button.Flyout>
-                                            <ci:FluentIcon Glyph="{ci:FI EditRegular}"/>
-                                        </Button>
-                                        <Button Theme="{StaticResource TransparentButton}"
-                                                Command="{Binding $parent[controls:TimeRuleEditControl].RemoveDateCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="移除">
-                                            <ci:FluentIcon Glyph="{ci:FI DismissRegular}"/>
-                                        </Button>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}, StringFormat='yyyy/MM/dd ddd'}"
-                                               VerticalAlignment="Center"/>
-                                </DockPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                    <Button Theme="{StaticResource TransparentButton}">
-                        <Button.Flyout>
-                            <Flyout Placement="Top">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="添加启用日期" FontWeight="Bold"/>
-                                    <CalendarDatePicker SelectedDate="{Binding $parent[controls:TimeRuleEditControl].ViewModel.NewDateTime}"/>
-                                    <Button Content="确定" Classes="accent"
-                                            Command="{Binding $parent[controls:TimeRuleEditControl].CommitEditSelectedDateCommand}"
-                                            CommandParameter="{Binding $self}"/>
-                                </StackPanel>
-                            </Flyout>
-                        </Button.Flyout>
-                        <ci:IconText Glyph="{ci:FI AddRegular}" Text="添加"/>
-                    </Button>
+                    <ci:MultipleDateSelector SelectedDates="{Binding $parent[controls:TimeRuleEditControl].TimeRule.EnableDates}"
+                                             Width="NaN" HorizontalAlignment="Stretch"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="">
@@ -185,5 +135,14 @@
                                 SelectedDate="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeEnd, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"/>
             <TextBlock Text="]" Grid.Column="4" Margin="4 0 0 0"/>
         </Grid>
+        
+        <ci:Field Label="排除以下日期" HorizontalAlignment="Stretch" Margin="0 4 0 0">
+            <ci:MultipleDateSelector SelectedDates="{Binding $parent[controls:TimeRuleEditControl].TimeRule.ExcludedDates}"
+                                     Width="NaN" HorizontalAlignment="Stretch"/>
+        </ci:Field>
+        <ci:Field Label="附加以下日期" HorizontalAlignment="Stretch" Margin="0 4 0 0">
+            <ci:MultipleDateSelector SelectedDates="{Binding $parent[controls:TimeRuleEditControl].TimeRule.AdditionalDates}"
+                                     Width="NaN" HorizontalAlignment="Stretch"/>
+        </ci:Field>
     </StackPanel>
 </UserControl>
