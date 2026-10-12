@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="using:ClassIsland.Core.Controls"
+             xmlns:icons="using:ClassIsland.Core.Icons"
+             xmlns:models="using:ClassIsland.Core.Models.UI"
+             xmlns:converters="using:ClassIsland.Core.Converters"
+             x:Class="ClassIsland.Core.Controls.MultipleDateSelector"
+             x:DataType="models:MultipleDateSelectorViewModel"
+             x:CompileBindings="False">
+    <UserControl.Resources>
+        <converters:MultipleDateSelectorDayConverter x:Key="DayConverter" />
+        <ControlTheme x:Key="DayTheme" TargetType="CalendarDayButton"
+                      BasedOn="{StaticResource {x:Type CalendarDayButton}}">
+            <Setter Property="ci:MultipleDateSelectorDayState.IsSelected">
+                <MultiBinding Converter="{StaticResource DayConverter}">
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="$parent[Calendar].DataContext.Dates" />
+                </MultiBinding>
+            </Setter>
+            <Setter Property="AutomationProperties.Name">
+                <MultiBinding Converter="{StaticResource DayConverter}" ConverterParameter="Description">
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="$parent[Calendar].DataContext.Dates" />
+                </MultiBinding>
+            </Setter>
+            <!-- Mirror FluentAvalonia's :selected states while Calendar only handles navigation. -->
+            <Style Selector="^.date-selected /template/ Border#Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewSelectedBorderBrush}" />
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            <Style Selector="^.date-selected:pointerover /template/ Border#Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewSelectedHoverBorderBrush}" />
+            </Style>
+            <Style Selector="^.date-selected:pressed /template/ Border#Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewSelectedPressedBorderBrush}" />
+            </Style>
+            <Style Selector="^.date-selected:disabled /template/ Border#Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewSelectedDisabledBorderBrush}" />
+            </Style>
+            <Style Selector="^:today.date-selected /template/ Border#Border">
+                <Setter Property="IsVisible" Value="False" />
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewTodaySelectedInnerBorderBrush}" />
+            </Style>
+            <Style Selector="^:today.date-selected /template/ Border#InnerBorder">
+                <Setter Property="IsVisible" Value="True" />
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewTodaySelectedInnerBorderBrush}" />
+            </Style>
+        </ControlTheme>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="ci|MultipleDateSelector">
+            <Setter Property="Width" Value="236" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+    </UserControl.Styles>
+    <Grid x:Name="PreviewRoot" x:CompileBindings="True">
+        <Button x:Name="PreviewButton" MinHeight="32" Padding="11,4"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                ToolTip.Tip="{Binding Description}" AutomationProperties.Name="{Binding Description}">
+            <Grid ColumnDefinitions="*,8,12">
+                <TextBlock x:Name="PreviewText" Text="{Binding Preview}" VerticalAlignment="Center"
+                           TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                <ci:FluentIcon Grid.Column="2" Glyph="{x:Static icons:FluentIcons.ChevronDownRegular}"
+                               FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </Grid>
+            <Button.Flyout>
+                <Flyout Placement="BottomEdgeAlignedLeft" Opened="OnFlyoutOpened">
+                    <Flyout.FlyoutPresenterTheme>
+                        <ControlTheme TargetType="FlyoutPresenter" BasedOn="{StaticResource {x:Type FlyoutPresenter}}">
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+                        </ControlTheme>
+                    </Flyout.FlyoutPresenterTheme>
+                    <Calendar x:Name="MonthCalendar" SelectionMode="None" Focusable="True" FocusAdorner="{x:Null}"
+                              AutomationProperties.Name="选择日期">
+                        <Calendar.Styles>
+                            <Style Selector="CalendarDayButton">
+                                <Setter Property="Theme" Value="{StaticResource DayTheme}" />
+                            </Style>
+                        </Calendar.Styles>
+                    </Calendar>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+    </Grid>
+</UserControl>

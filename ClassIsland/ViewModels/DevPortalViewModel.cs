@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -10,6 +11,7 @@ using ClassIsland.Services;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ClassIsland.ViewModels;
 
@@ -120,4 +122,32 @@ public partial class DevPortalViewModel(
     [ObservableProperty] private string _styleSelector = "Control";
 
     [ObservableProperty] private string? _iconExpression = "";
+
+    [ObservableProperty] private ObservableCollection<DateOnly>? _selectedDates =
+    [
+        new(2026, 9, 21),
+        new(2026, 11, 18),
+        new(2027, 1, 1)
+    ];
+
+    [RelayCommand]
+    private void AddTodayToSelectedDates()
+    {
+        SelectedDates ??= [];
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        if (!SelectedDates.Contains(today))
+            SelectedDates.Add(today);
+    }
+
+    [RelayCommand]
+    private void ClearSelectedDates() => SelectedDates?.Clear();
+
+    [RelayCommand]
+    private void ReplaceSelectedDates()
+    {
+        SelectedDates = [new(2027, 1, 1), new(2026, 11, 18), new(2026, 11, 18), new(2026, 9, 21)];
+    }
+
+    [RelayCommand]
+    private void SetSelectedDatesToNull() => SelectedDates = null;
 }

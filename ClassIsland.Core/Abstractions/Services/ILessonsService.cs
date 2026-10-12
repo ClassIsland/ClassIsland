@@ -64,6 +64,12 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     /// </summary>
     event EventHandler? CurrentTimeStateChanged;
 
+    /// <summary>
+    /// 当课程安排失效时触发，事件参数用于判断指定日期是否受影响。
+    /// 通知包含尚未缓存课表的日期。
+    /// </summary>
+    event EventHandler<Predicate<DateOnly>>? ScheduleItemsInvalidated;
+
     internal void DebugTriggerOnClass();
     internal void DebugTriggerOnBreakingTime();
     internal void DebugTriggerOnAfterSchool();

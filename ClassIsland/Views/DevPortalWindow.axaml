@@ -69,6 +69,31 @@
             <TabItem Header="控件">
                 <ScrollViewer>
                     <StackPanel Spacing="6">
+                        <ci:Field Label="MultipleDateSelector">
+                            <StackPanel Spacing="6">
+                                <ci:MultipleDateSelector SelectedDates="{Binding ViewModel.SelectedDates}"
+                                                         Width="{Binding #DateSelectorWidth.Value}" />
+                                <Slider x:Name="DateSelectorWidth" Minimum="60" Maximum="600" Value="236"
+                                        Width="300" HorizontalAlignment="Left" AutomationProperties.Name="日期预览宽度" />
+                                <WrapPanel ItemSpacing="6">
+                                    <Button Content="添加今天" Command="{Binding ViewModel.AddTodayToSelectedDatesCommand}" />
+                                    <Button Content="清空" Command="{Binding ViewModel.ClearSelectedDatesCommand}" />
+                                    <Button Content="替换集合（含重复日期）" Command="{Binding ViewModel.ReplaceSelectedDatesCommand}" />
+                                    <Button Content="设为 null" Command="{Binding ViewModel.SetSelectedDatesToNullCommand}" />
+                                </WrapPanel>
+                                <TextBlock Text="绑定集合中的日期（原始顺序）：" />
+                                <ItemsControl ItemsSource="{Binding ViewModel.SelectedDates}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding StringFormat='yyyy/M/d'}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="独立实例（未绑定）：" />
+                                <ci:MultipleDateSelector />
+                                <ci:MultipleDateSelector />
+                            </StackPanel>
+                        </ci:Field>
                         <ci:Field Label="IconExpressionEditor">
                             <StackPanel Spacing="6">
                                 <ci:IconExpressionEditor IconExpression="{Binding ViewModel.IconExpression}" />

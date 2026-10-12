@@ -139,15 +139,21 @@ public class LessonsService : ObservableRecipient, ILessonsService
         public TimeRule RuleSnapshot { get; set; } = ruleSnapshot;
         public TimeRule? ObservedRule { get; set; }
         public ObservableCollection<DateOnly>? ObservedEnableDates { get; set; }
+        public ObservableCollection<DateOnly>? ObservedExcludedDates { get; set; }
+        public ObservableCollection<DateOnly>? ObservedAdditionalDates { get; set; }
         public IDisposable? ItemPropertySubscription { get; set; }
         public IDisposable? RulePropertySubscription { get; set; }
         public IDisposable? EnableDatesCollectionSubscription { get; set; }
+        public IDisposable? ExcludedDatesCollectionSubscription { get; set; }
+        public IDisposable? AdditionalDatesCollectionSubscription { get; set; }
 
         public void Dispose()
         {
             ItemPropertySubscription?.Dispose();
             RulePropertySubscription?.Dispose();
             EnableDatesCollectionSubscription?.Dispose();
+            ExcludedDatesCollectionSubscription?.Dispose();
+            AdditionalDatesCollectionSubscription?.Dispose();
         }
     }
 
@@ -163,6 +169,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
             WeekCountDiv = rule.WeekCountDiv,
             WeekCountDivTotal = rule.WeekCountDivTotal,
             EnableDates = new ObservableCollection<DateOnly>(rule.EnableDates),
+            ExcludedDates = new ObservableCollection<DateOnly>(rule.ExcludedDates),
+            AdditionalDates = new ObservableCollection<DateOnly>(rule.AdditionalDates),
             LoopCycleDays = rule.LoopCycleDays,
             LoopOffsetDays = rule.LoopOffsetDays
         };
@@ -171,13 +179,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void UpdateScheduleModeSubscriptions()
     {
         ReleaseScheduleItemSubscriptions();
-        if (Profile.ScheduleType != ScheduleType.Schedule)
-        {
-            return;
-        }
-
-        PruneConvertedScheduleItemsCache();
-        DirtyScheduleItemDates.UnionWith(ConvertedScheduleItemsCache.Keys);
 
         var scheduleItems = Profile.ScheduleItems;
         foreach (var (id, scheduleItem) in scheduleItems)
@@ -190,6 +191,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 handler => scheduleItems.CollectionChanged += handler,
                 handler => scheduleItems.CollectionChanged -= handler)
             .Subscribe(x => OnScheduleItemsCollectionChanged(x.EventArgs));
+
+        InvalidateAllScheduleItemDates();
     }
 
     private void ReleaseScheduleItemSubscriptions()
@@ -233,7 +236,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void ResetScheduleItemRuleSubscriptions(ScheduleItemSubscription subscription)
     {
         subscription.RulePropertySubscription?.Dispose();
-        subscription.EnableDatesCollectionSubscription?.Dispose();
 
         var rule = subscription.Item.EnableRule;
         subscription.ObservedRule = rule;
@@ -242,12 +244,14 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 handler => rule.PropertyChanged += handler,
                 handler => rule.PropertyChanged -= handler)
             .Subscribe(_ => OnScheduleItemChanged(subscription));
-        ResetScheduleItemEnableDatesSubscription(subscription);
+        ResetScheduleItemDateSubscriptions(subscription);
     }
 
-    private void ResetScheduleItemEnableDatesSubscription(ScheduleItemSubscription subscription)
+    private void ResetScheduleItemDateSubscriptions(ScheduleItemSubscription subscription)
     {
         subscription.EnableDatesCollectionSubscription?.Dispose();
+        subscription.ExcludedDatesCollectionSubscription?.Dispose();
+        subscription.AdditionalDatesCollectionSubscription?.Dispose();
 
         var enableDates = subscription.Item.EnableRule.EnableDates;
         subscription.ObservedEnableDates = enableDates;
@@ -255,6 +259,22 @@ public class LessonsService : ObservableRecipient, ILessonsService
             .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
                 handler => enableDates.CollectionChanged += handler,
                 handler => enableDates.CollectionChanged -= handler)
+            .Subscribe(_ => OnScheduleItemChanged(subscription));
+
+        var excludedDates = subscription.Item.EnableRule.ExcludedDates;
+        subscription.ObservedExcludedDates = excludedDates;
+        subscription.ExcludedDatesCollectionSubscription = Observable
+            .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => excludedDates.CollectionChanged += handler,
+                handler => excludedDates.CollectionChanged -= handler)
+            .Subscribe(_ => OnScheduleItemChanged(subscription));
+
+        var additionalDates = subscription.Item.EnableRule.AdditionalDates;
+        subscription.ObservedAdditionalDates = additionalDates;
+        subscription.AdditionalDatesCollectionSubscription = Observable
+            .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => additionalDates.CollectionChanged += handler,
+                handler => additionalDates.CollectionChanged -= handler)
             .Subscribe(_ => OnScheduleItemChanged(subscription));
     }
 
@@ -267,9 +287,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
         {
             ResetScheduleItemRuleSubscriptions(subscription);
         }
-        else if (!ReferenceEquals(subscription.ObservedEnableDates, subscription.Item.EnableRule.EnableDates))
+        else if (!ReferenceEquals(subscription.ObservedEnableDates, subscription.Item.EnableRule.EnableDates)
+                 || !ReferenceEquals(subscription.ObservedExcludedDates, subscription.Item.EnableRule.ExcludedDates)
+                 || !ReferenceEquals(subscription.ObservedAdditionalDates, subscription.Item.EnableRule.AdditionalDates))
         {
-            ResetScheduleItemEnableDatesSubscription(subscription);
+            ResetScheduleItemDateSubscriptions(subscription);
         }
     }
 
@@ -329,20 +351,25 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private void InvalidateScheduleItemDates(IEnumerable<TimeRule> rules)
     {
-        if (Profile.ScheduleType != ScheduleType.Schedule)
-        {
-            return;
-        }
-
         PruneConvertedScheduleItemsCache();
-        var affectedRules = rules.ToList();
+        var affectedRules = rules.Select(CreateTimeRuleSnapshot).ToList();
+        Predicate<DateOnly> isDateAffected = date =>
+            affectedRules.Any(rule => IsTimeRuleSatisfied(rule, date.ToDateTime(TimeOnly.MinValue)));
         foreach (var date in ConvertedScheduleItemsCache.Keys)
         {
-            if (affectedRules.Any(rule => IsTimeRuleSatisfied(rule, date.ToDateTime(TimeOnly.MinValue))))
+            if (isDateAffected(date))
             {
                 DirtyScheduleItemDates.Add(date);
             }
         }
+        ScheduleItemsInvalidated?.Invoke(this, isDateAffected);
+    }
+
+    private void InvalidateAllScheduleItemDates()
+    {
+        PruneConvertedScheduleItemsCache();
+        DirtyScheduleItemDates.UnionWith(ConvertedScheduleItemsCache.Keys);
+        ScheduleItemsInvalidated?.Invoke(this, _ => true);
     }
 
     public OrderedDictionary<Guid, ScheduleItem> GetScheduleItemsByDate(DateOnly date)
@@ -509,6 +536,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     public event EventHandler? OnBreakingTime;
     public event EventHandler? OnAfterSchool;
     public event EventHandler? CurrentTimeStateChanged;
+    public event EventHandler<Predicate<DateOnly>>? ScheduleItemsInvalidated;
 
     public void DebugTriggerOnClass() => OnClass?.Invoke(this, EventArgs.Empty);
     public void DebugTriggerOnBreakingTime() => OnBreakingTime?.Invoke(this, EventArgs.Empty);
@@ -909,8 +937,18 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private bool IsTimeRuleSatisfied(TimeRule rule, DateTime time)
     {
+        var date = DateOnly.FromDateTime(time);
+        if (rule.AdditionalDates.Contains(date))
+        {
+            return true;
+        }
+        if (rule.ExcludedDates.Contains(date))
+        {
+            return false;
+        }
+
         if (rule.RestrictsEnableRange
-            && (rule.RangeStart > DateOnly.FromDateTime(time) || rule.RangeEnd < DateOnly.FromDateTime(time)))
+            && (rule.RangeStart > date || rule.RangeEnd < date))
         {
             return false;
         }
@@ -929,7 +967,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 var rotation = GetCyclePositionsByDate(time);
                 return rule.WeekCountDiv == rotation[rule.WeekCountDivTotal];
             case TimeRule.TimeRuleType.Date:
-                return rule.EnableDates.Contains(DateOnly.FromDateTime(time));
+                return rule.EnableDates.Contains(date);
             case TimeRule.TimeRuleType.Loop:
                 var days = (time.Date - Settings.SingleWeekStartTime).Days;
                 return days % Math.Max(rule.LoopCycleDays, 1) == rule.LoopOffsetDays;
