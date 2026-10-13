@@ -22,6 +22,10 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
             MainTaskBarIcon.Icon = new WindowIcon(OperatingSystem.IsMacOS()
                 ? "../Resources/Assets/AppLogo_Monochrome.png"
                 : "Assets/AppLogo.png");
+
+            var icons = TrayIcon.GetIcons(AppBase.Current) ?? new TrayIcons();
+            icons.Add(MainTaskBarIcon);
+            TrayIcon.SetIcons(AppBase.Current, icons);
         }
         AppBase.Current.AppStopping += CurrentOnAppStopping;
     }
