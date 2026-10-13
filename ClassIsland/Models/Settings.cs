@@ -28,7 +28,7 @@ using ClassIsland.Services;
 
 namespace ClassIsland.Models;
 
-public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings, IGlobalSpeechSettings
+public partial class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings, IGlobalSpeechSettings
 {
     private int _theme = 2;
     private bool _iscustomBackgroundColorEnabled = false;

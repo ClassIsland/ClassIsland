@@ -165,6 +165,11 @@ public partial class App
         services.AddSettingsPage<PrivacySettingsPage>();
         services.AddSettingsPage<RefreshingSettingsPage>();
         services.AddSettingsPage<AdvancedSettingsPage>();
+        if (System.OperatingSystem.IsAndroid())
+        {
+            services.AddSettingsPage<RealtimeNotificationSettingsPage>();
+            services.AddTransient<RealtimeNotificationSettingsViewModel>();
+        }
         services.AddSettingsPage<ComponentsSettingsPage>();
         services.AddSettingsPage<AppearanceSettingsPage>();
         services.AddSettingsPage<NotificationSettingsPage>();
@@ -237,6 +242,10 @@ public partial class App
         // AttachedSettings
         services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
         services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
+        if (System.OperatingSystem.IsAndroid())
+        {
+            services.AddAttachedSettingsControl<RealtimeNotificationAttachedSettingsControl>();
+        }
         services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
         services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
         // 触发器

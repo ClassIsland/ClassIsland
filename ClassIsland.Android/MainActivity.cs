@@ -34,6 +34,7 @@ public class MainActivity : AvaloniaMainActivity
     public static WeakReference<MainActivity>? Current { get; set; }
 
     internal static event EventHandler? Resumed;
+    internal static event EventHandler? NotificationPermissionChanged;
 
     internal bool IsForeground { get; private set; }
 
@@ -183,6 +184,11 @@ public class MainActivity : AvaloniaMainActivity
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
     {
         base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == NotificationPermissionRequestCode)
+        {
+            NotificationPermissionChanged?.Invoke(this, EventArgs.Empty);
+            return;
+        }
         if (requestCode != LocationPermissionRequestCode)
         {
             return;
