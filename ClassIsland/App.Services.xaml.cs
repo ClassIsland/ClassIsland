@@ -165,7 +165,7 @@ public partial class App
         services.AddSettingsPage<PrivacySettingsPage>();
         services.AddSettingsPage<RefreshingSettingsPage>();
         services.AddSettingsPage<AdvancedSettingsPage>();
-        if (System.OperatingSystem.IsAndroid())
+        if (System.OperatingSystem.IsAndroid() || IsDevelopmentBuild)
         {
             services.AddSettingsPage<RealtimeNotificationSettingsPage>();
             services.AddTransient<RealtimeNotificationSettingsViewModel>();
