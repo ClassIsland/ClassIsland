@@ -90,6 +90,19 @@ public partial class ProfileSettingsWindow : ViewBase
             ViewModel.MasterPageTabSelectIndex = ForbiddenTabIndex;
         }
         InitializeComponent();
+        NavigateToTab(-1);
+        foreach (var tab in MasterTabControl.Items.OfType<TabItem>())
+        {
+            _externalSubscriptions.Add(tab.GetObservable(IsVisibleProperty)
+                .Skip(1)
+                .Subscribe(_ => Dispatcher.UIThread.Post(() =>
+                {
+                    if (!_resourcesReleased)
+                    {
+                        NavigateToTab(MasterTabControl.SelectedIndex);
+                    }
+                })));
+        }
         TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
         TimeLineListControl.KeyDown += OnKeyDown;
         ListViewTimePoints.KeyDown += OnKeyDown;
@@ -325,6 +338,7 @@ public partial class ProfileSettingsWindow : ViewBase
 
         if (uri == null || uri.Segments.Length < 3)
         {
+            NavigateToTab(-1);
             return;
         }
 
@@ -338,11 +352,12 @@ public partial class ProfileSettingsWindow : ViewBase
                 DisableProfileSubjectsEditing: false
             })
         {
+            NavigateToTab(-1);
             Dispatcher.UIThread.Post(OpenProfileTransferMenu, DispatcherPriority.Loaded);
             return;
         }
 
-        ViewModel.MasterPageTabSelectIndex = page.ToLower() switch 
+        NavigateToTab(page.ToLowerInvariant() switch
         {
             "classplans" when !ViewModel.ManagementService.Policy.DisableProfileEditing => ClassPlansTabIndex,
             "timelayouts" when !ViewModel.ManagementService.Policy.DisableProfileEditing => TimeLayoutsTabIndex,
@@ -350,8 +365,18 @@ public partial class ProfileSettingsWindow : ViewBase
             "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => SubjectsTabIndex,
             "forbidden" => ForbiddenTabIndex,
             "adjustment" => AdjustmentTabIndex,
-            _ => ViewModel.MasterPageTabSelectIndex
-        };
+            _ => -1
+        });
+    }
+
+    private void NavigateToTab(int index)
+    {
+        ViewModel.MasterPageTabSelectIndex =
+            index >= 0 && index < MasterTabControl.Items.Count &&
+            MasterTabControl.Items[index] is TabItem { IsVisible: true }
+                ? index
+                : Enumerable.Range(0, MasterTabControl.Items.Count)
+                    .FirstOrDefault(i => MasterTabControl.Items[i] is TabItem { IsVisible: true }, -1);
     }
 
     private void Window_OnClosing(object? sender, ViewClosingEventArgs e)
@@ -423,6 +448,8 @@ public partial class ProfileSettingsWindow : ViewBase
             {
                 return;
             }
+
+            NavigateToTab(MasterTabControl.SelectedIndex);
 
             if (ViewModel.MasterPageTabSelectIndex == ClassPlansTabIndex
                 && ViewModel.ProfileService.Profile.TimeLayouts.Count > 0
@@ -846,7 +873,7 @@ public partial class ProfileSettingsWindow : ViewBase
     
     private void ButtonGoToTimeLayoutsPage_OnClick(object? sender, RoutedEventArgs e)
     {
-        ViewModel.MasterPageTabSelectIndex = TimeLayoutsTabIndex;
+        NavigateToTab(TimeLayoutsTabIndex);
     }
     
     private void InputElementSubjectItem_OnPointerPressed(object? sender, PointerPressedEventArgs e)
