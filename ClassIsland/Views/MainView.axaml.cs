@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using ClassIsland.Core;
+using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
@@ -108,6 +109,15 @@ public partial class MainView : ViewBase
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
     {
         IAppHost.GetService<ProfileSettingsWindow>().Open();
+    }
+
+    private void ButtonAdjustSchedule_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.CanAdjustSchedule || sender is not Control anchor) return;
+        ScheduleAdjustmentMenu.Show(this, anchor, DateOnly.FromDateTime(ViewModel.SelectedDate),
+            () => ViewModel.ManagementService.AuthorizeByLevel(
+                ViewModel.ManagementService.CredentialConfig.ChangeLessonsAuthorizeLevel));
+        e.Handled = true;
     }
 
     private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)

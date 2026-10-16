@@ -16,6 +16,9 @@
         <Style Selector="TabControl#MainViewTabs /template/ ItemsPresenter#PART_ItemsPresenter">
             <Setter Property="IsVisible" Value="False"/>
         </Style>
+        <Style Selector="TextBlock#HomeScheduleSummary.adjusted">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+        </Style>
     </ci:ViewBase.Styles>
     <ci:AdaptiveNavigationView x:Name="MainNavigation"
                                Header="{Binding #MainViewTabs.SelectedItem.Header}">
@@ -67,22 +70,37 @@
                           Classes.wide="{Binding !#MainNavigation.IsNarrow}">
                         <appControls:HomeDatePicker x:Name="HomeCalendar" DataContext="{Binding $parent[views:MainView].ViewModel}"/>
                         <ScrollViewer x:Name="HomeLessons" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <Panel>
-                                <ci:LessonsListBox ClassPlan="{Binding $parent[views:MainView].ViewModel.DisplayedClassPlan}"
-                                                   Subjects="{Binding $parent[views:MainView].ViewModel.ProfileService.Profile.Subjects}"
-                                                   SelectedIndex="{Binding $parent[views:MainView].ViewModel.DisplayedSelectedIndex, Mode=OneWay}"
-                                                   IsLiveUpdatingEnabled="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
-                                                   FadeCompletedClasses="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
-                                                   IsVisible="{Binding $parent[views:MainView].ViewModel.HasDisplayedLessons}"
-                                                   Orientation="Vertical">
-                                    <ci:LessonsListBox.LessonControlSettings>
-                                        <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
-                                    </ci:LessonsListBox.LessonControlSettings>
-                                </ci:LessonsListBox>
-                                <TextBlock Text="这一天没有课程安排" Margin="16,32" HorizontalAlignment="Center"
-                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                           IsVisible="{Binding !$parent[views:MainView].ViewModel.HasDisplayedLessons}"/>
-                            </Panel>
+                            <Grid RowDefinitions="Auto,*">
+                                <Grid ColumnDefinitions="*,Auto" Margin="0 4">
+                                    <TextBlock x:Name="HomeScheduleSummary" Classes="l-instructive"
+                                               Classes.adjusted="{Binding $parent[views:MainView].ViewModel.HasDisplayedScheduleAdjustment}"
+                                               Text="{Binding $parent[views:MainView].ViewModel.DisplayedScheduleSummary}"
+                                               VerticalAlignment="Center" Margin="16,0,8,0" TextWrapping="Wrap"/>
+                                    <Button Grid.Column="1" HorizontalAlignment="Right" Theme="{StaticResource TransparentButton}"
+                                            ToolTip.Tip="调整所选日期课程" AutomationProperties.Name="调整所选日期课程"
+                                            IsVisible="{Binding $parent[views:MainView].ViewModel.IsScheduleAdjustmentVisible}"
+                                            IsEnabled="{Binding $parent[views:MainView].ViewModel.CanAdjustSchedule}"
+                                            Click="ButtonAdjustSchedule_OnClick">
+                                        <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+                                    </Button>
+                                </Grid>
+                                <Panel Grid.Row="1">
+                                    <ci:LessonsListBox ClassPlan="{Binding $parent[views:MainView].ViewModel.DisplayedClassPlan}"
+                                                       Subjects="{Binding $parent[views:MainView].ViewModel.ProfileService.Profile.Subjects}"
+                                                       SelectedIndex="{Binding $parent[views:MainView].ViewModel.DisplayedSelectedIndex, Mode=OneWay}"
+                                                       IsLiveUpdatingEnabled="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
+                                                       FadeCompletedClasses="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
+                                                       IsVisible="{Binding $parent[views:MainView].ViewModel.HasDisplayedLessons}"
+                                                       Orientation="Vertical">
+                                        <ci:LessonsListBox.LessonControlSettings>
+                                            <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
+                                        </ci:LessonsListBox.LessonControlSettings>
+                                    </ci:LessonsListBox>
+                                    <TextBlock Text="这一天没有课程安排" Margin="16,32" HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               IsVisible="{Binding !$parent[views:MainView].ViewModel.HasDisplayedLessons}"/>
+                                </Panel>
+                            </Grid>
                         </ScrollViewer>
                     </Grid>
                 </Border>

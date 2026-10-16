@@ -2119,6 +2119,7 @@
                                                 CreateRequested="ScheduleWeekEditor_OnCreateRequested"
                                                 EditRequested="ScheduleWeekEditor_OnEditRequested"
                                                 DeleteRequested="ScheduleWeekEditor_OnDeleteRequested"
+                                                DayHeaderClicked="ScheduleWeekEditor_OnDayHeaderClicked"
                                                 Margin="0 0 0 -28">
                                                 <scheduleWeek:ScheduleWeekEditControl.IsReadonly>
                                                     <MultiBinding Converter="{x:Static BoolConverters.Or}">
