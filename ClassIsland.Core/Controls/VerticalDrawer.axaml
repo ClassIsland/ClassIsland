@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:ClassIsland.Core.Controls">
+        xmlns:controls="using:ClassIsland.Core.Controls"
+        xmlns:icons="using:ClassIsland.Core.Icons">
     <Design.PreviewWith>
         <controls:VerticalDrawer />
     </Design.PreviewWith>
@@ -20,20 +21,12 @@
                     <Border x:Name="PART_DismissLayer" 
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"/>
-                    <Canvas x:Name="PART_Canvas"
+                    <Canvas x:Name="PART_Canvas" ClipToBounds="True"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch">
                         <Panel x:Name="WorkingPanel" 
                                Height="{TemplateBinding ContainerHeight}"
                                Width="{Binding #PART_Canvas.Bounds.Width}">
-                            <Panel.Transitions>
-                                <Transitions>
-                                    <DoubleTransition Property="Canvas.Bottom" Duration="0:0:0.25"
-                                                      Easing="0,0 0,1" />
-                                    <DoubleTransition Property="Height" Duration="0:0:0.25"
-                                                      Easing="0,0 0,1" />
-                                </Transitions>
-                            </Panel.Transitions>
                             <Border x:Name="PART_BackgroundElement"
                                     Background="{TemplateBinding Background}"
                                     BorderThickness="{StaticResource ContentDialogBorderWidth}"
@@ -51,56 +44,59 @@
                                 <Border ClipToBounds="True"
                                         CornerRadius="{TemplateBinding CornerRadius}"
                                         Padding="8 8 8 0">
-                                    <Grid RowDefinitions="32, *" ColumnDefinitions="*, Auto">
+                                    <Grid RowDefinitions="32, *">
                                         <!-- Title -->
-                                        <ContentPresenter x:Name="PART_TitleContentPresenter"
-                                                          Grid.Row="0" Grid.Column="0"
-                                                          VerticalAlignment="Center"
-                                                          Content="{TemplateBinding Title}"
-                                                          ContentTemplate="{TemplateBinding TitleTemplate}" />
-                                        <StackPanel Grid.Row="0" Grid.Column="1"
-                                                    Orientation="Horizontal" Classes="items-valign-center"
-                                                    Spacing="4">
-                                            <Button Theme="{StaticResource TransparentButton}"
-                                                    Content="{controls:FluentIcon &#xEC5C;}"
-                                                    ToolTip.Tip="收起"
-                                                    Command="{Binding Collapse, RelativeSource={RelativeSource TemplatedParent}}">
-                                                <Button.IsVisible>
-                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                        <TemplateBinding Property="AllowCollapse" />
-                                                        <TemplateBinding Property="State"
-                                                                         Converter="{x:Static ObjectConverters.Equal}">
-                                                            <TemplateBinding.ConverterParameter>
-                                                                <controls:VerticalDrawerOpenState>Opened</controls:VerticalDrawerOpenState>
-                                                            </TemplateBinding.ConverterParameter>
-                                                        </TemplateBinding>
-                                                    </MultiBinding>
-                                                </Button.IsVisible>
-                                            </Button>
-                                            <Button Theme="{StaticResource TransparentButton}"
-                                                    Content="{controls:FluentIcon &#xEC5E;}"
-                                                    ToolTip.Tip="展开"
-                                                    Command="{Binding Open, RelativeSource={RelativeSource TemplatedParent}}">
-                                                <Button.IsVisible>
-                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                        <TemplateBinding Property="AllowCollapse" />
-                                                        <TemplateBinding Property="State"
-                                                                         Converter="{x:Static ObjectConverters.NotEqual}">
-                                                            <TemplateBinding.ConverterParameter>
-                                                                <controls:VerticalDrawerOpenState>Opened</controls:VerticalDrawerOpenState>
-                                                            </TemplateBinding.ConverterParameter>
-                                                        </TemplateBinding>
-                                                    </MultiBinding>
-                                                </Button.IsVisible>
-                                            </Button>
-                                            <Button Theme="{StaticResource TransparentButton}"
-                                                    Content="{controls:FluentIcon &#xE671;}"
-                                                    ToolTip.Tip="关闭"
-                                                    Command="{Binding Close, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        </StackPanel>
+                                        <Grid x:Name="PART_TitleBar" Background="Transparent"
+                                              ColumnDefinitions="*, Auto">
+                                            <ContentPresenter x:Name="PART_TitleContentPresenter"
+                                                              Grid.Row="0" Grid.Column="0"
+                                                              VerticalAlignment="Center"
+                                                              Content="{TemplateBinding Title}"
+                                                              ContentTemplate="{TemplateBinding TitleTemplate}" />
+                                            <StackPanel Grid.Row="0" Grid.Column="1"
+                                                        Orientation="Horizontal" Classes="items-valign-center"
+                                                        Spacing="4">
+                                                <Button Theme="{StaticResource TransparentButton}"
+                                                        Content="{controls:FluentIcon {x:Static icons:FluentIcons.ChevronDownRegular}}"
+                                                        ToolTip.Tip="收起"
+                                                        Command="{Binding Collapse, RelativeSource={RelativeSource TemplatedParent}}">
+                                                    <Button.IsVisible>
+                                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                            <TemplateBinding Property="AllowCollapse" />
+                                                            <TemplateBinding Property="State"
+                                                                             Converter="{x:Static ObjectConverters.Equal}">
+                                                                <TemplateBinding.ConverterParameter>
+                                                                    <controls:VerticalDrawerOpenState>Opened</controls:VerticalDrawerOpenState>
+                                                                </TemplateBinding.ConverterParameter>
+                                                            </TemplateBinding>
+                                                        </MultiBinding>
+                                                    </Button.IsVisible>
+                                                </Button>
+                                                <Button Theme="{StaticResource TransparentButton}"
+                                                        Content="{controls:FluentIcon {x:Static icons:FluentIcons.ChevronUpRegular}}"
+                                                        ToolTip.Tip="展开"
+                                                        Command="{Binding Open, RelativeSource={RelativeSource TemplatedParent}}">
+                                                    <Button.IsVisible>
+                                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                            <TemplateBinding Property="AllowCollapse" />
+                                                            <TemplateBinding Property="State"
+                                                                             Converter="{x:Static ObjectConverters.NotEqual}">
+                                                                <TemplateBinding.ConverterParameter>
+                                                                    <controls:VerticalDrawerOpenState>Opened</controls:VerticalDrawerOpenState>
+                                                                </TemplateBinding.ConverterParameter>
+                                                            </TemplateBinding>
+                                                        </MultiBinding>
+                                                    </Button.IsVisible>
+                                                </Button>
+                                                <Button Theme="{StaticResource TransparentButton}"
+                                                        Content="{controls:FluentIcon {x:Static icons:FluentIcons.DismissRegular}}"
+                                                        ToolTip.Tip="关闭"
+                                                        Command="{Binding Close, RelativeSource={RelativeSource TemplatedParent}}" />
+                                            </StackPanel>
+                                        </Grid>
                                         <!-- Content -->
                                         <ContentPresenter x:Name="PART_ContentPresenter"
-                                                          Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                          Grid.Row="1"
                                                           Content="{TemplateBinding DrawerContent}"
                                                           ContentTemplate="{TemplateBinding DrawerTemplate}"
                                                           HorizontalContentAlignment="{TemplateBinding DrawerHorizontalContentAlignment}"
@@ -116,7 +112,18 @@
         </Setter>
         
         <Style Selector="^ /template/ Panel#WorkingPanel">
-            <Setter Property="Canvas.Bottom" Value="{Binding ContainerHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:VerticalDrawer.ContainerHeightToClosedCanvasBottomPosConverter}}"/>
+            <Setter Property="Opacity" Value="0"/>
+        </Style>
+        <Style Selector="^:layout-ready /template/ Panel#WorkingPanel">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        <Style Selector="^:animated:layout-ready:not(:dragging) /template/ Panel#WorkingPanel">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Canvas.Bottom" Duration="0:0:0.25" Easing="0,0 0,1" />
+                    <DoubleTransition Property="Height" Duration="0:0:0.25" Easing="0,0 0,1" />
+                </Transitions>
+            </Setter>
         </Style>
         <Style Selector="^ /template/ Border#PART_DismissLayer">
             <Setter Property="IsHitTestVisible" Value="False"/>
@@ -125,6 +132,8 @@
         </Style>
         <Style Selector="^[SmokeBackground=True] /template/ Border#PART_DismissLayer">
             <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefaultBrush}"/>
+        </Style>
+        <Style Selector="^:animated:layout-ready[SmokeBackground=True] /template/ Border#PART_DismissLayer">
             <Setter Property="Transitions">
                 <Transitions>
                     <DoubleTransition Property="Opacity" Duration="0:0:0.25"
@@ -133,20 +142,7 @@
             </Setter>
         </Style>
         
-        <Style Selector="^:closed">
-            <Style Selector="^ /template/ Panel#WorkingPanel">
-                <Setter Property="Canvas.Bottom" Value="{Binding ContainerHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:VerticalDrawer.ContainerHeightToClosedCanvasBottomPosConverter}}"/>
-            </Style>
-        </Style>
-        <Style Selector="^:collapsed">
-            <Style Selector="^ /template/ Panel#WorkingPanel">
-                <Setter Property="Canvas.Bottom" Value="{Binding ContainerHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:VerticalDrawer.ContainerHeightToCollapsedCanvasBottomPosConverter}}"/>
-            </Style>
-        </Style>
         <Style Selector="^:opened">
-            <Style Selector="^ /template/ Panel#WorkingPanel">
-                <Setter Property="Canvas.Bottom" Value="0"/>
-            </Style>
             <Style Selector="^ /template/ Border#PART_DismissLayer">
                 <Setter Property="IsHitTestVisible" Value="True"/>
                 <Setter Property="Opacity" Value="1"/>
