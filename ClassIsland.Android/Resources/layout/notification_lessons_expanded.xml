@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
         android:ellipsize="end"
-        android:maxLines="2" />
+        android:maxLines="1" />
 
     <LinearLayout
         android:id="@+id/notification_progress_container"
@@ -42,15 +42,6 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/notification_time_range"
-                style="@style/TextAppearance.Compat.Notification.Info"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1" />
-
-            <TextView
                 android:id="@+id/notification_progress_percent"
                 style="@style/TextAppearance.Compat.Notification.Info"
                 android:layout_width="wrap_content"
@@ -61,25 +52,33 @@
 
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/notification_progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_marginTop="5dp"
-            android:indeterminate="false"
-            android:max="100"
-            android:progress="0" />
-
-        <Chronometer
-            android:id="@+id/notification_remaining"
-            style="@style/TextAppearance.Compat.Notification.Line2"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:ellipsize="end"
-            android:gravity="end"
-            android:maxLines="1" />
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ProgressBar
+                android:id="@+id/notification_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="0" />
+
+            <ImageView
+                android:id="@+id/notification_progress_end_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

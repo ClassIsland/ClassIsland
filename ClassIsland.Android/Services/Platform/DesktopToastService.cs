@@ -4,6 +4,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Graphics;
+using Android.Widget;
 using AndroidX.Core.App;
 using Avalonia.Platform;
 using Avalonia.Threading;
@@ -12,11 +13,12 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
+using AndroidSettings = global::Android.Provider.Settings;
 
 namespace ClassIsland.Android.Services.Platform;
 
 [SupportedOSPlatform("android24.0")]
-public class DesktopToastService : IDesktopToastService, IDisposable
+public class DesktopToastService : IDesktopToastService, INotificationPermissionService, IDisposable
 {
     private const string NotificationChannelId = "desktop_toasts";
     internal const string NotificationIdExtra = "desktop_toast_notification_id";
@@ -31,6 +33,19 @@ public class DesktopToastService : IDesktopToastService, IDisposable
     private bool _isWaitingForAppStart;
     private bool _disposed;
 
+    public event EventHandler? NotificationPermissionChanged;
+
+    public bool IsNotificationPermissionGranted
+    {
+        get
+        {
+            using var manager = NotificationManagerCompat.From(_context);
+            return manager?.AreNotificationsEnabled() == true &&
+                   (!OperatingSystem.IsAndroidVersionAtLeast(33) ||
+                    _context.CheckSelfPermission(global::Android.Manifest.Permission.PostNotifications) == Permission.Granted);
+        }
+    }
+
     public DesktopToastService()
     {
         _notificationManager = (NotificationManager)_context.GetSystemService(Context.NotificationService)!;
@@ -44,7 +59,43 @@ public class DesktopToastService : IDesktopToastService, IDisposable
             _notificationManager.CreateNotificationChannel(channel);
         }
         MainActivity.Resumed += ActivityOnResumed;
+        MainActivity.NotificationPermissionChanged += ActivityOnNotificationPermissionChanged;
     }
+
+    public void OpenNotificationPermissionSettings() => RunOnUiThread(() =>
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (OperatingSystem.IsAndroidVersionAtLeast(26))
+        {
+            try
+            {
+                using var intent = new Intent(AndroidSettings.ActionAppNotificationSettings);
+                intent.PutExtra(AndroidSettings.ExtraAppPackage, _context.PackageName);
+                intent.AddFlags(ActivityFlags.NewTask);
+                _context.StartActivity(intent);
+                return;
+            }
+            catch (ActivityNotFoundException)
+            {
+            }
+        }
+
+        try
+        {
+            using var intent = new Intent(AndroidSettings.ActionApplicationDetailsSettings,
+                global::Android.Net.Uri.Parse($"package:{_context.PackageName}"));
+            intent.AddFlags(ActivityFlags.NewTask);
+            _context.StartActivity(intent);
+        }
+        catch (ActivityNotFoundException)
+        {
+            Toast.MakeText(_context, "请打开系统设置，在应用通知中允许 ClassIsland 发送通知。", ToastLength.Long)?.Show();
+        }
+    });
 
     public async Task ShowToastAsync(DesktopToastContent content)
     {
@@ -69,13 +120,7 @@ public class DesktopToastService : IDesktopToastService, IDisposable
 
     private bool CanPostNotification()
     {
-        using var manager = NotificationManagerCompat.From(_context);
-        if (_disposed || manager?.AreNotificationsEnabled() != true)
-        {
-            return false;
-        }
-        if (OperatingSystem.IsAndroidVersionAtLeast(33) &&
-            _context.CheckSelfPermission(global::Android.Manifest.Permission.PostNotifications) != Permission.Granted)
+        if (_disposed || !IsNotificationPermissionGranted)
         {
             return false;
         }
@@ -237,7 +282,25 @@ public class DesktopToastService : IDesktopToastService, IDisposable
     }
 
     private void ActivityOnResumed(object? sender, EventArgs e) =>
-        Dispatcher.UIThread.Post(ProcessPendingActivations, DispatcherPriority.Background);
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            NotificationPermissionChanged?.Invoke(this, EventArgs.Empty);
+            ProcessPendingActivations();
+        }, DispatcherPriority.Background);
+
+    private void ActivityOnNotificationPermissionChanged(object? sender, EventArgs e) =>
+        RunOnUiThread(() =>
+        {
+            if (!_disposed)
+            {
+                NotificationPermissionChanged?.Invoke(this, EventArgs.Empty);
+            }
+        });
 
     private void AppOnStarted(object? sender, EventArgs e)
     {
@@ -312,6 +375,7 @@ public class DesktopToastService : IDesktopToastService, IDisposable
         }
         _disposed = true;
         MainActivity.Resumed -= ActivityOnResumed;
+        MainActivity.NotificationPermissionChanged -= ActivityOnNotificationPermissionChanged;
         if (_isWaitingForAppStart)
         {
             AppBase.Current.AppStarted -= AppOnStarted;
