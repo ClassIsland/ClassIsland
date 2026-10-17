@@ -1545,13 +1545,20 @@ public partial class ProfileSettingsWindow : ViewBase
     private void ScheduleWeekEditor_OnForkAndReplaceRequested(object? sender, ScheduleWeekEditEventArgs e)
     {
         if (!CanEditScheduleItems()) return;
-        if (e.ScheduleItemId is not { } scheduleItemId
-            || ViewModel.ForkAndReplaceScheduleItem(scheduleItemId, e.Date) == null)
+        if (e.ScheduleItemId is not { } scheduleItemId)
+        {
+            this.ShowWarningToast("无法创建临时覆盖课程，请重新选择课程后重试。");
+            return;
+        }
+        var newId = ViewModel.ProfileService.ForkAndReplaceScheduleItem(scheduleItemId,
+            e.Date.ToDateTime(TimeOnly.MinValue));
+        if (newId == null)
         {
             this.ShowWarningToast("无法创建临时覆盖课程，请重新选择课程后重试。");
             return;
         }
 
+        ViewModel.SelectedScheduleItemId = newId;
         this.ShowToast("已创建临时覆盖课程。");
         e.Handled = true;
     }
@@ -1574,12 +1581,15 @@ public partial class ProfileSettingsWindow : ViewBase
             this.ShowWarningToast("请先在日程视图中选择要分叉的课程日期。");
             return;
         }
-        if (ViewModel.ForkAndReplaceScheduleItem(selected.Key, date) == null)
+        var newId = ViewModel.ProfileService.ForkAndReplaceScheduleItem(selected.Key,
+            date.ToDateTime(TimeOnly.MinValue));
+        if (newId == null)
         {
             this.ShowWarningToast("无法创建临时覆盖课程，请重新选择课程后重试。");
             return;
         }
 
+        ViewModel.SelectedScheduleItemId = newId;
         this.ShowToast("已创建临时覆盖课程。");
     }
 
@@ -1618,7 +1628,9 @@ public partial class ProfileSettingsWindow : ViewBase
     private void ButtonConvertScheduleItemReplacementToNormal_OnClick(object? sender, RoutedEventArgs e)
     {
         if (!CanEditScheduleItems()) return;
-        if (!ViewModel.ConvertSelectedScheduleItemReplacementToNormal()) return;
+        if (ViewModel.SelectedScheduleItemKvp is not { } selected
+            || !ViewModel.ProfileService.ConvertScheduleItemReplacementToNormal(selected.Key))
+            return;
         this.ShowToast("已转换为普通课程。");
     }
 
