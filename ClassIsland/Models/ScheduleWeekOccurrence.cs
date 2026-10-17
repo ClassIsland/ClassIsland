@@ -10,4 +10,5 @@ public sealed record ScheduleWeekOccurrence(Guid ScheduleItemId, DateOnly Date, 
 {
     public string? SubjectColorHex { get; init; }
     public string? SubjectIconExpression { get; init; }
+    public bool IsReplacement { get; init; }
 }

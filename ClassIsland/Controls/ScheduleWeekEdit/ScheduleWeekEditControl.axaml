@@ -62,6 +62,13 @@
                             <TextBlock Name="TimeLabel" Text="{TemplateBinding TimeText}" FontSize="11"
                                        TextWrapping="Wrap" IsVisible="{TemplateBinding ShowTimeText}"/>
                         </StackPanel>
+                        <Border HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"
+                                Padding="2" CornerRadius="3"
+                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                IsVisible="{TemplateBinding IsReplacement}" IsHitTestVisible="False">
+                            <ci:FluentIcon Glyph="{ci:FI BranchForkRegular}" FontSize="10"
+                                           Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                        </Border>
                         <Border BorderBrush="{TemplateBinding SubjectBrush}" BorderThickness="2"
                                 CornerRadius="4" IsVisible="{TemplateBinding IsSelected}" IsHitTestVisible="False"/>
                         <Border Height="3" Width="22" CornerRadius="2" Margin="0,2" VerticalAlignment="Top"

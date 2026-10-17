@@ -1951,6 +1951,14 @@
                                             <ci:FluentIconSource Glyph="{ci:FI CopyRegular}"/>
                                         </controls:FACommandBarButton.IconSource>
                                     </controls:FACommandBarButton>
+                                    <controls:FACommandBarButton Click="ButtonForkScheduleItem_OnClick"
+                                                               ToolTip.Tip="在日程视图中分叉并替换选中的课程。"
+                                                               IsEnabled="{Binding ViewModel.SelectedScheduleItemKvp, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                               Label="分叉">
+                                        <controls:FACommandBarButton.IconSource>
+                                            <ci:FluentIconSource Glyph="{ci:FI BranchForkRegular}"/>
+                                        </controls:FACommandBarButton.IconSource>
+                                    </controls:FACommandBarButton>
                                     <controls:FACommandBarButton Click="ButtonDeleteScheduleItem_OnClick"
                                                                ToolTip.Tip="删除选中的课程。"
                                                                IsEnabled="{Binding ViewModel.SelectedScheduleItemKvp, Converter={x:Static ObjectConverters.IsNotNull}}"
@@ -2060,15 +2068,32 @@
                                         <DataGridTemplateColumn Header="科目" Width="*" MinWidth="140">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <ContentControl
-                                                        Content="{Binding Value.SubjectId, Converter={StaticResource SubjectIdToSubjectConverter}, TargetNullValue={StaticResource UnspecifiedScheduleSubject}, FallbackValue={StaticResource UnspecifiedScheduleSubject}}"
-                                                        VerticalAlignment="Center" Margin="6 0">
-                                                        <ContentControl.ContentTemplate>
-                                                            <DataTemplate>
-                                                                <TextBlock Text="{Binding Name}"/>
-                                                            </DataTemplate>
-                                                        </ContentControl.ContentTemplate>
-                                                    </ContentControl>
+                                                    <Grid Margin="6 0" ColumnDefinitions="*,Auto">
+                                                        <ContentControl
+                                                            Content="{Binding Value.SubjectId, Converter={StaticResource SubjectIdToSubjectConverter}, TargetNullValue={StaticResource UnspecifiedScheduleSubject}, FallbackValue={StaticResource UnspecifiedScheduleSubject}}"
+                                                            VerticalAlignment="Center">
+                                                            <ContentControl.ContentTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding Name}"/>
+                                                                </DataTemplate>
+                                                            </ContentControl.ContentTemplate>
+                                                        </ContentControl>
+                                                        <Border Grid.Column="1" Margin="6 0 0 0"
+                                                                Padding="4 1" CornerRadius="3"
+                                                                VerticalAlignment="Center"
+                                                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                                                IsVisible="{Binding Value.HasReplacementTarget}"
+                                                                ToolTip.Tip="临时覆盖课程">
+                                                            <StackPanel Orientation="Horizontal" Spacing="3">
+                                                                <ci:FluentIcon Glyph="{ci:FI BranchForkRegular}"
+                                                                               FontSize="11"
+                                                                               Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                                                                <TextBlock Text="覆盖" FontSize="11"
+                                                                           VerticalAlignment="Center"
+                                                                           Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </Grid>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                             <DataGridTemplateColumn.CellEditingTemplate>
@@ -2148,6 +2173,8 @@
                                                 CreateRequested="ScheduleWeekEditor_OnCreateRequested"
                                                 EditRequested="ScheduleWeekEditor_OnEditRequested"
                                                 DeleteRequested="ScheduleWeekEditor_OnDeleteRequested"
+                                                DuplicateRequested="ScheduleWeekEditor_OnDuplicateRequested"
+                                                ForkAndReplaceRequested="ScheduleWeekEditor_OnForkAndReplaceRequested"
                                                 DayHeaderClicked="ScheduleWeekEditor_OnDayHeaderClicked"
                                                 Margin="0 0 0 -28">
                                                 <scheduleWeek:ScheduleWeekEditControl.IsReadonly>
@@ -2192,6 +2219,30 @@
                                             </StackPanel.IsEnabled>
                                             <TextBlock Text="编辑课程信息"
                                                        Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                                            <controls:FAInfoBar
+                                                Title="临时覆盖"
+                                                Message="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedScheduleItemReplacementDescription}"
+                                                Severity="Informational"
+                                                IsOpen="True"
+                                                IsClosable="False"
+                                                IsVisible="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedScheduleItemHasReplacement}">
+                                                <controls:FAInfoBar.ActionButton>
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <Button Click="ButtonRemoveReplacementScheduleItem_OnClick">
+                                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                <ci:FluentIcon Glyph="{ci:FI DeleteRegular}"/>
+                                                                <TextBlock Text="解除替换" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Click="ButtonConvertScheduleItemReplacementToNormal_OnClick">
+                                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                <ci:FluentIcon Glyph="{ci:FI ArrowSyncRegular}"/>
+                                                                <TextBlock Text="转换为普通课程" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </controls:FAInfoBar.ActionButton>
+                                            </controls:FAInfoBar>
                                             <ci:Field Label="科目">
                                                 <ComboBox ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ScheduleItemSubjects.List}"
                                                           SelectedValue="{Binding SubjectId, Mode=TwoWay}"

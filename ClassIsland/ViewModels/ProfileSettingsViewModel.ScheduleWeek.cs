@@ -131,6 +131,46 @@ public partial class ProfileSettingsViewModel
         return pair;
     }
 
+    public KeyValuePair<Guid, ScheduleItem>? ForkAndReplaceScheduleItem(Guid scheduleItemId, DateOnly date)
+    {
+        if (!ProfileService.Profile.ScheduleItems.TryGetValue(scheduleItemId, out var source)
+            || source.ReplacementTarget != null)
+            return null;
+
+        var item = ConfigureFileHelper.CopyObject(source);
+        item.EnableRule = new TimeRule
+        {
+            Type = TimeRule.TimeRuleType.Date,
+            EnableDates = new ObservableCollection<DateOnly> { date }
+        };
+        item.ReplacementTarget = new ScheduleItemReplacementTarget(scheduleItemId,
+            date.ToDateTime(TimeOnly.MinValue));
+        var pair = new KeyValuePair<Guid, ScheduleItem>(Guid.NewGuid(), item);
+        ScheduleItems.List.Add(pair);
+        SelectedScheduleItemKvp = pair;
+        return pair;
+    }
+
+    public bool ConvertSelectedScheduleItemReplacementToNormal()
+    {
+        if (SelectedScheduleItem?.ReplacementTarget == null)
+            return false;
+
+        SelectedScheduleItem.ReplacementTarget = null;
+        return true;
+    }
+
+    public bool RemoveSelectedReplacementScheduleItem()
+    {
+        if (SelectedScheduleItemKvp is not { } selected
+            || selected.Value.ReplacementTarget == null
+            || !ScheduleItems.List.Remove(selected))
+            return false;
+
+        SelectedScheduleItemKvp = null;
+        return true;
+    }
+
     public bool ApplyScheduleWeekEdit(ScheduleWeekEditEventArgs request)
     {
         if (request.ScheduleItemId is not { } id || !ProfileService.Profile.ScheduleItems.TryGetValue(id, out var item))

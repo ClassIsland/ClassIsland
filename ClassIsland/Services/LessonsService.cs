@@ -152,6 +152,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         public ScheduleItem Item { get; } = item;
         public TimeRule RuleSnapshot { get; set; } = ruleSnapshot;
+        public ScheduleItemReplacementTarget? ReplacementTargetSnapshot { get; set; }
         public TimeRule? ObservedRule { get; set; }
         public ObservableCollection<DateOnly>? ObservedEnableDates { get; set; }
         public ObservableCollection<DateOnly>? ObservedExcludedDates { get; set; }
@@ -264,7 +265,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
         var subscription = new ScheduleItemSubscription(
             scheduleItem,
-            CreateTimeRuleSnapshot(scheduleItem.EnableRule));
+            CreateTimeRuleSnapshot(scheduleItem.EnableRule))
+        {
+            ReplacementTargetSnapshot = scheduleItem.ReplacementTarget
+        };
         _scheduleItemSubscriptions.Add(id, subscription);
         subscription.ItemPropertySubscription = Observable
             .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
@@ -329,8 +333,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private void OnScheduleItemChanged(ScheduleItemSubscription subscription)
     {
-        InvalidateScheduleItemDates([subscription.RuleSnapshot, subscription.Item.EnableRule]);
+        var replacementTarget = subscription.Item.ReplacementTarget;
+        InvalidateScheduleItemDates([subscription.RuleSnapshot, subscription.Item.EnableRule],
+            GetReplacementTargetDates(subscription.ReplacementTargetSnapshot?.Date, replacementTarget?.Date));
         subscription.RuleSnapshot = CreateTimeRuleSnapshot(subscription.Item.EnableRule);
+        subscription.ReplacementTargetSnapshot = replacementTarget;
 
         if (!ReferenceEquals(subscription.ObservedRule, subscription.Item.EnableRule))
         {
@@ -354,11 +361,20 @@ public class LessonsService : ObservableRecipient, ILessonsService
         var oldItems = args.OldItems?.OfType<KeyValuePair<Guid, ScheduleItem>>().ToList() ?? [];
         var newItems = args.NewItems?.OfType<KeyValuePair<Guid, ScheduleItem>>().ToList() ?? [];
         var affectedRules = new List<TimeRule>();
+        var affectedReplacementDates = new HashSet<DateOnly>();
 
         if (args.Action == NotifyCollectionChangedAction.Reset)
         {
             affectedRules.AddRange(_scheduleItemSubscriptions.Values.Select(x => x.RuleSnapshot));
             affectedRules.AddRange(Profile.ScheduleItems.Values.Select(x => x.EnableRule));
+            affectedReplacementDates.UnionWith(_scheduleItemSubscriptions.Values
+                .Select(x => x.ReplacementTargetSnapshot?.Date)
+                .Where(x => x.HasValue)
+                .Select(x => DateOnly.FromDateTime(x!.Value)));
+            affectedReplacementDates.UnionWith(Profile.ScheduleItems.Values
+                .Select(x => x.ReplacementTarget?.Date)
+                .Where(x => x.HasValue)
+                .Select(x => DateOnly.FromDateTime(x!.Value)));
         }
         else
         {
@@ -368,11 +384,18 @@ public class LessonsService : ObservableRecipient, ILessonsService
                     && ReferenceEquals(subscription.Item, scheduleItem)
                         ? subscription.RuleSnapshot
                         : CreateTimeRuleSnapshot(scheduleItem.EnableRule));
+                if (scheduleItem.ReplacementTarget is { } target)
+                    affectedReplacementDates.Add(DateOnly.FromDateTime(target.Date));
             }
             affectedRules.AddRange(newItems.Select(x => x.Value.EnableRule));
+            foreach (var (_, scheduleItem) in newItems)
+            {
+                if (scheduleItem.ReplacementTarget is { } target)
+                    affectedReplacementDates.Add(DateOnly.FromDateTime(target.Date));
+            }
         }
 
-        InvalidateScheduleItemDates(affectedRules);
+        InvalidateScheduleItemDates(affectedRules, affectedReplacementDates);
 
         if (args.Action == NotifyCollectionChangedAction.Reset)
         {
@@ -398,13 +421,24 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
     }
 
-    private void InvalidateScheduleItemDates(IEnumerable<TimeRule> rules)
+    private static HashSet<DateOnly> GetReplacementTargetDates(params DateTime?[] dates) =>
+        dates.Where(x => x.HasValue)
+            .Select(x => DateOnly.FromDateTime(x!.Value))
+            .ToHashSet();
+
+    private void InvalidateScheduleItemDates(IEnumerable<TimeRule> rules,
+        IEnumerable<DateOnly>? replacementTargetDates = null)
     {
         PruneConvertedScheduleItemsCache();
         var affectedRules = rules.Select(CreateTimeRuleSnapshot).ToList();
+        var affectedReplacementDates = replacementTargetDates?.ToHashSet() ?? new HashSet<DateOnly>();
         // An adjusted day depends on its source's original rules, not on the target day's rules.
         Predicate<DateOnly> isDateAffected = date =>
         {
+            if (affectedReplacementDates.Contains(date))
+            {
+                return true;
+            }
             if (Profile.OrderedSchedulesV2.TryGetValue(date.ToDateTime(TimeOnly.MinValue), out var schedule))
             {
                 if (schedule.SetEmpty) return false;
@@ -431,6 +465,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     public OrderedDictionary<Guid, ScheduleItem> GetScheduleItemsByDate(DateOnly date)
     {
+        var displayDate = date;
         if (Profile.OrderedSchedulesV2.TryGetValue(date.ToDateTime(TimeOnly.MinValue), out var order))
         {
             if (order.SetEmpty)
@@ -440,8 +475,37 @@ public class LessonsService : ObservableRecipient, ILessonsService
             date = DateOnly.FromDateTime(order.SourceDate);
         }
 
-        var items = Profile.ScheduleItems
-            .Where(x => IsTimeRuleSatisfied(x.Value.EnableRule, date.ToDateTime(TimeOnly.MinValue)))
+        var activeItems = Profile.ScheduleItems
+            .Where(x =>
+            {
+                var ruleDate = x.Value.ReplacementTarget == null ? date : displayDate;
+                return IsTimeRuleSatisfied(x.Value.EnableRule, ruleDate.ToDateTime(TimeOnly.MinValue));
+            })
+            .ToList();
+        var suppressedIds = Profile.ScheduleItems.Values
+            .Where(x => x.ReplacementTarget is { } target &&
+                        DateOnly.FromDateTime(target.Date) == displayDate)
+            .Select(x => x.ReplacementTarget!.ScheduleItemId)
+            .ToHashSet();
+        var activeReplacementIds = activeItems
+            .Where(x => !suppressedIds.Contains(x.Key) &&
+                        x.Value.ReplacementTarget is { } target &&
+                        DateOnly.FromDateTime(target.Date) == displayDate)
+            .GroupBy(x => x.Value.ReplacementTarget!.ScheduleItemId)
+            .ToDictionary(x => x.Key, x => x.Last().Key);
+
+        var items = activeItems
+            .Where(x => !suppressedIds.Contains(x.Key))
+            .Where(x =>
+            {
+                if (x.Value.ReplacementTarget is not { } target
+                    || DateOnly.FromDateTime(target.Date) != displayDate)
+                {
+                    return true;
+                }
+                return activeReplacementIds.TryGetValue(target.ScheduleItemId, out var replacementId)
+                       && replacementId == x.Key;
+            })
             .OrderBy(x => x.Value.StartTime);
         return new OrderedDictionary<Guid, ScheduleItem>(items);
     }
