@@ -12,6 +12,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -68,6 +69,9 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     public event EventHandler<ScheduleWeekEditEventArgs> CreateRequested { add => AddHandler(CreateRequestedEvent, value); remove => RemoveHandler(CreateRequestedEvent, value); }
     public event EventHandler<ScheduleWeekEditEventArgs> EditRequested { add => AddHandler(EditRequestedEvent, value); remove => RemoveHandler(EditRequestedEvent, value); }
     public event EventHandler<ScheduleWeekEditEventArgs> DeleteRequested { add => AddHandler(DeleteRequestedEvent, value); remove => RemoveHandler(DeleteRequestedEvent, value); }
+    public static readonly RoutedEvent<ScheduleDayHeaderEventArgs> DayHeaderClickedEvent =
+        RoutedEvent.Register<ScheduleWeekEditControl, ScheduleDayHeaderEventArgs>(nameof(DayHeaderClicked), RoutingStrategies.Bubble);
+    public event EventHandler<ScheduleDayHeaderEventArgs> DayHeaderClicked { add => AddHandler(DayHeaderClickedEvent, value); remove => RemoveHandler(DayHeaderClickedEvent, value); }
 
     private Canvas? _canvas;
     private Canvas? _header;
@@ -78,8 +82,9 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private TextBlock? _resizeGuideTime;
     private ScheduleWeekRuler? _ruler;
     private ScheduleWeekRuler? _headerRuler;
-    private readonly List<TextBlock> _dayHeaders = [];
+    private readonly List<Button> _dayHeaders = [];
     private readonly List<Run> _dayHeaderDates = [];
+    private readonly HashSet<DateOnly> _adjustedDates = [];
     private bool? _compactHeaders;
     private readonly Dictionary<(Guid Id, DateOnly Date), ScheduleWeekBlock> _blocks = [];
     private readonly CompositeDisposable _autoItemSubscriptions = new();
@@ -191,6 +196,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             {
                 _autoItemSubscriptions.Clear();
                 _autoItems = [];
+                _adjustedDates.Clear();
             }
             Rebuild();
         }
@@ -245,6 +251,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         var lessonsService = IAppHost.GetService<ILessonsService>();
         var settingsService = IAppHost.GetService<SettingsService>();
         var profile = profileService.Profile;
+        _adjustedDates.Clear();
+        _adjustedDates.UnionWith(profile.OrderedSchedulesV2.Keys.Select(DateOnly.FromDateTime));
         PropertyChangedEventHandler profileChanged = (_, args) =>
         {
             if (string.IsNullOrEmpty(args.PropertyName) || args.PropertyName == nameof(Profile.Subjects))
@@ -297,6 +305,13 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             QueueAutomaticRefresh();
             break;
         }
+    }
+
+    private void DayHeaderOnClick(object? sender, RoutedEventArgs e)
+    {
+        if (IsReadonly || sender is not Button { Tag: DateOnly date } button) return;
+        RaiseEvent(new ScheduleDayHeaderEventArgs(DayHeaderClickedEvent, date, button));
+        e.Handled = true;
     }
 
     private void WatchProperties(INotifyPropertyChanged source)
@@ -532,14 +547,34 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                     label.Inlines.Add(new LineBreak());
                 label.Inlines.Add(dateRun);
                 _dayHeaderDates.Add(dateRun);
-                _dayHeaders.Add(label);
-                _header.Children.Add(label);
+                var button = new Button
+                {
+                    Content = label, Padding = new Thickness(0), MinWidth = 0, MinHeight = 0,
+                    HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center
+                };
+                button.Bind(ThemeProperty, new DynamicResourceExtension("TransparentButton"));
+                button.Click += DayHeaderOnClick;
+                _dayHeaders.Add(button);
+                _header.Children.Add(button);
             }
             var header = _dayHeaders[day];
+            header.Tag = date;
+            header.Height = headerHeight;
+            header.IsHitTestVisible = !IsReadonly;
+            header.Focusable = !IsReadonly;
+            AutomationProperties.SetName(header, $"{date:yyyy年M月d日}，调整课程");
+            ToolTip.SetTip(header, $"{date:yyyy年M月d日}，调整课程");
+            var adjusted = _adjustedDates.Contains(date);
+            var labelContent = (TextBlock)header.Content!;
+            labelContent.Bind(TextBlock.ForegroundProperty, new DynamicResourceExtension(
+                adjusted ? "AccentTextFillColorPrimaryBrush" : "TextFillColorPrimaryBrush"));
+            if (adjusted) _dayHeaderDates[day].Classes.Remove("l2");
+            else if (!_dayHeaderDates[day].Classes.Contains("l2")) _dayHeaderDates[day].Classes.Add("l2");
             _dayHeaderDates[day].Text = compactHeaders ? $"{date:M/d}" : $"{date:MM/dd}";
             header.Width = columnWidth;
             Canvas.SetLeft(header, RulerWidth + day * columnWidth);
-            Canvas.SetTop(header, compactHeaders ? 2 : 4);
+            Canvas.SetTop(header, 0);
             var dayItems = items.Where(x => x.Display.Date == date).OrderBy(x => x.Display.StartTime).ThenBy(x => x.Source.ScheduleItemId).ToList();
             // Include the minimum visual hit area in collision layout so zero/short courses remain selectable.
             var group = new List<DisplayOccurrence>();
@@ -805,7 +840,10 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         else if (e.Key == Key.Delete && !IsReadonly && SelectedScheduleItemId is { } id)
         {
             CancelDrag();
-            RaiseEvent(new ScheduleWeekEditEventArgs(DeleteRequestedEvent) { ScheduleItemId = id });
+            RaiseEvent(new ScheduleWeekEditEventArgs(DeleteRequestedEvent)
+            {
+                ScheduleItemId = id, Date = SelectedDate ?? WeekStart
+            });
             e.Handled = true;
         }
     }

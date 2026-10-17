@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
@@ -130,8 +131,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
     public HashSet<DateOnly> DirtyScheduleItemDates { get; } = [];
 
     private readonly Dictionary<Guid, ScheduleItemSubscription> _scheduleItemSubscriptions = new();
-    private readonly IDisposable _scheduleProfileSubscription;
+    private readonly SerialDisposable _scheduleProfileSubscription = new();
+    private readonly IDisposable? _scheduleProfileServiceSubscription;
     private IDisposable? _scheduleItemsCollectionSubscription;
+    private readonly CompositeDisposable _orderedScheduleSubscriptions = new();
 
     private sealed class ScheduleItemSubscription(ScheduleItem item, TimeRule ruleSnapshot) : IDisposable
     {
@@ -176,6 +179,19 @@ public class LessonsService : ObservableRecipient, ILessonsService
         };
     }
 
+    private void ObserveScheduleProfile()
+    {
+        var profile = Profile;
+        _scheduleProfileSubscription.Disposable = Observable
+            .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                handler => profile.PropertyChanged += handler,
+                handler => profile.PropertyChanged -= handler)
+            .Where(x => x.EventArgs.PropertyName is nameof(Profile.ScheduleType) or nameof(Profile.ScheduleItems)
+                or nameof(Profile.OrderedSchedulesV2))
+            .Subscribe(_ => UpdateScheduleModeSubscriptions());
+        UpdateScheduleModeSubscriptions();
+    }
+
     private void UpdateScheduleModeSubscriptions()
     {
         ReleaseScheduleItemSubscriptions();
@@ -192,11 +208,32 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 handler => scheduleItems.CollectionChanged -= handler)
             .Subscribe(x => OnScheduleItemsCollectionChanged(x.EventArgs));
 
+        UpdateOrderedScheduleSubscriptions();
+    }
+
+    private void UpdateOrderedScheduleSubscriptions()
+    {
+        _orderedScheduleSubscriptions.Clear();
+        var schedules = Profile.OrderedSchedulesV2;
+        _orderedScheduleSubscriptions.Add(Observable
+            .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => schedules.CollectionChanged += handler,
+                handler => schedules.CollectionChanged -= handler)
+            .Subscribe(_ => UpdateOrderedScheduleSubscriptions()));
+        foreach (var schedule in schedules.Values.Distinct())
+        {
+            _orderedScheduleSubscriptions.Add(Observable
+                .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                    handler => schedule.PropertyChanged += handler,
+                    handler => schedule.PropertyChanged -= handler)
+                .Subscribe(_ => InvalidateAllScheduleItemDates()));
+        }
         InvalidateAllScheduleItemDates();
     }
 
     private void ReleaseScheduleItemSubscriptions()
     {
+        _orderedScheduleSubscriptions.Clear();
         _scheduleItemsCollectionSubscription?.Dispose();
         _scheduleItemsCollectionSubscription = null;
         foreach (var subscription in _scheduleItemSubscriptions.Values)
@@ -353,8 +390,16 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         PruneConvertedScheduleItemsCache();
         var affectedRules = rules.Select(CreateTimeRuleSnapshot).ToList();
+        // An adjusted day depends on its source's original rules, not on the target day's rules.
         Predicate<DateOnly> isDateAffected = date =>
-            affectedRules.Any(rule => IsTimeRuleSatisfied(rule, date.ToDateTime(TimeOnly.MinValue)));
+        {
+            if (Profile.OrderedSchedulesV2.TryGetValue(date.ToDateTime(TimeOnly.MinValue), out var schedule))
+            {
+                if (schedule.SetEmpty) return false;
+                date = DateOnly.FromDateTime(schedule.SourceDate);
+            }
+            return affectedRules.Any(rule => IsTimeRuleSatisfied(rule, date.ToDateTime(TimeOnly.MinValue)));
+        };
         foreach (var date in ConvertedScheduleItemsCache.Keys)
         {
             if (isDateAffected(date))
@@ -374,6 +419,15 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     public OrderedDictionary<Guid, ScheduleItem> GetScheduleItemsByDate(DateOnly date)
     {
+        if (Profile.OrderedSchedulesV2.TryGetValue(date.ToDateTime(TimeOnly.MinValue), out var order))
+        {
+            if (order.SetEmpty)
+            {
+                return [];
+            }
+            date = DateOnly.FromDateTime(order.SourceDate);
+        }
+
         var items = Profile.ScheduleItems
             .Where(x => IsTimeRuleSatisfied(x.Value.EnableRule, date.ToDateTime(TimeOnly.MinValue)))
             .OrderBy(x => x.Value.StartTime);
@@ -572,13 +626,16 @@ public class LessonsService : ObservableRecipient, ILessonsService
         PropertyChanged += OnPropertyChanged;
         PropertyChanging += OnPropertyChanging;
 
-        _scheduleProfileSubscription = Observable
-            .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
-                handler => Profile.PropertyChanged += handler,
-                handler => Profile.PropertyChanged -= handler)
-            .Where(x => x.EventArgs.PropertyName is nameof(Profile.ScheduleType) or nameof(Profile.ScheduleItems))
-            .Subscribe(_ => UpdateScheduleModeSubscriptions());
-        UpdateScheduleModeSubscriptions();
+        if (ProfileService is INotifyPropertyChanged observableProfileService)
+        {
+            _scheduleProfileServiceSubscription = Observable
+                .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                    handler => observableProfileService.PropertyChanged += handler,
+                    handler => observableProfileService.PropertyChanged -= handler)
+                .Where(x => x.EventArgs.PropertyName is nameof(ProfileService.Profile) or null or "")
+                .Subscribe(_ => ObserveScheduleProfile());
+        }
+        ObserveScheduleProfile();
 
 
         CurrentTimeStateChanged += async (_, _) =>

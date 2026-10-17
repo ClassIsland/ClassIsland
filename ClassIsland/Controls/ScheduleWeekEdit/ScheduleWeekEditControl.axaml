@@ -7,7 +7,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid RowDefinitions="Auto,*,Auto" ClipToBounds="True">
-                    <Canvas Name="PART_Header" Grid.Row="0" Height="24" IsHitTestVisible="False"/>
+                    <Canvas Name="PART_Header" Grid.Row="0" Height="24"/>
                     <ScrollViewer Name="PART_ScrollViewer" Grid.Row="1"
                                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible">
                         <Canvas Name="PART_Canvas" Background="Transparent" ClipToBounds="True"
