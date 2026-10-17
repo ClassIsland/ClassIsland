@@ -1198,6 +1198,21 @@
                                                                       Content="选完科目自动移动到下一个课程" />
                                                         </Grid>
                                                     </TabItem>
+                                                    <TabItem Header="编辑课程">
+                                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                                            <StackPanel Spacing="6" Margin="8">
+                                                                <ci:Field Label="上课地点">
+                                                                    <TextBox
+                                                                        Text="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.Location, Mode=TwoWay}"
+                                                                        PlaceholderText="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.Subject.Location}"
+                                                                        IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.IsEmpty, Converter={StaticResource InvertBooleanConverter}}" />
+                                                                </ci:Field>
+                                                                <TextBlock Text="留空时将使用科目设置的上课地点。"
+                                                                           Classes="l-secondary"
+                                                                           TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                        </ScrollViewer>
+                                                    </TabItem>
                                                 </ci:ReusableTabControl>
                                             </Grid>
                                         </Grid>
@@ -1329,6 +1344,20 @@
                                                           IsChecked="{Binding ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}"
                                                           Content="选完科目自动移动到下一个课程" />
                                             </Grid>
+                                        </TabItem>
+                                        <TabItem Header="编辑课程">
+                                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                                <StackPanel Spacing="6" Margin="8">
+                                                    <ci:Field Label="上课地点">
+                                                        <TextBox Text="{Binding ViewModel.SelectedClassInfo.Location, Mode=TwoWay}"
+                                                                 PlaceholderText="{Binding ViewModel.SelectedClassInfo.Subject.Location}"
+                                                                 IsEnabled="{Binding !ViewModel.SelectedClassInfo.IsEmpty}" />
+                                                    </ci:Field>
+                                                    <TextBlock Text="留空时将使用科目设置的上课地点。"
+                                                               Classes="l-secondary"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+                                            </ScrollViewer>
                                         </TabItem>
                                     </ci:ReusableTabControl>
                                 </Grid>
@@ -2175,6 +2204,13 @@
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
                                             </ci:Field>
+                                            <ci:Field Label="上课地点">
+                                                <TextBox Text="{Binding Location, Mode=TwoWay}"
+                                                         PlaceholderText="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedScheduleItemSubject.Location}" />
+                                            </ci:Field>
+                                            <TextBlock Text="留空时将使用科目设置的上课地点。"
+                                                       Classes="l-secondary"
+                                                       TextWrapping="Wrap" />
                                             <ci:Field Label="开始时间">
                                                 <TimePicker SelectedTime="{Binding StartTime, Mode=TwoWay}"
                                                             UseSeconds="True" MinWidth="0"

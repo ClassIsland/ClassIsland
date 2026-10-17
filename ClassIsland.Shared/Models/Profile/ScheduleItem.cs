@@ -8,6 +8,7 @@ namespace ClassIsland.Shared.Models.Profile;
 public partial class ScheduleItem : ObservableObject
 {
     [ObservableProperty] private Guid _subjectId;
+    [ObservableProperty] private string _location = "";
 
     [ObservableProperty] private TimeSpan _startTime;
     [ObservableProperty] private TimeSpan _endTime;

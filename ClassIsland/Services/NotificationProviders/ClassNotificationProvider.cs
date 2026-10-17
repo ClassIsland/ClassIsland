@@ -39,6 +39,14 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         return string.IsNullOrWhiteSpace(name) ? string.Empty : $"由{name}老师任教";
     }
 
+    private string GetNextClassLocation()
+    {
+        var location = LessonsService.NextClassInfo?.EffectiveLocation;
+        return string.IsNullOrWhiteSpace(location)
+            ? LessonsService.NextClassSubject.Location
+            : location;
+    }
+
     private string GetNextClassSpeechContent(IClassNotificationSettings settingsSource)
     {
         var subject = LessonsService.NextClassSubject;
@@ -54,8 +62,9 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             var timeLayoutItem = LessonsService.NextClassTimeLayoutItem;
             parts.Add($"上课时间为{timeLayoutItem.StartTime:hh\\:mm}至{timeLayoutItem.EndTime:hh\\:mm}");
         }
-        if (settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(subject.Location))
-            parts.Add($"上课地点为{subject.Location}");
+        var location = GetNextClassLocation();
+        if (settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(location))
+            parts.Add($"上课地点为{location}");
         return $"{string.Join("，", parts)}。";
     }
 
@@ -167,7 +176,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
                 Message = message,
                 ShowClassTime = settingsSource.ShowClassTime,
                 ShowTeacherName = settingsSource.ShowTeacherName && !string.IsNullOrWhiteSpace(LessonsService.NextClassSubject.TeacherName),
-                ShowLocation = settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(LessonsService.NextClassSubject.Location)
+                ShowLocation = settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(GetNextClassLocation())
             })
             {
                 SpeechContent = $"{message} {GetNextClassSpeechContent(settingsSource)}",
@@ -247,7 +256,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             {
                 ShowClassTime = settingsSource.ShowClassTime,
                 ShowTeacherName = settingsSource.ShowTeacherName && !string.IsNullOrWhiteSpace(LessonsService.NextClassSubject.TeacherName),
-                ShowLocation = settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(LessonsService.NextClassSubject.Location),
+                ShowLocation = settingsSource.ShowLocation && !string.IsNullOrWhiteSpace(GetNextClassLocation()),
                 Message = overlayText
             })
             {

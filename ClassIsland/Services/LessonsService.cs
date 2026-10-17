@@ -102,6 +102,18 @@ public class LessonsService : ObservableRecipient, ILessonsService
         set => SetProperty(ref field, value);
     }
 
+    public ClassInfo? CurrentClassInfo
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
+    public ClassInfo? NextClassInfo
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
     public bool IsClassPlanEnabled
     {
         get;
@@ -469,6 +481,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             },
             TimeLayoutId = phonyTimeLayoutId
         };
+        classPlan.Subjects = Profile.Subjects;
 
         timeLayout.Layouts.Clear();
         for (var i = 0; i < scheduleItems.Count; i++)
@@ -497,6 +510,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         {
             var (_, item) = scheduleItems[i];
             classPlan.Classes[i].SubjectId = item.SubjectId;
+            classPlan.Classes[i].Location = item.Location;
         }
         classPlan.MakeValidTimeLayoutItemsDirty();
 
@@ -803,6 +817,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         TimeState? currentState = null;
         Subject? currentSubject = null;
         Subject? nextClassSubject = null;
+        ClassInfo? currentClassInfo = null;
+        ClassInfo? nextClassInfo = null;
         TimeLayoutItem? currentTimeLayoutItem = null;
         TimeLayoutItem? nextClassTimeLayoutItem = null;
         TimeLayoutItem? nextBreakingTimeLayoutItem = null;
@@ -842,10 +858,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 currentState = TimeState.OnClass;
 
                 var i0 = GetClassIndex((int)currentSelectedIndex);
-                if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0 &&
-                    Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
+                if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0)
                 {
-                    currentSubject = subject;
+                    currentClassInfo = CurrentClassPlan.Classes[i0];
+                    if (Profile.Subjects.TryGetValue(currentClassInfo.SubjectId, out var subject))
+                    {
+                        currentSubject = subject;
+                    }
                 }
             }
             else if (currentTimeLayoutItem.TimeType == 1)
@@ -864,9 +883,14 @@ public class LessonsService : ObservableRecipient, ILessonsService
         if (nextClassTimeLayoutItem != null)
         {
             var i0 = GetClassIndex(layout.IndexOf(nextClassTimeLayoutItem));
-            if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0 &&
-                Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
-                nextClassSubject = subject;
+            if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0)
+            {
+                nextClassInfo = CurrentClassPlan.Classes[i0];
+                if (Profile.Subjects.TryGetValue(nextClassInfo.SubjectId, out var subject))
+                {
+                    nextClassSubject = subject;
+                }
+            }
         }
         nextBreakingTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 1 &&
@@ -889,6 +913,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         CurrentState = currentState ?? TimeState.None;
         CurrentSubject = currentSubject ?? Subject.Fallback;
         NextClassSubject = nextClassSubject ?? Subject.Fallback;
+        CurrentClassInfo = currentClassInfo;
+        NextClassInfo = nextClassInfo;
         CurrentTimeLayoutItem = currentTimeLayoutItem ?? TimeLayoutItem.Empty;
         NextClassTimeLayoutItem = nextClassTimeLayoutItem ?? TimeLayoutItem.Empty;
         NextBreakingTimeLayoutItem = nextBreakingTimeLayoutItem ?? TimeLayoutItem.Empty;

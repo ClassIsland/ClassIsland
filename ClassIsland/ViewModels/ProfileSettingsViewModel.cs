@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -108,6 +110,14 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private int _selectedClassIndex2 = -1;
     [ObservableProperty] private KeyValuePair<Guid, ScheduleItem>? _selectedScheduleItemKvp;
     [ObservableProperty] private ScheduleItem? _selectedScheduleItem;
+    private Subject? _selectedScheduleItemSubject;
+    private ScheduleItem? _observedScheduleItem;
+
+    public Subject? SelectedScheduleItemSubject
+    {
+        get => _selectedScheduleItemSubject;
+        private set => SetProperty(ref _selectedScheduleItemSubject, value);
+    }
     
     [ObservableProperty] private ReadOnlyObservableCollection<ClassPlansTreeNode> _groupedClassPlans;
     private readonly ObservableCollection<ClassPlansTreeNode> _groupedClassPlanNodes = [];
@@ -158,6 +168,11 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         OrderedSchedules =
             new SyncDictionaryList<DateTime, OrderedSchedule>(ProfileService.Profile.OrderedSchedules, () => DateTime.MinValue);
         ScheduleItems = new SyncDictionaryList<Guid, ScheduleItem>(ProfileService.Profile.ScheduleItems, Guid.NewGuid);
+        NotifyCollectionChangedEventHandler scheduleItemSubjectsChanged =
+            (_, _) => UpdateSelectedScheduleItemSubject();
+        ProfileService.Profile.Subjects.CollectionChanged += scheduleItemSubjectsChanged;
+        _externalSubscriptions.Add(Disposable.Create(() =>
+            ProfileService.Profile.Subjects.CollectionChanged -= scheduleItemSubjectsChanged));
 
         TempClassPlanList = ClassPlans.List
             .ToObservableChangeSet()
@@ -240,6 +255,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     partial void OnSelectedScheduleItemChanged(ScheduleItem? value)
     {
+        ObserveSelectedScheduleItem(value);
         if (value == null)
         {
             SelectedScheduleItemKvp = null;
@@ -261,6 +277,38 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
 
         SelectedScheduleItemKvp = null;
+    }
+
+    private void ObserveSelectedScheduleItem(ScheduleItem? value)
+    {
+        if (_observedScheduleItem != null)
+        {
+            _observedScheduleItem.PropertyChanged -= SelectedScheduleItemOnPropertyChanged;
+        }
+
+        _observedScheduleItem = value;
+        if (_observedScheduleItem != null)
+        {
+            _observedScheduleItem.PropertyChanged += SelectedScheduleItemOnPropertyChanged;
+        }
+
+        UpdateSelectedScheduleItemSubject();
+    }
+
+    private void SelectedScheduleItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ScheduleItem.SubjectId))
+        {
+            UpdateSelectedScheduleItemSubject();
+        }
+    }
+
+    private void UpdateSelectedScheduleItemSubject()
+    {
+        SelectedScheduleItemSubject = SelectedScheduleItem != null &&
+            ProfileService.Profile.Subjects.TryGetValue(SelectedScheduleItem.SubjectId, out var subject)
+                ? subject
+                : null;
     }
 
     public void ReleaseResources()

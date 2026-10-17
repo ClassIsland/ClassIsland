@@ -174,6 +174,7 @@ public class Profile : ObservableRecipient
     {
         foreach (var i in _classPlans)
         {
+            i.Value.Subjects = Subjects;
             i.Value.TimeLayouts = TimeLayouts;
             i.Value.ClassPlans = ClassPlans;
         }
@@ -190,6 +191,7 @@ public class Profile : ObservableRecipient
             if (Equals(value, _subjects)) return;
             _subjects = value;
             OnPropertyChanged();
+            RefreshTimeLayouts();
         }
     }
 

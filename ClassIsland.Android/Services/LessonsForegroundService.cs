@@ -284,7 +284,7 @@ public class LessonsForegroundService : Service
             {
                 var settings = GetEffectiveSettings(isUpcoming: false);
                 return CreateCourseSnapshot(now, item, LessonsService.CurrentSubject,
-                    settings, isUpcoming: false);
+                    LessonsService.CurrentClassInfo, settings, isUpcoming: false);
             }
         }
         else if (LessonsService.CurrentState is TimeState.Breaking or TimeState.None)
@@ -297,7 +297,7 @@ public class LessonsForegroundService : Service
                 remaining <= TimeSpan.FromMinutes(settings.UpcomingClassRealtimeNotificationLeadMinutes))
             {
                 return CreateCourseSnapshot(now, item, LessonsService.NextClassSubject,
-                    settings, isUpcoming: true);
+                    LessonsService.NextClassInfo, settings, isUpcoming: true);
             }
 
             if (LessonsService.CurrentState == TimeState.Breaking)
@@ -306,7 +306,7 @@ public class LessonsForegroundService : Service
                 if (!ReferenceEquals(breakItem, TimeLayoutItem.Empty) && breakItem.EndTime > breakItem.StartTime)
                 {
                     return CreateCourseSnapshot(now, breakItem, LessonsService.CurrentSubject,
-                        GetEffectiveSettings(isUpcoming: false), isUpcoming: false);
+                        null, GetEffectiveSettings(isUpcoming: false), isUpcoming: false);
                 }
             }
         }
@@ -335,6 +335,7 @@ public class LessonsForegroundService : Service
         DateTime now,
         TimeLayoutItem item,
         Subject? subject,
+        ClassInfo? classInfo,
         IRealtimeNotificationSettings settings,
         bool isUpcoming)
     {
@@ -351,7 +352,7 @@ public class LessonsForegroundService : Service
         var progressPercent = (int)Math.Round(
             progressSeconds * 100.0 / totalSeconds,
             MidpointRounding.AwayFromZero);
-        var content = _contentBuilder.Build(settings, subject, item,
+        var content = _contentBuilder.Build(settings, subject, classInfo, item,
             RealtimeNotificationContentBuilder.FormatDuration(remainingSeconds),
             isUpcoming, intervalKey, System.Environment.TickCount64);
         var nextSubject = RealtimeNotificationContentBuilder.GetNextClassSubject(

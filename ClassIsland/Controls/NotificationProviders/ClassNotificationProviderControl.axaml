@@ -44,7 +44,7 @@
                     </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndTime, StringFormat={}{0:hh\\:mm}}"/>
                 </TextBlock>
                 <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
-                           Text="{Binding LessonsService.NextClassSubject.Location, Converter={StaticResource SubjectLocationDisplayConverter}}"
+                           Text="{Binding LessonsService.NextClassInfo.EffectiveLocation, Converter={StaticResource SubjectLocationDisplayConverter}}"
                            Classes="l-secondary" IsVisible="{Binding ShowLocation}"/>
             </StackPanel>
         </UniformGrid>
@@ -87,7 +87,7 @@
                     </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndTime, StringFormat={}{0:hh\\:mm}}"/>
                 </TextBlock>
                 <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
-                           Text="{Binding LessonsService.NextClassSubject.Location, Converter={StaticResource SubjectLocationDisplayConverter}}"
+                           Text="{Binding LessonsService.NextClassInfo.EffectiveLocation, Converter={StaticResource SubjectLocationDisplayConverter}}"
                            Classes="l-secondary" IsVisible="{Binding ShowLocation}"/>
             </StackPanel>
         </Grid>
