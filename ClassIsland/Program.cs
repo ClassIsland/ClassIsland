@@ -198,7 +198,8 @@ public static class Program
     /// </summary>
     static void SetProcessPriority(uint priority)
     {
-        Process.GetCurrentProcess().PriorityClass = priority switch
+        using var process = Process.GetCurrentProcess();
+        process.PriorityClass = priority switch
         {
             0 => ProcessPriorityClass.Idle,
             1 => ProcessPriorityClass.BelowNormal,
