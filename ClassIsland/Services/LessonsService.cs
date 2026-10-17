@@ -575,6 +575,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             var (_, item) = scheduleItems[i];
             classPlan.Classes[i].SubjectId = item.SubjectId;
             classPlan.Classes[i].Location = item.Location;
+            classPlan.Classes[i].IsEnabled = item.IsEnabled;
         }
         classPlan.MakeValidTimeLayoutItemsDirty();
 

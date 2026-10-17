@@ -294,7 +294,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                 {
                     SubjectColorHex = subject?.ColorHex,
                     SubjectIconExpression = subject?.Icon,
-                    IsReplacement = item.HasReplacementTarget
+                    IsReplacement = item.HasReplacementTarget,
+                    IsEnabled = item.IsEnabled
                 });
             }
         }
@@ -682,11 +683,13 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             block.IsCompact = block.Height < 44 || block.Width < 60;
             block.ShowTimeText = block.Height >= 44;
             block.IsReplacement = item.IsReplacement;
+            block.IsCourseEnabled = item.IsEnabled;
             block.IsVisible = true;
             block.Cursor = new Cursor(IsReadonly || _openBlockMenu != null
                 ? StandardCursorType.Arrow : StandardCursorType.SizeAll);
             var tip = $"{item.SubjectName}\n{item.Date:yyyy-MM-dd} {block.TimeText}"
-                      + (item.IsReplacement ? "\n临时覆盖课程" : "");
+                      + (item.IsReplacement ? "\n临时覆盖课程" : "")
+                      + (item.IsEnabled ? "" : "\n已禁用");
             AutomationProperties.SetName(block, tip);
             var dragging = _drag?.Item.ScheduleItemId == item.ScheduleItemId;
             if (dragging) ToolTip.SetIsOpen(block, false);

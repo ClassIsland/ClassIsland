@@ -42,6 +42,8 @@ public partial class ScheduleItem : ObservableObject
     [ObservableProperty] private TimeSpan _startTime;
     [ObservableProperty] private TimeSpan _endTime;
 
+    [ObservableProperty] private bool _isEnabled = true;
+
     [ObservableProperty] private TimeRule _enableRule = new();
 
     [ObservableProperty]

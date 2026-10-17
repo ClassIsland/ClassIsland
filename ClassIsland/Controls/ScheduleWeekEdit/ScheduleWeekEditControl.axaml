@@ -93,5 +93,8 @@
         <Style Selector="^[IsCompact=True] /template/ StackPanel#Labels">
             <Setter Property="Margin" Value="2,1"/>
         </Style>
+        <Style Selector="^[IsCourseEnabled=False] /template/ TextBlock#PART_SubjectLabel">
+            <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/>
+        </Style>
     </ControlTheme>
 </ResourceDictionary>
