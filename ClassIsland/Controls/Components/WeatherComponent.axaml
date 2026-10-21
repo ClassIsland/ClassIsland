@@ -66,9 +66,14 @@
                             Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
                             Height="22" VerticalAlignment="Center" />
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
-                            </Run>
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
+                            <!-- 数值绑定必须挂在 TextBlock 上，不能写成内联 Run：
+                                 Run 不在逻辑树里，主题切换重建样式时会丢掉求值上下文，数值直接清空。 -->
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}{1}">
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value" />
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit" />
+                                </MultiBinding>
+                            </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -87,9 +92,12 @@
                              Glyph="&#xE794;"
                              VerticalAlignment="Center"/>
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}">
-                            </Run>
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" />
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}{1}">
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value" />
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit" />
+                                </MultiBinding>
+                            </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -117,9 +125,12 @@
                             </ci:FluentIcon.RenderTransform>
                         </ci:FluentIcon>
                         <TextBlock VerticalAlignment="Center" Margin="0 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}">
-                            </Run>
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" />
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}{1}">
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value" />
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit" />
+                                </MultiBinding>
+                            </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -137,8 +148,9 @@
                                        FontSize="22"
                                        x:Name="AqiIcon"/>
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}">
-                            </Run>
+                            <TextBlock.Text>
+                                <Binding Path="SettingsService.Settings.LastWeatherInfo.Aqi.Aqi" />
+                            </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -155,9 +167,12 @@
                                        FontSize="22"
                                        Glyph="&#xE8E0;" VerticalAlignment="Center"/>
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Value}">
-                            </Run>
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Unit}" />
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}{1}">
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.Pressure.Value" />
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.Pressure.Unit" />
+                                </MultiBinding>
+                            </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -175,9 +190,12 @@
                                        FontSize="22"
                                        VerticalAlignment="Center"/>
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Value}">
-                            </Run>
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Unit}" />
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}{1}">
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Value" />
+                                    <Binding Path="SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Unit" />
+                                </MultiBinding>
+                            </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
                 </Border>
