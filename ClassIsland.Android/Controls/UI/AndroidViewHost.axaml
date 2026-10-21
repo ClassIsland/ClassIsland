@@ -2,6 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:ClassIsland.Controls.UI;assembly=ClassIsland"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Android.Controls.UI.AndroidViewHost">
     <UserControl.Styles>
@@ -16,7 +18,15 @@
             </Grid.RenderTransform>
             <NavigationPage x:Name="NavigationPage"
                             Popped="NavigationPage_OnPopped">
+                <NavigationPage.PageTransition>
+                    <ci:CompositionPageTransition Duration="0:0:0.25"
+                                                  SlideInEasing="0,0 0,1"
+                                                  SlideOutEasing="0,0 0,1"
+                                                  FadeInEasing="0,0 0,1"
+                                                  FadeOutEasing="0,0 0,1"/>
+                </NavigationPage.PageTransition>
             </NavigationPage>
+            <ui:DrawerNavigationHost x:Name="DrawerHost"/>
         </Grid>
         <Border Height="3"
                 VerticalAlignment="Top"

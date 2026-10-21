@@ -10,6 +10,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Controls.UI.WindowViewHost"
         x:DataType="ui:WindowViewHost"
+        d:DataContext="{d:DesignInstance ui:WindowViewHost}"
         EnableMicaWindow="True">
     <ci:MyWindow.Styles>
         <Style Selector=":is(Window):not(:closed)">
@@ -111,6 +112,13 @@
     <Grid>
         <NavigationPage x:Name="NavigationPage"
                         Popped="NavigationPage_OnPopped">
+            <NavigationPage.PageTransition>
+                <ci:CompositionPageTransition Duration="0:0:0.25"
+                                              SlideInEasing="0,0 0,1"
+                                              SlideOutEasing="0,0 0,1"
+                                              FadeInEasing="0,0 0,1"
+                                              FadeOutEasing="0,0 0,1"/>
+            </NavigationPage.PageTransition>
         </NavigationPage>
         <ci:ExpressiveLoadingIndicator x:Name="ContentLoadingProgressRing"
                                     HorizontalAlignment="Center"
@@ -118,5 +126,6 @@
                                     IsHitTestVisible="False"
                                     IsActive="True"
                                     IsVisible="False" />
+        <ui:DrawerNavigationHost x:Name="DrawerHost"/>
     </Grid>
 </ci:MyWindow>

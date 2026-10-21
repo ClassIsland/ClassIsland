@@ -32,11 +32,17 @@
                                     BorderThickness="{StaticResource ContentDialogBorderWidth}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     CornerRadius="{TemplateBinding CornerRadius}"
-                                    MaxWidth="{Binding #PART_Canvas.Bounds.Width}"
-                                    Width="{TemplateBinding RequestedWidth}"
+                                    MaxWidth="480"
+                                    MinWidth="0"
                                     HorizontalAlignment="Center"
                                     BoxShadow="0 8 32 0 #66000000"
                                     BackgroundSizing="{TemplateBinding BackgroundSizing}">
+                                <Border.Width>
+                                    <MultiBinding Converter="{x:Static controls:VerticalDrawer.DrawerWidthConverter}">
+                                        <Binding Path="#PART_Canvas.Bounds.Width"/>
+                                        <TemplateBinding Property="RequestedWidth"/>
+                                    </MultiBinding>
+                                </Border.Width>
                                 <!-- Even in WinUI, shadow is always black regardless of light/dark mode -->
 
                                 <!-- if this border isn't here, dialog space displays outside of corner radius at top

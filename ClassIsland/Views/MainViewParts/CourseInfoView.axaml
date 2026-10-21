@@ -1,0 +1,67 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ClassIsland.ViewModels.MainViewParts"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             x:Class="ClassIsland.Views.MainViewParts.CourseInfoView"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:CourseInfoViewModel}"
+             Header="课程信息"
+             NavigationPage.HasBackButton="False">
+    <ci:ViewBase.Resources>
+        <converters:SubjectIconSourceConverter x:Key="SubjectIconSourceConverter"/>
+        <converters:SubjectColorBrushConverter x:Key="SubjectColorBrushConverter"/>
+    </ci:ViewBase.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="12" Margin="0,4,0,8">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Border Width="32" Height="32" CornerRadius="16"
+                        Background="{Binding Subject.ColorHex, Converter={StaticResource SubjectColorBrushConverter}}">
+                    <controls:FAIconSourceElement Width="20" Height="20"
+                                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                  TextElement.FontSize="20"
+                                                  TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                                  Classes="repair-fontsize"
+                                                  IsHitTestVisible="False"
+                                                  IconSource="{Binding Subject.Icon, Converter={StaticResource SubjectIconSourceConverter}}"/>
+                </Border>
+                <TextBlock Text="{Binding Subject.Name, TargetNullValue='未指定科目', FallbackValue='未指定科目'}" FontSize="16" FontWeight="Medium"
+                           VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </StackPanel>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding CanEdit}">
+                <Button HorizontalAlignment="Stretch" Click="DisableButton_OnClick">
+                    <ci:IconText Glyph="{ci:FI EyeOffRegular}" Text="{Binding DisableButtonText}"/>
+                </Button>
+                <Button Grid.Column="1" HorizontalAlignment="Stretch" Click="EditButton_OnClick">
+                    <ci:IconText Glyph="{ci:FI EditRegular}" Text="编辑"/>
+                </Button>
+            </Grid>
+            <StackPanel Spacing="10">
+                <Button Theme="{StaticResource TransparentButton}" HorizontalContentAlignment="Left"
+                        Tag="{Binding TimeText}" Click="InfoButton_OnClick">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <ci:FluentIcon Glyph="{ci:FI ClockRegular}" FontSize="20"/>
+                        <TextBlock Text="{Binding TimeText}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Button>
+                <Button Theme="{StaticResource TransparentButton}" HorizontalContentAlignment="Left"
+                        Tag="{Binding LocationText}" Click="InfoButton_OnClick">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <ci:FluentIcon Glyph="{ci:FI LocationRegular}" FontSize="20"/>
+                        <TextBlock Text="{Binding LocationText}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Button>
+                <Button Theme="{StaticResource TransparentButton}" HorizontalContentAlignment="Left"
+                        Tag="{Binding TeacherText}" Click="InfoButton_OnClick">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <ci:FluentIcon Glyph="{ci:FI PersonRegular}" FontSize="20"/>
+                        <TextBlock Text="{Binding TeacherText}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</ci:ViewBase>

@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.ComponentModel;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -29,6 +31,17 @@ public class VerticalDrawer : ContentControl
     
     public static FuncValueConverter<double, double> ContainerHeightToCollapsedCanvasBottomPosConverter { get; } =
         new(x => -x + 40);
+
+    public static FuncMultiValueConverter<double, double> DrawerWidthConverter { get; } = new(values =>
+    {
+        var list = values.ToList();
+        var availableWidth = list.Count > 0 && double.IsFinite(list[0]) ? Math.Max(0, list[0]) : 0;
+        var requestedWidth = list.Count > 1 ? list[1] : double.NaN;
+        var maximumWidth = Math.Min(480, availableWidth);
+        return double.IsFinite(requestedWidth) && requestedWidth > 0
+            ? Math.Min(requestedWidth, maximumWidth)
+            : maximumWidth;
+    });
     
     public static readonly StyledProperty<object?> TitleProperty = AvaloniaProperty.Register<VerticalDrawer, object?>(
         nameof(Title));
@@ -91,6 +104,19 @@ public class VerticalDrawer : ContentControl
     {
         get => GetValue(ContentHeightRatioProperty);
         set => SetValue(ContentHeightRatioProperty, value);
+    }
+
+    /// <summary>
+    /// 抽屉展开后的绝对高度。设置后优先于 <see cref="ContentHeightRatio"/>。
+    /// </summary>
+    public static readonly StyledProperty<double> ContentHeightProperty = AvaloniaProperty.Register<VerticalDrawer, double>(
+        nameof(ContentHeight), double.NaN);
+
+    /// <inheritdoc cref="ContentHeightProperty"/>
+    public double ContentHeight
+    {
+        get => GetValue(ContentHeightProperty);
+        set => SetValue(ContentHeightProperty, value);
     }
 
     public static readonly StyledProperty<bool> SmokeBackgroundProperty = AvaloniaProperty.Register<VerticalDrawer, bool>(
@@ -183,6 +209,16 @@ public class VerticalDrawer : ContentControl
     private double _dragVisibleHeight;
     private bool _isDragging;
 
+    /// <summary>
+    /// 在抽屉即将关闭时触发。可取消关闭。
+    /// </summary>
+    public event EventHandler<CancelEventArgs>? Closing;
+
+    /// <summary>
+    /// 在抽屉关闭后触发。
+    /// </summary>
+    public event EventHandler? Closed;
+
     public VerticalDrawer()
     {
         if (IThemeService.AnimationLevel >= 1)
@@ -238,7 +274,7 @@ public class VerticalDrawer : ContentControl
         base.OnPropertyChanged(change);
         if (change.Property != StateProperty && change.Property != IsFullScreenProperty &&
             change.Property != AllowCollapseProperty && change.Property != ContentHeightRatioProperty &&
-            change.Property != RequestedWidthProperty)
+            change.Property != ContentHeightProperty && change.Property != RequestedWidthProperty)
         {
             return;
         }
@@ -285,7 +321,7 @@ public class VerticalDrawer : ContentControl
         
         if (_dismissLayer != null)
         {
-            _dismissLayer.PointerPressed -= DismissLayerOnPointerPressed;
+            _dismissLayer.PointerReleased -= DismissLayerOnPointerReleased;
         }
         if (_canvas != null)
         {
@@ -306,7 +342,7 @@ public class VerticalDrawer : ContentControl
 
         if (_dismissLayer != null)
         {
-            _dismissLayer.PointerPressed += DismissLayerOnPointerPressed;
+            _dismissLayer.PointerReleased += DismissLayerOnPointerReleased;
         }
         if (_canvas != null)
         {
@@ -448,6 +484,16 @@ public class VerticalDrawer : ContentControl
         }
 
         EndDrag();
+        if (target.State == VerticalDrawerOpenState.Closed)
+        {
+            if (!TryClose())
+            {
+                SetCurrentValue(StateProperty, VerticalDrawerOpenState.Opened);
+                UpdatePos();
+            }
+            e.Handled = true;
+            return;
+        }
         SetCurrentValue(StateProperty, target.State);
         SetCurrentValue(IsFullScreenProperty, target.FullScreen);
         UpdatePos();
@@ -509,6 +555,10 @@ public class VerticalDrawer : ContentControl
     private double GetNormalHeight()
     {
         var availableHeight = _canvas?.Bounds.Height ?? 0;
+        if (double.IsFinite(ContentHeight) && ContentHeight > 0)
+        {
+            return Math.Clamp(ContentHeight, Math.Min(40, availableHeight), availableHeight);
+        }
         var ratio = double.IsFinite(ContentHeightRatio) ? Math.Clamp(ContentHeightRatio, 0, 1) : 0.5;
         return Math.Clamp(availableHeight * ratio, Math.Min(40, availableHeight), availableHeight);
     }
@@ -540,15 +590,34 @@ public class VerticalDrawer : ContentControl
         PseudoClasses.Set(":fullscreen", IsFullScreen);
     }
 
-    private void DismissLayerOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void DismissLayerOnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         Dismiss();
     }
 
     public void Close()
     {
+        TryClose();
+    }
+
+    private bool TryClose()
+    {
+        if (State == VerticalDrawerOpenState.Closed)
+        {
+            return true;
+        }
+
+        var args = new CancelEventArgs();
+        Closing?.Invoke(this, args);
+        if (args.Cancel)
+        {
+            return false;
+        }
+
         CancelDrag();
         SetCurrentValue(StateProperty, VerticalDrawerOpenState.Closed);
+        Closed?.Invoke(this, EventArgs.Empty);
+        return true;
     }
 
     public void Collapse()

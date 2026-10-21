@@ -73,11 +73,14 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         RoutedEvent.Register<ScheduleWeekEditControl, ScheduleWeekEditEventArgs>(nameof(DuplicateRequested), RoutingStrategies.Bubble);
     public static readonly RoutedEvent<ScheduleWeekEditEventArgs> ForkAndReplaceRequestedEvent =
         RoutedEvent.Register<ScheduleWeekEditControl, ScheduleWeekEditEventArgs>(nameof(ForkAndReplaceRequested), RoutingStrategies.Bubble);
+    public static readonly RoutedEvent<ScheduleWeekEditEventArgs> CourseTappedEvent =
+        RoutedEvent.Register<ScheduleWeekEditControl, ScheduleWeekEditEventArgs>(nameof(CourseTapped), RoutingStrategies.Bubble);
     public event EventHandler<ScheduleWeekEditEventArgs> CreateRequested { add => AddHandler(CreateRequestedEvent, value); remove => RemoveHandler(CreateRequestedEvent, value); }
     public event EventHandler<ScheduleWeekEditEventArgs> EditRequested { add => AddHandler(EditRequestedEvent, value); remove => RemoveHandler(EditRequestedEvent, value); }
     public event EventHandler<ScheduleWeekEditEventArgs> DeleteRequested { add => AddHandler(DeleteRequestedEvent, value); remove => RemoveHandler(DeleteRequestedEvent, value); }
     public event EventHandler<ScheduleWeekEditEventArgs> DuplicateRequested { add => AddHandler(DuplicateRequestedEvent, value); remove => RemoveHandler(DuplicateRequestedEvent, value); }
     public event EventHandler<ScheduleWeekEditEventArgs> ForkAndReplaceRequested { add => AddHandler(ForkAndReplaceRequestedEvent, value); remove => RemoveHandler(ForkAndReplaceRequestedEvent, value); }
+    public event EventHandler<ScheduleWeekEditEventArgs> CourseTapped { add => AddHandler(CourseTappedEvent, value); remove => RemoveHandler(CourseTappedEvent, value); }
     public static readonly RoutedEvent<ScheduleDayHeaderEventArgs> DayHeaderClickedEvent =
         RoutedEvent.Register<ScheduleWeekEditControl, ScheduleDayHeaderEventArgs>(nameof(DayHeaderClicked), RoutingStrategies.Bubble);
     public event EventHandler<ScheduleDayHeaderEventArgs> DayHeaderClicked { add => AddHandler(DayHeaderClickedEvent, value); remove => RemoveHandler(DayHeaderClickedEvent, value); }
@@ -112,6 +115,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private int _viewportActionVersion;
     private IDisposable? _touchHoldTimer;
     private MenuFlyout? _openBlockMenu;
+    private ScheduleWeekBlock? _tapCandidate;
+    private Point _tapOrigin;
 
     private enum DragKind { Move, Start, End }
     private sealed record DisplayOccurrence(ScheduleWeekOccurrence Source, ScheduleWeekOccurrence Display);
@@ -748,6 +753,8 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         if (block != null)
         {
             var item = block.Occurrence;
+            _tapCandidate = block;
+            _tapOrigin = point;
             SetCurrentValue(SelectedScheduleItemIdProperty, item.ScheduleItemId);
             SetCurrentValue(SelectedDateProperty, (DateOnly?)item.Date);
             SetCurrentValue(SelectedTimeProperty, (TimeSpan?)item.StartTime);
@@ -767,6 +774,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         }
         else if (point.X >= RulerWidth)
         {
+            _tapCandidate = null;
             var date = DateAt(point.X);
             var time = TimeSpan.FromMinutes(Math.Clamp(Snap(point.Y / Scale), 0, 1435));
             SetCurrentValue(SelectedScheduleItemIdProperty, (Guid?)null);
@@ -929,6 +937,14 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         base.OnPointerMoved(e);
         if (_drag is not { } drag)
         {
+            if (_tapCandidate != null && _canvas != null)
+            {
+                var movedPoint = e.GetPosition(_canvas);
+                if (Math.Abs(movedPoint.X - _tapOrigin.X) > 3 || Math.Abs(movedPoint.Y - _tapOrigin.Y) > 3)
+                {
+                    _tapCandidate = null;
+                }
+            }
             if (_openBlockMenu != null)
                 return;
             var visual = e.Source as Visual;
@@ -941,6 +957,11 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         }
         if (_canvas == null || IsReadonly || e.Pointer != drag.Pointer) return;
         var point = e.GetPosition(_canvas);
+        if (_tapCandidate != null &&
+            (Math.Abs(point.X - _tapOrigin.X) > 3 || Math.Abs(point.Y - _tapOrigin.Y) > 3))
+        {
+            _tapCandidate = null;
+        }
         if (!drag.HasMoved && Math.Abs(point.Y - drag.Origin.Y) < 3 && Math.Abs(point.X - drag.Origin.X) < 3) return;
         var wasMoving = drag.HasMoved;
         drag.HasMoved = true;
@@ -971,7 +992,24 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     {
         base.OnPointerReleased(e);
         CancelTouchHold();
-        if (_drag is not { } drag || e.Pointer != drag.Pointer) return;
+        if (_drag is not { } drag)
+        {
+            if (_tapCandidate != null)
+            {
+                var point = e.GetPosition(this);
+                var canvasPoint = _canvas == null ? point : e.GetPosition(_canvas);
+                if (Math.Abs(canvasPoint.X - _tapOrigin.X) <= 3 &&
+                    Math.Abs(canvasPoint.Y - _tapOrigin.Y) <= 3)
+                {
+                    RaiseCourseTapped(_tapCandidate);
+                }
+                _tapCandidate = null;
+                e.Handled = true;
+            }
+            return;
+        }
+        if (e.Pointer != drag.Pointer) return;
+        var wasTap = !drag.HasMoved && _tapCandidate != null;
         _drag = null;
         e.Pointer.Capture(null);
         Cursor = null;
@@ -992,6 +1030,10 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
                 if (AutoFetchScheduleItems) RefreshAutomaticItems();
                 RemapCommittedBlocks(drag);
             }
+            if (wasTap)
+            {
+                RaiseCourseTapped(drag.Item);
+            }
         }
         finally
         {
@@ -999,6 +1041,23 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             Rebuild();
         }
         e.Handled = true;
+    }
+
+    private void RaiseCourseTapped(ScheduleWeekBlock block)
+    {
+        RaiseCourseTapped(block.Occurrence);
+    }
+
+    private void RaiseCourseTapped(ScheduleWeekOccurrence item)
+    {
+        RaiseEvent(new ScheduleWeekEditEventArgs(CourseTappedEvent)
+        {
+            ScheduleItemId = item.ScheduleItemId,
+            OriginalDate = item.Date,
+            Date = item.Date,
+            StartTime = item.StartTime,
+            EndTime = item.EndTime
+        });
     }
 
     private void RemapCommittedBlocks(DragState drag)
@@ -1043,6 +1102,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private void CancelDrag()
     {
         CancelTouchHold();
+        _tapCandidate = null;
         if (_drag is not { } drag) return;
         _drag = null;
         drag.Pointer.Capture(null);
