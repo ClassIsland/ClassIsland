@@ -2,6 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Platform;
 using Avalonia.Rendering;
 using Avalonia.Vulkan;
@@ -10,6 +12,17 @@ namespace ClassIsland.Core.Helpers;
 
 internal static class AvaloniaUnsafeAccessorHelpers
 {
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ApplyTemplatedParent")]
+    internal static extern void ApplyTemplatedParent(TemplatedControl? declaringType, StyledElement control,
+        AvaloniaObject? templatedParent);
+
+    // ComboBox exposes these events through its native popup; drawer selection has no native popup.
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "DropDownOpened")]
+    internal static extern ref EventHandler? GetComboBoxDropDownOpened(ComboBox comboBox);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "DropDownClosed")]
+    internal static extern ref EventHandler? GetComboBoxDropDownClosed(ComboBox comboBox);
+
     [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "get_Current")]
     static extern IAvaloniaDependencyResolver? GetCurrentAvaloniaLocator(AvaloniaLocator? nullLocator);
 

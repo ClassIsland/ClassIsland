@@ -261,6 +261,7 @@
     </Style>
 
     <Style Selector="ComboBox">
+        <Setter Property="ci:ComboBoxAssist.UseDrawer" Value="False"/>
         <Setter Property="Template">
             <ControlTemplate>
                 <DataValidationErrors>
@@ -385,6 +386,10 @@
                 </DataValidationErrors>
             </ControlTemplate>
         </Setter>
+    </Style>
+
+    <Style Selector="ComboBox.drawer-selection > ComboBoxItem">
+        <Setter Property="Padding" Value="{StaticResource MenuFlyoutItemThemePadding}"/>
     </Style>
 
     <Style Selector="ToolTip">
