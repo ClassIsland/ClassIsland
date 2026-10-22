@@ -152,6 +152,12 @@ public partial class DrawerNavigationHost : UserControl
             return;
         }
 
+        if (property == null || property == ViewHostAssist.DrawerMaxWidthProperty)
+        {
+            PART_Drawer.DrawerMaxWidth = _options.IsMaxWidthSet
+                ? _options.MaxWidth
+                : ViewHostAssist.GetDrawerMaxWidth(_currentView);
+        }
         if (property == null || property == ViewHostAssist.DrawerAllowCollapseProperty)
         {
             PART_Drawer.AllowCollapse = _options.IsAllowCollapseSet

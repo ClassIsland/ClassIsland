@@ -5,6 +5,7 @@
              xmlns:viewModels="clr-namespace:ClassIsland.ViewModels.MainViewParts"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              x:Class="ClassIsland.Views.MainViewParts.ProfileManagementView"
+             ci:ViewHostAssist.DrawerMaxWidth="480"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ProfileManagementViewModel}"
              ci:ViewHostAssist.DrawerContentHeightRatio="0.7"

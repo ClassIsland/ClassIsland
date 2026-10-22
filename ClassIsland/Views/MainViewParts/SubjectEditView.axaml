@@ -8,6 +8,7 @@
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
              xmlns:views="clr-namespace:ClassIsland.Views.MainViewParts"
              x:Class="ClassIsland.Views.MainViewParts.SubjectEditView"
+             ci:ViewHostAssist.DrawerMaxWidth="480"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:SubjectEditViewModel}"
              ci:ViewHostAssist.DrawerContentHeightRatio="0.7"
