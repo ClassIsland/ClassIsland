@@ -1,0 +1,19 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             x:Class="ClassIsland.Views.MainViewParts.ScheduleModeView"
+             Header="课程模式"
+             NavigationPage.HasBackButton="False">
+    <StackPanel Spacing="12" Margin="0,4,0,8">
+        <controls:FAInfoBar Title="注意！"
+                            Message="经典课程模式在移动端支持不佳，无法直接编辑课表。"
+                            Severity="Warning"
+                            IsOpen="True"
+                            IsClosable="False"/>
+        <RadioButton x:Name="ClassicRadio" GroupName="ScheduleMode"
+                     Content="经典" IsCheckedChanged="ModeRadio_OnChecked"/>
+        <RadioButton x:Name="ScheduleRadio" GroupName="ScheduleMode"
+                     Content="日程" IsCheckedChanged="ModeRadio_OnChecked"/>
+    </StackPanel>
+</ci:ViewBase>

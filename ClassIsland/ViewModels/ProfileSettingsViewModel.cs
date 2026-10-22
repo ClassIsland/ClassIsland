@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -14,6 +16,7 @@ using ClassIsland.Models;
 using ClassIsland.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Shared.ComponentModels;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -108,6 +111,16 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private int _selectedClassIndex2 = -1;
     [ObservableProperty] private KeyValuePair<Guid, ScheduleItem>? _selectedScheduleItemKvp;
     [ObservableProperty] private ScheduleItem? _selectedScheduleItem;
+    [ObservableProperty] private bool _selectedScheduleItemHasReplacement;
+    [ObservableProperty] private string? _selectedScheduleItemReplacementDescription;
+    private Subject? _selectedScheduleItemSubject;
+    private ScheduleItem? _observedScheduleItem;
+
+    public Subject? SelectedScheduleItemSubject
+    {
+        get => _selectedScheduleItemSubject;
+        private set => SetProperty(ref _selectedScheduleItemSubject, value);
+    }
     
     [ObservableProperty] private ReadOnlyObservableCollection<ClassPlansTreeNode> _groupedClassPlans;
     private readonly ObservableCollection<ClassPlansTreeNode> _groupedClassPlanNodes = [];
@@ -158,6 +171,19 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         OrderedSchedules =
             new SyncDictionaryList<DateTime, OrderedSchedule>(ProfileService.Profile.OrderedSchedules, () => DateTime.MinValue);
         ScheduleItems = new SyncDictionaryList<Guid, ScheduleItem>(ProfileService.Profile.ScheduleItems, Guid.NewGuid);
+        NotifyCollectionChangedEventHandler scheduleItemSubjectsChanged =
+            (_, _) =>
+            {
+                UpdateSelectedScheduleItemSubject();
+                UpdateSelectedScheduleItemReplacement();
+            };
+        ProfileService.Profile.Subjects.CollectionChanged += scheduleItemSubjectsChanged;
+        _externalSubscriptions.Add(Disposable.Create(() =>
+            ProfileService.Profile.Subjects.CollectionChanged -= scheduleItemSubjectsChanged));
+        NotifyCollectionChangedEventHandler scheduleItemsChanged = (_, _) => UpdateSelectedScheduleItemReplacement();
+        ScheduleItems.List.CollectionChanged += scheduleItemsChanged;
+        _externalSubscriptions.Add(Disposable.Create(() =>
+            ScheduleItems.List.CollectionChanged -= scheduleItemsChanged));
 
         TempClassPlanList = ClassPlans.List
             .ToObservableChangeSet()
@@ -240,6 +266,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     partial void OnSelectedScheduleItemChanged(ScheduleItem? value)
     {
+        ObserveSelectedScheduleItem(value);
         if (value == null)
         {
             SelectedScheduleItemKvp = null;
@@ -261,6 +288,64 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
 
         SelectedScheduleItemKvp = null;
+    }
+
+    private void ObserveSelectedScheduleItem(ScheduleItem? value)
+    {
+        if (_observedScheduleItem != null)
+        {
+            _observedScheduleItem.PropertyChanged -= SelectedScheduleItemOnPropertyChanged;
+        }
+
+        _observedScheduleItem = value;
+        if (_observedScheduleItem != null)
+        {
+            _observedScheduleItem.PropertyChanged += SelectedScheduleItemOnPropertyChanged;
+        }
+
+        UpdateSelectedScheduleItemSubject();
+        UpdateSelectedScheduleItemReplacement();
+    }
+
+    private void SelectedScheduleItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(ScheduleItem.SubjectId) or nameof(ScheduleItem.ReplacementTarget))
+        {
+            UpdateSelectedScheduleItemSubject();
+            UpdateSelectedScheduleItemReplacement();
+        }
+    }
+
+    private void UpdateSelectedScheduleItemSubject()
+    {
+        SelectedScheduleItemSubject = SelectedScheduleItem != null &&
+            ProfileService.Profile.Subjects.TryGetValue(SelectedScheduleItem.SubjectId, out var subject)
+                ? subject
+                : null;
+    }
+
+    private void UpdateSelectedScheduleItemReplacement()
+    {
+        var target = SelectedScheduleItem?.ReplacementTarget;
+        SelectedScheduleItemHasReplacement = target != null;
+        if (target == null)
+        {
+            SelectedScheduleItemReplacementDescription = null;
+            return;
+        }
+
+        var date = DateOnly.FromDateTime(target.Date);
+        if (!ProfileService.Profile.ScheduleItems.TryGetValue(target.ScheduleItemId, out var targetItem))
+        {
+            SelectedScheduleItemReplacementDescription = $"原课程已不存在（{date:yyyy年M月d日}）";
+            return;
+        }
+
+        var subjectName = ProfileService.Profile.Subjects.TryGetValue(targetItem.SubjectId, out var subject)
+                          && !string.IsNullOrWhiteSpace(subject.Name)
+            ? subject.Name
+            : "未指定科目";
+        SelectedScheduleItemReplacementDescription = $"替换 {date:yyyy年M月d日} 的“{subjectName}”课程";
     }
 
     public void ReleaseResources()

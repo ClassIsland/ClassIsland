@@ -2,6 +2,8 @@ using System.Runtime.Versioning;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Android.Views;
+using AndroidX.Activity;
 using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -41,6 +43,8 @@ public class MainActivity : AvaloniaMainActivity
     public event EventHandler? Destroy;
 
     private AndroidViewHost? ViewHost { get; set; }
+    private OnBackPressedCallback? _backPressedCallback;
+    private bool _isBackKeyHandled;
 
     public MainActivity()
     {
@@ -201,6 +205,21 @@ public class MainActivity : AvaloniaMainActivity
              CheckSelfPermission(global::Android.Manifest.Permission.AccessFineLocation) == Permission.Granted));
     }
 
+    protected override void OnStart()
+    {
+        base.OnStart();
+        // Avalonia registers its callback in OnStart; register last so the host handles drawers first.
+        _backPressedCallback = new HostBackPressedCallback(this);
+        OnBackPressedDispatcher.AddCallback(this, _backPressedCallback);
+    }
+
+    protected override void OnStop()
+    {
+        _backPressedCallback?.Remove();
+        _backPressedCallback = null;
+        base.OnStop();
+    }
+
     protected override void OnResume()
     {
         base.OnResume();
@@ -216,6 +235,8 @@ public class MainActivity : AvaloniaMainActivity
 
     protected override void OnDestroy()
     {
+        _backPressedCallback?.Remove();
+        _backPressedCallback = null;
         IsForeground = false;
         _locationPermissionRequest?.TrySetResult(false);
         _locationPermissionRequest = null;
@@ -228,5 +249,72 @@ public class MainActivity : AvaloniaMainActivity
         Destroy?.Invoke(this, EventArgs.Empty);
         ViewHost = null;
         base.OnDestroy();
+    }
+
+    public override bool DispatchKeyEvent(KeyEvent? e)
+    {
+        if (e?.KeyCode != Keycode.Back)
+        {
+            return base.DispatchKeyEvent(e);
+        }
+
+        if (e.Action == KeyEventActions.Down && e.RepeatCount == 0)
+        {
+            _isBackKeyHandled = ViewHost?.HandleBackRequested() == true;
+        }
+        if (!_isBackKeyHandled)
+        {
+            return base.DispatchKeyEvent(e);
+        }
+
+        // Avalonia maps Back to Escape on key down but forwards key up to Android's back dispatcher.
+        // Consume the whole key press so closing a drawer cannot also navigate the underlying page.
+        if (e.Action == KeyEventActions.Up)
+        {
+            _isBackKeyHandled = false;
+        }
+        return true;
+    }
+
+    public override void OnBackPressed()
+    {
+        if (_isBackKeyHandled || ViewHost?.HandleBackRequested() == true)
+        {
+            return;
+        }
+
+        base.OnBackPressed();
+    }
+
+    private void HandleHostBackPressed()
+    {
+        if (_isBackKeyHandled || ViewHost?.HandleBackRequested() == true)
+        {
+            return;
+        }
+
+        if (_backPressedCallback == null)
+        {
+            base.OnBackPressed();
+            return;
+        }
+
+        _backPressedCallback.Enabled = false;
+        try
+        {
+            OnBackPressedDispatcher.OnBackPressed();
+        }
+        finally
+        {
+            if (!IsFinishing && !IsDestroyed)
+            {
+                _backPressedCallback.Enabled = true;
+            }
+        }
+    }
+
+    private sealed class HostBackPressedCallback(MainActivity activity) : OnBackPressedCallback(true)
+    {
+        public override void HandleOnBackPressed() => activity.HandleHostBackPressed();
     }
 }

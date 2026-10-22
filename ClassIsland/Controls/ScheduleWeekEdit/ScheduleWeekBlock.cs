@@ -29,6 +29,10 @@ public sealed class ScheduleWeekBlock : TemplatedControl
         AvaloniaProperty.Register<ScheduleWeekBlock, bool>(nameof(IsCompact));
     public static readonly StyledProperty<bool> ShowTimeTextProperty =
         AvaloniaProperty.Register<ScheduleWeekBlock, bool>(nameof(ShowTimeText), true);
+    public static readonly StyledProperty<bool> IsReplacementProperty =
+        AvaloniaProperty.Register<ScheduleWeekBlock, bool>(nameof(IsReplacement));
+    public static readonly StyledProperty<bool> IsCourseEnabledProperty =
+        AvaloniaProperty.Register<ScheduleWeekBlock, bool>(nameof(IsCourseEnabled), true);
 
     public string SubjectName { get => GetValue(SubjectNameProperty); set => SetValue(SubjectNameProperty, value); }
     public IBrush SubjectBrush { get => GetValue(SubjectBrushProperty); set => SetValue(SubjectBrushProperty, value); }
@@ -37,6 +41,8 @@ public sealed class ScheduleWeekBlock : TemplatedControl
     public bool IsSelected { get => GetValue(IsSelectedProperty); set => SetValue(IsSelectedProperty, value); }
     public bool IsCompact { get => GetValue(IsCompactProperty); set => SetValue(IsCompactProperty, value); }
     public bool ShowTimeText { get => GetValue(ShowTimeTextProperty); set => SetValue(ShowTimeTextProperty, value); }
+    public bool IsReplacement { get => GetValue(IsReplacementProperty); set => SetValue(IsReplacementProperty, value); }
+    public bool IsCourseEnabled { get => GetValue(IsCourseEnabledProperty); set => SetValue(IsCourseEnabledProperty, value); }
     public required ScheduleWeekOccurrence Occurrence { get; set; }
     private StackPanel? _labels;
     private TextBlock? _subjectLabel;
@@ -134,6 +140,8 @@ public sealed class ScheduleWeekBlock : TemplatedControl
             Transitions = null;
         IsSelected = selected;
         ShowHandles = selected && !isReadonly;
-        Opacity = selected ? 1 : 0.55;
+        Opacity = IsCourseEnabled
+            ? selected ? 1 : 0.55
+            : selected ? 0.8 : 0.4;
     }
 }

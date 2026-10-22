@@ -12,6 +12,16 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChanging, IPublicLessonsService
 {
+    /// <summary>
+    /// 当前正在上的课程。课间休息或没有课程时为 null。
+    /// </summary>
+    ClassInfo? CurrentClassInfo { get; }
+
+    /// <summary>
+    /// 当前或下一节上课课程。没有课程时为 null。
+    /// </summary>
+    ClassInfo? NextClassInfo { get; }
+
     #region Timer
 
     /// <summary>

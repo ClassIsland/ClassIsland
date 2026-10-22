@@ -1198,6 +1198,21 @@
                                                                       Content="选完科目自动移动到下一个课程" />
                                                         </Grid>
                                                     </TabItem>
+                                                    <TabItem Header="编辑课程">
+                                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                                            <StackPanel Spacing="6" Margin="8">
+                                                                <ci:Field Label="上课地点">
+                                                                    <TextBox
+                                                                        Text="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.Location, Mode=TwoWay}"
+                                                                        PlaceholderText="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.Subject.Location}"
+                                                                        IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.IsEmpty, Converter={StaticResource InvertBooleanConverter}}" />
+                                                                </ci:Field>
+                                                                <TextBlock Text="留空时将使用科目设置的上课地点。"
+                                                                           Classes="l-secondary"
+                                                                           TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                        </ScrollViewer>
+                                                    </TabItem>
                                                 </ci:ReusableTabControl>
                                             </Grid>
                                         </Grid>
@@ -1329,6 +1344,20 @@
                                                           IsChecked="{Binding ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}"
                                                           Content="选完科目自动移动到下一个课程" />
                                             </Grid>
+                                        </TabItem>
+                                        <TabItem Header="编辑课程">
+                                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                                <StackPanel Spacing="6" Margin="8">
+                                                    <ci:Field Label="上课地点">
+                                                        <TextBox Text="{Binding ViewModel.SelectedClassInfo.Location, Mode=TwoWay}"
+                                                                 PlaceholderText="{Binding ViewModel.SelectedClassInfo.Subject.Location}"
+                                                                 IsEnabled="{Binding !ViewModel.SelectedClassInfo.IsEmpty}" />
+                                                    </ci:Field>
+                                                    <TextBlock Text="留空时将使用科目设置的上课地点。"
+                                                               Classes="l-secondary"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+                                            </ScrollViewer>
                                         </TabItem>
                                     </ci:ReusableTabControl>
                                 </Grid>
@@ -1922,6 +1951,14 @@
                                             <ci:FluentIconSource Glyph="{ci:FI CopyRegular}"/>
                                         </controls:FACommandBarButton.IconSource>
                                     </controls:FACommandBarButton>
+                                    <controls:FACommandBarButton Click="ButtonForkScheduleItem_OnClick"
+                                                               ToolTip.Tip="在日程视图中分叉并替换选中的课程。"
+                                                               IsEnabled="{Binding ViewModel.SelectedScheduleItemKvp, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                               Label="分叉">
+                                        <controls:FACommandBarButton.IconSource>
+                                            <ci:FluentIconSource Glyph="{ci:FI BranchForkRegular}"/>
+                                        </controls:FACommandBarButton.IconSource>
+                                    </controls:FACommandBarButton>
                                     <controls:FACommandBarButton Click="ButtonDeleteScheduleItem_OnClick"
                                                                ToolTip.Tip="删除选中的课程。"
                                                                IsEnabled="{Binding ViewModel.SelectedScheduleItemKvp, Converter={x:Static ObjectConverters.IsNotNull}}"
@@ -1980,6 +2017,12 @@
                                         <Style Selector="DataGridRow TextBlock, DataGridRow TextBox">
                                             <Setter Property="TextElement.FontSize" Value="13"/>
                                         </Style>
+                                        <Style Selector="Grid.disabled">
+                                            <Setter Property="Opacity" Value="0.45"/>
+                                        </Style>
+                                        <Style Selector="TextBlock.disabled">
+                                            <Setter Property="Opacity" Value="0.45"/>
+                                        </Style>
                                         <Style Selector="DataGridRow.DraggingUp">
                                             <Setter Property="BorderBrush"
                                                     Value="{DynamicResource AccentFillColorDefaultBrush}"/>
@@ -2028,18 +2071,38 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
+                                        <DataGridCheckBoxColumn Header="启用" Width="60"
+                                                                Binding="{Binding Value.IsEnabled, Mode=TwoWay}"/>
                                         <DataGridTemplateColumn Header="科目" Width="*" MinWidth="140">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <ContentControl
-                                                        Content="{Binding Value.SubjectId, Converter={StaticResource SubjectIdToSubjectConverter}, TargetNullValue={StaticResource UnspecifiedScheduleSubject}, FallbackValue={StaticResource UnspecifiedScheduleSubject}}"
-                                                        VerticalAlignment="Center" Margin="6 0">
-                                                        <ContentControl.ContentTemplate>
-                                                            <DataTemplate>
-                                                                <TextBlock Text="{Binding Name}"/>
-                                                            </DataTemplate>
-                                                        </ContentControl.ContentTemplate>
-                                                    </ContentControl>
+                                                    <Grid Margin="6 0" ColumnDefinitions="*,Auto"
+                                                          Classes.disabled="{Binding !Value.IsEnabled}">
+                                                        <ContentControl
+                                                            Content="{Binding Value.SubjectId, Converter={StaticResource SubjectIdToSubjectConverter}, TargetNullValue={StaticResource UnspecifiedScheduleSubject}, FallbackValue={StaticResource UnspecifiedScheduleSubject}}"
+                                                            VerticalAlignment="Center">
+                                                            <ContentControl.ContentTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding Name}"/>
+                                                                </DataTemplate>
+                                                            </ContentControl.ContentTemplate>
+                                                        </ContentControl>
+                                                        <Border Grid.Column="1" Margin="6 0 0 0"
+                                                                Padding="4 1" CornerRadius="3"
+                                                                VerticalAlignment="Center"
+                                                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                                                IsVisible="{Binding Value.HasReplacementTarget}"
+                                                                ToolTip.Tip="临时覆盖课程">
+                                                            <StackPanel Orientation="Horizontal" Spacing="3">
+                                                                <ci:FluentIcon Glyph="{ci:FI BranchForkRegular}"
+                                                                               FontSize="11"
+                                                                               Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                                                                <TextBlock Text="覆盖" FontSize="11"
+                                                                           VerticalAlignment="Center"
+                                                                           Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </Grid>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                             <DataGridTemplateColumn.CellEditingTemplate>
@@ -2062,6 +2125,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding Value.StartTime, StringFormat='{}{0:hh\\:mm\\:ss}'}"
+                                                               Classes.disabled="{Binding !Value.IsEnabled}"
                                                                VerticalAlignment="Center" Margin="6 0"/>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -2077,6 +2141,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding Value.EndTime, StringFormat='{}{0:hh\\:mm\\:ss}'}"
+                                                               Classes.disabled="{Binding !Value.IsEnabled}"
                                                                VerticalAlignment="Center" Margin="6 0"/>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -2119,6 +2184,8 @@
                                                 CreateRequested="ScheduleWeekEditor_OnCreateRequested"
                                                 EditRequested="ScheduleWeekEditor_OnEditRequested"
                                                 DeleteRequested="ScheduleWeekEditor_OnDeleteRequested"
+                                                DuplicateRequested="ScheduleWeekEditor_OnDuplicateRequested"
+                                                ForkAndReplaceRequested="ScheduleWeekEditor_OnForkAndReplaceRequested"
                                                 DayHeaderClicked="ScheduleWeekEditor_OnDayHeaderClicked"
                                                 Margin="0 0 0 -28">
                                                 <scheduleWeek:ScheduleWeekEditControl.IsReadonly>
@@ -2163,6 +2230,30 @@
                                             </StackPanel.IsEnabled>
                                             <TextBlock Text="编辑课程信息"
                                                        Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                                            <controls:FAInfoBar
+                                                Title="临时覆盖"
+                                                Message="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedScheduleItemReplacementDescription}"
+                                                Severity="Informational"
+                                                IsOpen="True"
+                                                IsClosable="False"
+                                                IsVisible="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedScheduleItemHasReplacement}">
+                                                <controls:FAInfoBar.ActionButton>
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <Button Click="ButtonRemoveReplacementScheduleItem_OnClick">
+                                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                <ci:FluentIcon Glyph="{ci:FI DeleteRegular}"/>
+                                                                <TextBlock Text="解除替换" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Click="ButtonConvertScheduleItemReplacementToNormal_OnClick">
+                                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                <ci:FluentIcon Glyph="{ci:FI ArrowSyncRegular}"/>
+                                                                <TextBlock Text="转换为普通课程" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </controls:FAInfoBar.ActionButton>
+                                            </controls:FAInfoBar>
                                             <ci:Field Label="科目">
                                                 <ComboBox ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ScheduleItemSubjects.List}"
                                                           SelectedValue="{Binding SubjectId, Mode=TwoWay}"
@@ -2175,6 +2266,13 @@
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
                                             </ci:Field>
+                                            <ci:Field Label="上课地点">
+                                                <TextBox Text="{Binding Location, Mode=TwoWay}"
+                                                         PlaceholderText="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedScheduleItemSubject.Location}" />
+                                            </ci:Field>
+                                            <TextBlock Text="留空时将使用科目设置的上课地点。"
+                                                       Classes="l-secondary"
+                                                       TextWrapping="Wrap" />
                                             <ci:Field Label="开始时间">
                                                 <TimePicker SelectedTime="{Binding StartTime, Mode=TwoWay}"
                                                             UseSeconds="True" MinWidth="0"
@@ -2185,6 +2283,8 @@
                                                             UseSeconds="True" MinWidth="0"
                                                             HorizontalAlignment="Stretch"/>
                                             </ci:Field>
+                                            <CheckBox Content="启用此课程"
+                                                      IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
                                             <controls1:TimeRuleEditControl x:Name="ScheduleItemTimeRuleEditControl"
                                                                            TimeRule="{Binding EnableRule, Mode=OneWay}"/>
                                         </StackPanel>

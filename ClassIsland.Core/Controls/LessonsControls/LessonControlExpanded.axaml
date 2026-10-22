@@ -310,7 +310,7 @@
                 <Run Text="{Binding CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:h\\:mm}'}"/>
                 <Run Text="-"/>
                 <Run Text="{Binding CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:h\\:mm}'}"/>
-                <Run Text="{Binding DisplayingSubject.Location, Converter={StaticResource SubjectLocationDisplayConverter}}"/>
+                <Run Text="{Binding DisplayingLocation, Converter={StaticResource SubjectLocationDisplayConverter}}"/>
             </TextBlock>
             <Panel Grid.RowSpan="3" Grid.Column="3" VerticalAlignment="Center" Margin="0 0 16 0"
                    IsVisible="{Binding SettingsSource.ShowExtraInfoOnTimePoint}"

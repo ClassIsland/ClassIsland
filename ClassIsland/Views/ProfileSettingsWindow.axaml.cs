@@ -1534,6 +1534,106 @@ public partial class ProfileSettingsWindow : ViewBase
         e.Handled = true;
     }
 
+    private void ScheduleWeekEditor_OnDuplicateRequested(object? sender, ScheduleWeekEditEventArgs e)
+    {
+        if (!CanEditScheduleItems()) return;
+        ViewModel.SelectedScheduleItemId = e.ScheduleItemId;
+        ButtonDuplicateScheduleItem_OnClick(this, e);
+        e.Handled = true;
+    }
+
+    private void ScheduleWeekEditor_OnForkAndReplaceRequested(object? sender, ScheduleWeekEditEventArgs e)
+    {
+        if (!CanEditScheduleItems()) return;
+        if (e.ScheduleItemId is not { } scheduleItemId)
+        {
+            this.ShowWarningToast("无法创建临时覆盖课程，请重新选择课程后重试。");
+            return;
+        }
+        var newId = ViewModel.ProfileService.ForkAndReplaceScheduleItem(scheduleItemId,
+            e.Date.ToDateTime(TimeOnly.MinValue));
+        if (newId == null)
+        {
+            this.ShowWarningToast("无法创建临时覆盖课程，请重新选择课程后重试。");
+            return;
+        }
+
+        ViewModel.SelectedScheduleItemId = newId;
+        this.ShowToast("已创建临时覆盖课程。");
+        e.Handled = true;
+    }
+
+    private void ButtonForkScheduleItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (!CanEditScheduleItems()) return;
+        if (ViewModel.SelectedScheduleItemKvp is not { } selected)
+        {
+            this.ShowWarningToast("请先选择要分叉的课程。");
+            return;
+        }
+        if (selected.Value.ReplacementTarget != null)
+        {
+            this.ShowWarningToast("覆盖课程不能再次分叉和替换。");
+            return;
+        }
+        if (ViewModel.ScheduleWeekSelectedDate is not { } date)
+        {
+            this.ShowWarningToast("请先在日程视图中选择要分叉的课程日期。");
+            return;
+        }
+        var newId = ViewModel.ProfileService.ForkAndReplaceScheduleItem(selected.Key,
+            date.ToDateTime(TimeOnly.MinValue));
+        if (newId == null)
+        {
+            this.ShowWarningToast("无法创建临时覆盖课程，请重新选择课程后重试。");
+            return;
+        }
+
+        ViewModel.SelectedScheduleItemId = newId;
+        this.ShowToast("已创建临时覆盖课程。");
+    }
+
+    private void ButtonRemoveReplacementScheduleItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (!CanEditScheduleItems()) return;
+        if (ViewModel.SelectedScheduleItemKvp is not { } selected
+            || selected.Value.ReplacementTarget == null)
+        {
+            return;
+        }
+
+        var index = ViewModel.ScheduleItems.List.IndexOf(selected);
+        if (index < 0 || !ViewModel.RemoveSelectedReplacementScheduleItem()) return;
+
+        var revertButton = new Button
+        {
+            Content = "撤销"
+        };
+        var toastMessage = new ToastMessage("已移除替换课程，原课程已恢复。")
+        {
+            ActionContent = revertButton,
+            Duration = TimeSpan.FromSeconds(10)
+        };
+        EventHandler<RoutedEventArgs> revertButtonOnClick = (_, _) =>
+        {
+            ViewModel.ScheduleItems.List.Insert(Math.Min(index, ViewModel.ScheduleItems.List.Count), selected);
+            ViewModel.SelectedScheduleItemKvp = selected;
+            toastMessage.Close();
+        };
+        revertButton.Click += revertButtonOnClick;
+        _eventUnhookActions.Add(() => revertButton.Click -= revertButtonOnClick);
+        ToastsHelper.ShowToast(this, toastMessage);
+    }
+
+    private void ButtonConvertScheduleItemReplacementToNormal_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (!CanEditScheduleItems()) return;
+        if (ViewModel.SelectedScheduleItemKvp is not { } selected
+            || !ViewModel.ProfileService.ConvertScheduleItemReplacementToNormal(selected.Key))
+            return;
+        this.ShowToast("已转换为普通课程。");
+    }
+
     private void WarnAboutAdjustedCourseEdit(DateOnly date)
     {
         if (ViewModel.ProfileService.Profile.OrderedSchedulesV2.ContainsKey(date.ToDateTime(TimeOnly.MinValue)))

@@ -23,6 +23,7 @@ public abstract class ViewBase : ContentPage
     private TaskCompletionSource? DeActiveTcs { get; set; }
 
     private bool _isShowed = false;
+    private TopLevel? _backRequestedTopLevel;
 
     public static readonly StyledProperty<object?> ResultProperty = AvaloniaProperty.Register<ViewBase, object?>(
         nameof(Result));
@@ -176,7 +177,12 @@ public abstract class ViewBase : ContentPage
     private void OnNavigatedTo(object? sender, NavigatedToEventArgs e)
     {
         Console.WriteLine($"[ELYSIADBG] OnNavigatedTo {this} {TopLevel}");
-        TopLevel?.BackRequested += TopLevelOnBackRequested;
+        UnsubscribeFromBackRequested();
+        _backRequestedTopLevel = TopLevel;
+        if (_backRequestedTopLevel != null)
+        {
+            _backRequestedTopLevel.BackRequested += TopLevelOnBackRequested;
+        }
     }
 
     private void OnNavigatedFrom(object? sender, NavigatedFromEventArgs e)
@@ -186,7 +192,19 @@ public abstract class ViewBase : ContentPage
 
     private void TopLevelOnBackRequested(object? sender, RoutedEventArgs e)
     {
-        if (e.Handled)
+        if (e.Handled || AssociatedViewHost == null)
+        {
+            return;
+        }
+
+        if (AssociatedViewHost.IsDrawerOpen)
+        {
+            if (!ReferenceEquals(AssociatedViewHost.CurrentDrawerView, this))
+            {
+                return;
+            }
+        }
+        else if (!ReferenceEquals(AssociatedViewHost.CurrentView, this))
         {
             return;
         }
@@ -235,7 +253,7 @@ public abstract class ViewBase : ContentPage
         }
         
         Console.WriteLine($"[ELYSIADBG] OnNavigatedFrom {this} {TopLevel}");
-        TopLevel?.BackRequested -= TopLevelOnBackRequested;
+        UnsubscribeFromBackRequested();
     }
 
     internal bool ViewActivating(IViewHost viewHost)
@@ -267,6 +285,7 @@ public abstract class ViewBase : ContentPage
 
     internal void ViewDeactivated()
     {
+        UnsubscribeFromBackRequested();
         var wasShowed = _isShowed;
         var deActiveTcs = DeActiveTcs;
 
@@ -284,6 +303,17 @@ public abstract class ViewBase : ContentPage
         {
             RaiseEvent(new RoutedEventArgs(ClosedEvent));
         }
+    }
+
+    private void UnsubscribeFromBackRequested()
+    {
+        if (_backRequestedTopLevel == null)
+        {
+            return;
+        }
+
+        _backRequestedTopLevel.BackRequested -= TopLevelOnBackRequested;
+        _backRequestedTopLevel = null;
     }
 
     private void ShowCore(ViewBase? owner = null, Window? windowOwner = null, bool modal = false)
@@ -316,15 +346,20 @@ public abstract class ViewBase : ContentPage
         {
             Dispatcher.Invoke(() =>
             {
-                if (ShowedOnce)
-                {
-                    InvalidChildren(this);
-                }
-                
-                _isShowed = true;
-                ShowedOnce = true;
+                ViewShown();
             });
         });
+    }
+
+    internal void ViewShown()
+    {
+        if (ShowedOnce)
+        {
+            InvalidChildren(this);
+        }
+
+        _isShowed = true;
+        ShowedOnce = true;
     }
 
     private async Task ShowModalCore(ViewBase? owner = null, Window? windowOwner = null)

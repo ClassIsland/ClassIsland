@@ -17,6 +17,7 @@ public class ClassPlan : AttachableSettingsObject
     private string _name = "新课表";
     private ObservableOrderedDictionary<Guid, TimeLayout> _timeLayouts = new();
     private ObservableOrderedDictionary<Guid, ClassPlan> _classPlans = new();
+    private ObservableOrderedDictionary<Guid, Subject> _subjects = new();
     private TimeRule _timeRule = new();
     private bool _isActivated = false;
     private bool _isOverlay = false;
@@ -158,6 +159,7 @@ public class ClassPlan : AttachableSettingsObject
                 foreach (var i in Classes)
                 {
                     i.PropertyChanged -= ClassInfoOnPropertyChanged;
+                    i.Subject = null;
                 }
 
                 break;
@@ -177,6 +179,7 @@ public class ClassPlan : AttachableSettingsObject
                     if (i is ClassInfo c)
                     {
                         c.PropertyChanged += ClassInfoOnPropertyChanged;
+                        UpdateClassInfoSubject(c);
                     }
                 }
                 break;
@@ -188,14 +191,41 @@ public class ClassPlan : AttachableSettingsObject
                     if (i is ClassInfo c)
                     {
                         c.PropertyChanged -= ClassInfoOnPropertyChanged;
+                        c.Subject = null;
                     }
                 }
                 break;
             case NotifyCollectionChangedAction.Replace:
+                if (e.OldItems != null)
+                {
+                    foreach (var i in e.OldItems)
+                    {
+                        if (i is ClassInfo c)
+                        {
+                            c.PropertyChanged -= ClassInfoOnPropertyChanged;
+                            c.Subject = null;
+                        }
+                    }
+                }
+                if (e.NewItems != null)
+                {
+                    foreach (var i in e.NewItems)
+                    {
+                        if (i is ClassInfo c)
+                        {
+                            c.PropertyChanged += ClassInfoOnPropertyChanged;
+                            UpdateClassInfoSubject(c);
+                        }
+                    }
+                }
                 break;
             case NotifyCollectionChangedAction.Move:
                 break;
             case NotifyCollectionChangedAction.Reset:
+                foreach (var classInfo in Classes)
+                {
+                    UpdateClassInfoSubject(classInfo);
+                }
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -204,6 +234,11 @@ public class ClassPlan : AttachableSettingsObject
 
     private void ClassInfoOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (sender is ClassInfo classInfo && e.PropertyName == nameof(ClassInfo.SubjectId))
+        {
+            UpdateClassInfoSubject(classInfo);
+        }
+
         NotifyClassesChanged();
 
         if (!IsActivated) return;
@@ -256,6 +291,7 @@ public class ClassPlan : AttachableSettingsObject
                 foreach (var i in Classes)
                 {
                     i.PropertyChanged += ClassInfoOnPropertyChanged;
+                    UpdateClassInfoSubject(i);
                 }
 
                 break;
@@ -379,6 +415,40 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    [JsonIgnore]
+    internal ObservableOrderedDictionary<Guid, Subject> Subjects
+    {
+        get => _subjects;
+        set
+        {
+            if (Equals(value, _subjects)) return;
+            _subjects.CollectionChanged -= SubjectsOnCollectionChanged;
+            _subjects = value;
+            _subjects.CollectionChanged += SubjectsOnCollectionChanged;
+            OnPropertyChanged();
+
+            foreach (var classInfo in Classes)
+            {
+                UpdateClassInfoSubject(classInfo);
+            }
+        }
+    }
+
+    private void SubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        foreach (var classInfo in Classes)
+        {
+            UpdateClassInfoSubject(classInfo);
+        }
+    }
+
+    private void UpdateClassInfoSubject(ClassInfo classInfo)
+    {
+        classInfo.Subject = Subjects.TryGetValue(classInfo.SubjectId, out var subject)
+            ? subject
+            : null;
+    }
+
     /// <summary>
     /// 当前课表的时间表
     /// </summary>
@@ -485,6 +555,7 @@ public class ClassPlan : AttachableSettingsObject
             {
                 Classes[i].SubjectId = Classes[i].CurrentTimeLayoutItem.DefaultClassId;
             }
+            UpdateClassInfoSubject(Classes[i]);
         }
 
         LastTimeLayoutCount = TimeLayout.Layouts.Count;

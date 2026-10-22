@@ -1,0 +1,63 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ClassIsland.ViewModels.MainViewParts"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+             xmlns:views="clr-namespace:ClassIsland.Views.MainViewParts"
+             x:Class="ClassIsland.Views.MainViewParts.SubjectEditView"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:SubjectEditViewModel}"
+             ci:ViewHostAssist.DrawerContentHeightRatio="0.7"
+             Header="编辑科目">
+    <ci:ViewBase.Resources>
+        <converters:StringToColorConverter x:Key="StringToColorConverter"/>
+    </ci:ViewBase.Resources>
+    <NavigationPage.TopCommandBar>
+        <Button Theme="{StaticResource TransparentButton}" ToolTip.Tip="更多选项"
+                Click="MoreButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+        </Button>
+    </NavigationPage.TopCommandBar>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="6" Margin="0,4,0,8">
+            <ci:Field Label="科目名">
+                <TextBox Text="{Binding Subject.Name, Mode=TwoWay}" LostFocus="CommitField_OnLostFocus"/>
+            </ci:Field>
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                <ci:Field Label="简称">
+                    <TextBox Text="{Binding Subject.Initial, Mode=TwoWay}" LostFocus="CommitField_OnLostFocus"/>
+                </ci:Field>
+                <ci:Field Grid.Column="1" Label="图标">
+                    <ci:IconExpressionEditor IconExpression="{Binding Subject.Icon, Mode=TwoWay}"
+                                              LostFocus="CommitField_OnLostFocus"/>
+                </ci:Field>
+                <ci:Field Grid.Column="2" Label="主题色">
+                    <ColorPicker Color="{Binding Subject.ColorHex, Mode=TwoWay, Converter={StaticResource StringToColorConverter}}"
+                                 LostFocus="CommitField_OnLostFocus"/>
+                </ci:Field>
+            </Grid>
+            <ci:Field Label="科任老师">
+                <TextBox Text="{Binding Subject.TeacherName, Mode=TwoWay}" LostFocus="CommitField_OnLostFocus"/>
+            </ci:Field>
+            <ci:Field Label="地点">
+                <TextBox Text="{Binding Subject.Location, Mode=TwoWay}" LostFocus="CommitField_OnLostFocus"/>
+            </ci:Field>
+            <CheckBox IsChecked="{Binding Subject.IsOutDoor, Mode=TwoWay}"
+                      Content="该科目是户外课程" Click="CommitField_OnLostFocus"/>
+            <Separator Margin="0,12,0,4"/>
+            <ci:IconText Glyph="{ci:FI OptionsRegular}" Text="更多选项"/>
+            <ItemsControl ItemsSource="{x:Static services:IAttachedSettingsHostService.SubjectSettingsAttachedSettingsControls}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ci:AttachedSettingsControlPresenter ControlInfo="{Binding}"
+                                                               TargetObject="{Binding $parent[views:SubjectEditView].ViewModel.Subject}"
+                                                               ContentId="{Binding $parent[views:SubjectEditView].ViewModel.SubjectId}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</ci:ViewBase>

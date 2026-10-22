@@ -43,7 +43,7 @@
                 <Run Text="{Binding #LessonControlVerticalMinimizedRoot.CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:h\\:mm}'}"/>
                 <Run Text="-"/>
                 <Run Text="{Binding #LessonControlVerticalMinimizedRoot.CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:h\\:mm}'}"/>
-                <Run Text="{Binding Location, Converter={StaticResource SubjectLocationDisplayConverter}}"/>
+                <Run Text="{Binding #LessonControlVerticalMinimizedRoot.ClassInfo.EffectiveLocation, Converter={StaticResource SubjectLocationDisplayConverter}}"/>
             </TextBlock>
         </Grid>
     </Grid>

@@ -46,6 +46,7 @@ internal sealed class RealtimeNotificationContentBuilder
     public RealtimeNotificationContent Build(
         IRealtimeNotificationSettings settings,
         Subject? subject,
+        ClassInfo? classInfo,
         TimeLayoutItem item,
         string remainingTime,
         bool isUpcoming,
@@ -53,6 +54,11 @@ internal sealed class RealtimeNotificationContentBuilder
         long monotonicMilliseconds)
     {
         subject ??= Subject.Fallback;
+        var effectiveLocation = classInfo?.EffectiveLocation;
+        if (string.IsNullOrWhiteSpace(effectiveLocation))
+        {
+            effectiveLocation = subject.Location;
+        }
         var isBreaking = !isUpcoming && item.TimeType == 1;
         var showSubject = isUpcoming
             ? settings.UpcomingClassRealtimeNotificationShowSubjectName
@@ -95,9 +101,9 @@ internal sealed class RealtimeNotificationContentBuilder
         {
             rotatingContent.Add(timeRange);
         }
-        if (!isBreaking && showLocation && !string.IsNullOrWhiteSpace(subject.Location))
+        if (!isBreaking && showLocation && !string.IsNullOrWhiteSpace(effectiveLocation))
         {
-            rotatingContent.Add($"@{subject.Location.Trim()}");
+            rotatingContent.Add($"@{effectiveLocation.Trim()}");
         }
         if (!isBreaking && showTeacher && !string.IsNullOrWhiteSpace(subject.TeacherName))
         {
@@ -114,7 +120,7 @@ internal sealed class RealtimeNotificationContentBuilder
         {
             criticalText = $"{(isUpcoming ? "▷" : "▶")}{criticalText}";
         }
-        var location = string.IsNullOrWhiteSpace(subject.Location) ? "未设置" : subject.Location.Trim();
+        var location = string.IsNullOrWhiteSpace(effectiveLocation) ? "未设置" : effectiveLocation.Trim();
         var teacher = string.IsNullOrWhiteSpace(subject.TeacherName) ? "未设置" : subject.TeacherName.Trim();
 
         return new RealtimeNotificationContent(
