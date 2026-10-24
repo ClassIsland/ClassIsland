@@ -1,0 +1,82 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ClassIsland.ViewModels.MainViewParts"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             x:Class="ClassIsland.Views.MainViewParts.SubjectPickerView"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:SubjectPickerViewModel}"
+             ci:ViewHostAssist.DrawerContentHeightRatio="0.7"
+             Header="选择科目">
+    <NavigationPage.TopCommandBar>
+        <Button Theme="{StaticResource TransparentButton}" ToolTip.Tip="更多选项"
+                Click="MoreButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+        </Button>
+    </NavigationPage.TopCommandBar>
+    <ci:ViewBase.Resources>
+        <converters:SubjectIconSourceConverter x:Key="SubjectIconSourceConverter"/>
+        <converters:SubjectColorBrushConverter x:Key="SubjectColorBrushConverter"/>
+        <converters:SubjectDetailsConverter x:Key="SubjectDetailsConverter"/>
+    </ci:ViewBase.Resources>
+    <Grid RowDefinitions="Auto,*" RowSpacing="10" Margin="0,0,0,8">
+        <TextBox PlaceholderText="搜索或新建科目"
+                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <DockPanel Grid.Row="1">
+            <DockPanel.Styles>
+                <Style Selector="Button#createSubject">
+                    <Setter Property="DockPanel.Dock" Value="Bottom"/>
+                </Style>
+                <Style Selector="Button#createSubject.empty">
+                    <Setter Property="DockPanel.Dock" Value="Top"/>
+                </Style>
+            </DockPanel.Styles>
+            <TextBlock DockPanel.Dock="Top" Text="找不到符合条件的科目。:(" LineHeight="20"
+                       Margin="0,0,0,4" IsVisible="{Binding !Subjects.Count}"/>
+            <Button x:Name="createSubject" Classes.empty="{Binding !Subjects.Count}"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                    Theme="{StaticResource TransparentButton}"
+                    Height="40" Padding="12,0" HorizontalContentAlignment="Stretch"
+                    IsVisible="{Binding CanCreateSubject}"
+                    Click="CreateButton_OnClick">
+                <Grid ColumnDefinitions="20,*" ColumnSpacing="10">
+                    <ci:FluentIcon Glyph="{ci:FI AddRegular}" FontSize="20" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="{Binding CreateButtonText}"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                </Grid>
+            </Button>
+            <ListBox x:Name="SubjectList"
+                     ItemsSource="{Binding Subjects}"
+                     SelectionChanged="SubjectList_OnSelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="4,6">
+                            <controls:FAIconSourceElement Width="20" Height="20"
+                                                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                          TextElement.FontSize="20"
+                                                          TextElement.Foreground="{Binding Value.ColorHex, Converter={StaticResource SubjectColorBrushConverter}}"
+                                                          Classes="repair-fontsize"
+                                                          IsHitTestVisible="False"
+                                                          IconSource="{Binding Value.Icon, Converter={StaticResource SubjectIconSourceConverter}}"/>
+                            <StackPanel Grid.Column="1" Spacing="1">
+                                <TextBlock Text="{Binding Value.Name}"/>
+                                <TextBlock Classes="l-secondary" FontSize="12"
+                                           IsVisible="{Binding $self.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource SubjectDetailsConverter}">
+                                            <Binding Path="Value.TeacherName"/>
+                                            <Binding Path="Value.Location"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Grid>
+</ci:ViewBase>

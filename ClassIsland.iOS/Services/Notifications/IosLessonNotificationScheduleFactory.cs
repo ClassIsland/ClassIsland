@@ -236,7 +236,7 @@ internal sealed class IosLessonNotificationScheduleFactory(
             profileService.Profile.Subjects.TryGetValue(
                 classPlan.Classes[classIndex].SubjectId,
                 out var subject);
-            lessons.Add(new LessonEntry(classIndex, item, subject ?? Subject.Fallback));
+            lessons.Add(new LessonEntry(classIndex, classPlan.Classes[classIndex], item, subject ?? Subject.Fallback));
         }
 
         foreach (var lesson in lessons)
@@ -251,9 +251,7 @@ internal sealed class IosLessonNotificationScheduleFactory(
             IClassNotificationSettings effectiveSettings = attachedSettings is not null
                 ? attachedSettings
                 : providerSettings;
-            var subjectText = FormatSubject(
-                lesson.Subject,
-                providerSettings.ShowTeacherName);
+            var lessonText = FormatLesson(lesson, effectiveSettings);
             var startAt = IosNotificationTimeMapper.ToSystemTime(
                 date + lesson.Item.StartTime,
                 logicalNow,
@@ -300,7 +298,7 @@ internal sealed class IosLessonNotificationScheduleFactory(
                         EnsureText(prepareTitle, "即将上课"),
                         JoinBody(
                             prepareMessage,
-                            $"下节课：{subjectText}，{FormatTime(lesson.Item.StartTime)} 开始。"),
+                            $"下节课：{lessonText}。"),
                         IosNotificationSchedulingPolicy.PrepareOnClassChannelId,
                         prepareDelivery.PlaySound,
                         fireAt != plannedPrepareAt,
@@ -317,7 +315,7 @@ internal sealed class IosLessonNotificationScheduleFactory(
                     $"{identifierPrefix}.on",
                     startAt,
                     EnsureText(effectiveSettings.ClassOnMaskText, "上课"),
-                    $"{subjectText} · {FormatTime(lesson.Item.StartTime)}–{FormatTime(lesson.Item.EndTime)}",
+                    lessonText,
                     IosNotificationSchedulingPolicy.OnClassChannelId,
                     onClassDelivery.PlaySound,
                     ChainId: identifierPrefix));
@@ -347,7 +345,7 @@ internal sealed class IosLessonNotificationScheduleFactory(
                 x => x.Item.StartTime >= breakItem.StartTime);
             var body = nextLesson == null
                 ? breakItem.BreakNameText
-                : $"{breakItem.BreakNameText}。下一节：{FormatSubject(nextLesson.Subject, providerSettings.ShowTeacherName)}，{FormatTime(nextLesson.Item.StartTime)} 开始。";
+                : $"{breakItem.BreakNameText}。下一节：{FormatLesson(nextLesson, effectiveSettings)}。";
             var layoutIndex = timeLayout.Layouts.IndexOf(breakItem);
             requests.Add(new IosLessonNotificationRequest(
                 $"classisland.lessons.{date:yyyyMMdd}.{layoutIndex:D2}.break",
@@ -407,6 +405,25 @@ internal sealed class IosLessonNotificationScheduleFactory(
             : name;
     }
 
+    private static string FormatLesson(LessonEntry lesson, IClassNotificationSettings settings)
+    {
+        var parts = new List<string> { FormatSubject(lesson.Subject, settings.ShowTeacherName) };
+        if (settings.ShowClassTime)
+        {
+            parts.Add($"{FormatTime(lesson.Item.StartTime)}–{FormatTime(lesson.Item.EndTime)}");
+        }
+        var location = lesson.ClassInfo.EffectiveLocation;
+        if (string.IsNullOrWhiteSpace(location))
+        {
+            location = lesson.Subject.Location;
+        }
+        if (settings.ShowLocation && !string.IsNullOrWhiteSpace(location))
+        {
+            parts.Add(location.Trim());
+        }
+        return string.Join(" · ", parts);
+    }
+
     private static string FormatTime(TimeSpan time) =>
         time.ToString(@"hh\:mm", CultureInfo.InvariantCulture);
 
@@ -424,6 +441,7 @@ internal sealed class IosLessonNotificationScheduleFactory(
 
     private sealed record LessonEntry(
         int ClassIndex,
+        ClassInfo ClassInfo,
         TimeLayoutItem Item,
         Subject Subject);
 }

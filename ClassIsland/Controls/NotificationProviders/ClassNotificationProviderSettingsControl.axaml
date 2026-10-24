@@ -146,13 +146,21 @@
                     </controls2:FASettingsExpanderItem>
                 </controls2:FASettingsExpander>
                 
-                <!-- 显示教科任老师名字 -->
-                <controls2:FASettingsExpander IconSource="{ci:FluentIconSource &#xeee9;}"
-                                            Header="显示科任老师名字"
-                                            Description="在显示课程相关的提醒时同时展示并播报对应科任老师的名字">
-                    <controls2:FASettingsExpander.Footer>
-                        <ToggleSwitch IsChecked="{Binding Settings.ShowTeacherName, Mode=TwoWay}"/>
-                    </controls2:FASettingsExpander.Footer>
+                <controls2:FASettingsExpander Header="课程信息显示"
+                                              IconSource="{ci:FluentIconSource {ci:FI ScreenSearchRegular}}"
+                                            Description="设置要在即将上课和课间提醒中要显示的课程信息。">
+                    <controls2:FASettingsExpanderItem>
+                        <CheckBox Content="显示课程起止时间"
+                                  IsChecked="{Binding Settings.ShowClassTime, Mode=TwoWay}"/>
+                    </controls2:FASettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
+                        <CheckBox Content="显示教师名"
+                                  IsChecked="{Binding Settings.ShowTeacherName, Mode=TwoWay}"/>
+                    </controls2:FASettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
+                        <CheckBox Content="显示上课地点"
+                                  IsChecked="{Binding Settings.ShowLocation, Mode=TwoWay}"/>
+                    </controls2:FASettingsExpanderItem>
                 </controls2:FASettingsExpander>
             </StackPanel>
         </ScrollViewer>

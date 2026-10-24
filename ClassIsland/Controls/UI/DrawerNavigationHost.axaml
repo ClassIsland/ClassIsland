@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             x:Class="ClassIsland.Controls.UI.DrawerNavigationHost">
+    <ci:VerticalDrawer x:Name="PART_Drawer"
+                       SmokeBackground="True"
+                       Focusable="True"
+                       KeyboardNavigation.TabNavigation="Cycle"
+                       HorizontalContentAlignment="Stretch"
+                       VerticalContentAlignment="Stretch">
+        <ci:VerticalDrawer.Title>
+            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Stretch">
+                <Button x:Name="PART_BackButton"
+                        Theme="{StaticResource TransparentButton}"
+                        Content="{ci:FluentIcon {ci:FI ArrowLeftRegular}}"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="返回"
+                        Click="BackButton_OnClick"/>
+                <ContentPresenter x:Name="PART_TitlePresenter"
+                                  Grid.Column="1"
+                                  Margin="4,0,8,0"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Stretch"/>
+                <ContentPresenter x:Name="PART_ActionPresenter"
+                                  Grid.Column="2"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Right"/>
+            </Grid>
+        </ci:VerticalDrawer.Title>
+        <ci:VerticalDrawer.DrawerContent>
+            <NavigationPage x:Name="PART_NavigationPage"
+                            Popped="NavigationPage_OnPopped">
+                <NavigationPage.PageTransition>
+                    <ci:CompositionPageTransition Duration="0:0:0.25"
+                                                  SlideInEasing="0,0 0,1"
+                                                  SlideOutEasing="0,0 0,1"
+                                                  FadeInEasing="0,0 0,1"
+                                                  FadeOutEasing="0,0 0,1"/>
+                </NavigationPage.PageTransition>
+            </NavigationPage>
+        </ci:VerticalDrawer.DrawerContent>
+    </ci:VerticalDrawer>
+</UserControl>

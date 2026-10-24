@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.ComponentModel;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -8,6 +11,7 @@ using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Core.Controls;
@@ -17,7 +21,9 @@ namespace ClassIsland.Core.Controls;
 [TemplatePart("PART_TitleContentPresenter", typeof(ContentPresenter))]
 [TemplatePart("PART_DismissLayer", typeof(Border))]
 [TemplatePart("PART_BackgroundElement", typeof(Border))]
-[PseudoClasses(":opened", ":closed", ":collapsed", ":can-collapse", ":animated")]
+[TemplatePart("PART_TitleBar", typeof(Grid))]
+[TemplatePart("WorkingPanel", typeof(Panel))]
+[PseudoClasses(":opened", ":closed", ":collapsed", ":can-collapse", ":animated", ":dragging", ":fullscreen", ":layout-ready")]
 public class VerticalDrawer : ContentControl
 {
     public static FuncValueConverter<double, double> ContainerHeightToClosedCanvasBottomPosConverter { get; } =
@@ -25,6 +31,17 @@ public class VerticalDrawer : ContentControl
     
     public static FuncValueConverter<double, double> ContainerHeightToCollapsedCanvasBottomPosConverter { get; } =
         new(x => -x + 40);
+
+    public static FuncMultiValueConverter<double, double> DrawerWidthConverter { get; } = new(values =>
+    {
+        var list = values.ToList();
+        var availableWidth = list.Count > 0 && double.IsFinite(list[0]) ? Math.Max(0, list[0]) : 0;
+        var requestedWidth = list.Count > 1 ? list[1] : double.NaN;
+        var maximumWidth = Math.Min(480, availableWidth);
+        return double.IsFinite(requestedWidth) && requestedWidth > 0
+            ? Math.Min(requestedWidth, maximumWidth)
+            : maximumWidth;
+    });
     
     public static readonly StyledProperty<object?> TitleProperty = AvaloniaProperty.Register<VerticalDrawer, object?>(
         nameof(Title));
@@ -89,6 +106,19 @@ public class VerticalDrawer : ContentControl
         set => SetValue(ContentHeightRatioProperty, value);
     }
 
+    /// <summary>
+    /// 抽屉展开后的绝对高度。设置后优先于 <see cref="ContentHeightRatio"/>。
+    /// </summary>
+    public static readonly StyledProperty<double> ContentHeightProperty = AvaloniaProperty.Register<VerticalDrawer, double>(
+        nameof(ContentHeight), double.NaN);
+
+    /// <inheritdoc cref="ContentHeightProperty"/>
+    public double ContentHeight
+    {
+        get => GetValue(ContentHeightProperty);
+        set => SetValue(ContentHeightProperty, value);
+    }
+
     public static readonly StyledProperty<bool> SmokeBackgroundProperty = AvaloniaProperty.Register<VerticalDrawer, bool>(
         nameof(SmokeBackground), true);
 
@@ -106,6 +136,31 @@ public class VerticalDrawer : ContentControl
         get => GetValue(StateProperty);
         set => SetValue(StateProperty, value);
     }
+
+    /// <summary>
+    /// 是否将抽屉高度展开到整个可用区域，宽度保持不变。撑满高度时 <see cref="State"/> 仍为打开状态。
+    /// </summary>
+    public static readonly StyledProperty<bool> IsFullScreenProperty = AvaloniaProperty.Register<VerticalDrawer, bool>(
+        nameof(IsFullScreen));
+
+    /// <inheritdoc cref="IsFullScreenProperty"/>
+    public bool IsFullScreen
+    {
+        get => GetValue(IsFullScreenProperty);
+        set => SetValue(IsFullScreenProperty, value);
+    }
+
+    /// <summary>
+    /// 将标题中的自定义交互控件及其子元素排除在抽屉拖动区域之外。
+    /// </summary>
+    public static readonly AttachedProperty<bool> IsTitleDragExcludedProperty =
+        AvaloniaProperty.RegisterAttached<VerticalDrawer, Control, bool>("IsTitleDragExcluded");
+
+    /// <inheritdoc cref="IsTitleDragExcludedProperty"/>
+    public static bool GetIsTitleDragExcluded(Control control) => control.GetValue(IsTitleDragExcludedProperty);
+
+    /// <inheritdoc cref="IsTitleDragExcludedProperty"/>
+    public static void SetIsTitleDragExcluded(Control control, bool value) => control.SetValue(IsTitleDragExcludedProperty, value);
 
     public static readonly StyledProperty<bool> AllowCollapseProperty = AvaloniaProperty.Register<VerticalDrawer, bool>(
         nameof(AllowCollapse));
@@ -144,12 +199,25 @@ public class VerticalDrawer : ContentControl
     }
 
     private Border? _dismissLayer;
-    private Border? _backgroundElement;
     private Canvas? _canvas;
-    private ContentPresenter? _contentPresenter;
-    private ContentPresenter? _titleContentPresenter;
-    private IDisposable? _stateObserver;
-    private IDisposable? _canCollapseObserver;
+    private Panel? _workingPanel;
+    private Grid? _titleBar;
+    private readonly Queue<(long Time, double Y)> _dragSamples = new();
+    private IPointer? _pointer;
+    private Point _pointerStart;
+    private double _startVisibleHeight;
+    private double _dragVisibleHeight;
+    private bool _isDragging;
+
+    /// <summary>
+    /// 在抽屉即将关闭时触发。可取消关闭。
+    /// </summary>
+    public event EventHandler<CancelEventArgs>? Closing;
+
+    /// <summary>
+    /// 在抽屉关闭后触发。
+    /// </summary>
+    public event EventHandler? Closed;
 
     public VerticalDrawer()
     {
@@ -159,14 +227,70 @@ public class VerticalDrawer : ContentControl
         }
     }
 
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        PrepareInitialLayout();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        CancelDrag();
+        LayoutUpdated -= OnInitialLayoutUpdated;
+        PseudoClasses.Set(":layout-ready", false);
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void PrepareInitialLayout()
+    {
+        PseudoClasses.Set(":layout-ready", false);
+        LayoutUpdated -= OnInitialLayoutUpdated;
+        LayoutUpdated += OnInitialLayoutUpdated;
+    }
+
+    private void OnInitialLayoutUpdated(object? sender, EventArgs e)
+    {
+        if (_canvas == null || _canvas.Bounds.Height <= 0)
+        {
+            return;
+        }
+
+        // Initial placement must be applied before transitions can interpolate Canvas.Bottom from NaN.
+        UpdatePos();
+        PseudoClasses.Set(":layout-ready", true);
+        LayoutUpdated -= OnInitialLayoutUpdated;
+    }
+
     protected override void OnLoaded(RoutedEventArgs e)
     {
         base.OnLoaded(e);
-        _stateObserver?.Dispose();
-        _canCollapseObserver?.Dispose();
-        _stateObserver = this.GetObservable(StateProperty).Subscribe(_ => UpdateContent());
-        _canCollapseObserver = this.GetObservable(AllowCollapseProperty).Subscribe(_ => UpdateContent());
+        UpdateContent();
+        UpdatePos();
         KeyDown += OnKeyDown;
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property != StateProperty && change.Property != IsFullScreenProperty &&
+            change.Property != AllowCollapseProperty && change.Property != ContentHeightRatioProperty &&
+            change.Property != ContentHeightProperty && change.Property != RequestedWidthProperty)
+        {
+            return;
+        }
+
+        CancelDrag();
+        if (change.Property == IsFullScreenProperty && IsFullScreen)
+        {
+            SetCurrentValue(StateProperty, VerticalDrawerOpenState.Opened);
+        }
+        else if (State != VerticalDrawerOpenState.Opened)
+        {
+            SetCurrentValue(IsFullScreenProperty, false);
+        }
+
+        UpdateContent();
+        UpdatePos();
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -185,73 +309,276 @@ public class VerticalDrawer : ContentControl
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         base.OnUnloaded(e);
-        _stateObserver?.Dispose();
-        _canCollapseObserver?.Dispose();
+        CancelDrag();
         KeyDown -= OnKeyDown;
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
+        CancelDrag();
+        PrepareInitialLayout();
         base.OnApplyTemplate(e);
         
         if (_dismissLayer != null)
         {
-            _dismissLayer.PointerPressed -= DismissLayerOnPointerPressed;
-        }
-        if (_backgroundElement != null)
-        {
-            _backgroundElement.SizeChanged -= BackgroundElementOnSizeChanged;
-            _backgroundElement.PointerPressed -= BackgroundElementOnPointerPressed;
+            _dismissLayer.PointerReleased -= DismissLayerOnPointerReleased;
         }
         if (_canvas != null)
         {
             _canvas.SizeChanged -= CanvasOnSizeChanged;
         }
+        if (_titleBar != null)
+        {
+            _titleBar.PointerPressed -= TitleBarOnPointerPressed;
+            _titleBar.PointerMoved -= TitleBarOnPointerMoved;
+            _titleBar.PointerReleased -= TitleBarOnPointerReleased;
+            _titleBar.PointerCaptureLost -= TitleBarOnPointerCaptureLost;
+        }
         
-        _dismissLayer = this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == "PART_DismissLayer");
-        _backgroundElement = this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == "PART_BackgroundElement");
-        _canvas = this.GetTemplateChildren().OfType<Canvas>().FirstOrDefault(x => x.Name == "PART_Canvas");
-        _contentPresenter = this.GetTemplateChildren().OfType<ContentPresenter>().FirstOrDefault(x => x.Name == "PART_ContentPresenter");
-        _titleContentPresenter = this.GetTemplateChildren().OfType<ContentPresenter>().FirstOrDefault(x => x.Name == "PART_TitleContentPresenter");
+        _dismissLayer = e.NameScope.Find<Border>("PART_DismissLayer");
+        _canvas = e.NameScope.Find<Canvas>("PART_Canvas");
+        _workingPanel = e.NameScope.Find<Panel>("WorkingPanel");
+        _titleBar = e.NameScope.Find<Grid>("PART_TitleBar");
 
         if (_dismissLayer != null)
         {
-            _dismissLayer.PointerPressed += DismissLayerOnPointerPressed;
-        }
-        if (_backgroundElement != null)
-        {
-            _backgroundElement.SizeChanged += BackgroundElementOnSizeChanged;
-            _backgroundElement.PointerPressed += BackgroundElementOnPointerPressed;
+            _dismissLayer.PointerReleased += DismissLayerOnPointerReleased;
         }
         if (_canvas != null)
         {
             _canvas.SizeChanged += CanvasOnSizeChanged;
         }
+        if (_titleBar != null)
+        {
+            _titleBar.PointerPressed += TitleBarOnPointerPressed;
+            _titleBar.PointerMoved += TitleBarOnPointerMoved;
+            _titleBar.PointerReleased += TitleBarOnPointerReleased;
+            _titleBar.PointerCaptureLost += TitleBarOnPointerCaptureLost;
+        }
+
+        UpdateContent();
+        UpdatePos();
     }
 
-    private void BackgroundElementOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private bool CanDragTitle(object? source)
     {
-        Open();
+        for (var visual = source as Visual; visual != null; visual = visual.GetVisualParent())
+        {
+            if (visual == _titleBar)
+            {
+                return true;
+            }
+
+            if (visual is Control control &&
+                (GetIsTitleDragExcluded(control) || control.Focusable ||
+                 control is Button or SelectingItemsControl or TextBox or RangeBase or ScrollViewer or
+                     SelectableTextBlock or Thumb))
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private void TitleBarOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_isDragging || _workingPanel == null || _canvas == null ||
+            !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || !CanDragTitle(e.Source))
+        {
+            return;
+        }
+
+        CancelDrag();
+        _pointer = e.Pointer;
+        _pointerStart = e.GetPosition(this);
+        _dragSamples.Clear();
+        SampleDragPosition(_pointerStart.Y);
+        // Read the displayed position so a drag can interrupt an opening/closing transition.
+        _startVisibleHeight = _workingPanel.Bounds.Height + Canvas.GetBottom(_workingPanel);
+    }
+
+    private void TitleBarOnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (_pointer != e.Pointer || _canvas == null)
+        {
+            return;
+        }
+
+        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            CancelDrag();
+            return;
+        }
+
+        var position = e.GetPosition(this);
+        var delta = position - _pointerStart;
+        SampleDragPosition(position.Y);
+        if (!_isDragging)
+        {
+            if (Math.Abs(delta.Y) < 8 || Math.Abs(delta.Y) <= Math.Abs(delta.X))
+            {
+                return;
+            }
+
+            _isDragging = true;
+            PseudoClasses.Set(":dragging", true);
+            e.Pointer.Capture(_titleBar);
+        }
+
+        _dragVisibleHeight = Math.Clamp(_startVisibleHeight - delta.Y, -2, _canvas.Bounds.Height);
+        UpdatePos();
+        e.Handled = true;
+    }
+
+    private void TitleBarOnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (_pointer != e.Pointer)
+        {
+            return;
+        }
+
+        var position = e.GetPosition(this);
+        var delta = position - _pointerStart;
+        if (!_isDragging || _canvas == null)
+        {
+            CancelDrag();
+            if (State == VerticalDrawerOpenState.Collapsed && Math.Abs(delta.X) < 8 && Math.Abs(delta.Y) < 8)
+            {
+                Open();
+            }
+
+            return;
+        }
+
+        var velocity = SampleDragPosition(position.Y);
+        var height = Math.Clamp(_startVisibleHeight - delta.Y, -2, _canvas.Bounds.Height);
+        var stops = new List<(double Height, VerticalDrawerOpenState State, bool FullScreen)>
+        {
+            (-2, VerticalDrawerOpenState.Closed, false)
+        };
+        if (AllowCollapse)
+        {
+            stops.Add((Math.Min(40, _canvas.Bounds.Height), VerticalDrawerOpenState.Collapsed, false));
+        }
+        stops.Add((GetNormalHeight(), VerticalDrawerOpenState.Opened, false));
+        stops.Add((_canvas.Bounds.Height, VerticalDrawerOpenState.Opened, true));
+        var candidates = stops.DistinctBy(stop => stop.Height).ToList();
+        var target = candidates
+            .OrderBy(stop => Math.Abs(stop.Height - height))
+            .ThenBy(stop => delta.Y < 0 ? -stop.Height : stop.Height)
+            .First();
+        var fling = Math.Abs(delta.Y) >= 16 && Math.Abs(velocity) >= 800 && Math.Sign(delta.Y) == Math.Sign(velocity);
+        if (fling)
+        {
+            var start = candidates.MinBy(stop => Math.Abs(stop.Height - _startVisibleHeight));
+            var next = candidates
+                .Where(stop => velocity < 0 ? stop.Height > start.Height : stop.Height < start.Height)
+                .OrderBy(stop => Math.Abs(stop.Height - start.Height))
+                .ToList();
+            // A short fling advances at least one stop; longer drags retain their distance-based target.
+            if (next.Count > 0 && (velocity < 0 ? target.Height < next[0].Height : target.Height > next[0].Height))
+            {
+                target = next[0];
+            }
+        }
+
+        EndDrag();
+        if (target.State == VerticalDrawerOpenState.Closed)
+        {
+            if (!TryClose())
+            {
+                SetCurrentValue(StateProperty, VerticalDrawerOpenState.Opened);
+                UpdatePos();
+            }
+            e.Handled = true;
+            return;
+        }
+        SetCurrentValue(StateProperty, target.State);
+        SetCurrentValue(IsFullScreenProperty, target.FullScreen);
+        UpdatePos();
+        e.Handled = true;
+    }
+
+    private double SampleDragPosition(double y)
+    {
+        var now = Stopwatch.GetTimestamp();
+        _dragSamples.Enqueue((now, y));
+        while (_dragSamples.Count > 1 && Stopwatch.GetElapsedTime(_dragSamples.Peek().Time, now).TotalMilliseconds > 100)
+        {
+            _dragSamples.Dequeue();
+        }
+
+        var first = _dragSamples.Peek();
+        var seconds = Stopwatch.GetElapsedTime(first.Time, now).TotalSeconds;
+        return seconds > 0 ? (y - first.Y) / seconds : 0;
+    }
+
+    private void TitleBarOnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+    {
+        if (_pointer == e.Pointer)
+        {
+            CancelDrag();
+        }
+    }
+
+    private void EndDrag()
+    {
+        var pointer = _pointer;
+        _pointer = null;
+        _isDragging = false;
+        _dragSamples.Clear();
+        if (pointer != null && pointer.Captured == _titleBar)
+        {
+            pointer.Capture(null);
+        }
+        PseudoClasses.Set(":dragging", false);
+    }
+
+    private void CancelDrag()
+    {
+        if (_pointer == null)
+        {
+            return;
+        }
+
+        EndDrag();
+        UpdatePos();
     }
 
     private void CanvasOnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
+        CancelDrag();
         UpdatePos();
     }
 
-    private void BackgroundElementOnSizeChanged(object? sender, SizeChangedEventArgs e)
+    private double GetNormalHeight()
     {
-        UpdatePos();
+        var availableHeight = _canvas?.Bounds.Height ?? 0;
+        if (double.IsFinite(ContentHeight) && ContentHeight > 0)
+        {
+            return Math.Clamp(ContentHeight, Math.Min(40, availableHeight), availableHeight);
+        }
+        var ratio = double.IsFinite(ContentHeightRatio) ? Math.Clamp(ContentHeightRatio, 0, 1) : 0.5;
+        return Math.Clamp(availableHeight * ratio, Math.Min(40, availableHeight), availableHeight);
     }
 
     private void UpdatePos()
     {
-        if (_canvas == null)
+        if (_canvas == null || _workingPanel == null)
         {
             return;
         }
         
-        ContainerHeight = _canvas.Bounds.Height * ContentHeightRatio;
+        var normalHeight = GetNormalHeight();
+        var visibleHeight = _isDragging ? _dragVisibleHeight : State switch
+        {
+            VerticalDrawerOpenState.Closed => -2,
+            VerticalDrawerOpenState.Collapsed => Math.Min(40, _canvas.Bounds.Height),
+            _ => IsFullScreen ? _canvas.Bounds.Height : normalHeight
+        };
+        SetCurrentValue(ContainerHeightProperty, Math.Max(normalHeight, visibleHeight));
+        Canvas.SetBottom(_workingPanel, visibleHeight - ContainerHeight);
     }
 
     private void UpdateContent()
@@ -260,16 +587,37 @@ public class VerticalDrawer : ContentControl
         PseudoClasses.Set(":collapsed", State == VerticalDrawerOpenState.Collapsed);
         PseudoClasses.Set(":closed", State == VerticalDrawerOpenState.Closed);
         PseudoClasses.Set(":can-collapse", AllowCollapse);
+        PseudoClasses.Set(":fullscreen", IsFullScreen);
     }
 
-    private void DismissLayerOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void DismissLayerOnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         Dismiss();
     }
 
     public void Close()
     {
-        State = VerticalDrawerOpenState.Closed;
+        TryClose();
+    }
+
+    private bool TryClose()
+    {
+        if (State == VerticalDrawerOpenState.Closed)
+        {
+            return true;
+        }
+
+        var args = new CancelEventArgs();
+        Closing?.Invoke(this, args);
+        if (args.Cancel)
+        {
+            return false;
+        }
+
+        CancelDrag();
+        SetCurrentValue(StateProperty, VerticalDrawerOpenState.Closed);
+        Closed?.Invoke(this, EventArgs.Empty);
+        return true;
     }
 
     public void Collapse()
@@ -279,12 +627,15 @@ public class VerticalDrawer : ContentControl
             return;
         }
 
-        State = VerticalDrawerOpenState.Collapsed;
+        CancelDrag();
+        SetCurrentValue(StateProperty, VerticalDrawerOpenState.Collapsed);
     }
 
     public void Open()
     {
-        State = VerticalDrawerOpenState.Opened;
+        CancelDrag();
+        SetCurrentValue(IsFullScreenProperty, false);
+        SetCurrentValue(StateProperty, VerticalDrawerOpenState.Opened);
     }
 
     public void Dismiss()

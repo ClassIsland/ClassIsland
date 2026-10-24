@@ -10,7 +10,7 @@
 
 ## SDK And Restore
 - `global.json` requests the .NET 10 SDK with `rollForward: latestFeature` and prerelease SDKs allowed. Use a .NET 10 SDK for repository builds, including the `net9.0` launcher.
-- The UI stack currently uses Avalonia `12.1.1` and FluentAvalonia `3.0.0`; check `AvaloniaShared.props` and project package references before documenting or using version-specific APIs.
+- The UI stack currently uses Avalonia `12.1.4` and FluentAvalonia `3.0.0`; check `AvaloniaShared.props` and project package references before documenting or using version-specific APIs.
 - Android builds require the .NET Android workload; macOS builds require the matching macOS workload and Xcode toolchain.
 - Repo depends on `vendors/EdgeTtsSharp` (`classisland-v2` branch). If missing, run `git submodule update --init --recursive`.
 - CI uses GitHub Package Registry: `https://nuget.pkg.github.com/ClassIsland/index.json`.
@@ -33,6 +33,8 @@ Before editing:
 3. Explain the planned changes.
 4. Only then modify files.
 Avoid speculative refactoring.
+- Generated code must follow the repository's formatting settings; do not generate minified or compressed code.
+- Keep implementations and fixes as small and concise as possible, without affecting other behavior. If effects on other behavior are unavoidable, inform the user before making the change.
 When requirements are unclear:
 - Ask the user when changes affect architecture, behavior, compatibility, or public APIs.
 - For minor implementation details, follow existing project patterns.

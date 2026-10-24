@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
@@ -280,6 +281,39 @@ public partial class ProfileService : IProfileService, INotifyPropertyChanged
     {
         var json = JsonSerializer.Serialize(o);
         return JsonSerializer.Deserialize<T>(json)!;
+    }
+
+    public Guid? ForkAndReplaceScheduleItem(Guid scheduleItemId, DateTime date)
+    {
+        if (!Profile.ScheduleItems.TryGetValue(scheduleItemId, out var source)
+            || source.ReplacementTarget != null)
+        {
+            return null;
+        }
+
+        var normalizedDate = date.Date;
+        var item = CopyObject(source);
+        item.EnableRule = new TimeRule
+        {
+            Type = TimeRule.TimeRuleType.Date,
+            EnableDates = new ObservableCollection<DateOnly> { DateOnly.FromDateTime(normalizedDate) }
+        };
+        item.ReplacementTarget = new ScheduleItemReplacementTarget(scheduleItemId, normalizedDate);
+        var newId = Guid.NewGuid();
+        Profile.ScheduleItems.Add(newId, item);
+        return newId;
+    }
+
+    public bool ConvertScheduleItemReplacementToNormal(Guid scheduleItemId)
+    {
+        if (!Profile.ScheduleItems.TryGetValue(scheduleItemId, out var item)
+            || item.ReplacementTarget == null)
+        {
+            return false;
+        }
+
+        item.ReplacementTarget = null;
+        return true;
     }
 
     public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId=null, DateTime? enableDateTime = null)

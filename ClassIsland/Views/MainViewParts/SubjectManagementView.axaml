@@ -1,0 +1,57 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ClassIsland.ViewModels.MainViewParts"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             x:Class="ClassIsland.Views.MainViewParts.SubjectManagementView"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:SubjectManagementViewModel}"
+             Header="科目管理"
+             NavigationPage.HasBackButton="True">
+    <ci:ViewBase.Resources>
+        <converters:SubjectIconSourceConverter x:Key="SubjectIconSourceConverter"/>
+        <converters:SubjectColorBrushConverter x:Key="SubjectColorBrushConverter"/>
+    </ci:ViewBase.Resources>
+    <NavigationPage.TopCommandBar>
+        <Button Theme="{StaticResource TransparentButton}" ToolTip.Tip="新建科目"
+                Click="AddButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI AddRegular}"/>
+        </Button>
+    </NavigationPage.TopCommandBar>
+    <Grid>
+        <ListBox x:Name="SubjectList"
+                 ItemsSource="{Binding Subjects.List}"
+                 SelectionChanged="SubjectList_OnSelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Margin="4,5">
+                        <controls:FAIconSourceElement Width="20" Height="20"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                      TextElement.FontSize="20"
+                                                      TextElement.Foreground="{Binding Value.ColorHex, Converter={StaticResource SubjectColorBrushConverter}}"
+                                                      Classes="repair-fontsize"
+                                                      IsHitTestVisible="False"
+                                                      IconSource="{Binding Value.Icon, Converter={StaticResource SubjectIconSourceConverter}}"/>
+                        <StackPanel Grid.Column="1" Spacing="1">
+                            <TextBlock Text="{Binding Value.Name}" FontWeight="SemiBold"/>
+                            <TextBlock Classes="l-secondary" FontSize="12" TextWrapping="Wrap">
+                                <Run Text="{Binding Value.TeacherName}"/>
+                                <Run Text=" "/>
+                                <Run Text="{Binding Value.Location}"/>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Text="{Binding Value.Initial}" Classes="l-secondary"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBlock Text="还没有科目，点击右上角按钮新建。"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Classes="l-instructive"
+                   IsVisible="{Binding !Subjects.List.Count}"/>
+    </Grid>
+</ci:ViewBase>

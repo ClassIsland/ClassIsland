@@ -14,6 +14,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../ClassIsland.iOS/Services/Notifications/IosLessonNotificationScheduleFactory.cs" Link="Notifications/IosLessonNotificationScheduleFactory.cs" />
     <ProjectReference Include="../ClassIsland/ClassIsland.csproj">
       <AdditionalProperties>ClassIslandReferencedByMobile=true</AdditionalProperties>
     </ProjectReference>

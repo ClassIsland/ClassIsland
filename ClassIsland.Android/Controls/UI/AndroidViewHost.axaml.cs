@@ -19,6 +19,7 @@ using ClassIsland.Controls.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Extensions.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Views;
 
 namespace ClassIsland.Android.Controls.UI;
@@ -30,10 +31,22 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     public MainActivity Activity { get; }
 
-    public ViewBase? CurrentView { get; }
+    public ViewBase? CurrentView => _currentView;
     IReadOnlyCollection<ViewBase> IViewHost.ActivatedViews => ActivatedViews;
 
     private HashSet<ViewBase> ActivatedViews { get; } = [];
+
+    private HashSet<ViewBase> DrawerActivatedViews { get; } = [];
+
+    IReadOnlyCollection<ViewBase> IViewHost.DrawerActivatedViews => DrawerActivatedViews;
+
+    public bool IsDrawerOpen => DrawerHost.IsOpen;
+
+    public ViewBase? CurrentDrawerView => DrawerHost.CurrentView;
+
+    private IInputElement? _drawerPreviousFocus;
+
+    private bool _isDrawerNavigationBusy;
 
     private bool _isShowed = false;
 
@@ -72,7 +85,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
     private bool _isInputPaneOffsetUpdatePending;
 
     private TextPresenter? _focusedTextPresenter;
-    
+
     public AndroidViewHost(MainActivity activity)
     {
         Activity = activity;
@@ -80,6 +93,10 @@ public partial class AndroidViewHost : UserControl, IViewHost
         _isShowed = true;
         this.UseMyWindowExt();
         InitializeComponent();
+        DrawerHost.ClosingRequested += DrawerHostOnClosingRequested;
+        DrawerHost.Closed += DrawerHostOnClosed;
+        DrawerHost.Popped += DrawerHostOnPopped;
+        DrawerHost.BackRequested += DrawerHostOnBackRequested;
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -114,9 +131,33 @@ public partial class AndroidViewHost : UserControl, IViewHost
         PreClosing(false);
         _isClosed = true;
         SetCurrentView(null);
+        DrawerHost.Clear();
+        foreach (var view in DrawerActivatedViews.ToArray())
+        {
+            view.ViewDeactivated();
+        }
+        DrawerActivatedViews.Clear();
         NavigationPage.PopAllModalsAsync(null);
         NavigationPage.PopToRootAsync(null);
         NavigationPage.ReplaceAsync(new ContentPage(), null);
+    }
+
+    public bool HandleBackRequested()
+    {
+        if (IsDrawerOpen)
+        {
+            _ = NavigateDrawerBack();
+            return true;
+        }
+
+        var currentView = _currentView ?? ActivatedViews.LastOrDefault();
+        if (currentView != null && NavigationPage.Pages?.Count() > 1)
+        {
+            _ = HideView(currentView);
+            return true;
+        }
+
+        return false;
     }
 
     private void AttachInputPane()
@@ -406,6 +447,14 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     private bool PreClosing(bool cancelable)
     {
+        foreach (var drawerView in DrawerHost.NavigationPage.NavigationStack.OfType<ViewBase>().Reverse())
+        {
+            if (!drawerView.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable))
+            {
+                return true;
+            }
+        }
+
         var view = ActivatedViews.LastOrDefault();
         if (view == null)
         {
@@ -598,6 +647,23 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     public async Task<bool> HideView(ViewBase view)
     {
+        if (DrawerActivatedViews.Contains(view))
+        {
+            if (!Equals(CurrentDrawerView, view))
+            {
+                return false;
+            }
+            if (DrawerHost.CanGoBack)
+            {
+                await DrawerHost.PopAsync();
+            }
+            else
+            {
+                await HideDrawer();
+            }
+            return !DrawerActivatedViews.Contains(view);
+        }
+
         Console.WriteLine($"[ELYSIADBG] Going to hide view {view}");
         if (!ActivatedViews.Contains(view))
         {
@@ -624,6 +690,124 @@ public partial class AndroidViewHost : UserControl, IViewHost
         }
 
         return true;
+    }
+
+    public async Task ShowDrawer(ViewBase view, DrawerOptions? options = null)
+    {
+        if (IsDrawerOpen)
+        {
+            throw new InvalidOperationException("当前视图宿主已有打开的抽屉。");
+        }
+        if (view.AssociatedViewHost != null)
+        {
+            throw new InvalidOperationException("视图已被激活，不能再次打开。");
+        }
+
+        ActivateDrawerView(view);
+        _drawerPreviousFocus = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+        await DrawerHost.OpenAsync(view, options);
+        DrawerHost.NavigationPage.Focus();
+    }
+
+    public async Task PushDrawerView(ViewBase view)
+    {
+        if (!IsDrawerOpen)
+        {
+            throw new InvalidOperationException("当前视图宿主没有打开的抽屉。");
+        }
+        if (view.AssociatedViewHost != null)
+        {
+            throw new InvalidOperationException("视图已被激活，不能再次推入抽屉。");
+        }
+
+        ActivateDrawerView(view);
+        await DrawerHost.PushAsync(view);
+    }
+
+    public async Task<bool> NavigateDrawerBack()
+    {
+        if (!IsDrawerOpen)
+        {
+            return false;
+        }
+        if (DrawerHost.CanGoBack)
+        {
+            return await DrawerHost.PopAsync();
+        }
+        return await HideDrawer();
+    }
+
+    public Task<bool> HideDrawer()
+    {
+        if (!IsDrawerOpen)
+        {
+            return Task.FromResult(false);
+        }
+        DrawerHost.RequestClose();
+        return Task.FromResult(!DrawerHost.IsOpen);
+    }
+
+    private bool ActivateDrawerView(ViewBase view)
+    {
+        if (DrawerActivatedViews.Contains(view) || !view.ViewActivating(this))
+        {
+            return false;
+        }
+        DrawerActivatedViews.Add(view);
+        view.ViewActivated(this);
+        return true;
+    }
+
+    private async void DrawerHostOnBackRequested(object? sender, EventArgs e)
+    {
+        if (_isDrawerNavigationBusy)
+        {
+            return;
+        }
+        _isDrawerNavigationBusy = true;
+        try
+        {
+            await NavigateDrawerBack();
+        }
+        finally
+        {
+            _isDrawerNavigationBusy = false;
+        }
+    }
+
+    private void DrawerHostOnClosingRequested(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        foreach (var view in DrawerHost.NavigationPage.NavigationStack.OfType<ViewBase>().Reverse())
+        {
+            if (!view.ViewDeactivating(WindowCloseReason.Undefined, true, true))
+            {
+                e.Cancel = true;
+                return;
+            }
+        }
+    }
+
+    private void DrawerHostOnPopped(object? sender, NavigationEventArgs e)
+    {
+        if (e.Page is ViewBase view && DrawerActivatedViews.Remove(view))
+        {
+            view.ViewDeactivated();
+        }
+    }
+
+    private void DrawerHostOnClosed(object? sender, EventArgs e)
+    {
+        DrawerHost.Clear();
+        foreach (var view in DrawerActivatedViews.ToArray())
+        {
+            view.ViewDeactivated();
+        }
+        DrawerActivatedViews.Clear();
+        if (_drawerPreviousFocus is Control control && control.IsAttachedToVisualTree())
+        {
+            control.Focus();
+        }
+        _drawerPreviousFocus = null;
     }
 
     private async Task RunNavigationWithProgressAsync(Func<Task> navigation)

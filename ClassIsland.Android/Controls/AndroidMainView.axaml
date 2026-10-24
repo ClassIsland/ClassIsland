@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:controls="clr-namespace:ClassIsland.Controls;assembly=ClassIsland"
+             xmlns:local="clr-namespace:ClassIsland.Android.Controls;assembly=ClassIsland.Android"
+             x:Class="ClassIsland.Android.Controls.AndroidMainView"
+             x:DataType="local:AndroidMainView"
+             Background="Transparent" ClipToBounds="False"
+             IsHitTestVisible="False">
+    <LayoutTransformControl x:Name="RootLayoutTransformControl" ClipToBounds="False">
+        <LayoutTransformControl.LayoutTransform>
+            <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
+                            ScaleY="{Binding ViewModel.Settings.Scale, Mode=OneWay}"/>
+        </LayoutTransformControl.LayoutTransform>
+        <Border x:Name="ResourceLoaderBorder" ClipToBounds="False"
+                TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}"
+                ci:MainWindowStylesAssist.IsIslandSeperated="{Binding ViewModel.Settings.IsIslandSeperated}"
+                ci:MainWindowStylesAssist.IsProgressAccuracyReduced="{Binding ViewModel.Settings.ReduceProgressAccuracy}"
+                ci:MainWindowStylesAssist.CornerRadius="{Binding ViewModel.Settings.RadiusX}"
+                ci:MainWindowStylesAssist.BackgroundOpacity="{Binding ViewModel.Settings.Opacity}"
+                ci:MainWindowStylesAssist.BackgroundCorlor="{Binding ViewModel.Settings.BackgroundColor}"
+                ci:MainWindowStylesAssist.IsBackgroundMaterialEnabled="{Binding ViewModel.Settings.IsMainWindowBackgroundMaterialEnabled}"
+                ci:MainWindowStylesAssist.BackgroundMaterialType="{Binding ViewModel.Settings.MainWindowBackgroundMaterialType}"
+                ci:MainWindowStylesAssist.IsCustomBackgroundColorEnabled="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}">
+            <ItemsControl x:Name="RootMainWindowLinesItemsControl" ClipToBounds="False"
+                          ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="{Binding $parent[local:AndroidMainView].ViewModel.Settings.MainWindowLineVerticalMargin}"
+                                    ClipToBounds="False"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:MainWindowLine Settings="{Binding}" AttachedToVisualTree="Line_OnAttachedToVisualTree"
+                                                 WindowDockingLocation="{Binding $parent[local:AndroidMainView].ViewModel.Settings.WindowDockingLocation}"
+                                                 IsMainLine="{Binding IsMainLine}" IsNotificationEnabled="{Binding IsNotificationEnabled}"
+                                                 HidingRules="{Binding HidingRules}" HideOnRule="{Binding HideOnRule}"
+                                                 HorizontalAlignment="Stretch" ClipToBounds="False">
+                            <ItemsControl ItemsSource="{Binding Children}" ClipToBounds="False" Classes="root-components-control">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Classes="components-panel" ClipToBounds="False"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ci:ComponentPresenter Settings="{Binding}" IsOnMainWindow="True" IsRootComponent="True"
+                                                               HidingRules="{Binding HidingRules}" HideOnRule="{Binding HideOnRule}"
+                                                               Margin="6,0"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </controls:MainWindowLine>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+    </LayoutTransformControl>
+</UserControl>

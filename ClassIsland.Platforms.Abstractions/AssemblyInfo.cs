@@ -6,3 +6,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ClassIsland.Android")]
 [assembly: InternalsVisibleTo("ClassIsland.iOS")]
 [assembly: InternalsVisibleTo("ClassIsland.Platforms.Abstractions.Tests")]
+[assembly: InternalsVisibleTo("ClassIsland.Lessons.Tests")]

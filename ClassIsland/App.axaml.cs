@@ -993,17 +993,7 @@ public partial class App : AppBase, IAppHost
         var uriNavigationService = GetService<IUriNavigationService>();
         uriNavigationService.HandleAppNavigation("test", args => _ = CommonTaskDialogs.ShowDialog("测试导航", $"{args.Uri}"));
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
-        uriNavigationService.HandleAppNavigation("profile", args =>
-        {
-            if (PlatformHelper.IsAppleMobile)
-            {
-                GetService<ProfileSettingsWindow>().Open(args.Uri);
-            }
-            else
-            {
-                GetService<MainWindow>().OpenProfileSettingsWindow(args.Uri);
-            }
-        });
+        uriNavigationService.HandleAppNavigation("profile", args => GetService<ProfileSettingsWindow>().Open(args.Uri));
         uriNavigationService.HandleAppNavigation("live-activity", _ =>
         {
             if (PlatformHelper.IsAppleMobile)

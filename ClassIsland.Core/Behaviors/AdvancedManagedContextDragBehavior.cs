@@ -45,6 +45,9 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
 
     private bool _isTouch;
 
+    private bool ShouldShowPreview =>
+        OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux();
+
     /// <summary>
     /// Gets or sets the context value used as a drag payload when the drag starts.
     /// </summary>
@@ -263,7 +266,10 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
             }
             : value;
 
-        DragPreviewService.Show(actualValue, PreviewTemplate, tl, client, previewOffset, PreviewOpacity);
+        if (ShouldShowPreview)
+        {
+            DragPreviewService.Show(actualValue, PreviewTemplate, tl, client, previewOffset, PreviewOpacity);
+        }
 
         try
         {
@@ -284,7 +290,11 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
                 AssociatedObject.DetachedFromVisualTree -= AssociatedObject_DetachedFromVisualTree;
             DetachTopLevelHandlers();
             try { triggerEvent.Pointer?.Capture(null); } catch { }
-            DragPreviewService.Hide();
+
+            if (ShouldShowPreview)
+            {
+                DragPreviewService.Hide();
+            }
             _internalDragging = false;
             _internalDragTcs = null;
             s_isDragging = false;
@@ -305,7 +315,10 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
         var previewOffset = UsePointerRelativePreviewOffset && _calculatedPreviewOffset.HasValue
             ? _calculatedPreviewOffset.Value
             : PreviewOffset;
-        DragPreviewService.Move(_topLevel, client, previewOffset);
+        if (ShouldShowPreview)
+        {
+            DragPreviewService.Move(_topLevel, client, previewOffset);
+        }
         ManagedDragDropService.Instance.Move(client);
     }
 

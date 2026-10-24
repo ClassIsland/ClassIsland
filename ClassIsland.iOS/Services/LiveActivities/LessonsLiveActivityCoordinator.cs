@@ -13,6 +13,7 @@ using ClassIsland.Services;
 using ClassIsland.Services.LiveActivities;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Profile;
 using Foundation;
 using Microsoft.Extensions.Logging;
 using UIKit;
@@ -36,6 +37,7 @@ internal sealed class LessonsLiveActivityCoordinator(
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
     private readonly LiveActivityLessonIconRenderer _iconRenderer = new();
     private readonly object _refreshTimerLock = new();
+    private readonly HashSet<ClassInfo> _observedClasses = [];
     private NSObject? _backgroundObserver;
     private NSObject? _foregroundObserver;
     private ILessonsService? _lessonsService;
@@ -117,6 +119,7 @@ internal sealed class LessonsLiveActivityCoordinator(
             lessonPreparationTimeline);
         _lessonsService.CurrentTimeStateChanged += OnLessonsStateChanged;
         _lessonsService.PropertyChanged += OnLessonsPropertyChanged;
+        ObserveClasses();
         _settingsService.PropertyChanged += OnSettingsServicePropertyChanged;
         SubscribeToSettings();
         lessonPreparationTimeline.PublicationTimeChanged +=
@@ -137,14 +140,46 @@ internal sealed class LessonsLiveActivityCoordinator(
 
     private void OnLessonsPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName is nameof(ILessonsService.CurrentClassInfo) or nameof(ILessonsService.NextClassInfo))
+        {
+            ObserveClasses();
+        }
+
         if (e.PropertyName is nameof(ILessonsService.CurrentClassPlan) or
             nameof(ILessonsService.CurrentState) or
             nameof(ILessonsService.CurrentTimeLayoutItem) or
             nameof(ILessonsService.CurrentSubject) or
             nameof(ILessonsService.NextClassTimeLayoutItem) or
             nameof(ILessonsService.NextClassSubject) or
+            nameof(ILessonsService.CurrentClassInfo) or
+            nameof(ILessonsService.NextClassInfo) or
             nameof(ILessonsService.IsClassPlanEnabled) or
             nameof(ILessonsService.IsClassPlanLoaded))
+        {
+            QueueLessonsRefresh();
+        }
+    }
+
+    private void ObserveClasses()
+    {
+        foreach (var classInfo in _observedClasses)
+        {
+            classInfo.PropertyChanged -= OnClassPropertyChanged;
+        }
+        _observedClasses.Clear();
+
+        foreach (var classInfo in new[] { _lessonsService?.CurrentClassInfo, _lessonsService?.NextClassInfo })
+        {
+            if (classInfo != null && _observedClasses.Add(classInfo))
+            {
+                classInfo.PropertyChanged += OnClassPropertyChanged;
+            }
+        }
+    }
+
+    private void OnClassPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is null or "" or nameof(ClassInfo.EffectiveLocation))
         {
             QueueLessonsRefresh();
         }
@@ -532,7 +567,9 @@ internal sealed class LessonsLiveActivityCoordinator(
             return null;
         }
 
-        return new LessonLiveActivityDetails(subject.Name, subject.Location,
+        var location = _lessonsService?.NextClassInfo?.EffectiveLocation;
+        return new LessonLiveActivityDetails(subject.Name,
+            string.IsNullOrWhiteSpace(location) ? subject.Location : location,
             $"{item.StartTime:hh\\:mm}–{item.EndTime:hh\\:mm}", "");
     }
 
@@ -652,6 +689,11 @@ internal sealed class LessonsLiveActivityCoordinator(
         {
             _settingsService.PropertyChanged -= OnSettingsServicePropertyChanged;
         }
+        foreach (var classInfo in _observedClasses)
+        {
+            classInfo.PropertyChanged -= OnClassPropertyChanged;
+        }
+        _observedClasses.Clear();
         if (_subscribedSettings != null)
         {
             _subscribedSettings.PropertyChanged -= OnSettingsPropertyChanged;

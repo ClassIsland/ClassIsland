@@ -1,0 +1,58 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ClassIsland.ViewModels.MainViewParts"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             x:Class="ClassIsland.Views.MainViewParts.ProfileManagementView"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:ProfileManagementViewModel}"
+             ci:ViewHostAssist.DrawerContentHeightRatio="0.7"
+             Header="档案管理"
+             NavigationPage.HasBackButton="False">
+    <NavigationPage.TopCommandBar>
+        <Button Theme="{StaticResource TransparentButton}" ToolTip.Tip="更多选项"
+                Click="MoreButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+        </Button>
+    </NavigationPage.TopCommandBar>
+    <ListBox x:Name="ProfileList" Margin="0,4,0,8"
+             ItemsSource="{Binding Profiles}">
+        <ListBox.Styles>
+            <Style Selector="ListBoxItem StackPanel#ProfileActions">
+                <Setter Property="IsVisible" Value="False"/>
+            </Style>
+            <Style Selector="ListBoxItem:pointerover StackPanel#ProfileActions">
+                <Setter Property="IsVisible" Value="True"/>
+            </Style>
+            <Style Selector="ListBoxItem:selected StackPanel#ProfileActions">
+                <Setter Property="IsVisible" Value="True"/>
+            </Style>
+        </ListBox.Styles>
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Margin="2,4">
+                    <RadioButton GroupName="ProfileSelection" VerticalAlignment="Center"
+                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                 IsCheckedChanged="ProfileRadioButton_OnChecked"/>
+                    <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis"/>
+                    <StackPanel x:Name="ProfileActions" Grid.Column="2" Orientation="Horizontal" Spacing="2">
+                        <Button Theme="{StaticResource TransparentButton}" Tag="{Binding Name}"
+                                ToolTip.Tip="复制" Click="CopyButton_OnClick">
+                            <ci:FluentIcon Glyph="{ci:FI CopyRegular}"/>
+                        </Button>
+                        <Button Theme="{StaticResource TransparentButton}" Tag="{Binding Name}"
+                                ToolTip.Tip="重命名" Click="RenameButton_OnClick">
+                            <ci:FluentIcon Glyph="{ci:FI RenameRegular}"/>
+                        </Button>
+                        <Button Theme="{StaticResource TransparentButton}" Tag="{Binding Name}"
+                                ToolTip.Tip="删除" Click="DeleteButton_OnClick">
+                            <ci:FluentIcon Glyph="{ci:FI DeleteRegular}" Foreground="{DynamicResource SystemFillColorCriticalBrush}"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</ci:ViewBase>

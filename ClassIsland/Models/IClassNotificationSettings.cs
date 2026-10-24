@@ -7,6 +7,9 @@ public interface IClassNotificationSettings : INotifyPropertyChanged
     bool IsClassOnNotificationEnabled { get; set; }
     bool IsClassOnPreparingNotificationEnabled { get; set; }
     bool IsClassOffNotificationEnabled { get; set; }
+    bool ShowClassTime { get; set; }
+    bool ShowTeacherName { get; set; }
+    bool ShowLocation { get; set; }
     string ClassOnPreparingText { get; set; }
     string OutdoorClassOnPreparingText { get; set; }
 

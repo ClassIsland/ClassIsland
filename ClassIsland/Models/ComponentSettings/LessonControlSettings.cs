@@ -21,6 +21,26 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private bool _highlightChangedClass = false;
     private bool _isNonExactCountdownEnabled = false;
     private bool _fadeCompletedClasses = true;
+    private bool _showSubjectIconWhenMinimized = false;
+    private bool _showSubjectIconWhenExpanded = true;
+
+    public bool ShowSubjectIconWhenMinimized
+    {
+        get => _showSubjectIconWhenMinimized;
+        set => SetProperty(ref _showSubjectIconWhenMinimized, value);
+    }
+
+    public bool ShowSubjectIconWhenExpanded
+    {
+        get => _showSubjectIconWhenExpanded;
+        set => SetProperty(ref _showSubjectIconWhenExpanded, value);
+    }
+
+    public double SubjectIconScale
+    {
+        get;
+        set => SetProperty(ref field, value);
+    } = 1.0;
 
     public bool ShowExtraInfoOnTimePoint
     {

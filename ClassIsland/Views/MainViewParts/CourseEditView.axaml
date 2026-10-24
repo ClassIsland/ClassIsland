@@ -1,0 +1,106 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ClassIsland.ViewModels.MainViewParts"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:controls1="clr-namespace:ClassIsland.Controls"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             x:Class="ClassIsland.Views.MainViewParts.CourseEditView"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:CourseEditViewModel}"
+             ci:ViewHostAssist.DrawerContentHeightRatio="0.7"
+             Header="课程信息"
+             NavigationPage.HasBackButton="False">
+    <ci:ViewBase.Resources>
+        <converters:SubjectIconSourceConverter x:Key="SubjectIconSourceConverter"/>
+        <converters:SubjectColorBrushConverter x:Key="SubjectColorBrushConverter"/>
+        <converters:SubjectDetailsConverter x:Key="SubjectDetailsConverter"/>
+    </ci:ViewBase.Resources>
+    <NavigationPage.TopCommandBar>
+        <Button Theme="{StaticResource TransparentButton}" ToolTip.Tip="更多选项"
+                Click="MoreButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+        </Button>
+    </NavigationPage.TopCommandBar>
+    <ScrollViewer x:Name="CourseEditScrollViewer" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="4" Margin="0,4,0,8">
+            <controls:FAInfoBar Title="临时覆盖"
+                                Message="{Binding ReplacementDescription}"
+                                Severity="Informational"
+                                IsOpen="True"
+                                IsClosable="False"
+                                IsVisible="{Binding Item.HasReplacementTarget}">
+                <controls:FAInfoBar.ActionButton>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Click="RemoveReplacementButton_OnClick">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <ci:FluentIcon Glyph="{ci:FI DeleteRegular}"/>
+                                <TextBlock Text="解除替换" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Click="ConvertToNormalButton_OnClick">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <ci:FluentIcon Glyph="{ci:FI ArrowSyncRegular}"/>
+                                <TextBlock Text="转换为普通课程" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </controls:FAInfoBar.ActionButton>
+            </controls:FAInfoBar>
+            <ci:Field Label="科目">
+                <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                        Click="SubjectButton_OnClick">
+                    <Grid ColumnDefinitions="20,*,Auto" ColumnSpacing="8">
+                        <controls:FAIconSourceElement Width="20" Height="20"
+                                                      TextElement.FontSize="20"
+                                                      TextElement.Foreground="{Binding Subject.ColorHex, Converter={StaticResource SubjectColorBrushConverter}}"
+                                                      IconSource="{Binding Subject.Icon, Converter={StaticResource SubjectIconSourceConverter}}"
+                                                      Classes="repair-fontsize"
+                                                      IsHitTestVisible="False"
+                                                      VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Subject.Name, TargetNullValue='未指定科目', FallbackValue='未指定科目'}"/>
+                            <TextBlock FontSize="12"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       IsVisible="{Binding $self.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource SubjectDetailsConverter}">
+                                        <Binding Path="Subject.TeacherName"/>
+                                        <Binding Path="Subject.Location"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </StackPanel>
+                        <ci:FluentIcon Grid.Column="2" Glyph="{ci:FI ChevronDownRegular}" FontSize="12"/>
+                    </Grid>
+                </Button>
+            </ci:Field>
+            <ci:Field Label="上课地点">
+                <TextBox Text="{Binding Item.Location, Mode=TwoWay}"
+                         PlaceholderText="{Binding Subject.Location}"
+                         LostFocus="CommitField_OnLostFocus"/>
+            </ci:Field>
+            <TextBlock Text="留空时将使用科目设置的上课地点。" Classes="l-secondary" TextWrapping="Wrap"/>
+            <ci:Field Label="开始时间">
+                <TimePicker SelectedTime="{Binding Item.StartTime, Mode=TwoWay}"
+                            MinWidth="0" HorizontalAlignment="Stretch"
+                            LostFocus="CommitField_OnLostFocus"/>
+            </ci:Field>
+            <ci:Field Label="结束时间">
+                <TimePicker SelectedTime="{Binding Item.EndTime, Mode=TwoWay}"
+                            MinWidth="0" HorizontalAlignment="Stretch"
+                            LostFocus="CommitField_OnLostFocus"/>
+            </ci:Field>
+            <TextBlock Text="{Binding DurationText}" Classes="l-instructive" TextWrapping="Wrap"/>
+            <CheckBox Content="启用此课程" IsChecked="{Binding Item.IsEnabled, Mode=TwoWay}"
+                      Click="EnabledCheckBox_OnClick"/>
+            <Border Margin="0,8,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                    BorderThickness="0,1,0,0"/>
+            <controls1:TimeRuleEditControl x:Name="CourseTimeRuleEditControl"
+                                           TimeRule="{Binding Item.EnableRule, Mode=OneWay}"
+                                           LostFocus="CommitField_OnLostFocus"/>
+        </StackPanel>
+    </ScrollViewer>
+</ci:ViewBase>

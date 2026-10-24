@@ -19,6 +19,7 @@ using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Extensions.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Views;
 
 namespace ClassIsland.Controls.UI;
@@ -40,6 +41,18 @@ public partial class MobileViewHost : UserControl, IViewHost
     IReadOnlyCollection<ViewBase> IViewHost.ActivatedViews => ActivatedViews;
 
     private HashSet<ViewBase> ActivatedViews { get; } = [];
+
+    private HashSet<ViewBase> DrawerActivatedViews { get; } = [];
+
+    IReadOnlyCollection<ViewBase> IViewHost.DrawerActivatedViews => DrawerActivatedViews;
+
+    public bool IsDrawerOpen => DrawerHost.IsOpen;
+
+    public ViewBase? CurrentDrawerView => DrawerHost.CurrentView;
+
+    private IInputElement? _drawerPreviousFocus;
+
+    private bool _isDrawerNavigationBusy;
 
     private bool _isShowed = false;
 
@@ -85,6 +98,10 @@ public partial class MobileViewHost : UserControl, IViewHost
         _isShowed = true;
         this.UseMyWindowExt();
         InitializeComponent();
+        DrawerHost.ClosingRequested += DrawerHostOnClosingRequested;
+        DrawerHost.Closed += DrawerHostOnClosed;
+        DrawerHost.Popped += DrawerHostOnPopped;
+        DrawerHost.BackRequested += DrawerHostOnBackRequested;
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -121,6 +138,13 @@ public partial class MobileViewHost : UserControl, IViewHost
         PreClosing(false);
         _isClosed = true;
         SetCurrentView(null);
+        DrawerHost.Clear();
+        foreach (var view in DrawerActivatedViews.ToArray())
+        {
+            view.ViewDeactivated();
+        }
+        DrawerActivatedViews.Clear();
+        _drawerPreviousFocus = null;
         NavigationPage.PopAllModalsAsync(null);
         NavigationPage.PopToRootAsync(null);
         NavigationPage.ReplaceAsync(new ContentPage(), null);
@@ -413,6 +437,14 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     private bool PreClosing(bool cancelable)
     {
+        foreach (var drawerView in DrawerHost.NavigationPage.NavigationStack.OfType<ViewBase>().Reverse())
+        {
+            if (!drawerView.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable) && cancelable)
+            {
+                return true;
+            }
+        }
+
         var view = ActivatedViews.LastOrDefault();
         if (view == null)
         {
@@ -605,6 +637,23 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     public async Task<bool> HideView(ViewBase view)
     {
+        if (DrawerActivatedViews.Contains(view))
+        {
+            if (!Equals(CurrentDrawerView, view))
+            {
+                return false;
+            }
+            if (DrawerHost.CanGoBack)
+            {
+                await DrawerHost.PopAsync();
+            }
+            else
+            {
+                await HideDrawer();
+            }
+            return !DrawerActivatedViews.Contains(view);
+        }
+
         if (!ActivatedViews.Contains(view))
         {
             throw new InvalidOperationException("视图必须已经激活才能隐藏。");
@@ -634,6 +683,175 @@ public partial class MobileViewHost : UserControl, IViewHost
         }
 
         return !ActivatedViews.Contains(view);
+    }
+
+    public async Task ShowDrawer(ViewBase view, DrawerOptions? options = null)
+    {
+        if (IsDrawerOpen)
+        {
+            throw new InvalidOperationException("当前视图宿主已有打开的抽屉。");
+        }
+        if (_isClosed)
+        {
+            throw new InvalidOperationException("视图宿主已关闭，无法打开抽屉。");
+        }
+        if (view.AssociatedViewHost != null)
+        {
+            throw new InvalidOperationException("视图已被激活，不能再次打开。");
+        }
+        if (!ActivateDrawerView(view))
+        {
+            return;
+        }
+
+        _drawerPreviousFocus = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+        try
+        {
+            await DrawerHost.OpenAsync(view, options);
+            if (IsDrawerOpen && ReferenceEquals(CurrentDrawerView, view))
+            {
+                DrawerHost.NavigationPage.Focus();
+            }
+        }
+        finally
+        {
+            ReleaseUnshownDrawerView(view);
+            if (!IsDrawerOpen)
+            {
+                _drawerPreviousFocus = null;
+            }
+        }
+    }
+
+    public async Task PushDrawerView(ViewBase view)
+    {
+        if (!IsDrawerOpen)
+        {
+            throw new InvalidOperationException("当前视图宿主没有打开的抽屉。");
+        }
+        if (view.AssociatedViewHost != null)
+        {
+            throw new InvalidOperationException("视图已被激活，不能再次推入抽屉。");
+        }
+        if (!ActivateDrawerView(view))
+        {
+            return;
+        }
+
+        try
+        {
+            await DrawerHost.PushAsync(view);
+        }
+        finally
+        {
+            ReleaseUnshownDrawerView(view);
+        }
+    }
+
+    public async Task<bool> NavigateDrawerBack()
+    {
+        if (!IsDrawerOpen)
+        {
+            return false;
+        }
+        if (DrawerHost.CanGoBack)
+        {
+            return await DrawerHost.PopAsync();
+        }
+        return await HideDrawer();
+    }
+
+    public Task<bool> HideDrawer()
+    {
+        if (!IsDrawerOpen)
+        {
+            return Task.FromResult(false);
+        }
+        DrawerHost.RequestClose();
+        return Task.FromResult(!DrawerHost.IsOpen);
+    }
+
+    private bool ActivateDrawerView(ViewBase view)
+    {
+        if (DrawerActivatedViews.Contains(view) || !view.ViewActivating(this))
+        {
+            return false;
+        }
+        DrawerActivatedViews.Add(view);
+        view.ViewActivated(this);
+        return true;
+    }
+
+    private void ReleaseUnshownDrawerView(ViewBase view)
+    {
+        // Avalonia 在导航被取消或已有过渡时会直接返回，异常也可能发生在入栈前。
+        if (!DrawerHost.NavigationPage.NavigationStack.Contains(view) && DrawerActivatedViews.Remove(view))
+        {
+            view.ViewDeactivated();
+        }
+    }
+
+    private async void DrawerHostOnBackRequested(object? sender, EventArgs e)
+    {
+        if (_isDrawerNavigationBusy)
+        {
+            return;
+        }
+        _isDrawerNavigationBusy = true;
+        try
+        {
+            await NavigateDrawerBack();
+        }
+        finally
+        {
+            _isDrawerNavigationBusy = false;
+        }
+    }
+
+    private void DrawerHostOnClosingRequested(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        // Avalonia 在导航过渡中忽略 RemovePage，避免关闭后遗留已取消激活的页面。
+        if (DrawerHost.NavigationPage.IsNavigating)
+        {
+            e.Cancel = true;
+            return;
+        }
+
+        foreach (var view in DrawerHost.NavigationPage.NavigationStack.OfType<ViewBase>().Reverse())
+        {
+            if (!view.ViewDeactivating(WindowCloseReason.Undefined, true, true))
+            {
+                e.Cancel = true;
+                return;
+            }
+        }
+    }
+
+    private void DrawerHostOnPopped(object? sender, NavigationEventArgs e)
+    {
+        if (e.Page is ViewBase view && DrawerActivatedViews.Remove(view))
+        {
+            view.ViewDeactivated();
+        }
+        UpdateFocusedTextPresenter();
+        UpdatePageContentOffsetForOpenInputPane();
+    }
+
+    private void DrawerHostOnClosed(object? sender, EventArgs e)
+    {
+        DrawerHost.Clear();
+        foreach (var view in DrawerActivatedViews.ToArray())
+        {
+            view.ViewDeactivated();
+        }
+        DrawerActivatedViews.Clear();
+        if (_drawerPreviousFocus is Control control && control.IsAttachedToVisualTree())
+        {
+            control.Focus();
+        }
+        _drawerPreviousFocus = null;
+        UpdateFocusedTextPresenter();
+        UpdatePageContentOffsetForOpenInputPane();
     }
 
     private async Task RunNavigationWithProgressAsync(Func<Task> navigation)

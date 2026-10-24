@@ -42,6 +42,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private bool _extraInfo4ShowSeconds = false;
     private ILessonControlSettings? _settingsSource = new LessonControlAttachedSettings();
     private Subject _displayingSubject = Subject.Fallback;
+    private string _displayingLocation = "";
     private bool _attachedToVisualTree = false;
     private string _detailedInfoText = "";
     private double _progressPercent = 0.0;
@@ -137,6 +138,12 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         set => SetField(ref _displayingSubject, value);
     }
 
+    public string DisplayingLocation
+    {
+        get => _displayingLocation;
+        set => SetField(ref _displayingLocation, value);
+    }
+
     private void UpdateSubject()
     {
         if (CurrentTimeLayoutItem == null)
@@ -145,6 +152,12 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         }
 
         DisplayingSubject = CurrentTimeLayoutItem.TimeType == 1 ? Subject.Breaking : CurrentSubject;
+        var location = ClassInfo?.EffectiveLocation;
+        DisplayingLocation = CurrentTimeLayoutItem.TimeType == 1
+            ? ""
+            : string.IsNullOrWhiteSpace(location)
+                ? CurrentSubject.Location
+                : location;
     }
 
     private IExactTimeService? ExactTimeService { get; set; }
@@ -162,6 +175,8 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         this.GetObservable(ClassInfoProperty).Subscribe(_ =>
         {
             ClassInfo.ObservableForProperty(x => x.SubjectId)
+                .Subscribe(_ => UpdateSubject());
+            ClassInfo.ObservableForProperty(x => x.EffectiveLocation)
                 .Subscribe(_ => UpdateSubject());
         });
         AttachedToVisualTree += OnAttachedToVisualTree;

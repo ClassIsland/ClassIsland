@@ -110,10 +110,16 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             return;
         }
-        ResourceLoaderBorder ??= MainWindow?.FindControl<Border>("ResourceLoaderBorder");
+        if (ResourceLoaderBorder == null)
+        {
+            SetResourceHost(MainWindow?.FindControl<Border>("ResourceLoaderBorder"));
+        }
         RootStyles.Clear();
         ResourceLoaderBorder?.Styles.Remove(RootStyles);
-        s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false); 
+        if (ResourceLoaderBorder != null)
+        {
+            s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false);
+        }
         RootStyles = [];
         ResourceLoaderBorder?.Styles.Add(RootStyles);
         var actualSafeAreaPx = 0.0;
@@ -141,6 +147,22 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         }
 
         ActualVerticalSafeAreaPx = actualSafeAreaPx;
+    }
+
+    void IXamlThemeService.SetResourceHost(Border? host)
+    {
+        SetResourceHost(host);
+    }
+
+    private void SetResourceHost(Border? host)
+    {
+        if (ReferenceEquals(ResourceLoaderBorder, host))
+        {
+            return;
+        }
+        ResourceLoaderBorder?.Styles.Remove(RootStyles);
+        RootStyles.Clear();
+        ResourceLoaderBorder = host;
     }
 
     private void LoadThemeFromFile(string themePath)

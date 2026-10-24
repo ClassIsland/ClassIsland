@@ -12,6 +12,16 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChanging, IPublicLessonsService
 {
+    /// <summary>
+    /// 当前正在上的课程。课间休息或没有课程时为 null。
+    /// </summary>
+    ClassInfo? CurrentClassInfo { get; }
+
+    /// <summary>
+    /// 当前或下一节上课课程。没有课程时为 null。
+    /// </summary>
+    ClassInfo? NextClassInfo { get; }
+
     #region Timer
 
     /// <summary>
@@ -63,6 +73,12 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     /// 当当前时间状态改变时触发。
     /// </summary>
     event EventHandler? CurrentTimeStateChanged;
+
+    /// <summary>
+    /// 当课程安排失效时触发，事件参数用于判断指定日期是否受影响。
+    /// 通知包含尚未缓存课表的日期。
+    /// </summary>
+    event EventHandler<Predicate<DateOnly>>? ScheduleItemsInvalidated;
 
     internal void DebugTriggerOnClass();
     internal void DebugTriggerOnBreakingTime();

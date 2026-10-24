@@ -7,7 +7,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid RowDefinitions="Auto,*,Auto" ClipToBounds="True">
-                    <Canvas Name="PART_Header" Grid.Row="0" Height="24" IsHitTestVisible="False"/>
+                    <Canvas Name="PART_Header" Grid.Row="0" Height="24"/>
                     <ScrollViewer Name="PART_ScrollViewer" Grid.Row="1"
                                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible">
                         <Canvas Name="PART_Canvas" Background="Transparent" ClipToBounds="True"
@@ -62,6 +62,13 @@
                             <TextBlock Name="TimeLabel" Text="{TemplateBinding TimeText}" FontSize="11"
                                        TextWrapping="Wrap" IsVisible="{TemplateBinding ShowTimeText}"/>
                         </StackPanel>
+                        <Border HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"
+                                Padding="2" CornerRadius="3"
+                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                IsVisible="{TemplateBinding IsReplacement}" IsHitTestVisible="False">
+                            <ci:FluentIcon Glyph="{ci:FI BranchForkRegular}" FontSize="10"
+                                           Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                        </Border>
                         <Border BorderBrush="{TemplateBinding SubjectBrush}" BorderThickness="2"
                                 CornerRadius="4" IsVisible="{TemplateBinding IsSelected}" IsHitTestVisible="False"/>
                         <Border Height="3" Width="22" CornerRadius="2" Margin="0,2" VerticalAlignment="Top"
@@ -85,6 +92,9 @@
         </Style>
         <Style Selector="^[IsCompact=True] /template/ StackPanel#Labels">
             <Setter Property="Margin" Value="2,1"/>
+        </Style>
+        <Style Selector="^[IsCourseEnabled=False] /template/ TextBlock#PART_SubjectLabel">
+            <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/>
         </Style>
     </ControlTheme>
 </ResourceDictionary>

@@ -148,6 +148,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             int.MinValue);
         _isWorkStarted = true;
         _lessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
+        _lessonsService.ScheduleItemsInvalidated += LessonsServiceOnScheduleItemsInvalidated;
         _exactTimeService.PropertyChanged += ExactTimeServiceOnPropertyChanged;
         PlatformServices.SystemEventsService.TimeChanged += SystemEventsOnTimeChanged;
         RebuildChangeSubscriptions();
@@ -449,6 +450,9 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     {
         AddPropertyChangeSource(classPlan);
         AddPropertyChangeSource(classPlan.TimeRule);
+        AddCollectionChangeSource(classPlan.TimeRule.EnableDates);
+        AddCollectionChangeSource(classPlan.TimeRule.ExcludedDates);
+        AddCollectionChangeSource(classPlan.TimeRule.AdditionalDates);
         AddAttachedSettingsSources(classPlan);
         if (_classPlanChangeSources.Add(classPlan))
         {
@@ -495,6 +499,8 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
                  or nameof(Profile.Subjects)
                  or nameof(Profile.OrderedSchedules)) ||
             (sender is ClassPlan && e.PropertyName == nameof(ClassPlan.TimeRule)) ||
+            (sender is TimeRule && e.PropertyName is nameof(TimeRule.EnableDates)
+                or nameof(TimeRule.ExcludedDates) or nameof(TimeRule.AdditionalDates)) ||
             (sender is TimeLayout && e.PropertyName == nameof(TimeLayout.Layouts)))
         {
             RebuildChangeSubscriptions();
@@ -528,6 +534,13 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             return;
         }
 
+        RebuildChangeSubscriptions();
+        QueueRefreshDebounced();
+    }
+
+    private void LessonsServiceOnScheduleItemsInvalidated(object? sender, Predicate<DateOnly> isDateAffected)
+    {
+        // 日程调整也可能影响尚未缓存的未来课程，必须同步重排系统通知。
         RebuildChangeSubscriptions();
         QueueRefreshDebounced();
     }
@@ -678,6 +691,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         if (_lessonsService != null)
         {
             _lessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
+            _lessonsService.ScheduleItemsInvalidated -= LessonsServiceOnScheduleItemsInvalidated;
         }
         if (_exactTimeService != null)
         {

@@ -10,11 +10,45 @@
              xmlns:appControls="using:ClassIsland.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.MainView"
+             x:Name="MainViewRoot"
              NavigationPage.HasBackButton="False"
-             Header="ClassIsland">
+             NavigationPage.BarHeightOverride="42"
+             Header="{Binding #MainViewRoot.ViewModel.MainViewHeader}">
+    <NavigationPage.TopCommandBar>
+        <StackPanel Orientation="Horizontal" Spacing="0">
+            <Button x:Name="EditScheduleButton" Theme="{StaticResource TransparentButton}"
+                    IsVisible="{Binding #MainViewRoot.ViewModel.CanStartScheduleEditing}"
+                    ToolTip.Tip="编辑课表" Click="EditScheduleButton_OnClick">
+                <ci:FluentIcon Glyph="{ci:FI EditRegular}"/>
+            </Button>
+            <Button x:Name="AddScheduleButton" Theme="{StaticResource TransparentButton}"
+                    IsVisible="{Binding #MainViewRoot.ViewModel.CanAddScheduleItem}"
+                    ToolTip.Tip="新增课程" Click="AddScheduleButton_OnClick">
+                <ci:FluentIcon Glyph="{ci:FI AddRegular}"/>
+            </Button>
+            <Button x:Name="FinishEditingButton" Theme="{StaticResource TransparentButton}"
+                    IsVisible="{Binding #MainViewRoot.ViewModel.IsScheduleEditing}"
+                    ToolTip.Tip="完成编辑" Click="FinishEditingButton_OnClick">
+                <ci:FluentIcon Glyph="{ci:FI CheckmarkRegular}"/>
+            </Button>
+            <Button x:Name="MainMoreButton" Theme="{StaticResource TransparentButton}"
+                    ToolTip.Tip="更多选项" Click="MainMoreButton_OnClick">
+                <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+            </Button>
+        </StackPanel>
+    </NavigationPage.TopCommandBar>
     <ci:ViewBase.Styles>
         <Style Selector="TabControl#MainViewTabs /template/ ItemsPresenter#PART_ItemsPresenter">
             <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="TextBlock#HomeScheduleSummary.adjusted">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+        </Style>
+        <Style Selector="ci|LessonsListBox#HomeLessonsList">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="ci|LessonsListBox#HomeLessonsList ListBoxItem">
+            <Setter Property="IsHitTestVisible" Value="False"/>
         </Style>
     </ci:ViewBase.Styles>
     <ci:AdaptiveNavigationView x:Name="MainNavigation"
@@ -67,29 +101,79 @@
                           Classes.wide="{Binding !#MainNavigation.IsNarrow}">
                         <appControls:HomeDatePicker x:Name="HomeCalendar" DataContext="{Binding $parent[views:MainView].ViewModel}"/>
                         <ScrollViewer x:Name="HomeLessons" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <Panel>
-                                <ci:LessonsListBox ClassPlan="{Binding $parent[views:MainView].ViewModel.DisplayedClassPlan}"
-                                                   Subjects="{Binding $parent[views:MainView].ViewModel.ProfileService.Profile.Subjects}"
-                                                   SelectedIndex="{Binding $parent[views:MainView].ViewModel.DisplayedSelectedIndex, Mode=OneWay}"
-                                                   IsLiveUpdatingEnabled="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
-                                                   FadeCompletedClasses="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
-                                                   IsVisible="{Binding $parent[views:MainView].ViewModel.HasDisplayedLessons}"
-                                                   Orientation="Vertical">
-                                    <ci:LessonsListBox.LessonControlSettings>
-                                        <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
-                                    </ci:LessonsListBox.LessonControlSettings>
-                                </ci:LessonsListBox>
-                                <TextBlock Text="这一天没有课程安排" Margin="16,32" HorizontalAlignment="Center"
-                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                           IsVisible="{Binding !$parent[views:MainView].ViewModel.HasDisplayedLessons}"/>
-                            </Panel>
+                            <Grid RowDefinitions="Auto,*">
+                                <Grid ColumnDefinitions="*,Auto" Margin="0 4">
+                                    <TextBlock x:Name="HomeScheduleSummary" Classes="l-instructive"
+                                               Classes.adjusted="{Binding $parent[views:MainView].ViewModel.HasDisplayedScheduleAdjustment}"
+                                               Text="{Binding $parent[views:MainView].ViewModel.DisplayedScheduleSummary}"
+                                               VerticalAlignment="Center" Margin="16,0,8,0" TextWrapping="Wrap"/>
+                                    <Button Grid.Column="1" HorizontalAlignment="Right" Theme="{StaticResource TransparentButton}"
+                                            ToolTip.Tip="调整所选日期课程" AutomationProperties.Name="调整所选日期课程"
+                                            IsVisible="{Binding $parent[views:MainView].ViewModel.IsScheduleAdjustmentVisible}"
+                                            IsEnabled="{Binding $parent[views:MainView].ViewModel.CanAdjustSchedule}"
+                                            Click="ButtonAdjustSchedule_OnClick">
+                                        <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+                                    </Button>
+                                </Grid>
+                                <Panel Grid.Row="1">
+                                    <ci:LessonsListBox x:Name="HomeLessonsList"
+                                                       ClassPlan="{Binding $parent[views:MainView].ViewModel.DisplayedClassPlan}"
+                                                       Subjects="{Binding $parent[views:MainView].ViewModel.ProfileService.Profile.Subjects}"
+                                                       SelectedIndex="{Binding $parent[views:MainView].ViewModel.DisplayedSelectedIndex, Mode=OneWay}"
+                                                       IsHitTestVisible="True"
+                                                       IsLiveUpdatingEnabled="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
+                                                       FadeCompletedClasses="{Binding $parent[views:MainView].ViewModel.IsViewingToday}"
+                                                       IsVisible="{Binding $parent[views:MainView].ViewModel.HasDisplayedLessons}"
+                                                       Orientation="Vertical">
+                                        <ci:LessonsListBox.LessonControlSettings>
+                                            <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
+                                        </ci:LessonsListBox.LessonControlSettings>
+                                    </ci:LessonsListBox>
+                                    <Border Background="Transparent"
+                                            Tapped="HomeLessonsList_OnTapped"/>
+                                    <TextBlock Text="这一天没有课程安排" Margin="16,32" HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               IsVisible="{Binding !$parent[views:MainView].ViewModel.HasDisplayedLessons}"/>
+                                </Panel>
+                            </Grid>
                         </ScrollViewer>
                     </Grid>
                 </Border>
             </TabItem>
             <TabItem Header="本周">
                 <Grid RowDefinitions="Auto,*">
-                    <scheduleWeek:ScheduleWeekEditControl x:Name="ScheduleWeekTest" Grid.Row="1" IsReadonly="True"/>
+                    <WrapPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <Button Click="ScheduleWeekPrevious_OnClick" ToolTip.Tip="上一周" Margin="0,0,4,0"
+                                AutomationProperties.Name="上一周" Theme="{StaticResource TransparentButton}">
+                            <ci:FluentIcon Glyph="{ci:FI ChevronLeftRegular}"/>
+                        </Button>
+                        <Button Click="ScheduleWeekToday_OnClick" Content="本周" Margin="0,0,4,0"
+                                ToolTip.Tip="返回本周" Theme="{StaticResource TransparentButton}"/>
+                        <Button Click="ScheduleWeekNext_OnClick" ToolTip.Tip="下一周" Margin="0,0,4,0"
+                                AutomationProperties.Name="下一周" Theme="{StaticResource TransparentButton}">
+                            <ci:FluentIcon Glyph="{ci:FI ChevronRightRegular}"/>
+                        </Button>
+                        <TextBlock Text="{Binding #MainViewRoot.ViewModel.ScheduleWeekCaption}"
+                                   VerticalAlignment="Center" FontSize="12"/>
+                    </WrapPanel>
+                    <scheduleWeek:ScheduleWeekEditControl x:Name="ScheduleWeekTest" Grid.Row="1"
+                                                         WeekStart="{Binding #MainViewRoot.ViewModel.ScheduleWeekStart}"
+                                                         SelectedDate="{Binding #MainViewRoot.ViewModel.ScheduleWeekSelectedDate, Mode=TwoWay}"
+                                                         SelectedTime="{Binding #MainViewRoot.ViewModel.ScheduleWeekSelectedTime, Mode=TwoWay}"
+                                                         IsReadonly="{Binding #MainViewRoot.ViewModel.IsScheduleWeekReadonly}"
+                                                         CourseTapped="ScheduleWeekEditor_OnCourseTapped"
+                                                         CreateRequested="ScheduleWeekEditor_OnCreateRequested"
+                                                         EditRequested="ScheduleWeekEditor_OnEditRequested"
+                                                         DeleteRequested="ScheduleWeekEditor_OnDeleteRequested"
+                                                         DuplicateRequested="ScheduleWeekEditor_OnDuplicateRequested"
+                                                         ForkAndReplaceRequested="ScheduleWeekEditor_OnForkAndReplaceRequested"
+                                                         DayHeaderClicked="ScheduleWeekEditor_OnDayHeaderClicked"/>
+                    <TextBlock Grid.Row="1"
+                               Text="点击课程开始编辑，长按后拖动课程"
+                               HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                               Margin="0,0,16,16" Padding="8,4"
+                               Classes="l-instructive"
+                               IsVisible="{Binding $parent[views:MainView].ViewModel.IsScheduleEditing}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="更多">

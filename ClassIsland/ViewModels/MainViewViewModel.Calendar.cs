@@ -67,6 +67,21 @@ public partial class MainViewViewModel
     [ObservableProperty] private bool _hasDisplayedLessons;
 
     public bool IsViewingToday => SelectedDate == _today;
+    public bool IsScheduleAdjustmentVisible => ProfileService.Profile.ScheduleType == Shared.Enums.ScheduleType.Schedule;
+    public bool CanAdjustSchedule => ScheduleAdjustmentViewModel.CanEdit(ProfileService.Profile, ManagementService.Policy);
+    public bool HasDisplayedScheduleAdjustment => IsScheduleAdjustmentVisible
+        && ProfileService.Profile.OrderedSchedulesV2.ContainsKey(SelectedDate);
+    public string DisplayedScheduleSummary
+    {
+        get
+        {
+            var summary = $"共{CountLessons(DisplayedClassPlan)}节课";
+            if (!IsScheduleAdjustmentVisible
+                || !ProfileService.Profile.OrderedSchedulesV2.TryGetValue(SelectedDate, out var adjustment))
+                return summary;
+            return adjustment.SetEmpty ? $"{summary}，已调课为无课" : $"{summary}，已从{adjustment.SourceDate:yyyy年M月d日}调课";
+        }
+    }
     public bool IsMonthCalendarVisible => IsCalendarPinned || IsCalendarExpanded;
     public string CalendarCaption => (IsMonthCalendarVisible ? CalendarDisplayDate : SelectedDate).ToString("yyyy年M月", CultureInfo.InvariantCulture);
     public string PreviousPeriodDescription => IsMonthCalendarVisible ? "上个月" : "上一周";
@@ -122,9 +137,14 @@ public partial class MainViewViewModel
             SynchronizeToday();
             RefreshCalendarData();
         }
+        // Converted plans can be updated in place, without changing CurrentClassPlan's reference.
+        if (CalendarDays.TryGetValue(_today, out var day)
+            && day.LessonCount != CountLessons(LessonsService.CurrentClassPlan))
+            QueueCalendarRefresh();
         if (!IsViewingToday) return;
         DisplayedClassPlan = LessonsService.CurrentClassPlan;
         DisplayedSelectedIndex = LessonsService.CurrentSelectedIndex;
+        HasDisplayedLessons = CountLessons(DisplayedClassPlan) > 0;
     }
 
     partial void OnIsCalendarExpandedChanged(bool value) => UpdateCalendarMode();
@@ -201,11 +221,15 @@ public partial class MainViewViewModel
         _refreshingCalendar = true;
         try
         {
+            OnPropertyChanged(nameof(IsScheduleAdjustmentVisible));
+            OnPropertyChanged(nameof(CanAdjustSchedule));
             // Queries can update converted schedule caches; don't observe their intermediate changes.
             _calendarSubscriptions.Clear();
             DisplayedClassPlan = IsViewingToday ? LessonsService.CurrentClassPlan : LessonsService.GetClassPlanByDate(SelectedDate, out _);
             DisplayedSelectedIndex = IsViewingToday ? LessonsService.CurrentSelectedIndex : -1;
             HasDisplayedLessons = CountLessons(DisplayedClassPlan) > 0;
+            OnPropertyChanged(nameof(HasDisplayedScheduleAdjustment));
+            OnPropertyChanged(nameof(DisplayedScheduleSummary));
             var days = new Dictionary<DateTime, HomeCalendarDay>();
             var weekStart = WeekStart(SelectedDate);
             AddDays(weekStart, 7);
@@ -262,7 +286,10 @@ public partial class MainViewViewModel
         Watch(profile.ClassPlans);
         Watch(profile.TimeLayouts);
         Watch(profile.OrderedSchedules);
+        Watch(profile.OrderedSchedulesV2);
         Watch(profile.Subjects);
+        if (ManagementService is INotifyPropertyChanged management) Watch(management);
+        Watch(ManagementService.Policy);
         foreach (var item in profile.ScheduleItems.Values) { Watch(item); WatchRule(item.EnableRule); }
         foreach (var plan in profile.ClassPlans.Values)
         {
@@ -278,6 +305,7 @@ public partial class MainViewViewModel
             foreach (var item in layout.Layouts) Watch(item);
         }
         foreach (var schedule in profile.OrderedSchedules.Values) Watch(schedule);
+        foreach (var schedule in profile.OrderedSchedulesV2.Values) Watch(schedule);
         foreach (var subject in profile.Subjects.Values) Watch(subject);
         PropertyChangedEventHandler changed = (_, e) =>
         {
@@ -285,6 +313,9 @@ public partial class MainViewViewModel
         };
         LessonsService.PropertyChanged += changed;
         _calendarSubscriptions.Add(Disposable.Create(() => LessonsService.PropertyChanged -= changed));
+        EventHandler<Predicate<DateOnly>> invalidated = (_, _) => QueueCalendarRefresh();
+        LessonsService.ScheduleItemsInvalidated += invalidated;
+        _calendarSubscriptions.Add(Disposable.Create(() => LessonsService.ScheduleItemsInvalidated -= invalidated));
     }
 
     private void WatchRule(TimeRule rule) { Watch(rule); Watch(rule.EnableDates); }

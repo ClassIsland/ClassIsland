@@ -52,7 +52,6 @@ public partial class WindowSettingsPage : SettingsPageBase
         };
         _taskbarTimer.Tick += TaskbarTimer_Tick;
         TaskbarTimer_Tick();
-        ViewModel.Screens = new ObservableCollection<Screen>(AppBase.Current.MainWindow!.Screens.All);
     }   
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -87,6 +86,7 @@ public partial class WindowSettingsPage : SettingsPageBase
             return;
         }
 
+        ViewModel.Screens = new ObservableCollection<Screen>(TopLevel.GetTopLevel(this)?.Screens?.All ?? []);
         _taskbarTimer.Start();
         ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         _isSettingsSubscribed = true;

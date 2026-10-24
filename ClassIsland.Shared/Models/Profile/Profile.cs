@@ -32,6 +32,7 @@ public class Profile : ObservableRecipient
     private ObservableOrderedDictionary<Guid, ScheduleItem> _scheduleV2Items = new();
     private ScheduleType _scheduleType = ScheduleType.Classic;
     private List<ProfileMigration> _migrations = [];
+    private ObservableOrderedDictionary<DateTime, OrderedScheduleV2> _orderedSchedulesV2 = [];
 
     /// <summary>
     /// 实例化对象
@@ -173,6 +174,7 @@ public class Profile : ObservableRecipient
     {
         foreach (var i in _classPlans)
         {
+            i.Value.Subjects = Subjects;
             i.Value.TimeLayouts = TimeLayouts;
             i.Value.ClassPlans = ClassPlans;
         }
@@ -189,6 +191,7 @@ public class Profile : ObservableRecipient
             if (Equals(value, _subjects)) return;
             _subjects = value;
             OnPropertyChanged();
+            RefreshTimeLayouts();
         }
     }
 
@@ -403,6 +406,20 @@ public class Profile : ObservableRecipient
         {
             if (Equals(value, _migrations)) return;
             _migrations = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 已预定的启用日程
+    /// </summary>
+    public ObservableOrderedDictionary<DateTime, OrderedScheduleV2> OrderedSchedulesV2
+    {
+        get => _orderedSchedulesV2;
+        set
+        {
+            if (Equals(value, _orderedSchedulesV2)) return;
+            _orderedSchedulesV2 = value;
             OnPropertyChanged();
         }
     }

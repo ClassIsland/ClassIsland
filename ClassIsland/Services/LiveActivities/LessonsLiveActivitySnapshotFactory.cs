@@ -99,7 +99,7 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                     : FormatTimeRange(item),
                 "???")
             {
-                ActivityDetails = isClass ? CreateDetails(LessonsService.CurrentSubject, item) : null,
+                ActivityDetails = isClass ? CreateDetails(LessonsService.CurrentSubject, LessonsService.CurrentClassInfo, item) : null,
                 LessonInitial = isClass ? LessonsService.CurrentSubject?.Initial ?? "" : "",
                 LessonIconExpression = isClass ? LessonsService.CurrentSubject?.Icon ?? "" : ""
             };
@@ -158,7 +158,7 @@ internal sealed class LessonsLiveActivitySnapshotFactory
             GetAbsoluteTime(now, absoluteNow, item.StartTime),
             GetAbsoluteTime(now, absoluteNow, item.EndTime))
         {
-            ActivityDetails = isClass ? CreateDetails(LessonsService.CurrentSubject, item) : null,
+            ActivityDetails = isClass ? CreateDetails(LessonsService.CurrentSubject, LessonsService.CurrentClassInfo, item) : null,
             LessonInitial = isClass ? LessonsService.CurrentSubject?.Initial ?? "" : "",
             LessonIconExpression = isClass ? LessonsService.CurrentSubject?.Icon ?? "" : ""
         };
@@ -217,7 +217,7 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                 GetAbsoluteTime(now, absoluteNow, nextItem.StartTime),
                 IsUpcomingLesson: true)
             {
-                ActivityDetails = CreateDetails(LessonsService.NextClassSubject, nextItem) with
+                ActivityDetails = CreateDetails(LessonsService.NextClassSubject, LessonsService.NextClassInfo, nextItem) with
                 {
                     IntervalTimeText = currentState == TimeState.Breaking &&
                                        !ReferenceEquals(LessonsService.CurrentTimeLayoutItem, TimeLayoutItem.Empty)
@@ -238,9 +238,17 @@ internal sealed class LessonsLiveActivitySnapshotFactory
             "");
     }
 
-    private static LessonLiveActivityDetails CreateDetails(Subject? subject, TimeLayoutItem item) =>
-        new(GetSubjectName(subject, "未命名课程"), subject?.Location?.Trim() ?? "",
+    private static LessonLiveActivityDetails CreateDetails(
+        Subject? subject,
+        ClassInfo? classInfo,
+        TimeLayoutItem item)
+    {
+        var location = classInfo?.EffectiveLocation;
+        return new LessonLiveActivityDetails(
+            GetSubjectName(subject, "未命名课程"),
+            (string.IsNullOrWhiteSpace(location) ? subject?.Location : location)?.Trim() ?? "",
             ReferenceEquals(item, TimeLayoutItem.Empty) ? "" : FormatTimeRange(item), "");
+    }
 
     private string CreateNextClassText(bool includeStartTime)
     {

@@ -1,10 +1,13 @@
 using System.ComponentModel;
 using System.Reflection;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using dotnetCampus.Ipc.Pipes;
@@ -132,6 +135,86 @@ public sealed class LessonsActivationTests
         Assert.True(fixture.Layout.IsActivated);
     }
 
+    [Fact]
+    public void ScheduleChanges_UpdateCurrentCourseLocationAndDisabledState()
+    {
+        using var fixture = new LessonsFixture();
+        fixture.Profile.ScheduleType = ScheduleType.Schedule;
+        var subjectId = Guid.NewGuid();
+        fixture.Profile.Subjects.Add(subjectId, new Subject { Name = "数学", Location = "101" });
+        var item = new ScheduleItem
+        {
+            SubjectId = subjectId,
+            StartTime = TimeSpan.FromHours(8),
+            EndTime = TimeSpan.FromHours(9),
+            EnableRule = new TimeRule { Type = TimeRule.TimeRuleType.Date, EnableDates = [DateOnly.FromDateTime(fixture.Now)] }
+        };
+        fixture.Profile.ScheduleItems.Add(Guid.NewGuid(), item);
+        fixture.Tick();
+        Assert.Equal("101", fixture.Lessons.CurrentClassInfo?.EffectiveLocation);
+
+        item.Location = "实验室";
+        fixture.Tick();
+        Assert.Equal("实验室", fixture.Lessons.CurrentClassInfo?.EffectiveLocation);
+
+        item.IsEnabled = false;
+        fixture.Tick();
+        Assert.NotEqual(TimeState.OnClass, fixture.Lessons.CurrentState);
+        Assert.Null(fixture.Lessons.CurrentClassInfo);
+    }
+
+    [Fact]
+    public void ScheduleDateExceptions_InvalidateCachedPlanAndRestoreAdditionalDate()
+    {
+        using var fixture = new LessonsFixture();
+        fixture.Profile.ScheduleType = ScheduleType.Schedule;
+        var date = DateOnly.FromDateTime(fixture.Now);
+        var item = new ScheduleItem
+        {
+            StartTime = TimeSpan.FromHours(8),
+            EndTime = TimeSpan.FromHours(9),
+            EnableRule = new TimeRule { Type = TimeRule.TimeRuleType.Date, EnableDates = [date] }
+        };
+        fixture.Profile.ScheduleItems.Add(Guid.NewGuid(), item);
+        fixture.Tick();
+        var invalidated = false;
+        fixture.Lessons.ScheduleItemsInvalidated += (_, affected) => invalidated |= affected(date);
+
+        item.EnableRule.ExcludedDates.Add(date);
+        fixture.Tick();
+        Assert.True(invalidated);
+        Assert.Null(fixture.Lessons.CurrentClassPlan);
+
+        item.EnableRule.AdditionalDates.Add(date);
+        fixture.Tick();
+        Assert.Single(fixture.Lessons.CurrentClassPlan!.Classes);
+    }
+
+    [Fact]
+    public void TemporaryReplacement_ReplacesOnlyItsTargetDateAndRestoresOnRemoval()
+    {
+        using var fixture = new LessonsFixture();
+        fixture.Profile.ScheduleType = ScheduleType.Schedule;
+        var date = DateOnly.FromDateTime(fixture.Now);
+        var originalId = Guid.NewGuid();
+        var replacementId = Guid.NewGuid();
+        fixture.Profile.ScheduleItems.Add(originalId, new ScheduleItem
+        {
+            EnableRule = new TimeRule { Type = TimeRule.TimeRuleType.Date, EnableDates = [date, date.AddDays(1)] }
+        });
+        fixture.Profile.ScheduleItems.Add(replacementId, new ScheduleItem
+        {
+            EnableRule = new TimeRule { Type = TimeRule.TimeRuleType.Date, EnableDates = [date] },
+            ReplacementTarget = new ScheduleItemReplacementTarget(originalId, fixture.Now.Date)
+        });
+
+        Assert.Equal(replacementId, Assert.Single(fixture.Lessons.GetScheduleItemsByDate(date)).Key);
+        Assert.Equal(originalId, Assert.Single(fixture.Lessons.GetScheduleItemsByDate(date.AddDays(1))).Key);
+
+        fixture.Profile.ScheduleItems.Remove(replacementId);
+        Assert.Equal(originalId, Assert.Single(fixture.Lessons.GetScheduleItemsByDate(date)).Key);
+    }
+
     private sealed class LessonsFixture : IDisposable
     {
         private readonly IHost? _previousHost = IAppHost.Host;
@@ -208,7 +291,8 @@ public sealed class LessonsActivationTests
             _context.Drain();
         }
 
-        public MainViewViewModel CreateCalendar() => new(null!, null!, null!, Lessons, _profileService);
+        public MainViewViewModel CreateCalendar() =>
+            new(new TestManagementService(), null!, null!, Lessons, _profileService);
 
         public void Dispose()
         {
@@ -246,12 +330,31 @@ public sealed class LessonsActivationTests
             throw new NotSupportedException();
         public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId, DateTime? enableDateTime, bool createTempTimeLayout) =>
             throw new NotSupportedException();
+        public Guid? ForkAndReplaceScheduleItem(Guid scheduleItemId, DateTime date) => throw new NotSupportedException();
+        public bool ConvertScheduleItemReplacementToNormal(Guid scheduleItemId) => throw new NotSupportedException();
         public void ClearTempClassPlan() => throw new NotSupportedException();
         public void ConvertToStdClassPlan() => throw new NotSupportedException();
         public void ConvertToStdClassPlan(Guid id) => throw new NotSupportedException();
         public void SetupTempClassPlanGroup(Guid key, DateTime? expireTime = null) => throw new NotSupportedException();
         public void ClearTempClassPlanGroup() => throw new NotSupportedException();
         public void TrustCurrentProfile() => throw new NotSupportedException();
+    }
+
+    private sealed class TestManagementService : IManagementService
+    {
+        public bool IsManagementEnabled { get; set; }
+        public ManagementVersions Versions { get; set; } = new();
+        public ManagementManifest Manifest { get; set; } = new();
+        public ManagementSettings Settings { get; } = new();
+        public ManagementPolicy Policy { get; set; } = new();
+        public ManagementCredentialConfig CredentialConfig { get; set; } = new();
+        public ManagementClientPersistConfig Persist { get; } = new();
+        public IManagementServerConnection? Connection => null;
+        Task<bool> IManagementService.SetupManagement() => throw new NotSupportedException();
+        void IManagementService.SaveSettings() => throw new NotSupportedException();
+        public Task JoinManagementAsync(ManagementSettings settings) => throw new NotSupportedException();
+        public Task ExitManagementAsync() => throw new NotSupportedException();
+        public Task<bool> AuthorizeByLevel(AuthorizeLevel level) => throw new NotSupportedException();
     }
 
     private static T CreateProxy<T>(Func<MethodInfo, object?> handler) where T : class
