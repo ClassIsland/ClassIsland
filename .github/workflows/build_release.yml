@@ -202,6 +202,11 @@ jobs:
           dotnet test ClassIsland.Plugin.Tests/ClassIsland.Plugin.Tests.csproj
           -c Release -p:ClassIslandIosDistribution="$IOS_DISTRIBUTION" -m:1
 
+      - name: Test lesson notifications and live activities
+        run: >-
+          dotnet test ClassIsland.Lessons.Tests/ClassIsland.Lessons.Tests.csproj
+          -c Release -p:ClassIslandIosDistribution="$IOS_DISTRIBUTION" -m:1
+
       - name: Build unsigned iOS IPA through NUKE
         env:
           osName: ios

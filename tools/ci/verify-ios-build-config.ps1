@@ -388,7 +388,7 @@ Assert-True ($pluginsSettingsPageText.Contains('ZipArchiveSafety.ValidateForExtr
 Assert-True ($managementConnectionText.Contains('var hash = SHA256.HashData(ClientGuid.ToByteArray())')) "iOS management identity must have a stable privacy-safe fallback when MAC addresses are unavailable."
 $hideViewMethod = [regex]::Match(
     $mobileViewHostText,
-    '(?s)public\s+async\s+Task<bool>\s+HideView\(.*?(?=\n\s*private\s+async\s+Task\s+RunNavigationWithProgressAsync)')
+    '(?ms)^    public\s+async\s+Task<bool>\s+HideView\([^)]*\)\s*\{.*?^    \}')
 Assert-True ($hideViewMethod.Success) "MobileViewHost.HideView could not be validated."
 Assert-True (([regex]::Matches($hideViewMethod.Value, 'ViewDeactivating\(')).Count -eq 1) "MobileViewHost.HideView must not invoke ViewDeactivating before a normal navigation pop."
 $rootPageBranchIndex = $hideViewMethod.Value.IndexOf('if (NavigationPage.Pages?.Count() <= 1)', [StringComparison]::Ordinal)
