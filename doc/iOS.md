@@ -2,6 +2,8 @@
 
 ClassIsland 的 iPhone 与 iPad 主界面由 Avalonia 统一实现。Swift 代码只存在于 ActivityKit bridge 和 Widget Extension 中；业务代码通过 `ClassIsland.Platforms.Abstraction` 提供的纯 C# API 调用实时活动与灵动岛。
 
+TrollStore 发行版（系统级悬浮主界面、ldid 签名与安装）见 [iOS-TrollStore.md](iOS-TrollStore.md)。
+
 ## 侧载版与 App Store 版
 
 通过 MSBuild 属性 `ClassIslandIosDistribution` 选择发行版，默认值为 `Sideload`。发行版与 `Debug` / `Release`、`BrandType` 相互独立。
@@ -32,7 +34,7 @@ dotnet build ClassIsland.iOS/ClassIsland.iOS.csproj -c Debug -p:ClassIslandIosDi
 dotnet build ClassIsland.iOS/ClassIsland.iOS.csproj -c Release -p:ClassIslandIosDistribution=AppStore -p:EnableCodeSigning=false -m:1
 ```
 
-NUKE 的 `PublishApp` 使用 `--IosDistribution Sideload|AppStore` 选择相同模式（默认 `Sideload`）。其它发布与签名参数不变，IPA 文件名附加发行版名称，避免混淆。托管构建产物分别存放在各项目的 `bin/<发行版>/` 与 `obj/<发行版>/` 下，Extension 的 Xcode 构建目录也按发行版隔离。不要仅通过修改 Bundle ID 把侧载包作为上架包。
+NUKE 的 `PublishApp` 使用 `--IosDistribution Sideload|AppStore|TrollStore` 选择相同模式（默认 `Sideload`）。其它发布与签名参数不变，IPA 文件名附加发行版名称，避免混淆。托管构建产物分别存放在各项目的 `bin/<发行版>/` 与 `obj/<发行版>/` 下，Extension 的 Xcode 构建目录也按发行版隔离。不要仅通过修改 Bundle ID 把侧载包作为上架包。`TrollStore` 模式的构建、ldid 签名与安装见 [iOS-TrollStore.md](iOS-TrollStore.md)。
 
 无需 iOS 真机即可运行的插件回归测试：
 
@@ -43,22 +45,22 @@ dotnet test ClassIsland.Plugin.Tests/ClassIsland.Plugin.Tests.csproj -p:ClassIsl
 
 这些测试覆盖待安装插件包的处理、上架版市场禁用、加载器是否包含在产物中，以及 Mono 路径下的托管插件加载与宿主 API 共享。它们不能替代 Release IPA 真机验证：还需要在侧载版安装带 Avalonia 设置页的插件，检查页面、依赖、重开生效和更新；在上架版确认入口隐藏、恢复插件目录及插件链接均无法启用插件。
 
-## 使用 GitHub Actions 构建 unsigned IPA
+## 使用 GitHub Actions 构建 iOS IPA
 
-工作流位于 `.github/workflows/build_release.yml`，由一个 `build_ios` job 的 `distribution: [Sideload, AppStore]` matrix 构建两个发行版，不需要 Apple 证书、provisioning profile 或 GitHub Environment Secrets。两个 matrix 实例分别校验和上传自己的 IPA。
+工作流位于 `.github/workflows/build_release.yml`，由一个 `build_ios` job 的 `distribution: [Sideload, AppStore, TrollStore]` matrix 构建三个发行版，不需要 Apple 证书、provisioning profile 或 GitHub Environment Secrets。每个 matrix 实例分别校验和上传自己的 IPA；`TrollStore` 实例在常规校验后会用固定版本的 ldid 做假签名，并校验 entitlements（详见 [iOS-TrollStore.md](iOS-TrollStore.md)）。
 
 - Pull Request、`master` 与 `develop/v2/ios` 的相关提交会通过仓库统一的 NUKE `PublishApp` 目标构建 Release `ios-arm64` 真机版本。
 - 工作流运行平台抽象测试，并构建 Avalonia 主程序、Swift bridge 和 Live Activity Extension。
 - 主程序 Bundle ID 由发行版决定，Extension 在宿主 ID 后附加 `.LiveActivityExtension`。
 - 构建结果封装为标准 `Payload/ClassIsland.iOS.app` IPA，并生成 SHA-256 文件。
-- 上传前会重新解包，检查 arm64、minimum OS、Swift back-deployment runtime、ActivityKit weak link、Extension 和 bridge，并确认没有签名与 provisioning profile。
+- 上传前会重新解包，检查 arm64、minimum OS、Swift back-deployment runtime、ActivityKit weak link、Extension 和 bridge，并确认没有签名与 provisioning profile（`TrollStore` 实例在签名前执行这项校验）。
 - Artifact 保留 14 天，名称格式为 `ClassIsland-iOS-unsigned-<run number>-<run attempt>`。
 
 当前只支持 iOS/iPadOS 真机的 `ios-arm64` RID。SoundFlow 1.2.1 没有提供 Simulator 原生 framework，因此 `iossimulator-*` 应用构建会在项目校验阶段给出明确错误。`.NET for iOS` 的 `XcodeProject` 集成会为纯 Swift bridge 生成包含 device 与 Simulator slice 的 XCFramework；该内部 slice 不代表应用支持 Simulator，也不会链接 SoundFlow。主程序和 Swift bridge 最低支持 iOS 15.0；Live Activity Extension 最低支持 iOS 16.1。
 
-推送代码后，进入 `Actions > Build iOS` 打开对应运行，从 Artifacts 下载 unsigned IPA。也可以在工作流进入默认分支后通过 `Run workflow` 手动构建。
+推送代码后，进入 `Actions > Build iOS` 打开对应运行，从 Artifacts 下载 IPA。也可以在工作流进入默认分支后通过 `Run workflow` 手动构建。
 
-unsigned IPA 不能直接安装到普通 iPhone 或 iPad；安装前需由使用者通过自己的证书或侧载工具重新签名。仓库与 Action 不处理签名。
+`Sideload`/`AppStore` 产物仍是 unsigned IPA，安装前需由使用者通过自己的证书或侧载工具重新签名；`TrollStore` 产物已经用 ldid 写入 entitlements，可直接在 TrollStore 中安装（不需要证书）。仓库不接受任何 Apple 证书或描述文件。
 
 Windows 可以编译和测试 C# 层，但无法执行 Xcode、构建 Widget Extension 或封装 iOS 真机应用。
 
