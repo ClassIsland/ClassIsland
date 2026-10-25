@@ -26,6 +26,7 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
     private bool _isSubscribed;
     private Settings? _settings;
     private DispatcherTimer? _restartTimer;
+    private DispatcherTimer? _livenessTimer;
 
     /// <inheritdoc />
     public bool IsSupported => true;
@@ -63,6 +64,8 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
     {
         _restartTimer?.Stop();
         _restartTimer = null;
+        _livenessTimer?.Stop();
+        _livenessTimer = null;
         UnsubscribeConfigurationChanges();
         if (_isEnabled)
         {
@@ -76,6 +79,8 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
         {
             return;
         }
+
+        IosStartupDiagnostics.Write($"悬浮主界面开关请求：{value}");
 
         if (value == _isEnabled)
         {
@@ -98,11 +103,14 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
 
             _isEnabled = true;
             SubscribeConfigurationChanges();
+            ScheduleHudLivenessCheck();
         }
         else
         {
             _isEnabled = false;
             UnsubscribeConfigurationChanges();
+            _livenessTimer?.Stop();
+            _livenessTimer = null;
             StopHud();
         }
 
@@ -124,6 +132,7 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
             }
 
             var dataDirectory = PrepareSnapshot();
+            IosStartupDiagnostics.Write($"悬浮主界面数据快照：{dataDirectory}");
             var result = IosHudNativeBridge.Start(1, dataDirectory);
             if (result == 0)
             {
@@ -140,6 +149,39 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
             IosStartupDiagnostics.Write("启动悬浮主界面宿主时发生异常", exception);
             return false;
         }
+    }
+
+    /// <summary>
+    /// spawn 后短延迟探活一次；HUD 子进程若在启动早期退出，恢复开关状态并记录原因。
+    /// </summary>
+    private void ScheduleHudLivenessCheck()
+    {
+        _livenessTimer?.Stop();
+        _livenessTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(2)
+        };
+        _livenessTimer.Tick += (_, _) =>
+        {
+            _livenessTimer?.Stop();
+            _livenessTimer = null;
+            if (!_isEnabled)
+            {
+                return;
+            }
+
+            if (IosHudNativeBridge.IsRunning() == 1)
+            {
+                return;
+            }
+
+            IosStartupDiagnostics.Write("HUD 子进程在启动后退出；已自动关闭悬浮主界面开关");
+            _isEnabled = false;
+            UnsubscribeConfigurationChanges();
+            PersistSetting(false);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsEnabled)));
+        };
+        _livenessTimer.Start();
     }
 
     private static void StopHud()
