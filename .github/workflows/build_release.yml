@@ -82,9 +82,10 @@ jobs:
       APPLICATION_ID: ${{ (matrix.distribution == 'Sideload' || matrix.distribution == 'TrollStore') && 'cn.classisland.ios.sideload' || 'cn.classisland.ios' }}
       XCODE_PATH: /Applications/Xcode_26.3.app
       # TrollStore 版构建产物仍是 unsigned IPA；安装前需要用 ldid 预置 entitlements。
-      # 这里固定 opa334/ldid 的 release 版本与 SHA-256，避免 runner 上依赖 Homebrew。
-      LDID_VERSION: v2.1.5-procursus7-new
-      LDID_SHA256: b6aa4018e7ef3df9ee3fee5889d162649719109521c5a2136ca98a81fccdf52a
+      # 固定 ProcursusTeam/ldid 的 macOS arm64 release 与 SHA-256，避免 runner 上依赖 Homebrew。
+      # 注意：releases/latest/download/ldid 是 iphoneos 二进制，在 macOS runner 上无法执行。
+      LDID_VERSION: v2.1.5-procursus7
+      LDID_SHA256: 5dff8e6b8d9dc3ff7226276c81e09930865f15381f54cb55b98b196a94c5ca50
       TROLLSTORE_ENTITLEMENTS: ClassIsland.iOS/Entitlements.TrollStore.plist
       artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}
       IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}.ipa
@@ -263,9 +264,16 @@ jobs:
           fi
           ldid_path="$RUNNER_TEMP/ldid"
           curl --fail --location --retry 3 --output "$ldid_path" \
-            "https://github.com/opa334/ldid/releases/download/${LDID_VERSION}/ldid"
+            "https://github.com/ProcursusTeam/ldid/releases/download/${LDID_VERSION}/ldid_macosx_arm64"
           echo "${LDID_SHA256}  ${ldid_path}" | shasum -a 256 -c -
+          if ! /usr/bin/file "$ldid_path" | grep -q 'Mach-O 64-bit executable arm64'; then
+            echo "::error::The downloaded ldid is not a macOS arm64 executable."
+            exit 1
+          fi
           chmod +x "$ldid_path"
+          # Apple Silicon 要求可执行文件带有效签名；Procursus 产物为 linker-signed，这里统一重签为 ad-hoc。
+          /usr/bin/codesign --force --sign - "$ldid_path"
+          /usr/bin/codesign --verify "$ldid_path"
 
       - name: Sign and verify TrollStore IPA
         if: matrix.distribution == 'TrollStore'

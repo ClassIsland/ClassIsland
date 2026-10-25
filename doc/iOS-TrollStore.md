@@ -146,9 +146,12 @@ IPA 产物未经过 Apple 签名；`tools/ci/sign-ios-trollstore-ipa.sh` 用 `ld
 安装 ldid（脚本不会自动下载）：
 
 ```sh
-brew install ldid
-# 或从源码构建：https://github.com/ProcursusTeam/ldid
+# macOS：从 ProcursusTeam/ldid releases 下载与主机架构匹配的 ldid_macosx_arm64 / ldid_macosx_x86_64
+# 并放到 PATH 中；也可以使用 Homebrew 的 ldid-procursus（若可用）：
+brew install ldid-procursus
 ```
+
+注意不要使用 TrollStore 下载器里的 `ldid` 资产（`releases/latest/download/ldid`）：那是 **iphoneos** 二进制，macOS 无法执行。
 
 对 IPA 签名：
 
@@ -203,7 +206,7 @@ SHA-256: 34e0adc4...
 `build_release.yml` 的 iOS 矩阵已包含 `Sideload` / `AppStore` / `TrollStore` 三档。TrollStore 档位在常规流程之外额外执行：
 
 1. 与 Sideload 相同的 Release 解释器构建与 unsigned IPA 校验（`tools/ci/verify-ios-ipa.sh` 已支持 `TrollStore`，并使用 `bin/TrollStore/` 的宿主程序集做对比）；
-2. 下载固定版本的 [opa334/ldid](https://github.com/opa334/ldid)（`LDID_VERSION` / `LDID_SHA256`，`macos-26` arm64 runner 可原生运行），下载后先校验 SHA-256；
+2. 下载固定版本的 [ProcursusTeam/ldid](https://github.com/ProcursusTeam/ldid) **macOS arm64** 资产（`ldid_macosx_arm64`，`LDID_VERSION` / `LDID_SHA256` 固定），校验 SHA-256；`macos-26` runner 是 arm64，但注意不能下载 `releases/latest/download/ldid`（该资产是 iphoneos 二进制，会被 macOS 以 `Killed: 9` 终止）。下载后用 `codesign --force --sign -` 做 ad-hoc 重签再执行；
 3. `tools/ci/sign-ios-trollstore-ipa.sh` 用 `ClassIsland.iOS/Entitlements.TrollStore.plist` 对主可执行文件做 ldid 假签名，其余 Mach-O 使用空 entitlements；
 4. `tools/ci/verify-ios-trollstore-ipa.sh` 校验签名结果：主二进制必须包含 `platform-application`、`com.apple.springboard.accessibility-window-hosting`、`com.apple.private.persona-mgmt` 等必需 entitlements 与 IOKit/Metal 例外，不得包含被 iOS 15/A12+ 封禁的 `com.apple.private.cs.debugger` / `dynamic-codesigning` / `com.apple.private.skip-library-validation`；app bundle 内所有 Mach-O 都必须已签名；
 5. 用签名后的 IPA 覆盖 unsigned 产物，保持 artifact 命名不变：`out_app_ios_arm64_selfContained_ipa_TrollStore.ipa`（内容为 ldid signed IPA），随附同名 `.sha256`。
@@ -250,7 +253,7 @@ SHA-256: 34e0adc4...
 - 打开开关后没有悬浮岛：先看主 App 日志中“无法启动悬浮主界面宿主”的 `result` 与 `ci_hud_last_error` 文本，再确认安装包是否确实经过 ldid 签名、entitlements 是否包含 `platform-application` 与 `com.apple.springboard.accessibility-window-hosting`。
 - 安装后无法启动：检查 IPA 是否用 `Entitlements.TrollStore.plist` 签名、是否误加了被 iOS 15/A12+ 封禁的调试 entitlements。
 - 升级后数据“丢失”：确认没有声明 `no-container` / `container-required=false`；只保留 `no-sandbox` 才能保住数据容器。
-- 签名脚本报 ldid 缺失：`brew install ldid`，或用 `LDID=<path>` 指定已有的 ldid。
+- 签名脚本报 ldid 缺失：从 ProcursusTeam/ldid releases 下载对应的 `ldid_macosx_<arch>`（或 `brew install ldid-procursus`），再用 `LDID=<path>` 指定；不要使用 iphoneos 版 `ldid`。
 
 ## 本地实现验证记录（2026-10-25，阶段 1）
 
@@ -262,10 +265,10 @@ SHA-256: 34e0adc4...
   - TrollStore 产物 `Entitlements.xcent` 包含 `Entitlements.TrollStore.plist` 的全部键；app 内 `ClassIslandLiveActivityBridge.framework` 导出 6 个 `ci_hud_*` 符号；`ClassIsland.iOS.dll` 含 HUD 类型。
   - 预期警告：`MT7139`（未提供 provisioning profile 时 `increased-memory-limit` 的告警；TrollStore 版由 ldid 在安装前写入 entitlements）、`CA1422`（`UIApplication.Windows` 自 iOS 15 起弃用，HUD 窗口只能从应用级窗口列表获取）。二者不影响 ldid 签名后的安装。
 - 签名脚本：用本机构建出的 100 MB TrollStore `.app` 打包 IPA，配合**伪造 ldid** 做端到端验证：7 个 Mach-O 被签名（主可执行使用 `Entitlements.TrollStore.plist`，Extension 与 5 个 Framework 使用空 entitlements），输出 `*-TrollStore-signed.ipa` 与 SHA-256；无参数/缺 ldid/缺 IPA/非法 plist 的错误路径均给出明确提示。
-- 真实 ldid 未在本机执行：opa334/ldid 官方 release 只提供 arm64 二进制，本机为 x86_64 且未安装 Homebrew。真实签名需在装有 ldid 的机器上运行（`brew install ldid`，或设置 `LDID=` 指向已有二进制）。
+- 真实 ldid 验证：本机（x86_64 macOS）使用 ProcursusTeam/ldid 的 `ldid_macosx_x86_64` 对同一 100 MB IPA 完成真实签名，`verify-ios-trollstore-ipa.sh` 校验通过（14 个必需 entitlements 存在、封禁项不存在、7 个 Mach-O 均已签名）。macOS arm64 版 `ldid_macosx_arm64` 将在 CI 中使用。
 - `dotnet build build/_build.csproj`（仅编译 NUKE 工程）通过；`tools/ci/verify-ios-build-config.ps1` 已在本机用 PowerShell 7.4.6 运行，`Sideload`/`AppStore`/`TrollStore` 三种模式全部通过（含新增的 CI 断言）。
 - CI 变更静态验证：`actionlint` 解析 `.github/workflows/build_release.yml` 无新增问题（仅仓库既有的旧 action 版本提示与既有 `trim_assets` 表达式提示）；`tools/ci/verify-ios-trollstore-ipa.sh` 用伪造 ldid 对真实 100 MB signed IPA 做正/负向测试通过（错误 bundle id 能正确失败）。
-- CI 尚未在 GitHub 上实际运行：首次运行仍需观察 macOS arm64 runner 上的 ldid 下载与 SHA-256 校验、ldid 签名、entitlements 校验以及 artifact 上传结果。
+- 首次 GitHub CI 运行（run 40175498518）在 `Sign and verify TrollStore IPA` 步骤失败：下载的 `releases/latest/download/ldid` 是 **iphoneos** arm64 二进制，在 macOS arm64 runner 上被系统以 `Killed: 9` 终止。已改为固定 `ProcursusTeam/ldid` 的 `ldid_macosx_arm64`、校验 SHA-256 后用 `codesign --force --sign -` 重签再执行；修复后的 CI 运行待验证。
 - 未验证：所有真机运行项（HUD 子进程的 `UIApplicationMain`/Avalonia 窗口引导、root persona、SpringBoard 窗口注册、`object_setClass` 生效时机、透明渲染、锁屏、触摸穿透、停止/退出、无沙盒下的数据容器路径、ldid 签名后 entitlements 是否被 TrollStore 保留）。
 
 ## 参考
