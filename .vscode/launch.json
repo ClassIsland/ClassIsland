@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // 如果已更改目标框架，请确保更新程序路径。
-            "program": "${workspaceFolder}/ClassIsland/bin/Debug/net8.0-windows/ClassIsland.dll",
+            "program": "${workspaceFolder}/ClassIsland/bin/Debug/net10.0-windows/ClassIsland.dll",
             "args": [],
             "cwd": "${workspaceFolder}/ClassIsland",
             // 有关“控制台”字段的详细信息，请参阅 https://aka.ms/VSCode-CS-LaunchJson-Console
