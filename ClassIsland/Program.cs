@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Converters;
 using ClassIsland.Core.Enums;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.IPC;
@@ -61,6 +62,7 @@ public static class Program
             new Option<bool>(["--onboarding"], "应用将继续迎新向导"),
             new Option<bool>(["--autostartup", "-au"], "自启动模式，检测到程序已运行时直接退出"),
             new Option<bool>(["--mobile"], "伪移动端模式"),
+            new Option<bool>(["--hud"], "以悬浮主界面宿主进程模式运行（仅 TrollStore 发行版内部使用）"),
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);
@@ -81,7 +83,18 @@ public static class Program
             Environment.SetEnvironmentVariable("QT_SCALE_FACTORS", null);
         }
 
-        var mutex = new Mutex(true, "Global\\ClassIsland.Lock", out var createNew);
+        bool createNew;
+        Mutex mutex;
+        if (PlatformHelper.IsAppleMobile)
+        {
+            // iOS 已由系统保证单一应用实例；避免依赖移动沙盒中的命名 Mutex 语义。
+            mutex = new Mutex(true);
+            createNew = true;
+        }
+        else
+        {
+            mutex = new Mutex(true, "Global\\ClassIsland.Lock", out createNew);
+        }
 
         if (!createNew)
         {
@@ -105,7 +118,9 @@ public static class Program
             }
         }
 
-        var sentryEnabled = GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
+        var sentryPreference = GlobalStorageService.GetValue("IsSentryEnabled");
+        var sentryEnabled = sentryPreference == "1" ||
+                            sentryPreference == null && !PlatformHelper.IsAppleMobile;
         if (sentryEnabled)
         {
             SentrySdk.Init(ConfigureSentry);
@@ -147,7 +162,10 @@ public static class Program
             await client.Connect();
             var uriSc = client.Provider.CreateIpcProxy<IPublicUriNavigationService>(client.PeerProxy!);
             uriSc.Navigate(new Uri(App.ApplicationCommand.Uri));
-            Environment.Exit(0);
+            if (!PlatformHelper.IsAppleMobile)
+            {
+                Environment.Exit(0);
+            }
         }
         catch
         {

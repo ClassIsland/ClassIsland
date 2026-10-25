@@ -135,7 +135,7 @@
                                 SelectedDate="{Binding $parent[controls:TimeRuleEditControl].TimeRule.RangeEnd, Converter={x:Static controls:TimeRuleEditControl.DateOnlyToDateTimeConverter}}"/>
             <TextBlock Text="]" Grid.Column="4" Margin="4 0 0 0"/>
         </Grid>
-        
+
         <ci:Field Label="排除以下日期" HorizontalAlignment="Stretch" Margin="0 4 0 0">
             <ci:MultipleDateSelector SelectedDates="{Binding $parent[controls:TimeRuleEditControl].TimeRule.ExcludedDates}"
                                      Width="NaN" HorizontalAlignment="Stretch"/>

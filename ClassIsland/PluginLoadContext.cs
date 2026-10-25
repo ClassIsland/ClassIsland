@@ -13,7 +13,7 @@ namespace ClassIsland;
 /// <summary>
 /// 为插件加载提供隔离的 <see cref="AssemblyLoadContext"/> 实现。<para/>
 /// 根据运行平台选择不同的依赖解析器，并负责从插件目录解析托管与非托管依赖项。
-/// <remarks>macOS 和 Android 平台的依赖解析器为 <see cref="MonoPluginAssemblyResolver"/>。</remarks>
+/// <remarks>macOS、Android 和 iOS 平台的依赖解析器为 <see cref="MonoPluginAssemblyResolver"/>。</remarks>
 /// </summary>
 public class PluginLoadContext : AssemblyLoadContext
 {
@@ -33,7 +33,7 @@ public class PluginLoadContext : AssemblyLoadContext
     public PluginInfo Info { get; }
 
     private bool UseMonoPluginLoadingBehavior =>
-        _forceMonoPluginLoader || OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid();
+        _forceMonoPluginLoader || OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
 
     private AssemblyDependencyResolver? CoreResolver { get; }
     

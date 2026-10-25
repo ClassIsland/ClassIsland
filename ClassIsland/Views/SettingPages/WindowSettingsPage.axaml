@@ -139,7 +139,7 @@
                                IsClosable="False"
                                IsOpen="True"
                                IsVisible="{Binding ViewModel.SettingsService.Settings.UseRawInput}"/>
-            
+
             <controls1:FASettingsExpander Header="显示悬浮主界面"
                                           IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
                                           Description="在其他应用上方显示组件和提醒，触摸会穿透到背后的内容。需要允许 ClassIsland 显示在其他应用上层；未授权时不会显示，关闭后重新开启可再次授权。"
@@ -148,7 +148,7 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsAndroidOverlayEnabled, Mode=TwoWay}"/>
                 </controls1:FASettingsExpander.Footer>
             </controls1:FASettingsExpander>
-            
+
             <!-- 窗口层级 -->
             <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xEA2F;}"
                                         Header="窗口层级"

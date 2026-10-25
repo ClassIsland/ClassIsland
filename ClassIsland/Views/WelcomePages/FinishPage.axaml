@@ -7,11 +7,13 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.WelcomePages.FinishPage">
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                Classes="settings-container animated-intro"
-                DataContext="{Binding RelativeSource={RelativeSource AncestorType=welcomePages:FinishPage}}"
-                MaxWidth="600">
-        <Carousel Width="600" x:Name="Carousel"
+    <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                 Classes="settings-container animated-intro"
+                 DataContext="{Binding RelativeSource={RelativeSource AncestorType=welcomePages:FinishPage}}"
+                 Margin="16"
+                 MaxWidth="600">
+        <Carousel MaxWidth="600" x:Name="Carousel"
+                  HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   ClipToBounds="False"
                   Margin="0 0 0 8">
@@ -24,7 +26,7 @@
                 </CompositePageTransition>
             </Carousel.PageTransition>
             <Carousel.Items>
-                <Border VerticalAlignment="Center">
+                <Border x:Name="DesktopTrayTutorial" VerticalAlignment="Center">
                     <StackPanel Classes="settings-container animated-intro" MaxWidth="600">
                         <Image Source="/Assets/Demo_MainMenu.png" Margin="0 0 0 4"/>
                         <TextBlock Text="点击任务栏托盘图标可以打开应用主菜单。" 
@@ -32,7 +34,7 @@
                         />
                     </StackPanel>
                 </Border>
-                <Border VerticalAlignment="Center">
+                <Border x:Name="DesktopProfileTutorial" VerticalAlignment="Center">
                     <StackPanel Classes="settings-container animated-intro" MaxWidth="600">
                         <Image Source="/Assets/Demo_OpenProfileSettingsWindow.png" Margin="0 0 0 4"/>
                         <TextBlock Text="要编辑课表和时间点，请在应用主菜单中点击【编辑档案】。" 
@@ -50,7 +52,10 @@
                         <TextBlock Text="完成" HorizontalAlignment="Center"
                                    Margin="0 0 0 4"
                                    Theme="{StaticResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="恭喜！应用的基本设置已完成，感谢您选用 ClassIsland。点击【&#xE423;】以结束设置向导。" HorizontalAlignment="Center"/>
+                        <TextBlock Text="恭喜！应用的基本设置已完成，感谢您选用 ClassIsland。点击【&#xE423;】以结束设置向导。"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"/>
                     </StackPanel>
                 </Border>
             </Carousel.Items>
@@ -58,13 +63,15 @@
         
         
         <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-            <Button Click="ButtonPrevious_OnClick"
+            <Button x:Name="PreviousButton"
+                    Click="ButtonPrevious_OnClick"
                     ToolTip.Tip="上一步"
                     Content="{ci:FluentIcon &#xE108;, FontSize=18}"
                     Width="48" Height="48"
                     CornerRadius="24"
                     Margin="0 8 0 0"/>
-            <Button Click="ButtonNext_OnClick"
+            <Button x:Name="NextButton"
+                    Click="ButtonNext_OnClick"
                     ToolTip.Tip="下一步"
                     Content="{ci:FluentIcon &#xE130;, FontSize=18}"
                     Width="48" Height="48"

@@ -14,6 +14,7 @@ using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Helpers;
@@ -46,6 +47,7 @@ public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
     
     private Dictionary<Type, object?> PageCache { get; } = new();
 
+
     
     public WelcomeWindow()
     {
@@ -75,7 +77,7 @@ public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
             Pages.Remove(typeof(WelcomePage));
             Pages.Remove(typeof(LicensePage));
         }
-        if (!isOnboarding)
+        if (!isOnboarding || PlatformHelper.IsAppleMobile)
         {
             Pages.Remove(typeof(SystemPage));
         }
@@ -208,7 +210,12 @@ public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
         {
             ViewModel.SettingsService.Settings.LeftRefreshingToastCounts = 0;
         }
-        
+
+        if (PlatformHelper.IsAppleMobile)
+        {
+            ViewModel.SettingsService.SaveSettings("完成 iOS 首次设置向导。");
+        }
+
         Hide();
     }
 

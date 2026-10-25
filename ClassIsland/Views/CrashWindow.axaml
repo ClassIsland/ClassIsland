@@ -68,7 +68,8 @@
               ColumnDefinitions="Auto, *, Auto" Margin="-12 0 -12 -12"
               Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}">
             <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal" Margin="12">
-                <Button Margin="0 0 6 0"
+                <Button x:Name="DebugButton"
+                        Margin="0 0 6 0"
                                 IsVisible="{Binding IsCritical, Mode=OneTime}"
                                 Click="ButtonDebug_OnClick">
                     <controls1:IconText Glyph="&#xE2C8;" Text="调试" Spacing="3"/>

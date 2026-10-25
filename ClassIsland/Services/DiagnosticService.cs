@@ -304,6 +304,9 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     /// <returns>获取到的插件列表</returns>
     public static List<PluginInfo> GetPluginsByStacktrace(Exception exception)
     {
+#if CLASSISLAND_APP_STORE
+        return [];
+#else
         var stack = new StackTrace(exception);
         var frames = stack.GetFrames();
         var plugins = new List<PluginInfo>();
@@ -332,6 +335,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         }
 
         return plugins;
+#endif
     }
 
     /// <summary>

@@ -176,7 +176,6 @@ public abstract class ViewBase : ContentPage
 
     private void OnNavigatedTo(object? sender, NavigatedToEventArgs e)
     {
-        Console.WriteLine($"[ELYSIADBG] OnNavigatedTo {this} {TopLevel}");
         UnsubscribeFromBackRequested();
         _backRequestedTopLevel = TopLevel;
         if (_backRequestedTopLevel != null)
@@ -209,7 +208,6 @@ public abstract class ViewBase : ContentPage
             return;
         }
 
-        Console.WriteLine("[ELYSIADBG] 听好了！！！！！ BackRequested！！！！！！！！！！");
         e.Handled = true;
         Hide();
     }
@@ -252,7 +250,6 @@ public abstract class ViewBase : ContentPage
             return;
         }
         
-        Console.WriteLine($"[ELYSIADBG] OnNavigatedFrom {this} {TopLevel}");
         UnsubscribeFromBackRequested();
     }
 

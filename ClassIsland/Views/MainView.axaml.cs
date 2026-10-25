@@ -12,6 +12,7 @@ using ClassIsland.Core;
 using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
@@ -88,7 +89,7 @@ public partial class MainView : ViewBase
         {
             if (MainViewTabs.SelectedIndex != 1)
                 MainViewTabs.SelectedIndex = 1;
-        } 
+        }
         else if (e.SelectedItem == MoreNavigationItem)
         {
             if (MainViewTabs.SelectedIndex != 2)
@@ -510,11 +511,22 @@ public partial class MainView : ViewBase
         App.GetService<SettingsWindowNew>().Open();
     }
 
+    private void MenuItemLiveActivitySettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<SettingsWindowNew>().Open("live-activity");
+    }
+
 
     private async void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
     {
         if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
         {
+            return;
+        }
+
+        if (PlatformHelper.IsAppleMobile)
+        {
+            ((App)AppBase.Current).PrepareForAppleMobileManualTermination();
             return;
         }
         

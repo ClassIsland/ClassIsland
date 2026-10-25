@@ -52,4 +52,15 @@ public static class PlatformServices
     /// 启动器服务
     /// </summary>
     public static ILauncherService LauncherService { get; internal set; } = new LauncherServiceStub();
+
+    /// <summary>
+    /// 系统实时活动服务。非 Apple 平台和不受支持的系统会安全返回 Unsupported。
+    /// </summary>
+    public static ILiveActivityService LiveActivityService { get; internal set; } = new LiveActivityServiceStub();
+
+    /// <summary>
+    /// 系统级悬浮主界面服务。仅 TrollStore 发行版的 iOS 端提供实现。
+    /// </summary>
+    public static IMainWindowOverlayService MainWindowOverlayService { get; internal set; } =
+        new MainWindowOverlayServiceStub();
 }

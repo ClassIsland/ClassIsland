@@ -51,7 +51,7 @@
                                     TickFrequency="0.05" IsSnapToTickEnabled="True"/>
                         </controls:FASettingsExpanderItem.Footer>
                     </controls:FASettingsExpanderItem>
-                    
+
                 </controls:FASettingsExpander>
 
                 <!-- 显示时间点附加信息 -->

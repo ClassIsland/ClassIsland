@@ -195,6 +195,19 @@
                         <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C9;}"
                                                  Header="编辑主界面…"
                                                  IsClickEnabled="True"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                                 Header="设置灵动岛展开态…"
+                                                 IsVisible="{OnPlatform Default=False, iOS=True}"
+                                                 IsClickEnabled="True"
+                                                 Click="MenuItemLiveActivitySettings_OnClick"/>
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                                 Header="显示悬浮主界面…"
+                                                 Description="在其他应用上方常驻显示课表主界面。仅 TrollStore 发行版可用。"
+                                                 IsVisible="{Binding #MainViewRoot.ViewModel.MainWindowOverlayService.IsSupported}">
+                            <controls:FASettingsExpander.Footer>
+                                <ToggleSwitch IsChecked="{Binding #MainViewRoot.ViewModel.MainWindowOverlayService.IsEnabled, Mode=TwoWay}"/>
+                            </controls:FASettingsExpander.Footer>
+                        </controls:FASettingsExpander>
                         <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xEF27;}"
                                                  Header="应用设置…"
                                                  IsClickEnabled="True"

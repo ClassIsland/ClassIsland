@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Avalonia.Media;
@@ -19,12 +20,14 @@ using Octokit;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Enums.UI;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.ComponentModels;
 using System.Runtime.InteropServices;
 using ClassIsland.Models.Refreshing;
 using ClassIsland.Services;
+using ClassIsland.Models.LiveActivities;
 
 namespace ClassIsland.Models;
 
@@ -69,6 +72,7 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     private string _selectedProfile = "Default.json";
     private bool _isMainWindowVisible = true;
     private bool _isAndroidOverlayEnabled;
+    private bool _isIosHudOverlayEnabled;
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
     private Dictionary<string, string> _releaseChannels = new()
@@ -161,6 +165,10 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     private string _updateArtifactHash = "";
     private ObservableCollection<string> _excludedWeatherAlerts = new();
     private string _currentComponentConfig = "Default";
+    private ObservableCollection<LiveActivityComponentSettings> _liveActivityComponents =
+        LiveActivityComponentSettings.CreateDefault();
+    private readonly HashSet<LiveActivityComponentSettings> _subscribedLiveActivityComponents = [];
+    private bool _isLiveActivityLayoutCustomized;
     private bool _isAutomationEnabled = false;
     private bool _isAutomationWarningVisible = true;
     private string _currentAutomationConfig = "Default";
@@ -225,6 +233,12 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     private bool _isNonExactCountdownEnabled = false;
     private bool _showDetailedStatusOnSplash = false;
 
+    public Settings()
+    {
+        _liveActivityComponents.CollectionChanged += LiveActivityComponentsOnCollectionChanged;
+        UpdateLiveActivityComponentSubscriptions();
+    }
+
     public void NotifyPropertyChanged(string propertyName)
     {
         OnPropertyChanged(propertyName);
@@ -245,6 +259,15 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     {
         get => _isAndroidOverlayEnabled;
         set => SetProperty(ref _isAndroidOverlayEnabled, value);
+    }
+
+    /// <summary>
+    /// 是否在 TrollStore 发行版中启用系统级悬浮主界面。
+    /// </summary>
+    public bool IsIosHudOverlayEnabled
+    {
+        get => _isIosHudOverlayEnabled;
+        set => SetProperty(ref _isIosHudOverlayEnabled, value);
     }
 
     [SettingsInfo("显示主界面", "\uEFBF", order: 1)]
@@ -269,6 +292,56 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
             OnPropertyChanged();
         }
     }
+
+    public ObservableCollection<LiveActivityComponentSettings> LiveActivityComponents
+    {
+        get => _liveActivityComponents;
+        set
+        {
+            if (ReferenceEquals(value, _liveActivityComponents))
+            {
+                return;
+            }
+
+            _liveActivityComponents.CollectionChanged -= LiveActivityComponentsOnCollectionChanged;
+            _liveActivityComponents = LiveActivityComponentSettings.Normalize(value);
+            _liveActivityComponents.CollectionChanged += LiveActivityComponentsOnCollectionChanged;
+            UpdateLiveActivityComponentSubscriptions();
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsLiveActivityLayoutCustomized
+    {
+        get => _isLiveActivityLayoutCustomized;
+        set => SetProperty(ref _isLiveActivityLayoutCustomized, value);
+    }
+
+    private void LiveActivityComponentsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateLiveActivityComponentSubscriptions();
+        OnPropertyChanged(nameof(LiveActivityComponents));
+    }
+
+    private void UpdateLiveActivityComponentSubscriptions()
+    {
+        foreach (var component in _subscribedLiveActivityComponents)
+        {
+            component.PropertyChanged -= LiveActivityComponentOnPropertyChanged;
+        }
+
+        _subscribedLiveActivityComponents.Clear();
+        foreach (var component in _liveActivityComponents)
+        {
+            if (component != null && _subscribedLiveActivityComponents.Add(component))
+            {
+                component.PropertyChanged += LiveActivityComponentOnPropertyChanged;
+            }
+        }
+    }
+
+    private void LiveActivityComponentOnPropertyChanged(object? sender, PropertyChangedEventArgs e) =>
+        OnPropertyChanged(nameof(LiveActivityComponents));
 
     [JsonPropertyName("SettingsOverlay")] // ClassIsland 1.x 名称
     public Dictionary<string, OrderedDictionary> SettingsOverlays
@@ -528,7 +601,12 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     [JsonIgnore]
     public bool IsSentryEnabled
     {
-        get => GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
+        get
+        {
+            var preference = GlobalStorageService.GetValue("IsSentryEnabled");
+            return preference == "1" ||
+                   preference == null && !PlatformHelper.IsAppleMobile;
+        }
         set
         {
             try
