@@ -48,7 +48,9 @@
                         <controls:FASettingsExpanderItem.Footer>
                             <Slider Width="150" Minimum="0.5" Maximum="1.6"
                                     Value="{Binding Settings.SubjectIconScale}"
-                                    TickFrequency="0.05" IsSnapToTickEnabled="True"/>
+                                    TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                    Classes="auto-tooltip"
+                                    ci:SliderDragTooltipAssist.StringFormat="F2"/>
                         </controls:FASettingsExpanderItem.Footer>
                     </controls:FASettingsExpanderItem>
                     
