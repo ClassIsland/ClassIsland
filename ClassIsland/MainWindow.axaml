@@ -607,7 +607,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <Button Theme="{StaticResource TransparentButton}"
                             x:Name="ButtonResetView"
-                            Command="{Binding #ZoomBorder.ResetMatrix}">
+                            Command="{Binding #ZoomBorder.ResetCommand}">
                         <ci:IconText Glyph="&#xE12F;" Text="重置视图" />
                     </Button>
                     <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}"
