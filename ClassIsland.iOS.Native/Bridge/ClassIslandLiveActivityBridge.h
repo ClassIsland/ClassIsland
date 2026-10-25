@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "ClassIslandHudBridge.h"
+
 #if defined(__cplusplus)
 extern "C" {
 #endif

@@ -2,6 +2,11 @@
   <PropertyGroup>
     <ClassIslandIosDistribution Condition="'$(MSBuildProjectName)' == 'ClassIsland.iOS' And '$(ClassIslandIosDistribution)' == ''">Sideload</ClassIslandIosDistribution>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(ClassIslandIosDistribution)' == 'Sideload' Or '$(ClassIslandIosDistribution)' == 'TrollStore'">
+    <!-- TrollStore 版与侧载版共用解释器、裁剪和插件策略，项目条件统一使用该派生属性；
+         两者的差异仅在 entitlements、签名方式与编译常量。 -->
+    <ClassIslandIosSideloadMode>true</ClassIslandIosSideloadMode>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(ClassIslandIosDistribution)' != ''">
     <!-- 两种发行版必须隔离 NuGet、编译和链接产物，避免切换后复用另一版的插件能力。 -->
     <BaseIntermediateOutputPath>obj/$(ClassIslandIosDistribution)/</BaseIntermediateOutputPath>

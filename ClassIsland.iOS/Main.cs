@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using ClassIsland.iOS.Services.Overlay;
 using ClassIsland.iOS.Services.Platform;
 using UIKit;
 
@@ -8,8 +9,14 @@ public static class MainClass
 {
     public static void Main(string[] args)
     {
+        IosHudMode.Detect(args);
+        var diagnosticsDirectory = IosHudMode.IsHudProcess
+            ? Environment.GetEnvironmentVariable("CLASSISLAND_HUD_DATA_DIR")
+            : null;
         IosStartupDiagnostics.Initialize(
-            Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+            string.IsNullOrWhiteSpace(diagnosticsDirectory)
+                ? Environment.GetFolderPath(Environment.SpecialFolder.Personal)
+                : diagnosticsDirectory);
         try
         {
             RunApplication(args);

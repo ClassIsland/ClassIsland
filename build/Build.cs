@@ -39,7 +39,7 @@ partial class Build : NukeBuild
     [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
     [Parameter] readonly string AppVersion;
     [Parameter] readonly string BrandType;
-    [Parameter("iOS distribution: Sideload (plugins enabled) or AppStore (external plugins disabled).")]
+    [Parameter("iOS distribution: Sideload (plugins enabled), AppStore (external plugins disabled) or TrollStore (plugins enabled, signed with ldid for TrollStore).")]
     readonly string IosDistribution = "Sideload";
     [Parameter] readonly string CodesignKey;
     [Parameter] readonly string CodesignProvision;
@@ -91,9 +91,9 @@ partial class Build : NukeBuild
             PublishArtifactName = $"out_{BuildName}_{OsName}_{Arch}_{BuildType}_{Package}";
             if (IsIosBuild)
             {
-                if (IosDistribution is not ("Sideload" or "AppStore"))
+                if (IosDistribution is not ("Sideload" or "AppStore" or "TrollStore"))
                 {
-                    throw new InvalidOperationException("IosDistribution must be Sideload or AppStore.");
+                    throw new InvalidOperationException("IosDistribution must be Sideload, AppStore or TrollStore.");
                 }
                 PublishArtifactName += $"_{IosDistribution}";
             }

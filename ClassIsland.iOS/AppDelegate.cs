@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -11,8 +12,10 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.UI;
 using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Extensions;
+using ClassIsland.iOS.Controls;
 using ClassIsland.iOS.Services.LiveActivities;
 using ClassIsland.iOS.Services.Notifications;
+using ClassIsland.iOS.Services.Overlay;
 using ClassIsland.iOS.Services.Platform;
 using ClassIsland.iOS.Services.UI;
 using ClassIsland.Platforms.Abstraction;
@@ -21,16 +24,19 @@ using ClassIsland.Shared;
 using ClassIsland.Views;
 using FluentAvalonia.UI.Controls;
 using Foundation;
+using UIKit;
 using UserNotifications;
 
 namespace ClassIsland.iOS;
 
 /// <summary>
 /// 将共享 ClassIsland Avalonia 应用接入 iOS/iPadOS 的单视图生命周期。
+/// 当进程以 <c>--hud</c> 启动时，改为承载系统级悬浮主界面宿主。
 /// </summary>
 [Register("AppDelegate")]
 public sealed class AppDelegate : AvaloniaAppDelegate<App>
 {
+    private readonly bool _isHudProcess = IosHudMode.IsHudProcess;
     private LessonsLiveActivityCoordinator? _liveActivityCoordinator;
     private IosLessonsNotificationCoordinator? _lessonsNotificationCoordinator;
     private IosSystemEventsService? _systemEventsService;
@@ -39,33 +45,55 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private readonly IosNotificationAuthorizationService _notificationAuthorizationService = new();
     private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
     private IosLocationService? _locationService;
+    private IosHudOverlayService? _hudOverlayService;
+    private IosHudHost? _hudHost;
+    private DispatcherTimer? _hudWindowRegistrationTimer;
+    private DispatcherTimer? _hudWatchdogTimer;
+    private int _hudWindowRegistrationAttempts;
     private App? _app;
     private Uri? _pendingNavigationUri;
     private bool _isAppNavigationReady;
 
     protected override AppBuilder CreateAppBuilder()
     {
-        IosStartupDiagnostics.Write("Creating Avalonia app builder");
+        IosStartupDiagnostics.Write(
+            _isHudProcess ? "Creating Avalonia app builder (HUD)" : "Creating Avalonia app builder");
         if (!IosSoundFlowNativeBootstrap.TryInitialize(out var soundFlowException))
         {
             Console.Error.WriteLine(
                 $"SoundFlow iOS native bootstrap failed; audio will be unavailable: {soundFlowException}");
         }
 
-        UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
         PlatformServices.AppLifetimeService = new IosAppLifetimeService(
             PrepareForManualTerminationAsync,
             ResumeAfterManualTerminationCanceled);
         PlatformServices.FilePickerService = new IosPlatformFilePickerService();
         PlatformServices.LauncherService = new IosLauncherService();
-        _locationService = new IosLocationService();
-        PlatformServices.LocationService = _locationService;
-        PlatformServices.LiveActivityService = new IosLiveActivityService();
-        _systemEventsService = new IosSystemEventsService();
-        PlatformServices.SystemEventsService = _systemEventsService;
+
+        if (!_isHudProcess)
+        {
+            UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
+            _locationService = new IosLocationService();
+            PlatformServices.LocationService = _locationService;
+            PlatformServices.LiveActivityService = new IosLiveActivityService();
+            _systemEventsService = new IosSystemEventsService();
+            PlatformServices.SystemEventsService = _systemEventsService;
+#if CLASSISLAND_TROLLSTORE
+            _hudOverlayService = new IosHudOverlayService();
+            PlatformServices.MainWindowOverlayService = _hudOverlayService;
+#endif
+        }
 
         var launchArguments = new List<string> { "--mobile" };
-        launchArguments.AddRange(IosPendingLaunchArgumentsStore.Consume());
+        if (_isHudProcess)
+        {
+            launchArguments.Add("--hud");
+        }
+        else
+        {
+            launchArguments.AddRange(IosPendingLaunchArgumentsStore.Consume());
+        }
+
         IosStartupDiagnostics.Write("Starting shared AppEntry");
         var buildApp = Program.AppEntry(launchArguments.ToArray());
         IosStartupDiagnostics.Write("Shared AppEntry completed");
@@ -103,11 +131,18 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
                 throw new InvalidOperationException("iOS Avalonia 单视图生命周期尚未初始化。");
             }
 
+            _app = app;
+            app.AppStarted += OnAppStarted;
+
+            if (_isHudProcess)
+            {
+                SetupHudHost(app, lifetime);
+                return;
+            }
+
             var viewHost = new MobileViewHost();
             IViewHostProvider.Instance = new IosViewHostProvider(viewHost);
             lifetime.MainView = viewHost;
-            _app = app;
-            app.AppStarted += OnAppStarted;
             _activatableLifetime = app.TryGetFeature<IActivatableLifetime>();
             if (_activatableLifetime != null)
             {
@@ -152,8 +187,28 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         });
     }
 
+    private void SetupHudHost(App app, ISingleViewApplicationLifetime lifetime)
+    {
+        IosStartupDiagnostics.Write("HUD mode: creating overlay host");
+        _hudHost = new IosHudHost();
+        // 共享代码在 HUD 模式不会导航页面，仅需要一个可用的宿主提供方以满足初始化路径。
+        IViewHostProvider.Instance = new IosViewHostProvider(new MobileViewHost());
+        lifetime.MainView = _hudHost;
+        Dispatcher.UIThread.Post(async () =>
+        {
+            app.PhonyRootWindow = await GetTopLevelAsync(_hudHost);
+            IosStartupDiagnostics.Write("HUD host ready; starting App.Init");
+            app.Init();
+        });
+    }
+
     private void OnActivated(object? sender, ActivatedEventArgs args)
     {
+        if (_isHudProcess)
+        {
+            return;
+        }
+
         if (args is not ProtocolActivatedEventArgs protocolArguments ||
             !AppNavigationUriParser.TryParseClassIslandUri(
                 protocolArguments.Uri.AbsoluteUri,
@@ -174,7 +229,19 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private void OnAppStarted(object? sender, EventArgs e)
     {
         IosStartupDiagnostics.Write("App startup completed");
+        if (_isHudProcess)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                _hudHost?.InitializeIsland();
+                StartHudWindowRegistration();
+                StartHudWatchdog();
+            }, DispatcherPriority.Loaded);
+            return;
+        }
+
         _locationService?.SetApplicationReady();
+        _hudOverlayService?.ResumeIfEnabled();
         _isAppNavigationReady = true;
         if (_pendingNavigationUri is not { } uri)
         {
@@ -183,6 +250,75 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
         _pendingNavigationUri = null;
         QueueNavigation(uri);
+    }
+
+    private void StartHudWindowRegistration()
+    {
+        _hudWindowRegistrationAttempts = 0;
+        _hudWindowRegistrationTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(100)
+        };
+        _hudWindowRegistrationTimer.Tick += (_, _) => TryRegisterHudWindow();
+        _hudWindowRegistrationTimer.Start();
+        TryRegisterHudWindow();
+    }
+
+    private void TryRegisterHudWindow()
+    {
+        if (_hudWindowRegistrationAttempts++ > 100)
+        {
+            _hudWindowRegistrationTimer?.Stop();
+            IosStartupDiagnostics.Write("HUD window was not created in time; overlay registration aborted");
+            return;
+        }
+
+        var window = UIApplication.SharedApplication.Windows.FirstOrDefault();
+        if (window == null)
+        {
+            return;
+        }
+
+        window.BackgroundColor = UIColor.Clear;
+        IosHudNativeBridge.RegisterWindow(window.Handle);
+        var registrationError = IosHudNativeBridge.GetLastError();
+        if (!string.IsNullOrEmpty(registrationError))
+        {
+            // 窗口可能尚未上屏（没有 CAContext），保留定时器继续重试。
+            IosStartupDiagnostics.Write(
+                $"HUD window registration attempt {_hudWindowRegistrationAttempts} failed: {registrationError}");
+            return;
+        }
+
+        _hudWindowRegistrationTimer?.Stop();
+        _hudWindowRegistrationTimer = null;
+        IosStartupDiagnostics.Write("HUD window registered to SpringBoard");
+    }
+
+    private void StartHudWatchdog()
+    {
+        _hudWatchdogTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(3)
+        };
+        _hudWatchdogTimer.Tick += (_, _) =>
+        {
+            try
+            {
+                // HUD 进程是主进程 spawn 出来的；主进程退出后由 launchd 收养，此时应自行退出避免孤儿悬浮窗。
+                if (getppid() == 1)
+                {
+                    IosStartupDiagnostics.Write("HUD parent process exited; terminating HUD process");
+                    _hudWatchdogTimer?.Stop();
+                    Environment.Exit(0);
+                }
+            }
+            catch (Exception exception)
+            {
+                IosStartupDiagnostics.Write("HUD watchdog failed", exception);
+            }
+        };
+        _hudWatchdogTimer.Start();
     }
 
     private static void QueueNavigation(Uri uri)
@@ -267,10 +403,18 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         return await completionSource.Task;
     }
 
+    [DllImport("libc", EntryPoint = "getppid")]
+    private static extern int getppid();
+
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
+            _hudWindowRegistrationTimer?.Stop();
+            _hudWindowRegistrationTimer = null;
+            _hudWatchdogTimer?.Stop();
+            _hudWatchdogTimer = null;
+
             if (_activatableLifetime != null)
             {
                 _activatableLifetime.Activated -= OnActivated;
@@ -290,6 +434,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
                 UNUserNotificationCenter.Current.Delegate = null;
             }
 
+            _hudOverlayService?.Shutdown();
+            _hudOverlayService = null;
             _lessonsNotificationCoordinator?.Dispose();
             _lessonsNotificationCoordinator = null;
             _liveActivityCoordinator?.Dispose();

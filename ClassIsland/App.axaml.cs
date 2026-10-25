@@ -245,6 +245,16 @@ public partial class App : AppBase, IAppHost
                 CommonDirectories.AppRootFolderPath
         };
 
+        // 悬浮主界面宿主进程使用主进程生成的只读快照，避免两个进程并发写同一份配置。
+        if (ApplicationCommand.Hud)
+        {
+            var hudDataPath = Environment.GetEnvironmentVariable("CLASSISLAND_HUD_DATA_DIR");
+            if (!string.IsNullOrWhiteSpace(hudDataPath))
+            {
+                CommonDirectories.AppRootFolderPath = Path.GetFullPath(hudDataPath);
+            }
+        }
+
         if (!Directory.Exists(CommonDirectories.AppRootFolderPath))
         {
             Directory.CreateDirectory(CommonDirectories.AppRootFolderPath);
@@ -813,7 +823,7 @@ public partial class App : AppBase, IAppHost
 
         CurrentLifetime = Core.Enums.ApplicationLifetime.StartingOnline;
         Logger.LogInformation("初始化应用。");
-        if (Settings.IsSplashEnabled)
+        if (Settings.IsSplashEnabled && !ApplicationCommand.Hud)
         {
             await GetService<ISplashService>().StartSplash();
         }
@@ -897,7 +907,8 @@ public partial class App : AppBase, IAppHost
             IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
         }
         
-        if (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding)
+        if (!ApplicationCommand.Hud &&
+            (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding))
         {
             if (Settings.IsSplashEnabled)
             {
@@ -1047,6 +1058,13 @@ public partial class App : AppBase, IAppHost
 
         if (!isDesktop)
         {
+            if (ApplicationCommand.Hud)
+            {
+                // 悬浮主界面宿主进程没有页面导航，直接完成启动收尾（会触发 AppStarted）。
+                PostStartup(spanLoadMainWindow, transaction, startupCountFilePath);
+                return;
+            }
+
             var mv = GetService<MainView>();
             if (PlatformHelper.IsAppleMobile)
             {
@@ -1126,7 +1144,7 @@ public partial class App : AppBase, IAppHost
             PlatformServices.DesktopToastService.ShowToastAsync(content);
         }
 
-        if (Settings.IsSplashEnabled)
+        if (Settings.IsSplashEnabled && !ApplicationCommand.Hud)
         {
             App.GetService<ISplashService>().EndSplash();
         }

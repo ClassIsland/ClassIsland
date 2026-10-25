@@ -18,6 +18,8 @@
 		A10000000000000000000008 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* ActivityKit.framework */; };
 		A10000000000000000000009 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* SwiftUI.framework */; };
 		A1000000000000000000000A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* WidgetKit.framework */; };
+		A1000000000000000000000C /* ClassIslandHudBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* ClassIslandHudBridge.swift */; };
+		A1000000000000000000000D /* ClassIslandHudBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* ClassIslandHudBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		A2000000000000000000000A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A2000000000000000000000B /* ClassIslandLiveActivityBridge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ClassIslandLiveActivityBridge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000000000000000000000C /* ClassIslandLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = ClassIslandLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000000000000000000000E /* ClassIslandHudBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandHudBridge.swift; sourceTree = "<group>"; };
+		A2000000000000000000000F /* ClassIslandHudBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassIslandHudBridge.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +86,8 @@
 			children = (
 				A20000000000000000000002 /* ClassIslandLiveActivityBridge.swift */,
 				A20000000000000000000003 /* ClassIslandLiveActivityBridge.h */,
+				A2000000000000000000000E /* ClassIslandHudBridge.swift */,
+				A2000000000000000000000F /* ClassIslandHudBridge.h */,
 			);
 			path = Bridge;
 			sourceTree = "<group>";
@@ -125,6 +131,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000003 /* ClassIslandLiveActivityBridge.h in Headers */,
+				A1000000000000000000000D /* ClassIslandHudBridge.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +235,7 @@
 			files = (
 				A10000000000000000000001 /* ClassIslandActivityAttributes.swift in Sources */,
 				A10000000000000000000002 /* ClassIslandLiveActivityBridge.swift in Sources */,
+				A1000000000000000000000C /* ClassIslandHudBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

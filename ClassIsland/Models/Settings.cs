@@ -72,6 +72,7 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     private string _selectedProfile = "Default.json";
     private bool _isMainWindowVisible = true;
     private bool _isAndroidOverlayEnabled;
+    private bool _isIosHudOverlayEnabled;
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
     private Dictionary<string, string> _releaseChannels = new()
@@ -258,6 +259,15 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     {
         get => _isAndroidOverlayEnabled;
         set => SetProperty(ref _isAndroidOverlayEnabled, value);
+    }
+
+    /// <summary>
+    /// 是否在 TrollStore 发行版中启用系统级悬浮主界面。
+    /// </summary>
+    public bool IsIosHudOverlayEnabled
+    {
+        get => _isIosHudOverlayEnabled;
+        set => SetProperty(ref _isIosHudOverlayEnabled, value);
     }
 
     [SettingsInfo("显示主界面", "\uEFBF", order: 1)]
