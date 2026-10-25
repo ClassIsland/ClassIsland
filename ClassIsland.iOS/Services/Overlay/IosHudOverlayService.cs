@@ -207,16 +207,13 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
     /// <summary>
     /// 为 HUD 子进程生成只读数据快照，避免两个进程并发写同一份配置。
     /// 插件、日志、缓存等不在快照内，因此 HUD 进程不会加载插件。
+    /// 每次使用新的目录，避免主 App 删除 root HUD 进程创建的文件时触发权限错误。
     /// </summary>
     private static string PrepareSnapshot()
     {
         var sourceRoot = CommonDirectories.AppRootFolderPath;
-        var targetRoot = Path.Combine(CommonDirectories.AppSharedDocumentsFolderPath, HudDataFolderName);
-        if (Directory.Exists(targetRoot))
-        {
-            Directory.Delete(targetRoot, true);
-        }
-
+        var snapshotRoot = Path.Combine(CommonDirectories.AppSharedDocumentsFolderPath, HudDataFolderName);
+        var targetRoot = Path.Combine(snapshotRoot, $"Snapshot-{Guid.NewGuid():N}");
         Directory.CreateDirectory(targetRoot);
 
         CopyFileIfExists(Path.Combine(sourceRoot, "Settings.json"), Path.Combine(targetRoot, "Settings.json"));

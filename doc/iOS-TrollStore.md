@@ -249,7 +249,7 @@ SHA-256: 34e0adc4...
 ## 故障排查
 
 - 主 App 启动诊断日志：`Documents/ClassIsland/Diagnostics/startup-latest.log`（上一次启动为 `startup-previous.log`），可通过 Files App 访问。
-- HUD 子进程诊断日志：HUD 数据目录下的 `ClassIsland/Diagnostics/startup-latest.log`（`CLASSISLAND_HUD_DATA_DIR` 指向 `Documents/ClassIsland/HudData`）。
+- HUD 子进程诊断日志：主 App 日志中“悬浮主界面数据快照”所记录的快照目录下的 `ClassIsland/Diagnostics/startup-latest.log`（`CLASSISLAND_HUD_DATA_DIR` 指向 `Documents/ClassIsland/HudData/Snapshot-<guid>`）。
 - 打开开关后没有悬浮岛：先看主 App 日志中“无法启动悬浮主界面宿主”的 `result` 与 `ci_hud_last_error` 文本，再确认安装包是否确实经过 ldid 签名、entitlements 是否包含 `platform-application` 与 `com.apple.springboard.accessibility-window-hosting`。
 - 安装后无法启动：检查 IPA 是否用 `Entitlements.TrollStore.plist` 签名、是否误加了被 iOS 15/A12+ 封禁的调试 entitlements。
 - 升级后数据“丢失”：确认没有声明 `no-container` / `container-required=false`；只保留 `no-sandbox` 才能保住数据容器。
