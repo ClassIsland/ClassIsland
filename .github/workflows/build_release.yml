@@ -67,7 +67,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: ['arm64']
-        distribution: ['Sideload', 'AppStore']
+        distribution: ['Sideload', 'AppStore', 'TrollStore']
     concurrency:
       group: ios-${{ matrix.distribution }}-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}-${{ matrix.arch }}
       cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
@@ -79,8 +79,13 @@ jobs:
       IOS_DISTRIBUTION: ${{ matrix.distribution }}
       IOS_RUNTIME_IDENTIFIER: ios-${{ matrix.arch }}
       IOS_WORKLOAD_VERSION: 10.0.202
-      APPLICATION_ID: ${{ matrix.distribution == 'Sideload' && 'cn.classisland.ios.sideload' || 'cn.classisland.ios' }}
+      APPLICATION_ID: ${{ (matrix.distribution == 'Sideload' || matrix.distribution == 'TrollStore') && 'cn.classisland.ios.sideload' || 'cn.classisland.ios' }}
       XCODE_PATH: /Applications/Xcode_26.3.app
+      # TrollStore 版构建产物仍是 unsigned IPA；安装前需要用 ldid 预置 entitlements。
+      # 这里固定 opa334/ldid 的 release 版本与 SHA-256，避免 runner 上依赖 Homebrew。
+      LDID_VERSION: v2.1.5-procursus7-new
+      LDID_SHA256: b6aa4018e7ef3df9ee3fee5889d162649719109521c5a2136ca98a81fccdf52a
+      TROLLSTORE_ENTITLEMENTS: ClassIsland.iOS/Entitlements.TrollStore.plist
       artifact_name: out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}
       IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}.ipa
     steps:
@@ -153,7 +158,9 @@ jobs:
 
       - name: Verify iOS build configuration
         shell: pwsh
-        run: ./tools/ci/verify-ios-build-config.ps1
+        run: |
+          ./tools/ci/verify-ios-build-config.ps1
+          ./tools/ci/verify-ios-build-config.ps1 -IosDistribution TrollStore
 
       - name: Select Xcode
         run: |
@@ -245,7 +252,39 @@ jobs:
           "${{ steps.build_metadata.outputs.build_number }}"
           "$IOS_DISTRIBUTION"
 
-      - name: Upload unsigned IPA artifact
+      - name: Download ldid for TrollStore signing
+        if: matrix.distribution == 'TrollStore'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$(uname -m)" != "arm64" ]]; then
+            echo "::error::TrollStore IPA signing requires an arm64 runner for the pinned ldid binary (got $(uname -m))."
+            exit 1
+          fi
+          ldid_path="$RUNNER_TEMP/ldid"
+          curl --fail --location --retry 3 --output "$ldid_path" \
+            "https://github.com/opa334/ldid/releases/download/${LDID_VERSION}/ldid"
+          echo "${LDID_SHA256}  ${ldid_path}" | shasum -a 256 -c -
+          chmod +x "$ldid_path"
+
+      - name: Sign and verify TrollStore IPA
+        if: matrix.distribution == 'TrollStore'
+        shell: bash
+        env:
+          LDID: ${{ runner.temp }}/ldid
+        run: |
+          set -euo pipefail
+          # 签名脚本输出到输入 IPA 同目录的 *-TrollStore-signed.ipa。
+          signed_ipa="${IPA_PATH%.ipa}-TrollStore-signed.ipa"
+          bash ./tools/ci/sign-ios-trollstore-ipa.sh "$IPA_PATH" "$TROLLSTORE_ENTITLEMENTS"
+          test -f "$signed_ipa"
+          bash ./tools/ci/verify-ios-trollstore-ipa.sh "$signed_ipa" "$APPLICATION_ID"
+          # 用签名后的 IPA 覆盖 unsigned 产物，保持 artifact/发布文件名不变。
+          mv -f "$signed_ipa" "$IPA_PATH"
+          rm -f "$signed_ipa.sha256"
+          shasum -a 256 "$IPA_PATH" > "$IPA_PATH.sha256"
+
+      - name: Upload iOS IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
@@ -779,7 +818,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for distribution in Sideload AppStore; do
+          for distribution in Sideload AppStore TrollStore; do
             artifact_directory="./out_artifacts/out_app_ios_arm64_selfContained_ipa_$distribution"
             ipa_name="out_app_ios_arm64_selfContained_ipa_$distribution.ipa"
             test -f "$artifact_directory/$ipa_name"

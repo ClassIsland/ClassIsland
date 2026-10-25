@@ -7,7 +7,7 @@ source "$script_directory/ios-build-number.sh"
 source "$script_directory/ios-display-version.sh"
 
 if [[ "$#" -lt 5 || "$#" -gt 6 ]]; then
-  echo "Usage: $0 <ipa-path> <application-id> <runtime-identifier> <display-version> <build-number> [Sideload|AppStore]" >&2
+  echo "Usage: $0 <ipa-path> <application-id> <runtime-identifier> <display-version> <build-number> [Sideload|AppStore|TrollStore]" >&2
   exit 64
 fi
 
@@ -18,8 +18,8 @@ readonly ipa_expected_display_version="$4"
 readonly ipa_expected_build_number="$5"
 readonly ios_distribution="${6:-AppStore}"
 case "$ios_distribution" in
-  Sideload|AppStore) readonly expected_display_name="ClassIsland" ;;
-  *) echo "::error::The iOS distribution must be Sideload or AppStore" >&2; exit 64 ;;
+  Sideload|AppStore|TrollStore) readonly expected_display_name="ClassIsland" ;;
+  *) echo "::error::The iOS distribution must be Sideload, AppStore or TrollStore" >&2; exit 64 ;;
 esac
 
 validate_ios_display_version "$ipa_expected_display_version" || exit $?
@@ -44,13 +44,14 @@ fi
 
 app_bundle="${app_bundles[0]}"
 entry_verifier_args=("$app_bundle/ClassIsland.iOS.dll")
-if [[ "$ios_distribution" == "Sideload" ]]; then
+# TrollStore 与 Sideload 一样保留插件与完整宿主 API，需要同样的托管程序集比对。
+if [[ "$ios_distribution" == "Sideload" || "$ios_distribution" == "TrollStore" ]]; then
   for host_assembly in ClassIsland ClassIsland.Core ClassIsland.Shared ClassIsland.Shared.IPC ClassIsland.Platforms.Abstractions; do
-    entry_verifier_args+=("$script_directory/../../$host_assembly/bin/Sideload/Release/net10.0/$host_assembly.dll")
+    entry_verifier_args+=("$script_directory/../../$host_assembly/bin/$ios_distribution/Release/net10.0/$host_assembly.dll")
   done
 fi
 dotnet run --file "$script_directory/verify-ios-entry.cs" -- "${entry_verifier_args[@]}"
-if [[ "$ios_distribution" == "Sideload" ]]; then
+if [[ "$ios_distribution" == "Sideload" || "$ios_distribution" == "TrollStore" ]]; then
   dotnet run --file "$script_directory/verify-ios-config.cs" -- "$app_bundle"
 fi
 extension_bundle="$app_bundle/PlugIns/ClassIslandLiveActivityExtension.appex"

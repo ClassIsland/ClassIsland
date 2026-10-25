@@ -1,6 +1,6 @@
 param(
     [string]$RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path,
-    [ValidateSet("Sideload", "AppStore")]
+    [ValidateSet("Sideload", "AppStore", "TrollStore")]
     [string]$IosDistribution = "Sideload"
 )
 
@@ -221,7 +221,7 @@ $pluginTypeDeclarations = $pluginInfoPlist.SelectSingleNode('/plist/dict/key[.="
 Assert-True ($null -ne $pluginTypeDeclarations) "PluginInfo.plist must declare the plugin package type for sideload builds."
 Assert-True (-not $infoPlistText.Contains('cn.classisland.plugin-package')) "The shared Info.plist must not register plugin packages for App Store builds."
 $pluginManifest = $iosProject.SelectSingleNode('/Project/ItemGroup/PartialAppManifest[@Include="PluginInfo.plist"]')
-Assert-True ($null -ne $pluginManifest -and $pluginManifest.Condition -eq "'`$(ClassIslandIosDistribution)' == 'Sideload'") "PluginInfo.plist must only be included in sideload builds."
+Assert-True ($null -ne $pluginManifest -and $pluginManifest.Condition -eq "'`$(ClassIslandIosSideloadMode)' == 'true'") "PluginInfo.plist must only be included in sideload and TrollStore builds."
 foreach ($typeDeclaration in (@($exportedTypeDeclarations.dict) + @($pluginTypeDeclarations.dict))) {
     $identifier = $typeDeclaration.SelectSingleNode('key[.="UTTypeIdentifier"]/following-sibling::string[1]')
     if ($null -ne $identifier) {
@@ -481,8 +481,8 @@ Assert-True ($releaseWorkflowText.Contains("needs.build_app.result == 'success'"
 Assert-True (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot ".github/workflows/_build_ios_reusable.yml"))) "The obsolete reusable iOS workflow must remain removed."
 Assert-True ($iosWorkflowText.Contains("matrix:") -and $iosWorkflowText.Contains("arch: ['arm64']")) "The iOS matrix must include the supported arm64 device build."
 Assert-True ($iosWorkflowText.Contains('name: build_ios (${{ matrix.arch }}, ${{ matrix.distribution }})')) "The iOS matrix job name must identify its distribution."
-Assert-True ($iosWorkflowText.Contains("distribution: ['Sideload', 'AppStore']")) "The iOS matrix must build both distributions."
-Assert-True ($iosWorkflowText.Contains('ClassIsland.Plugin.Tests/ClassIsland.Plugin.Tests.csproj')) "Both distributions must run plugin behavior tests."
+Assert-True ($iosWorkflowText.Contains("distribution: ['Sideload', 'AppStore', 'TrollStore']")) "The iOS matrix must build all supported distributions."
+Assert-True ($iosWorkflowText.Contains('ClassIsland.Plugin.Tests/ClassIsland.Plugin.Tests.csproj')) "All distributions must run plugin behavior tests."
 Assert-True ($iosWorkflowText.Contains('group: ios-${{ matrix.distribution }}-')) "The iOS matrix entries must not cancel each other."
 Assert-True ($iosWorkflowText.Contains('IOS_RUNTIME_IDENTIFIER: ios-${{ matrix.arch }}')) "The iOS runtime identifier must follow the matrix architecture."
 Assert-True ($iosWorkflowText.Contains('arch: ${{ matrix.arch }}')) "NUKE must receive the matrix architecture."
@@ -496,11 +496,22 @@ Assert-True ($iosWorkflowText.Contains("bash ./tools/ci/test-ios-display-version
 Assert-True (-not $iosWorkflowText.Contains('ClassIsland-iOS-${APPLICATION_DISPLAY_VERSION}')) "iOS artifacts must not use the legacy display-version/build-number naming scheme."
 Assert-True ($iosWorkflowText.Contains('IPA_PATH: ${{ github.workspace }}/out/out_app_ios_${{ matrix.arch }}_selfContained_ipa_${{ matrix.distribution }}.ipa')) "The iOS IPA path must include the distribution suffix produced by NUKE."
 Assert-True ($iosWorkflowText.Contains('IOS_DISTRIBUTION: ${{ matrix.distribution }}') -and $iosWorkflowText.Contains('IosDistribution: ${{ env.IOS_DISTRIBUTION }}')) "Each iOS matrix entry must explicitly pass its distribution to NUKE."
-Assert-True ($iosWorkflowText.Contains("APPLICATION_ID: `${{ matrix.distribution == 'Sideload' && 'cn.classisland.ios.sideload' || 'cn.classisland.ios' }}")) "IPA verification must expect the distribution's bundle identifier."
+Assert-True ($iosWorkflowText.Contains("APPLICATION_ID: `${{ (matrix.distribution == 'Sideload' || matrix.distribution == 'TrollStore') && 'cn.classisland.ios.sideload' || 'cn.classisland.ios' }}")) "IPA verification must expect the distribution's bundle identifier."
 Assert-True ($iosWorkflowText.Contains('"$IOS_DISTRIBUTION"')) "IPA verification must receive the distribution to validate the display name."
 Assert-True ($iosWorkflowText.Contains('ClassIsland.iOS/obj/$IOS_DISTRIBUTION/$IOS_CONFIGURATION/net10.0-ios/$IOS_RUNTIME_IDENTIFIER/linker-cache/main.arm64.mm')) "Interpreter verification must use the distribution-specific intermediate directory."
 Assert-True ($ipaVerificationText.Contains('dotnet run --file "$script_directory/verify-ios-entry.cs" -- "${entry_verifier_args[@]}"') -and $ipaVerificationText.Contains('ClassIsland.Shared.IPC ClassIsland.Platforms.Abstractions')) "CI must verify startup methods and preserved host APIs in the final IPA assemblies."
 Assert-True ($ipaVerificationText.Contains('dotnet run --file "$script_directory/verify-ios-config.cs" -- "$app_bundle"')) "CI must exercise configuration creation and serialization using the packaged shared library."
+Assert-True ($ipaVerificationText.Contains('Sideload|AppStore|TrollStore')) "Signed IPA verification must accept the TrollStore distribution."
+Assert-True ($ipaVerificationText.Contains('bin/$ios_distribution/Release/net10.0')) "Sideload-like distributions must compare against their own host assemblies."
+Assert-True ($iosWorkflowText.Contains('TROLLSTORE_ENTITLEMENTS: ClassIsland.iOS/Entitlements.TrollStore.plist')) "The iOS matrix must point TrollStore signing at the side-load entitlements file."
+Assert-True ($iosWorkflowText.Contains('LDID_VERSION: v2.1.5-procursus7-new') -and $iosWorkflowText.Contains('LDID_SHA256: b6aa4018e7ef3df9ee3fee5889d162649719109521c5a2136ca98a81fccdf52a')) "CI must download a pinned ldid release and verify its SHA-256 before signing."
+Assert-True ($iosWorkflowText.Contains('bash ./tools/ci/sign-ios-trollstore-ipa.sh')) "The iOS matrix must sign the TrollStore IPA with ldid."
+Assert-True ($iosWorkflowText.Contains('bash ./tools/ci/verify-ios-trollstore-ipa.sh')) "The iOS matrix must verify TrollStore entitlements after signing."
+Assert-True ($iosWorkflowText.Contains("if: matrix.distribution == 'TrollStore'")) "TrollStore-only steps must be gated to the TrollStore matrix entry."
+Assert-True ($iosWorkflowText.Contains('mv -f "$signed_ipa" "$IPA_PATH"')) "The iOS matrix must publish the signed IPA under the fixed artifact name."
+$trollStoreVerificationText = Read-RepositoryFile "tools/ci/verify-ios-trollstore-ipa.sh"
+Assert-True ($trollStoreVerificationText.Contains('com.apple.springboard.accessibility-window-hosting') -and $trollStoreVerificationText.Contains('dynamic-codesigning')) "TrollStore IPA verification must check required and banned entitlements."
+Assert-True ($trollStoreVerificationText.Contains('com.apple.private.persona-mgmt') -and $trollStoreVerificationText.Contains('com.apple.security.iokit-user-client-class')) "TrollStore IPA verification must cover root-spawn and Metal entitlements."
 Assert-True (-not $iosWorkflowText.Contains("buildNumber:")) "The iOS matrix job must not duplicate NUKE's Git-derived ApplicationVersion logic."
 Assert-True (-not $releaseWorkflowText.Contains("build_number: `${{ format('{0}', github.run_number) }}")) "The unified caller must not use github.run_number as the iOS ApplicationVersion."
 Assert-True ($androidBuildText.Contains('SetProperty("ApplicationVersion", Math.Max(GitCommitCount, 1))')) "Android ApplicationVersion must remain based on GitCommitCount."
@@ -521,7 +532,7 @@ Assert-True ($iosWorkflowText.Contains("verify-cobertura-coverage.ps1")) "The iO
 Assert-True ($iosWorkflowText.Contains("-MinimumLineRate 0.8")) "The iOS matrix job must enforce at least 80% line coverage."
 Assert-True (-not $iosWorkflowText.Contains("Upload platform abstraction coverage")) "Coverage must remain a validation gate without producing a second iOS artifact."
 $iosArtifactUploadCount = ([regex]::Matches($iosWorkflowText, "uses:\s+actions/upload-artifact@v4")).Count
-Assert-True ($iosArtifactUploadCount -eq 1) "The iOS matrix job must publish exactly one artifact containing the unsigned IPA."
+Assert-True ($iosArtifactUploadCount -eq 1) "The iOS matrix job must publish exactly one artifact containing the final IPA."
 Assert-True ($iosWorkflowText.Contains("IOS_WORKLOAD_VERSION: 10.0.202")) "The iOS matrix job must pin the .NET workload set compatible with Xcode 26.3."
 Assert-True ($iosWorkflowText.Contains("XCODE_PATH: /Applications/Xcode_26.3.app")) "The iOS matrix job must select Xcode 26.3 for the pinned .NET for iOS SDK."
 Assert-True ($iosWorkflowText.Contains('dotnet-version: 10.0.202')) "The iOS matrix job must use the .NET SDK feature band compatible with the pinned iOS workload."
@@ -542,7 +553,7 @@ Assert-True ($coverageVerificationText.Contains('$lineRate -lt $MinimumLineRate'
 Assert-True (-not [regex]::IsMatch($releaseWorkflowText, '(?m)^  build_ios_(sideload|store):')) "Both iOS distributions must use the shared matrix job."
 Assert-True ($releaseWorkflowText.Contains("needs.build_ios.result == 'success'")) "Publishing must require the entire iOS matrix to succeed."
 Assert-True ($releaseWorkflowText.Contains('version_source="$DISPATCH_RELEASE_TAG"')) "The release iOS build must derive its display version from the Android release tag."
-Assert-True ($releaseWorkflowText.Contains('for distribution in Sideload AppStore; do') -and $releaseWorkflowText.Contains('artifact_directory="./out_artifacts/out_app_ios_arm64_selfContained_ipa_$distribution"')) "Release publishing must collect both distribution artifacts."
+Assert-True ($releaseWorkflowText.Contains('for distribution in Sideload AppStore TrollStore; do') -and $releaseWorkflowText.Contains('artifact_directory="./out_artifacts/out_app_ios_arm64_selfContained_ipa_$distribution"')) "Release publishing must collect all distribution artifacts."
 # 验证实际结果，避免等价的 Shell 表达式因文本写法不同而被误报。
 $retentionAssignments = [regex]::Matches($releaseWorkflowText, '(?m)^[ \t]+retention_days=[^\r\n]+')
 Assert-True ($retentionAssignments.Count -eq 1) "The iOS metadata step must define one artifact retention expression."
@@ -557,7 +568,7 @@ foreach ($retentionCase in @(
 }
 Assert-True ($releaseWorkflowText.Contains("needs: [ pack_app, build_nupkg, build_android, build_ios ]")) "Publishing must wait for Android and the iOS matrix."
 Assert-True ($releaseWorkflowText.Contains("sha256sum --check")) "Publishing must verify the downloaded iOS checksum."
-Assert-True ($releaseWorkflowText.Contains("./out/*.ipa,./out/*.sha256")) "The release draft must include the unsigned IPA and checksum."
+Assert-True ($releaseWorkflowText.Contains("./out/*.ipa,./out/*.sha256")) "The release draft must include the iOS IPA files and checksums."
 
 Assert-True ($artifactInitializationText.Contains('$payloadName')) "Release checksum regeneration must reference the renamed payload by basename."
 Assert-True ($artifactInitializationText.Contains('Get-FileHash -LiteralPath $payloadPath -Algorithm SHA256')) "Release artifact normalization must regenerate SHA-256 sidecars."
