@@ -268,7 +268,8 @@ SHA-256: 34e0adc4...
 - 真实 ldid 验证：本机（x86_64 macOS）使用 ProcursusTeam/ldid 的 `ldid_macosx_x86_64` 对同一 100 MB IPA 完成真实签名，`verify-ios-trollstore-ipa.sh` 校验通过（14 个必需 entitlements 存在、封禁项不存在、7 个 Mach-O 均已签名）。macOS arm64 版 `ldid_macosx_arm64` 将在 CI 中使用。
 - `dotnet build build/_build.csproj`（仅编译 NUKE 工程）通过；`tools/ci/verify-ios-build-config.ps1` 已在本机用 PowerShell 7.4.6 运行，`Sideload`/`AppStore`/`TrollStore` 三种模式全部通过（含新增的 CI 断言）。
 - CI 变更静态验证：`actionlint` 解析 `.github/workflows/build_release.yml` 无新增问题（仅仓库既有的旧 action 版本提示与既有 `trim_assets` 表达式提示）；`tools/ci/verify-ios-trollstore-ipa.sh` 用伪造 ldid 对真实 100 MB signed IPA 做正/负向测试通过（错误 bundle id 能正确失败）。
-- 首次 GitHub CI 运行（run 40175498518）在 `Sign and verify TrollStore IPA` 步骤失败：下载的 `releases/latest/download/ldid` 是 **iphoneos** arm64 二进制，在 macOS arm64 runner 上被系统以 `Killed: 9` 终止。已改为固定 `ProcursusTeam/ldid` 的 `ldid_macosx_arm64`、校验 SHA-256 后用 `codesign --force --sign -` 重签再执行；修复后的 CI 运行待验证。
+- 首次 GitHub CI 运行（run 40175498518）在 `Sign and verify TrollStore IPA` 步骤失败：下载的 `releases/latest/download/ldid` 是 **iphoneos** arm64 二进制，在 macOS arm64 runner 上被系统以 `Killed: 9` 终止。已改为固定 `ProcursusTeam/ldid` 的 `ldid_macosx_arm64`、校验 SHA-256 后用 `codesign --force --sign -` 重签再执行。
+- 修复后的 CI 运行（run 40176193178）中 `build_ios (arm64, TrollStore)` 全部步骤成功；下载的 artifact `out_app_ios_arm64_selfContained_ipa_TrollStore.ipa`（74.9 MB，SHA-256 `75796442…`）已在本机用真实 ldid 复核：14 个必需 entitlements 存在、封禁项不存在、bundle id 为 `cn.classisland.ios.sideload`、所有 Mach-O 已签名，包内包含 HUD 符号与托管类型。
 - 未验证：所有真机运行项（HUD 子进程的 `UIApplicationMain`/Avalonia 窗口引导、root persona、SpringBoard 窗口注册、`object_setClass` 生效时机、透明渲染、锁屏、触摸穿透、停止/退出、无沙盒下的数据容器路径、ldid 签名后 entitlements 是否被 TrollStore 保留）。
 
 ## 参考
