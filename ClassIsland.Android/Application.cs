@@ -29,6 +29,7 @@ public class Application : AvaloniaAndroidApplication<App>
         PlatformServices.LauncherService = new LauncherService();
         PlatformServices.DesktopToastService = new DesktopToastService();
         PlatformServices.LocationService = new LocationService();
+        PlatformServices.HapticFeedbackService = new HapticFeedbackService();
 
         var restartParameters = MainActivity.Current?.TryGetTarget(out var mainActivity) == true
             ? mainActivity.Intent?.GetStringArrayExtra(AndroidAppLifetimeService.RestartParametersExtra)
