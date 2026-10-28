@@ -711,7 +711,7 @@ public partial class App : AppBase, IAppHost
 
         IAppHost.Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
-            .UseContentRoot(AppContext.BaseDirectory)
+            .UseContentRoot(System.OperatingSystem.IsAndroid() ? CommonDirectories.AppRootFolderPath : AppContext.BaseDirectory)
             .ConfigureServices(ConfigureServices)
             .Build();
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;

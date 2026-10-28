@@ -12,6 +12,8 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BrandType>Production</BrandType>
     <BrandType Condition="'$(Configuration)' == 'Debug'">Dev</BrandType>
+    <UseMonoRuntime>false</UseMonoRuntime>
+    <PublishReadyToRun>false</PublishReadyToRun>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BrandType)' == 'Production'">
     <ApplicationId>cn.classisland.android</ApplicationId>
