@@ -276,8 +276,10 @@ internal sealed class AndroidDebugOverlay : IDisposable
         AddOverlaySwitch(content, "重绘区域", RendererDebugOverlays.DirtyRects);
         AddOverlaySwitch(content, "布局耗时图", RendererDebugOverlays.LayoutTimeGraph);
         AddOverlaySwitch(content, "渲染耗时图", RendererDebugOverlays.RenderTimeGraph);
+        AddAction(content, "触发完整 GC", CollectGarbageAsync, successMessage: "完整 GC 已完成。");
         content.AddView(CreateText("重载视图宿主将清空导航和未保存的页面状态。", 12));
-        _reloadButton = AddAction(content, "重载 AndroidViewHost", _activity.ReloadViewHostAsync);
+        _reloadButton = AddAction(content, "重载 AndroidViewHost", _activity.ReloadViewHostAsync,
+            successMessage: "视图宿主已重载。");
         AddAction(content, "重启应用", () =>
         {
             AppBase.Current.Restart();
@@ -328,17 +330,34 @@ internal sealed class AndroidDebugOverlay : IDisposable
         content.AddView(toggle);
     }
 
-    private Button AddAction(LinearLayout content, string text, Func<Task> action, bool terminal = false)
+    private async Task CollectGarbageAsync()
+    {
+        await Task.Run(() =>
+        {
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+            GC.WaitForPendingFinalizers();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+        });
+        if (!_disposed && _activity.IsForeground && _popup?.IsShowing == true)
+        {
+            StopSampling();
+            _sampler = new AndroidProcessMetrics();
+            SampleMetrics();
+        }
+    }
+
+    private Button AddAction(LinearLayout content, string text, Func<Task> action, bool terminal = false,
+        string? successMessage = null)
     {
         var button = new Button(_activity) { Text = text };
         button.SetAllCaps(false);
-        button.Click += async (_, _) => await RunActionAsync(action, terminal);
+        button.Click += async (_, _) => await RunActionAsync(action, terminal, successMessage);
         _actionButtons.Add(button);
         content.AddView(button);
         return button;
     }
 
-    private async Task RunActionAsync(Func<Task> action, bool terminal)
+    private async Task RunActionAsync(Func<Task> action, bool terminal, string? successMessage)
     {
         if (_operationInProgress || _disposed)
         {
@@ -352,9 +371,9 @@ internal sealed class AndroidDebugOverlay : IDisposable
             if (!terminal)
             {
                 _operationInProgress = false;
-                if (!_disposed)
+                if (!_disposed && successMessage != null)
                 {
-                    Toast.MakeText(_activity, "视图宿主已重载。", ToastLength.Short)?.Show();
+                    Toast.MakeText(_activity, successMessage, ToastLength.Short)?.Show();
                 }
             }
         }
