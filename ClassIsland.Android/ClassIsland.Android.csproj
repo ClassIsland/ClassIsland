@@ -14,6 +14,8 @@
     <BrandType Condition="'$(Configuration)' == 'Debug'">Dev</BrandType>
     <UseMonoRuntime>false</UseMonoRuntime>
     <PublishReadyToRun>false</PublishReadyToRun>
+    <!-- CoreCLR 快速部署可能保留旧的 Java 类型映射，导致增量部署后启动崩溃。 -->
+    <EmbedAssembliesIntoApk Condition="'$(Configuration)' == 'Debug' and '$(UseMonoRuntime)' == 'false'">true</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BrandType)' == 'Production'">
     <ApplicationId>cn.classisland.android</ApplicationId>

@@ -69,6 +69,8 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     private string _selectedProfile = "Default.json";
     private bool _isMainWindowVisible = true;
     private bool _isAndroidOverlayEnabled;
+    private string _androidBackgroundImageSource = "";
+    private double _androidBackgroundImageOpacity = 0.1;
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
     private Dictionary<string, string> _releaseChannels = new()
@@ -245,6 +247,19 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     {
         get => _isAndroidOverlayEnabled;
         set => SetProperty(ref _isAndroidOverlayEnabled, value);
+    }
+
+    public string AndroidBackgroundImageSource
+    {
+        get => _androidBackgroundImageSource;
+        set => SetProperty(ref _androidBackgroundImageSource, value);
+    }
+
+    public double AndroidBackgroundImageOpacity
+    {
+        get => _androidBackgroundImageOpacity;
+        set => SetProperty(ref _androidBackgroundImageOpacity,
+            double.IsFinite(value) ? Math.Clamp(value, 0, 1) : 0.1);
     }
 
     [SettingsInfo("显示主界面", "\uEFBF", order: 1)]
