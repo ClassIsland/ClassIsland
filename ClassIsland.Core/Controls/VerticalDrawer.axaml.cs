@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -9,10 +10,13 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
+using Avalonia.Input.GestureRecognizers;
+using Avalonia.Input.Raw;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 
 namespace ClassIsland.Core.Controls;
 
@@ -37,10 +41,9 @@ public class VerticalDrawer : ContentControl
         var list = values.ToList();
         var availableWidth = list.Count > 0 && double.IsFinite(list[0]) ? Math.Max(0, list[0]) : 0;
         var requestedWidth = list.Count > 1 ? list[1] : double.NaN;
-        var maximumWidth = Math.Min(480, availableWidth);
         return double.IsFinite(requestedWidth) && requestedWidth > 0
-            ? Math.Min(requestedWidth, maximumWidth)
-            : maximumWidth;
+            ? Math.Min(requestedWidth, availableWidth)
+            : double.NaN;
     });
     
     public static readonly StyledProperty<object?> TitleProperty = AvaloniaProperty.Register<VerticalDrawer, object?>(
@@ -151,6 +154,19 @@ public class VerticalDrawer : ContentControl
     }
 
     /// <summary>
+    /// 是否允许通过内容区上拉手势将抽屉撑满可用高度，默认禁用。不影响标题栏拖动和直接设置 <see cref="IsFullScreen"/>。
+    /// </summary>
+    public static readonly StyledProperty<bool> IsFullScreenGestureEnabledProperty =
+        AvaloniaProperty.Register<VerticalDrawer, bool>(nameof(IsFullScreenGestureEnabled));
+
+    /// <inheritdoc cref="IsFullScreenGestureEnabledProperty"/>
+    public bool IsFullScreenGestureEnabled
+    {
+        get => GetValue(IsFullScreenGestureEnabledProperty);
+        set => SetValue(IsFullScreenGestureEnabledProperty, value);
+    }
+
+    /// <summary>
     /// 将标题中的自定义交互控件及其子元素排除在抽屉拖动区域之外。
     /// </summary>
     public static readonly AttachedProperty<bool> IsTitleDragExcludedProperty =
@@ -198,6 +214,19 @@ public class VerticalDrawer : ContentControl
         set => SetValue(RequestedWidthProperty, value);
     }
 
+    /// <summary>
+    /// 抽屉边框的最大宽度，不影响遮罩范围。默认不限制。
+    /// </summary>
+    public static readonly StyledProperty<double> DrawerMaxWidthProperty = AvaloniaProperty.Register<VerticalDrawer, double>(
+        nameof(DrawerMaxWidth), double.PositiveInfinity, validate: value => value >= 0);
+
+    /// <inheritdoc cref="DrawerMaxWidthProperty"/>
+    public double DrawerMaxWidth
+    {
+        get => GetValue(DrawerMaxWidthProperty);
+        set => SetValue(DrawerMaxWidthProperty, value);
+    }
+
     private Border? _dismissLayer;
     private Canvas? _canvas;
     private Panel? _workingPanel;
@@ -208,6 +237,64 @@ public class VerticalDrawer : ContentControl
     private double _startVisibleHeight;
     private double _dragVisibleHeight;
     private bool _isDragging;
+    private Border? _backgroundElement;
+    private ScrollGestureRecognizer? _contentRecognizer;
+    private IPointer? _contentPointer;
+    private InputElement? _contentSource;
+    private InputElement? _contentGestureTarget;
+    private int? _contentGestureId;
+    private Point _contentStart;
+    private Point _contentPosition;
+    private IDisposable? _contentInputSubscription;
+    private bool _contentDragging;
+    private bool _contentClosing;
+    private bool _contentReleased;
+    private bool _contentHandedOff;
+    private bool _contentForwarded;
+    private bool _forwardingContentGesture;
+    private bool _updatingContentState;
+    private readonly HashSet<int> _cancelledContentGestures = new();
+
+    static VerticalDrawer()
+    {
+        // Scroll gestures only bubble. Intercept at their source before a presenter's instance handlers.
+        ScrollGestureEvent.AddClassHandler<InputElement>((sender, e) =>
+            GetContentGestureOwner(sender, e)?.OnContentScrollGesture(sender, e));
+        ScrollGestureInertiaStartingEvent.AddClassHandler<InputElement>((sender, e) =>
+        {
+            var drawer = GetContentGestureOwner(sender, e);
+            if (drawer?._contentGestureId == e.Id && drawer._contentGestureTarget == sender &&
+                drawer._contentDragging && !drawer._contentHandedOff)
+            {
+                e.Handled = true;
+                drawer.FinishContentGesture();
+            }
+        });
+        ScrollGestureEndedEvent.AddClassHandler<InputElement>((sender, e) =>
+        {
+            var drawer = GetContentGestureOwner(sender, e);
+            drawer?._cancelledContentGestures.Remove(e.Id);
+            if (drawer == null || drawer._contentGestureId != e.Id || drawer._contentGestureTarget != sender)
+            {
+                return;
+            }
+
+            drawer._contentGestureId = null;
+            if (drawer._contentForwarded && sender == drawer._backgroundElement && drawer._contentSource is { } source)
+            {
+                drawer.ForwardContentGestureEnded(source, e.Id);
+            }
+            if (drawer._contentReleased && drawer._contentDragging && !drawer._contentHandedOff)
+            {
+                e.Handled = true;
+                drawer.FinishContentGesture();
+            }
+            else
+            {
+                drawer.CancelContentGesture();
+            }
+        });
+    }
 
     /// <summary>
     /// 在抽屉即将关闭时触发。可取消关闭。
@@ -272,9 +359,15 @@ public class VerticalDrawer : ContentControl
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
+        if (change.Property == IsFullScreenGestureEnabledProperty)
+        {
+            CancelContentGesture();
+            return;
+        }
         if (change.Property != StateProperty && change.Property != IsFullScreenProperty &&
             change.Property != AllowCollapseProperty && change.Property != ContentHeightRatioProperty &&
-            change.Property != ContentHeightProperty && change.Property != RequestedWidthProperty)
+            change.Property != ContentHeightProperty && change.Property != RequestedWidthProperty && change.Property != DrawerMaxWidthProperty &&
+            change.Property != DrawerContentProperty && change.Property != DrawerTemplateProperty)
         {
             return;
         }
@@ -334,11 +427,24 @@ public class VerticalDrawer : ContentControl
             _titleBar.PointerReleased -= TitleBarOnPointerReleased;
             _titleBar.PointerCaptureLost -= TitleBarOnPointerCaptureLost;
         }
+        if (_backgroundElement != null)
+        {
+            _backgroundElement.RemoveHandler(PointerPressedEvent, ContentOnPointerPressed);
+            _backgroundElement.RemoveHandler(PointerMovedEvent, ContentOnPointerMoved);
+            _backgroundElement.RemoveHandler(PointerReleasedEvent, ContentOnPointerReleased);
+            _backgroundElement.RemoveHandler(ScrollGestureEvent, ContentOnUnhandledScrollGesture);
+            _backgroundElement.PointerCaptureLost -= ContentOnPointerCaptureLost;
+            if (_contentRecognizer != null)
+            {
+                _backgroundElement.GestureRecognizers.Remove(_contentRecognizer);
+            }
+        }
         
         _dismissLayer = e.NameScope.Find<Border>("PART_DismissLayer");
         _canvas = e.NameScope.Find<Canvas>("PART_Canvas");
         _workingPanel = e.NameScope.Find<Panel>("WorkingPanel");
         _titleBar = e.NameScope.Find<Grid>("PART_TitleBar");
+        _backgroundElement = e.NameScope.Find<Border>("PART_BackgroundElement");
 
         if (_dismissLayer != null)
         {
@@ -355,9 +461,387 @@ public class VerticalDrawer : ContentControl
             _titleBar.PointerReleased += TitleBarOnPointerReleased;
             _titleBar.PointerCaptureLost += TitleBarOnPointerCaptureLost;
         }
+        if (_backgroundElement != null)
+        {
+            _backgroundElement.AddHandler(PointerPressedEvent, ContentOnPointerPressed, RoutingStrategies.Tunnel, true);
+            _backgroundElement.AddHandler(PointerMovedEvent, ContentOnPointerMoved, RoutingStrategies.Tunnel, true);
+            _backgroundElement.AddHandler(PointerReleasedEvent, ContentOnPointerReleased, RoutingStrategies.Tunnel, true);
+            _backgroundElement.AddHandler(ScrollGestureEvent, ContentOnUnhandledScrollGesture);
+            _backgroundElement.PointerCaptureLost += ContentOnPointerCaptureLost;
+            _contentRecognizer = new ContentScrollGestureRecognizer(this);
+            _backgroundElement.GestureRecognizers.Add(_contentRecognizer);
+        }
 
         UpdateContent();
         UpdatePos();
+    }
+
+    private static VerticalDrawer? GetContentGestureOwner(InputElement sender, RoutedEventArgs e)
+    {
+        if (sender != e.Source)
+        {
+            return null;
+        }
+
+        var drawer = sender.FindAncestorOfType<VerticalDrawer>();
+        return drawer != null && !drawer._forwardingContentGesture &&
+               (drawer._contentPointer != null || drawer._cancelledContentGestures.Count > 0) ? drawer : null;
+    }
+
+    private void ContentOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_pointer != null || _contentPointer != null || _workingPanel == null || _canvas == null ||
+            State != VerticalDrawerOpenState.Opened ||
+            e.Pointer.Type is not (PointerType.Touch or PointerType.Pen) ||
+            !e.Properties.IsLeftButtonPressed || e.Source is not InputElement source ||
+            source.FindAncestorOfType<VerticalDrawer>() != this ||
+            source == _titleBar || _titleBar?.IsVisualAncestorOf(source) == true)
+        {
+            return;
+        }
+
+        _contentPointer = e.Pointer;
+        _contentSource = source;
+        _contentHandedOff = IsFullScreen;
+        _contentStart = _contentPosition = e.GetPosition(null);
+        _startVisibleHeight = _workingPanel.Bounds.Height + Canvas.GetBottom(_workingPanel);
+        _dragSamples.Clear();
+        SampleDragPosition(_contentStart.Y);
+        // Captured gesture recognizers receive later input directly, bypassing routed pointer events.
+        var inputManager = AvaloniaUnsafeAccessorHelpers.GetAvaloniaLocatorService<IInputManager>();
+        if (inputManager != null)
+        {
+            _contentInputSubscription = AvaloniaUnsafeAccessorHelpers.GetRawInputPreProcess(inputManager)
+                .Subscribe(OnContentRawInput);
+        }
+    }
+
+    private void OnContentRawInput(RawInputEventArgs e)
+    {
+        if (e is not RawPointerEventArgs raw ||
+            AvaloniaUnsafeAccessorHelpers.GetRawInputDevice(raw) is not IPointerDevice device ||
+            AvaloniaUnsafeAccessorHelpers.GetRawInputPointer(device, raw) != _contentPointer)
+        {
+            return;
+        }
+
+        _contentPosition = AvaloniaUnsafeAccessorHelpers.GetRawPointerPosition(raw);
+        var eventType = AvaloniaUnsafeAccessorHelpers.GetRawPointerEventType(raw);
+        if (eventType == RawPointerEventType.TouchCancel)
+        {
+            CancelContentGesture();
+        }
+        else if (eventType is RawPointerEventType.TouchEnd or RawPointerEventType.LeftButtonUp)
+        {
+            _contentReleased = true;
+        }
+    }
+
+    private bool TryStartContentDrag()
+    {
+        if (_contentDragging || _contentHandedOff)
+        {
+            return true;
+        }
+        if (!IsFullScreenGestureEnabled)
+        {
+            return false;
+        }
+
+        var delta = _contentPosition - _contentStart;
+        if (Math.Max(Math.Abs(delta.X), Math.Abs(delta.Y)) < 8)
+        {
+            return false;
+        }
+        if (Math.Abs(delta.Y) <= Math.Abs(delta.X))
+        {
+            CancelContentGesture(releaseCapture: false);
+            return false;
+        }
+        if (delta.Y >= 0)
+        {
+            return false;
+        }
+
+        _contentDragging = _isDragging = true;
+        _dragVisibleHeight = _startVisibleHeight;
+        PseudoClasses.Set(":dragging", true);
+        return true;
+    }
+
+    private void ContentOnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (e.Pointer != _contentPointer || _contentHandedOff)
+        {
+            return;
+        }
+
+        _contentPosition = e.GetPosition(null);
+        if (TryStartContentDrag())
+        {
+            e.Handled = true;
+        }
+    }
+
+    private void ContentOnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.Pointer != _contentPointer || _contentHandedOff)
+        {
+            return;
+        }
+
+        _contentPosition = e.GetPosition(null);
+        e.Handled |= _contentDragging;
+        FinishContentGesture();
+    }
+
+    private void ContentOnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+    {
+        if (e.Pointer == _contentPointer && _contentGestureId == null)
+        {
+            CancelContentGesture();
+        }
+    }
+
+    private void OnContentScrollGesture(InputElement sender, ScrollGestureEventArgs e)
+    {
+        if (_cancelledContentGestures.Contains(e.Id))
+        {
+            e.Handled = true;
+            e.ShouldEndScrollGesture = true;
+            return;
+        }
+        if (_canvas == null || _contentPointer == null || _contentGestureId.HasValue && _contentGestureId != e.Id)
+        {
+            return;
+        }
+
+        _contentGestureId = e.Id;
+        _contentGestureTarget = sender;
+        if (_contentClosing)
+        {
+            UpdateContentClosing(e);
+            return;
+        }
+        if (!_contentDragging && (_contentPosition.Y >= _contentStart.Y || IsFullScreen || !IsFullScreenGestureEnabled))
+        {
+            if (sender == _backgroundElement)
+            {
+                e.Handled = true;
+                ForwardContentGesture(sender, e, e.Delta);
+            }
+            return;
+        }
+
+        if (!_contentHandedOff)
+        {
+            TryStartContentDrag();
+            if (_contentPointer == null)
+            {
+                return;
+            }
+
+            e.Handled = true;
+            if (!_contentDragging)
+            {
+                return;
+            }
+
+            SampleDragPosition(_contentPosition.Y);
+            var height = _startVisibleHeight + _contentStart.Y - _contentPosition.Y;
+            _dragVisibleHeight = Math.Clamp(height, GetNormalHeight(), _canvas.Bounds.Height);
+            UpdatePos();
+            if (height < _canvas.Bounds.Height)
+            {
+                return;
+            }
+
+            _contentHandedOff = true;
+            _updatingContentState = true;
+            try
+            {
+                SetCurrentValue(IsFullScreenProperty, true);
+            }
+            finally
+            {
+                _updatingContentState = false;
+            }
+            _isDragging = false;
+            PseudoClasses.Set(":dragging", false);
+            UpdatePos();
+
+            var remaining = Math.Max(0, height - _canvas.Bounds.Height);
+            var fraction = e.Delta.Y > 0 ? Math.Min(1, remaining / e.Delta.Y) : 0;
+            ForwardContentGesture(sender, e, new Vector(e.Delta.X * fraction, remaining));
+        }
+        else if (sender == _backgroundElement)
+        {
+            e.Handled = true;
+            ForwardContentGesture(sender, e, e.Delta);
+        }
+    }
+
+    private void ContentOnUnhandledScrollGesture(object? sender, ScrollGestureEventArgs e)
+    {
+        if (_canvas == null || _workingPanel == null || _contentPointer == null || _contentReleased ||
+            _contentDragging || _contentGestureId != e.Id || e.Delta.Y >= 0 ||
+            (e.Source as Visual)?.FindAncestorOfType<VerticalDrawer>() != this)
+        {
+            return;
+        }
+
+        var delta = _contentPosition - _contentStart;
+        if (delta.Y < 8 || delta.Y <= Math.Abs(delta.X))
+        {
+            return;
+        }
+
+        // Only unhandled gestures reach this handler, after every content control has had its turn.
+        // Rebase at the current event so earlier scrolling never contributes to the drawer's movement.
+        _contentClosing = _contentDragging = _isDragging = true;
+        _contentHandedOff = false;
+        _contentStart = _contentPosition + e.Delta;
+        _startVisibleHeight = _workingPanel.Bounds.Height + Canvas.GetBottom(_workingPanel);
+        _dragSamples.Clear();
+        SampleDragPosition(_contentStart.Y);
+        PseudoClasses.Set(":dragging", true);
+        UpdateContentClosing(e);
+    }
+
+    private void UpdateContentClosing(ScrollGestureEventArgs e)
+    {
+        SampleDragPosition(_contentPosition.Y);
+        _dragVisibleHeight = Math.Clamp(_startVisibleHeight + _contentStart.Y - _contentPosition.Y,
+            -2, GetMaximumContentDragHeight());
+        UpdatePos();
+        e.Handled = true;
+    }
+
+    private void ForwardContentGesture(InputElement sender, ScrollGestureEventArgs original, Vector delta)
+    {
+        var target = sender == _backgroundElement ? _contentSource : sender;
+        if (target == null || delta == default)
+        {
+            return;
+        }
+
+        _forwardingContentGesture = true;
+        try
+        {
+            _contentForwarded |= sender == _backgroundElement;
+            var forwarded = new ScrollGestureEventArgs(original.Id, delta);
+            target.RaiseEvent(forwarded);
+            original.ShouldEndScrollGesture = forwarded.ShouldEndScrollGesture;
+        }
+        finally
+        {
+            _forwardingContentGesture = false;
+        }
+    }
+
+    private void ForwardContentGestureEnded(InputElement source, int gestureId)
+    {
+        var forwarding = _forwardingContentGesture;
+        _forwardingContentGesture = true;
+        try
+        {
+            source.RaiseEvent(new ScrollGestureEndedEventArgs(gestureId));
+        }
+        finally
+        {
+            _forwardingContentGesture = forwarding;
+        }
+    }
+
+    private void FinishContentGesture()
+    {
+        if (!_contentDragging || _contentHandedOff || _canvas == null)
+        {
+            CancelContentGesture();
+            return;
+        }
+
+        var delta = _contentPosition.Y - _contentStart.Y;
+        var velocity = SampleDragPosition(_contentPosition.Y);
+        if (_contentClosing)
+        {
+            var target = GetDragTarget(_dragVisibleHeight, delta, velocity, IsFullScreenGestureEnabled || IsFullScreen);
+            CancelContentGesture();
+            ApplyDragTarget(target.State, target.FullScreen);
+            return;
+        }
+        var fullScreen = _dragVisibleHeight >= (GetNormalHeight() + _canvas.Bounds.Height) / 2;
+        if (Math.Abs(delta) >= 16 && Math.Abs(velocity) >= 800 && Math.Sign(delta) == Math.Sign(velocity))
+        {
+            fullScreen = velocity < 0;
+        }
+
+        CancelContentGesture();
+        SetCurrentValue(IsFullScreenProperty, fullScreen);
+        UpdatePos();
+    }
+
+    private void CancelContentGesture(bool releaseCapture = true)
+    {
+        if (_updatingContentState || _contentPointer == null)
+        {
+            return;
+        }
+
+        var pointer = _contentPointer;
+        var captured = _contentGestureId.HasValue;
+        var forwardedSource = _contentForwarded ? _contentSource : null;
+        var forwardedGestureId = _contentGestureId;
+        if (releaseCapture && _contentGestureId is { } gestureId)
+        {
+            // A released pointer no longer owns its recognizer, but its inertia can still be running.
+            _cancelledContentGestures.Add(gestureId);
+        }
+        _contentPointer = null;
+        _contentSource = null;
+        _contentGestureTarget = null;
+        _contentGestureId = null;
+        _contentInputSubscription?.Dispose();
+        _contentInputSubscription = null;
+        if (_contentDragging)
+        {
+            _isDragging = false;
+            _dragSamples.Clear();
+            PseudoClasses.Set(":dragging", false);
+        }
+        _contentDragging = _contentClosing = _contentReleased = _contentHandedOff = _contentForwarded = false;
+        if (releaseCapture && captured)
+        {
+            pointer.Capture(null);
+        }
+        if (forwardedSource != null && forwardedGestureId is { } endedId)
+        {
+            ForwardContentGestureEnded(forwardedSource, endedId);
+        }
+        UpdatePos();
+    }
+
+    private sealed class ContentScrollGestureRecognizer(VerticalDrawer owner) : ScrollGestureRecognizer
+    {
+        protected override void PointerMoved(PointerEventArgs e)
+        {
+            if (!owner._contentDragging && e.Handled && owner._contentPosition.Y > owner._contentStart.Y)
+            {
+                return;
+            }
+            base.PointerMoved(e);
+        }
+
+        protected override void PointerPressed(PointerPressedEventArgs e)
+        {
+            if (owner._contentPointer == e.Pointer)
+            {
+                CanVerticallyScroll = true;
+                ScrollStartDistance = 8;
+                IsScrollInertiaEnabled = true;
+                base.PointerPressed(e);
+            }
+        }
     }
 
     private bool CanDragTitle(object? source)
@@ -453,22 +937,39 @@ public class VerticalDrawer : ContentControl
 
         var velocity = SampleDragPosition(position.Y);
         var height = Math.Clamp(_startVisibleHeight - delta.Y, -2, _canvas.Bounds.Height);
+        var target = GetDragTarget(height, delta.Y, velocity);
+        EndDrag();
+        ApplyDragTarget(target.State, target.FullScreen);
+        e.Handled = true;
+    }
+
+    private double GetMaximumContentDragHeight() => IsFullScreenGestureEnabled || IsFullScreen
+        ? _canvas?.Bounds.Height ?? 0
+        : GetNormalHeight();
+
+    private (VerticalDrawerOpenState State, bool FullScreen) GetDragTarget(double height, double delta, double velocity,
+        bool allowFullScreen = true)
+    {
+        var availableHeight = _canvas!.Bounds.Height;
         var stops = new List<(double Height, VerticalDrawerOpenState State, bool FullScreen)>
         {
             (-2, VerticalDrawerOpenState.Closed, false)
         };
         if (AllowCollapse)
         {
-            stops.Add((Math.Min(40, _canvas.Bounds.Height), VerticalDrawerOpenState.Collapsed, false));
+            stops.Add((Math.Min(40, availableHeight), VerticalDrawerOpenState.Collapsed, false));
         }
         stops.Add((GetNormalHeight(), VerticalDrawerOpenState.Opened, false));
-        stops.Add((_canvas.Bounds.Height, VerticalDrawerOpenState.Opened, true));
+        if (allowFullScreen)
+        {
+            stops.Add((availableHeight, VerticalDrawerOpenState.Opened, true));
+        }
         var candidates = stops.DistinctBy(stop => stop.Height).ToList();
         var target = candidates
             .OrderBy(stop => Math.Abs(stop.Height - height))
-            .ThenBy(stop => delta.Y < 0 ? -stop.Height : stop.Height)
+            .ThenBy(stop => delta < 0 ? -stop.Height : stop.Height)
             .First();
-        var fling = Math.Abs(delta.Y) >= 16 && Math.Abs(velocity) >= 800 && Math.Sign(delta.Y) == Math.Sign(velocity);
+        var fling = Math.Abs(delta) >= 16 && Math.Abs(velocity) >= 800 && Math.Sign(delta) == Math.Sign(velocity);
         if (fling)
         {
             var start = candidates.MinBy(stop => Math.Abs(stop.Height - _startVisibleHeight));
@@ -483,21 +984,23 @@ public class VerticalDrawer : ContentControl
             }
         }
 
-        EndDrag();
-        if (target.State == VerticalDrawerOpenState.Closed)
+        return (target.State, target.FullScreen);
+    }
+
+    private void ApplyDragTarget(VerticalDrawerOpenState state, bool fullScreen)
+    {
+        if (state == VerticalDrawerOpenState.Closed)
         {
             if (!TryClose())
             {
                 SetCurrentValue(StateProperty, VerticalDrawerOpenState.Opened);
                 UpdatePos();
             }
-            e.Handled = true;
             return;
         }
-        SetCurrentValue(StateProperty, target.State);
-        SetCurrentValue(IsFullScreenProperty, target.FullScreen);
+        SetCurrentValue(StateProperty, state);
+        SetCurrentValue(IsFullScreenProperty, fullScreen);
         UpdatePos();
-        e.Handled = true;
     }
 
     private double SampleDragPosition(double y)
@@ -537,6 +1040,7 @@ public class VerticalDrawer : ContentControl
 
     private void CancelDrag()
     {
+        CancelContentGesture();
         if (_pointer == null)
         {
             return;
