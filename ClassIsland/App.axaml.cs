@@ -242,6 +242,8 @@ public partial class App : AppBase, IAppHost
             Directory.CreateDirectory(CommonDirectories.AppRootFolderPath);
         }
 
+        PlatformServices.BlobRootFolderPath = CommonDirectories.AppBlobFolderPath;
+
         if (File.Exists(Path.Combine(CommonDirectories.AppPackageRoot, "ClassIsland" + PlatformExecutableExtension)))
         {
             ExecutingEntrance =
