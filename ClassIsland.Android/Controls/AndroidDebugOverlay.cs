@@ -5,9 +5,11 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Avalonia.Rendering;
+using Avalonia.Threading;
 using ClassIsland.Android.Services;
 using ClassIsland.Core;
 using ClassIsland.Core.Enums;
+using ClassIsland.Helpers;
 using NativeView = global::Android.Views.View;
 
 namespace ClassIsland.Android.Controls;
@@ -27,6 +29,7 @@ internal sealed class AndroidDebugOverlay : IDisposable
     private PopupWindow? _popup;
     private ScrollView? _panel;
     private TextView? _metricsText;
+    private TextView? _fontProbeText;
     private Button? _reloadButton;
     private AndroidProcessMetrics? _sampler;
     private float _xFraction = 1;
@@ -93,6 +96,22 @@ internal sealed class AndroidDebugOverlay : IDisposable
         if (!_disposed && _activity.ViewHostRoot is { } root)
         {
             root.RendererDiagnostics.DebugOverlays = _overlays;
+            RefreshFontProbe();
+        }
+    }
+
+    private async void RefreshFontProbe()
+    {
+        if (_disposed || _fontProbeText == null)
+        {
+            return;
+        }
+
+        var target = _fontProbeText;
+        var result = await Dispatcher.UIThread.InvokeAsync(DefaultFontProbe.Read);
+        if (!_disposed && _fontProbeText == target)
+        {
+            target.Text = result.DisplayText;
         }
     }
 
@@ -272,6 +291,10 @@ internal sealed class AndroidDebugOverlay : IDisposable
         _metricsText = CreateText("进程 RSS：正在采样…\n.NET 托管堆（估算）：正在采样…\nGC 已提交：正在采样…\n原生堆已分配：正在采样…\nCPU：采样中…", 14);
         content.AddView(_metricsText);
         content.AddView(CreateText("内存口径不同，不可直接相加；原生堆不含全部非托管映射。CPU 100% 表示占满一个核心。", 12));
+        content.AddView(CreateText("默认字体探针", 18));
+        _fontProbeText = CreateText("正在探测…", 14);
+        content.AddView(_fontProbeText);
+        RefreshFontProbe();
         AddOverlaySwitch(content, "帧率（FPS）", RendererDebugOverlays.Fps);
         AddOverlaySwitch(content, "重绘区域", RendererDebugOverlays.DirtyRects);
         AddOverlaySwitch(content, "布局耗时图", RendererDebugOverlays.LayoutTimeGraph);
@@ -471,6 +494,7 @@ internal sealed class AndroidDebugOverlay : IDisposable
         }
         _panel = null;
         _metricsText = null;
+        _fontProbeText = null;
         _reloadButton = null;
         _actionButtons.Clear();
         ScheduleFade();
