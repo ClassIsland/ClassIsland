@@ -3,6 +3,7 @@
     "path": "ClassIsland.sln",
     "projects": [
       "build\\_build.csproj",
+      "ClassIsland.Android\\ClassIsland.Android.csproj",
       "ClassIsland.Core\\ClassIsland.Core.csproj",
       "ClassIsland.Desktop\\ClassIsland.Desktop.csproj",
       "ClassIsland.DocsGenerator\\ClassIsland.DocsGenerator.csproj",
@@ -14,6 +15,7 @@
       "ClassIsland.Shared\\ClassIsland.Shared.csproj",
       "ClassIsland\\ClassIsland.csproj",
       "platforms\\ClassIsland.Platforms.Linux\\ClassIsland.Platforms.Linux.csproj",
+      "roslyn\\IconsMappingGenerator\\IconsMappingGenerator.csproj",
       "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj",
       "vendors\\PhainonDistributionCenter.Shared\\PhainonDistributionCenter.Shared.csproj"
     ]
