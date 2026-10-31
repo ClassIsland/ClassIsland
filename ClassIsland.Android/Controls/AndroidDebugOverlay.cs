@@ -288,9 +288,9 @@ internal sealed class AndroidDebugOverlay : IDisposable
         background.Alpha = 204;
         content.Background = background;
         content.AddView(CreateText($"Android 调试 · PID {(global::Android.OS.Process.MyPid())}", 18));
-        _metricsText = CreateText("进程 RSS：正在采样…\n.NET 托管堆（估算）：正在采样…\nGC 已提交：正在采样…\n原生堆已分配：正在采样…\nCPU：采样中…", 14);
+        _metricsText = CreateText("进程 RSS：正在采样…\n.NET 托管堆（估算）：正在采样…\nGC 已提交：正在采样…\n原生堆已分配：正在采样…\nCPU：采样中…\nSkia GPU 缓存：正在采样…", 14);
         content.AddView(_metricsText);
-        content.AddView(CreateText("内存口径不同，不可直接相加；原生堆不含全部非托管映射。CPU 100% 表示占满一个核心。", 12));
+        content.AddView(CreateText("内存口径不同，不可直接相加；原生堆不含全部非托管映射。Skia GPU 缓存显示已用量 / 上限，不代表总显存占用。CPU 100% 表示占满一个核心。", 12));
         content.AddView(CreateText("默认字体探针", 18));
         _fontProbeText = CreateText("正在探测…", 14);
         content.AddView(_fontProbeText);
@@ -466,7 +466,9 @@ internal sealed class AndroidDebugOverlay : IDisposable
         }
         var generation = _sampleGeneration;
         var sampler = _sampler;
-        var result = await Task.Run(sampler.Read);
+        var processMetrics = Task.Run(sampler.Read);
+        var gpuMetrics = await Dispatcher.UIThread.InvokeAsync(() => AndroidSkiaGpuMetrics.ReadAsync(_activity.ViewHostRoot));
+        var result = $"{await processMetrics}\nSkia GPU 缓存：{gpuMetrics}";
         if (_disposed || generation != _sampleGeneration || !_activity.IsForeground || _popup?.IsShowing != true)
         {
             return;

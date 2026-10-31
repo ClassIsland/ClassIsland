@@ -8,6 +8,7 @@ using ClassIsland.Android.Services.Platform;
 using ClassIsland.Core;
 using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
+using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 
@@ -51,6 +52,10 @@ public class Application : AvaloniaAndroidApplication<App>
             })
             .UseAndroid()
             .UseOverlayAssetLoader()
+            .With(new SkiaOptions
+            {
+                MaxGpuResourceSizeBytes = SkiaGpuCacheHelper.SizeBytes
+            })
             .With(new FontManagerOptions
             {
                 FontFallbacks =

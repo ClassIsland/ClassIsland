@@ -1,5 +1,7 @@
+using System;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Services;
+using ClassIsland.Helpers;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -8,6 +10,22 @@ namespace ClassIsland.ViewModels.SettingsPages;
 public partial class AdvancedSettingsViewModel(SettingsService settingsService) : ObservableObject
 {
     public SettingsService SettingsService { get; } = settingsService;
+
+    public int SkiaGpuCacheSizeMb
+    {
+        get => SkiaGpuCacheHelper.SizeMb;
+        set
+        {
+            value = Math.Clamp(value, SkiaGpuCacheHelper.MinimumSizeMb, SkiaGpuCacheHelper.MaximumSizeMb);
+            if (value == SkiaGpuCacheSizeMb)
+            {
+                return;
+            }
+
+            SkiaGpuCacheHelper.SizeMb = value;
+            OnPropertyChanged();
+        }
+    }
     
     public int RenderingModeSelectedIndex
     {
