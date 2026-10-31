@@ -63,13 +63,16 @@
             </StackPanel>
         </Grid>
     </controls:SettingsPageBase.Resources>
+    
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
-            <controls1:IconText Glyph="&#xF464;" Text="天气预览" Margin="0 0 0 8" />
-            <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
-                    Padding="20"
-                    CornerRadius="12"
-                    Margin="0 0 0 4">
+            <controls1:IconText Glyph="&#xF464;" Text="天气预览" Margin="0 0 0 4" />
+            
+            <Border Padding="20"
+                    Background="{DynamicResource ControlFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
                 <StackPanel Spacing="16">
                     <Grid ColumnDefinitions="Auto, *, Auto">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="14">
@@ -83,14 +86,13 @@
                                 </TextBlock>
                                 <TextBlock Classes="l-instructive"
                                            FontSize="12"
-                                           Opacity="0.6"
                                            Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.UpdateTime, StringFormat='更新于 {0:HH:mm}'}" />
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"
                                     Orientation="Horizontal" Spacing="28">
                             <StackPanel Spacing="4">
-                                <TextBlock Text="湿度" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8" />
+                                <TextBlock Text="湿度" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
                                     <ci:FluentIcon Glyph="&#xE794;" FontSize="14" VerticalAlignment="Center" />
                                     <TextBlock VerticalAlignment="Center" FontWeight="Medium">
@@ -100,14 +102,14 @@
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Spacing="4">
-                                <TextBlock Text="空气质量" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8" />
+                                <TextBlock Text="空气质量" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
                                     <ci:FluentIcon Glyph="&#xEA7D;" FontSize="14" VerticalAlignment="Center" />
                                     <TextBlock Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}" VerticalAlignment="Center" FontWeight="Medium" />
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Spacing="4">
-                                <TextBlock Text="风力" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8" />
+                                <TextBlock Text="风力" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
                                     <ci:FluentIcon Glyph="&#xF43B;" FontSize="14" VerticalAlignment="Center" />
                                     <TextBlock VerticalAlignment="Center" FontWeight="Medium">
@@ -136,12 +138,15 @@
                                 <Expander Margin="0 4 0 0" Padding="12 8">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal" Spacing="10">
-                                            <asyncImageLoader:AdvancedImage Width="22" Height="22"
+                                            <asyncImageLoader:AdvancedImage Width="22" Height="22" VerticalAlignment="Center"
                                                                             Source="{Binding Images[icon]}" />
-                                            <TextBlock Text="{Binding Title}" VerticalAlignment="Center" FontWeight="Medium" />
+                                            <TextBlock Text="{Binding Title}" FontWeight="Medium"
+                                                       VerticalAlignment="Center" Margin="0,1,0,0"/>
                                         </StackPanel>
                                     </Expander.Header>
-                                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" FontSize="13" Margin="32 4 8 8" Opacity="0.8" />
+                                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap"
+                                               FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Margin="36 4 8 4" />
                                 </Expander>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -149,8 +154,9 @@
                 </StackPanel>
             </Border>
 
-            <Separator Margin="0 16 0 8" />
-            <controls1:IconText Glyph="&#xE7C5;" Text="位置设置" Margin="0 0 0 8" />
+            <Separator Margin="0 12 0 4" />
+            <controls1:IconText Glyph="&#xE7C5;" Text="位置设置" Margin="0 0 0 4" />
+            
             <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C5;}"
                                         Header="天气位置"
                                         IsExpanded="True"
@@ -273,8 +279,10 @@
                     </controls3:FASettingsExpanderItem.Footer>
                 </controls3:FASettingsExpanderItem>
             </controls3:FASettingsExpander>
-            <Separator Margin="0 16 0 8" />
-            <controls1:IconText Glyph="&#xE713;" Text="外观与高级设置" Margin="0 0 0 8" />
+            
+            <Separator Margin="0 12 0 4" />
+            <controls1:IconText Glyph="&#xE713;" Text="外观与高级设置" Margin="0 0 0 4" />
+            
             <!-- 天气图标包 -->
             <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE9B0;}"
                                         Header="天气图标包"
@@ -318,15 +326,11 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.NoTLSWeatherRequests, Mode=TwoWay}" />
                 </controls3:FASettingsExpander.Footer>
             </controls3:FASettingsExpander>
-            <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
-                    CornerRadius="8"
-                    Padding="12"
-                    Margin="0 8 0 0">
-                <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">
-                    要调整天气提醒设置，请转到<ci:NavHyperlink NavTarget="classisland://app/settings/notification">【提醒】页面</ci:NavHyperlink>。
-                    要调整主界面上的天气快速信息，请在<ci:NavHyperlink NavTarget="classisland://app/settings/components">【组件】页面</ci:NavHyperlink>中配置天气简报组件。
-                </TextBlock>
-            </Border>
+            
+            <TextBlock TextWrapping="Wrap" FontSize="12" Classes="l-instructive">
+                要调整天气提醒设置，请转到<ci:NavHyperlink NavTarget="classisland://app/settings/notification">【提醒】页面</ci:NavHyperlink>。
+                要调整主界面上的天气信息显示，请转到<ci:NavHyperlink NavTarget="classisland://app/settings/components">【组件】页面</ci:NavHyperlink>中配置天气简报组件。
+            </TextBlock>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>
