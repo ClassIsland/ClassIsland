@@ -9,7 +9,20 @@ public static class MainClass
 {
     public static void Main(string[] args)
     {
+        if (args.Length >= 2 && args[0] == "--hud-stop" && int.TryParse(args[1], out var targetPid))
+        {
+            IosHudNativeBridge.StopTarget(targetPid);
+            return;
+        }
+
         IosHudMode.Detect(args);
+        if (IosHudMode.IsHudProcess)
+        {
+            // 在任何托管初始化之前注册退出通知；HUD 可能卡在 Avalonia 启动阶段，
+            // 此时仍必须能响应主 App 的停止请求。
+            IosHudNativeBridge.InitializeChildLifecycle();
+        }
+
         var diagnosticsDirectory = IosHudMode.IsHudProcess
             ? Environment.GetEnvironmentVariable("CLASSISLAND_HUD_DATA_DIR")
             : null;

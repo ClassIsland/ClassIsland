@@ -128,7 +128,13 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
         {
             if (IosHudNativeBridge.IsRunning() == 1)
             {
-                IosHudNativeBridge.Stop();
+                var stopResult = IosHudNativeBridge.Stop();
+                if (stopResult < 0 || IosHudNativeBridge.IsRunning() == 1)
+                {
+                    IosStartupDiagnostics.Write(
+                        $"无法重启悬浮主界面宿主：旧 HUD 无法终止，result={stopResult}，{IosHudNativeBridge.GetLastError()}");
+                    return false;
+                }
             }
 
             var dataDirectory = PrepareSnapshot();

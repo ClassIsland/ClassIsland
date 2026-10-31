@@ -390,6 +390,56 @@ private func hudPostDismissalNotification() -> Bool {
     return notificationName.withCString { ci_notify_post($0) == 0 }
 }
 
+/// 以 root persona 启动一个极小的同包 stop helper，处理旧版 HUD 未安装退出通知的情况。
+private func hudSpawnRootStopHelper(_ targetPid: pid_t) -> Bool {
+    guard let executablePath = Bundle.main.executablePath, !executablePath.isEmpty else {
+        return false
+    }
+
+    var attributes: posix_spawnattr_t?
+    guard posix_spawnattr_init(&attributes) == 0 else {
+        return false
+    }
+    defer { posix_spawnattr_destroy(&attributes) }
+
+    let personaResult = ci_posix_spawnattr_set_persona_np(
+        &attributes,
+        HudConstants.superuserPersonaID,
+        HudConstants.superuserPersonaFlags
+    )
+    let uidResult = ci_posix_spawnattr_set_persona_uid_np(&attributes, 0)
+    let gidResult = ci_posix_spawnattr_set_persona_gid_np(&attributes, 0)
+    guard personaResult == 0, uidResult == 0, gidResult == 0 else {
+        return false
+    }
+
+    let argumentStrings = [executablePath, "--hud-stop", String(targetPid)]
+    let arguments = argumentStrings.map { strdup($0) }
+    defer {
+        for case let pointer? in arguments {
+            free(pointer)
+        }
+    }
+
+    var helperPid: pid_t = 0
+    let spawnResult = executablePath.withCString { path in
+        posix_spawn(
+            &helperPid,
+            path,
+            nil,
+            &attributes,
+            arguments + [nil],
+            environ
+        )
+    }
+    guard spawnResult == 0, helperPid > 0 else {
+        return false
+    }
+
+    _ = waitpid(helperPid, nil, 0)
+    return true
+}
+
 private func hudTerminateProcess(_ pid: pid_t) -> HudTerminationResult {
     if !hudIsProcessAlive(pid) {
         return .alreadyGone
@@ -426,6 +476,10 @@ private func hudTerminateProcess(_ pid: pid_t) -> HudTerminationResult {
         if hudWaitForProcessExit(pid, timeout: HudConstants.dismissalGracePeriod) {
             return .terminated
         }
+    }
+
+    if hudSpawnRootStopHelper(pid), hudWaitForProcessExit(pid, timeout: HudConstants.killGracePeriod) {
+        return .terminated
     }
 
     if permissionDenied {
@@ -708,4 +762,24 @@ private func hudInstallHudChildLifecycleObserversIfNeeded() {
     }
     timer.resume()
     hudParentWatchdogTimer = timer
+}
+
+/// 在 HUD 子进程进入 UIKit/Avalonia 初始化前安装生命周期观察者。
+/// 不能等到窗口注册后再安装，否则 HUD 若卡在建窗阶段将无法被宿主终止。
+@_cdecl("ci_hud_initialize_child_lifecycle")
+public func ci_hud_initialize_child_lifecycle() {
+    hudInstallHudChildLifecycleObserversIfNeeded()
+}
+
+@_cdecl("ci_hud_stop_target")
+public func ci_hud_stop_target(_ pid: Int32) -> Int32 {
+    guard pid > 0, pid != getpid() else {
+        return HudError.invalidArgument.rawValue
+    }
+
+    if kill(pid_t(pid), SIGKILL) == 0 || errno == ESRCH {
+        return HudError.ok.rawValue
+    }
+
+    return HudError.terminationForbidden.rawValue
 }

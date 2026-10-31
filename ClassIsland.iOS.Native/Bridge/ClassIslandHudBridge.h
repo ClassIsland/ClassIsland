@@ -82,7 +82,7 @@ ci_hud_start(int32_t spawn_as_root, const char *data_dir_utf8);
  *   - 先 SIGTERM；最多等待 0.5 秒仍未退出则 SIGKILL；再等待 0.2 秒。
  *   - 宿主 App 以 mobile 运行、HUD 以 root 运行时 kill 会返回 EPERM（TrollStore
  *     场景的常态）。此时桥接会 post 一个 <bundle-id>.hud.dismissal 的 darwin
- *     notification，HUD 子进程在 ci_hud_register_window 中安装的观察者收到后自行
+ *     notification，HUD 子进程在启动早期安装的观察者收到后自行
  *     _exit(0)（与 TrollRecorder TRHud 相同的退出机制），随后再等待最多 0.6 秒。
  *   - 清理 pid marker 仅在确认终止后执行；失败时保留 marker 以便重试。
  *
@@ -92,6 +92,19 @@ ci_hud_start(int32_t spawn_as_root, const char *data_dir_utf8);
  */
 CI_HUD_EXPORT int32_t
 ci_hud_stop(void);
+
+/*
+ * 仅由 HUD 子进程入口调用，在 UIKit/Avalonia 初始化前安装退出通知和父进程看门狗。
+ * 该函数幂等，主 App 不应调用。
+ */
+CI_HUD_EXPORT void
+ci_hud_initialize_child_lifecycle(void);
+
+/*
+ * 由 root stop helper 调用，终止指定 HUD PID。普通 mobile 主 App 不应直接调用。
+ */
+CI_HUD_EXPORT int32_t
+ci_hud_stop_target(int32_t pid);
 
 /* 1 = HUD 子进程正在运行；0 = 没有运行。 */
 CI_HUD_EXPORT int32_t

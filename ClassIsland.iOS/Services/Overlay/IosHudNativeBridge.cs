@@ -37,6 +37,14 @@ internal static partial class IosHudNativeBridge
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void RegisterWindow(nint window);
 
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_hud_initialize_child_lifecycle")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial void InitializeChildLifecycle();
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_hud_stop_target")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial int StopTarget(int pid);
+
     internal static string GetLastError()
     {
         var pointer = LastErrorPointer();
