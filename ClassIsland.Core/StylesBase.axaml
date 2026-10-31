@@ -373,6 +373,16 @@
                                            FadeOutEasing="0,0 0,1"/>
         </Setter>
     </Style>
+    
+    <Style Selector=":is(TabControl).no-header TabItem">
+        <Setter Property="Header" Value=""/>
+    </Style>
+    
+    <Style Selector=":is(TabControl).no-header /template/ ItemsPresenter#PART_ItemsPresenter">
+        <Setter Property="Height" Value="0"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
 
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>
