@@ -17,6 +17,11 @@ public static class PlatformServices
     /// 平台定位服务
     /// </summary>
     public static ILocationService LocationService { get; internal set; } = new LocationServiceStub();
+
+    /// <summary>
+    /// 平台触觉反馈服务
+    /// </summary>
+    public static IHapticFeedbackService HapticFeedbackService { get; internal set; } = new HapticFeedbackServiceStub();
     
     /// <summary>
     /// 平台桌面服务
@@ -42,6 +47,8 @@ public static class PlatformServices
     /// 平台文件选取服务
     /// </summary>
     public static IPlatformFilePickerService FilePickerService { get; internal set; } = new AvaloniaDefaultPlatformFilePickerService();
+
+    internal static string BlobRootFolderPath { get; set; } = Path.Combine(".", "Blobs");
 
     /// <summary>
     /// 应用生命周期操作服务

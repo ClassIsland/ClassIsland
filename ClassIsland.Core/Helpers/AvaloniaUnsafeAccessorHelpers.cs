@@ -2,6 +2,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Avalonia.Input.Raw;
 using Avalonia.Platform;
 using Avalonia.Rendering;
 using Avalonia.Vulkan;
@@ -10,6 +14,33 @@ namespace ClassIsland.Core.Helpers;
 
 internal static class AvaloniaUnsafeAccessorHelpers
 {
+    // Gesture capture bypasses routed input. Avalonia hides the raw input observer from reference assemblies.
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_PreProcess")]
+    internal static extern IObservable<RawInputEventArgs> GetRawInputPreProcess(IInputManager inputManager);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_Device")]
+    internal static extern IInputDevice GetRawInputDevice(RawInputEventArgs args);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "TryGetPointer")]
+    internal static extern IPointer? GetRawInputPointer(IPointerDevice device, RawPointerEventArgs args);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_Position")]
+    internal static extern Point GetRawPointerPosition(RawPointerEventArgs args);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_Type")]
+    internal static extern RawPointerEventType GetRawPointerEventType(RawPointerEventArgs args);
+
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ApplyTemplatedParent")]
+    internal static extern void ApplyTemplatedParent(TemplatedControl? declaringType, StyledElement control,
+        AvaloniaObject? templatedParent);
+
+    // ComboBox exposes these events through its native popup; drawer selection has no native popup.
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "DropDownOpened")]
+    internal static extern ref EventHandler? GetComboBoxDropDownOpened(ComboBox comboBox);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "DropDownClosed")]
+    internal static extern ref EventHandler? GetComboBoxDropDownClosed(ComboBox comboBox);
+
     [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "get_Current")]
     static extern IAvaloniaDependencyResolver? GetCurrentAvaloniaLocator(AvaloniaLocator? nullLocator);
 

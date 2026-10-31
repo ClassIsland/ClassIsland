@@ -21,6 +21,24 @@ public partial class AdvancedSettingsViewModel(SettingsService settingsService) 
         }
     }
     
+    public int AndroidRenderingModeSelectedIndex
+    {
+        get => int.TryParse(GlobalStorageService.GetValue("AndroidRenderingMode"), out var value)
+               && value is >= 0 and <= 3
+            ? value
+            : 0;
+        set
+        {
+            if (value is < 0 or > 3 || value == AndroidRenderingModeSelectedIndex)
+            {
+                return;
+            }
+
+            GlobalStorageService.SetValue("AndroidRenderingMode", value.ToString());
+            OnPropertyChanged();
+        }
+    }
+
     public bool UseNativeTitlebar
     {
         get => bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var v)

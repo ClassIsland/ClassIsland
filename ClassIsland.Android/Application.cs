@@ -5,6 +5,8 @@ using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Media;
 using ClassIsland.Android.Services.Platform;
+using ClassIsland.Core;
+using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
@@ -29,6 +31,7 @@ public class Application : AvaloniaAndroidApplication<App>
         PlatformServices.LauncherService = new LauncherService();
         PlatformServices.DesktopToastService = new DesktopToastService();
         PlatformServices.LocationService = new LocationService();
+        PlatformServices.HapticFeedbackService = new HapticFeedbackService();
 
         var restartParameters = MainActivity.Current?.TryGetTarget(out var mainActivity) == true
             ? mainActivity.Intent?.GetStringArrayExtra(AndroidAppLifetimeService.RestartParametersExtra)
@@ -36,6 +39,9 @@ public class Application : AvaloniaAndroidApplication<App>
         var buildApp = Program.AppEntry(restartParameters is null
             ? ["--mobile"]
             : [.. restartParameters, "--mobile"]);
+        var renderingMode = int.TryParse(GlobalStorageService.GetValue("AndroidRenderingMode"), out var value)
+            ? value
+            : 0;
 
         return AppBuilder.Configure<App>(() =>
             {
@@ -44,25 +50,38 @@ public class Application : AvaloniaAndroidApplication<App>
                 return app;
             })
             .UseAndroid()
+            .UseOverlayAssetLoader()
             .With(new FontManagerOptions
             {
-                DefaultFamilyName = MainWindow.DefaultFontFamilyKey,
                 FontFallbacks =
                 [
                     new FontFallback
                     {
-                        FontFamily = MainWindow.DefaultFontFamily
+                        FontFamily = AppBase.FluentIconsFontFamily
                     }
                 ]
             })
             .With(new AndroidPlatformOptions()
             {
-                RenderingMode = [
-                    AndroidRenderingMode.Egl,
-                    AndroidRenderingMode.Vulkan,
-                    AndroidRenderingMode.Software
-                ]
+                RenderingMode = BuildRenderingMode(renderingMode)
             })
             .LogToHostSink();
     }
+
+    private static IReadOnlyList<AndroidRenderingMode> BuildRenderingMode(int userValue) => userValue switch
+    {
+        2 =>
+        [
+            AndroidRenderingMode.Vulkan,
+            AndroidRenderingMode.Egl,
+            AndroidRenderingMode.Software
+        ],
+        3 => [AndroidRenderingMode.Software],
+        _ =>
+        [
+            AndroidRenderingMode.Egl,
+            AndroidRenderingMode.Vulkan,
+            AndroidRenderingMode.Software
+        ]
+    };
 }

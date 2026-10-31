@@ -12,6 +12,10 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BrandType>Production</BrandType>
     <BrandType Condition="'$(Configuration)' == 'Debug'">Dev</BrandType>
+    <UseMonoRuntime>false</UseMonoRuntime>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <!-- CoreCLR 快速部署可能保留旧的 Java 类型映射，导致增量部署后启动崩溃。 -->
+    <EmbedAssembliesIntoApk Condition="'$(Configuration)' == 'Debug' and '$(UseMonoRuntime)' == 'false'">true</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BrandType)' == 'Production'">
     <ApplicationId>cn.classisland.android</ApplicationId>
@@ -46,6 +50,10 @@
 
   <ItemGroup>
     <AndroidResource Remove="Resources\mipmap-*\appicon*.png" />
+    <AndroidResource Remove="Resources\drawable-nodpi\debug_floating_icon.webp"
+                     Condition="'$(Configuration)' != 'Debug'" />
+    <Compile Remove="Controls\AndroidDebugOverlay.cs;Services\AndroidProcessMetrics.cs"
+             Condition="'$(Configuration)' != 'Debug'" />
     <AndroidResource Include="..\ClassIsland\Assets\Logos\Main.png"
                      Link="Resources\drawable\appicon_foreground.png"
                      Condition="'$(BrandType)' == 'Production'" />

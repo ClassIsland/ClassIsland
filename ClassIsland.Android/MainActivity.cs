@@ -2,6 +2,8 @@ using System.Runtime.Versioning;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Android.Views;
+using AndroidX.Activity;
 using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -15,6 +17,9 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
 using ClassIsland.Views;
+#if DEBUG
+using ClassIsland.Android.Controls;
+#endif
 
 namespace ClassIsland.Android;
 
@@ -41,6 +46,14 @@ public class MainActivity : AvaloniaMainActivity
     public event EventHandler? Destroy;
 
     private AndroidViewHost? ViewHost { get; set; }
+    private OnBackPressedCallback? _backPressedCallback;
+    private bool _isBackKeyHandled;
+#if DEBUG
+    private AndroidDebugOverlay? _debugOverlay;
+    private bool _isReloadingViewHost;
+
+    internal TopLevel? ViewHostRoot => ViewHost == null ? null : TopLevel.GetTopLevel(ViewHost);
+#endif
 
     public MainActivity()
     {
@@ -60,6 +73,10 @@ public class MainActivity : AvaloniaMainActivity
         ViewHost = new AndroidViewHost(this);
         Content = ViewHost;
         ActivityViewHostProvider.Instance.ViewHosts.Add(ViewHost);
+#if DEBUG
+        ViewHost.Loaded += DebugViewHostOnLoaded;
+        _debugOverlay = new AndroidDebugOverlay(this, savedInstanceState);
+#endif
         
         var splash = new SplashView();
         splash.Show();
@@ -201,21 +218,52 @@ public class MainActivity : AvaloniaMainActivity
              CheckSelfPermission(global::Android.Manifest.Permission.AccessFineLocation) == Permission.Granted));
     }
 
+    protected override void OnStart()
+    {
+        base.OnStart();
+        // Avalonia registers its callback in OnStart; register last so the host handles drawers first.
+        _backPressedCallback = new HostBackPressedCallback(this);
+        OnBackPressedDispatcher.AddCallback(this, _backPressedCallback);
+    }
+
+    protected override void OnStop()
+    {
+        _backPressedCallback?.Remove();
+        _backPressedCallback = null;
+        base.OnStop();
+    }
+
     protected override void OnResume()
     {
         base.OnResume();
         IsForeground = true;
+#if DEBUG
+        _debugOverlay?.Resume();
+#endif
         Resumed?.Invoke(this, EventArgs.Empty);
     }
 
     protected override void OnPause()
     {
         IsForeground = false;
+#if DEBUG
+        _debugOverlay?.Pause();
+#endif
         base.OnPause();
     }
 
     protected override void OnDestroy()
     {
+#if DEBUG
+        _debugOverlay?.Dispose();
+        _debugOverlay = null;
+        if (ViewHost != null)
+        {
+            ViewHost.Loaded -= DebugViewHostOnLoaded;
+        }
+#endif
+        _backPressedCallback?.Remove();
+        _backPressedCallback = null;
         IsForeground = false;
         _locationPermissionRequest?.TrySetResult(false);
         _locationPermissionRequest = null;
@@ -228,5 +276,133 @@ public class MainActivity : AvaloniaMainActivity
         Destroy?.Invoke(this, EventArgs.Empty);
         ViewHost = null;
         base.OnDestroy();
+    }
+
+#if DEBUG
+    protected override void OnSaveInstanceState(Bundle outState)
+    {
+        _debugOverlay?.SaveState(outState);
+        base.OnSaveInstanceState(outState);
+    }
+
+    private void DebugViewHostOnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+        _debugOverlay?.ApplyOverlays();
+
+    internal async Task ReloadViewHostAsync()
+    {
+        await Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            if (_isReloadingViewHost || IsFinishing || IsDestroyed ||
+                AppBase.CurrentLifetime != ApplicationLifetime.Running || ViewHost == null)
+            {
+                throw new InvalidOperationException("应用尚未就绪，或视图宿主正在重载，请稍后再试。");
+            }
+
+            _isReloadingViewHost = true;
+            try
+            {
+                var replacement = new AndroidViewHost(this);
+                var previous = ViewHost;
+                previous.Loaded -= DebugViewHostOnLoaded;
+                try
+                {
+                    await previous.ReleaseHostAsync();
+                }
+                catch
+                {
+                    await replacement.ReleaseHostAsync();
+                    throw;
+                }
+                if (IsFinishing || IsDestroyed)
+                {
+                    await replacement.ReleaseHostAsync();
+                    return;
+                }
+
+                ActivityViewHostProvider.Instance.ViewHosts.Remove(previous);
+                ViewHost = replacement;
+                ViewHost.Loaded += DebugViewHostOnLoaded;
+                ActivityViewHostProvider.Instance.ViewHosts.Add(ViewHost);
+                Content = ViewHost;
+                _isBackKeyHandled = false;
+                _debugOverlay?.ApplyOverlays();
+                var mainView = IAppHost.GetService<MainView>();
+                ViewHost.ActivateView(mainView);
+                await ViewHost.ShowView(mainView);
+                mainView.ViewShown();
+            }
+            finally
+            {
+                _isReloadingViewHost = false;
+            }
+        });
+    }
+#endif
+
+    public override bool DispatchKeyEvent(KeyEvent? e)
+    {
+        if (e?.KeyCode != Keycode.Back)
+        {
+            return base.DispatchKeyEvent(e);
+        }
+
+        if (e.Action == KeyEventActions.Down && e.RepeatCount == 0)
+        {
+            _isBackKeyHandled = ViewHost?.HandleBackRequested() == true;
+        }
+        if (!_isBackKeyHandled)
+        {
+            return base.DispatchKeyEvent(e);
+        }
+
+        // Avalonia maps Back to Escape on key down but forwards key up to Android's back dispatcher.
+        // Consume the whole key press so closing a drawer cannot also navigate the underlying page.
+        if (e.Action == KeyEventActions.Up)
+        {
+            _isBackKeyHandled = false;
+        }
+        return true;
+    }
+
+    public override void OnBackPressed()
+    {
+        if (_isBackKeyHandled || ViewHost?.HandleBackRequested() == true)
+        {
+            return;
+        }
+
+        base.OnBackPressed();
+    }
+
+    private void HandleHostBackPressed()
+    {
+        if (_isBackKeyHandled || ViewHost?.HandleBackRequested() == true)
+        {
+            return;
+        }
+
+        if (_backPressedCallback == null)
+        {
+            base.OnBackPressed();
+            return;
+        }
+
+        _backPressedCallback.Enabled = false;
+        try
+        {
+            OnBackPressedDispatcher.OnBackPressed();
+        }
+        finally
+        {
+            if (!IsFinishing && !IsDestroyed)
+            {
+                _backPressedCallback.Enabled = true;
+            }
+        }
+    }
+
+    private sealed class HostBackPressedCallback(MainActivity activity) : OnBackPressedCallback(true)
+    {
+        public override void HandleOnBackPressed() => activity.HandleHostBackPressed();
     }
 }

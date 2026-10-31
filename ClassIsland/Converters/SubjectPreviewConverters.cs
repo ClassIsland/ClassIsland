@@ -1,11 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 using ClassIsland.Core.Helpers.UI;
 
 namespace ClassIsland.Converters;
+
+public class SubjectDetailsConverter : IMultiValueConverter
+{
+    public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var teacher = values[0] as string;
+        var location = values[1] as string;
+        return string.Join("  ", new[] { teacher, string.IsNullOrWhiteSpace(location) ? "" : $"@{location}" }
+            .Where(x => !string.IsNullOrWhiteSpace(x)));
+    }
+}
 
 public class SubjectIconSourceConverter : IValueConverter
 {

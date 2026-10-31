@@ -2,21 +2,63 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:ClassIsland.Controls.UI;assembly=ClassIsland"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Android.Controls.UI.AndroidViewHost">
     <UserControl.Styles>
         <Style Selector="NavigationPage#NavigationPage /template/ Border#PART_NavigationBar">
             <Setter Property="Background" Value="{x:Null}"/>
         </Style>
+        <Style Selector="Grid.custom-background NavigationPage#NavigationPage">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Grid.custom-background NavigationPage#NavigationPage :is(ci|ViewBase)">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Grid.custom-background NavigationPage#NavigationPage :is(fa|FANavigationView)">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Grid.custom-background NavigationPage#NavigationPage :is(fa|FANavigationView) /template/ Border#ContentGridBorder">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
     </UserControl.Styles>
-    <Grid>
+    <Grid Classes.custom-background="{Binding #BackgroundImage.CurrentImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <Panel x:Name="BackgroundLayer"
+               IsVisible="{Binding #BackgroundImage.CurrentImage, Converter={x:Static ObjectConverters.IsNotNull}}"
+               IsHitTestVisible="False"
+               ClipToBounds="True" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
+            <asyncImageLoader:AdvancedImage x:Name="BackgroundImage" Stretch="UniformToFill"
+                                           Source="{Binding Settings.AndroidBackgroundImageSource}"
+                                           Opacity="{Binding Settings.AndroidBackgroundImageOpacity, FallbackValue=0.1}">
+                <!-- 不加缓存会卡爆 -->
+                <asyncImageLoader:AdvancedImage.CacheMode>
+                    <BitmapCache RenderAtScale="1"/>
+                </asyncImageLoader:AdvancedImage.CacheMode>
+                <asyncImageLoader:AdvancedImage.Template>
+                    <ControlTemplate>
+                        <Panel/>
+                    </ControlTemplate>
+                </asyncImageLoader:AdvancedImage.Template>
+            </asyncImageLoader:AdvancedImage>
+        </Panel>
         <Grid x:Name="PageContentRoot">
             <Grid.RenderTransform>
                 <TranslateTransform />
             </Grid.RenderTransform>
             <NavigationPage x:Name="NavigationPage"
                             Popped="NavigationPage_OnPopped">
+                <NavigationPage.PageTransition>
+                    <ci:CompositionPageTransition Duration="0:0:0.25"
+                                                  SlideInEasing="0,0 0,1"
+                                                  SlideOutEasing="0,0 0,1"
+                                                  FadeInEasing="0,0 0,1"
+                                                  FadeOutEasing="0,0 0,1"/>
+                </NavigationPage.PageTransition>
             </NavigationPage>
+            <ui:DrawerNavigationHost x:Name="DrawerHost"/>
         </Grid>
         <Border Height="3"
                 VerticalAlignment="Top"
