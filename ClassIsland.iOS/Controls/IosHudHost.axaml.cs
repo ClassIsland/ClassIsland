@@ -2,6 +2,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Threading;
 using ClassIsland.iOS.Services.Platform;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -16,12 +18,22 @@ namespace ClassIsland.iOS.Controls;
 /// 悬浮岛的停靠方位与偏移复用共享的 <see cref="Settings.WindowDockingLocation"/> /
 /// <see cref="Settings.WindowDockingOffsetX"/> / <see cref="Settings.WindowDockingOffsetY"/>，
 /// 与 Android 系统悬浮窗保持一致。
+/// 由于 HUD 窗口宽度固定为屏幕宽度，而主界面行（例如课程表组件）在桌面端是靠窗口自动加宽
+/// 来完整显示的，这里会按内容自然宽度整体缩放悬浮岛，保证完整内容都能落在屏幕内。
 /// </summary>
 public partial class IosHudHost : UserControl
 {
+    private const double FitCheckIntervalSeconds = 2;
+    private const double FitScaleChangeThreshold = 0.01;
+
     private bool _isDockedTop;
     private bool _hasLoggedMissingWindow;
     private Settings? _settings;
+    private LayoutTransformControl? _islandFitHost;
+    private ScaleTransform? _islandFitTransform;
+    private DispatcherTimer? _fitTimer;
+    private double _availableWidth;
+    private double _appliedFitScale = 1;
 
     /// <summary>
     /// 当前承载的悬浮主界面岛，未初始化时为 <see langword="null"/>。
@@ -38,6 +50,11 @@ public partial class IosHudHost : UserControl
     /// 悬浮主界面岛是否已完成初始化。
     /// </summary>
     public bool IsIslandInitialized => Island != null;
+
+    /// <summary>
+    /// 当前为适配屏幕宽度而施加的整体缩放比例。
+    /// </summary>
+    public double FitScale => _appliedFitScale;
 
     public IosHudHost()
     {
@@ -68,11 +85,21 @@ public partial class IosHudHost : UserControl
         _isDockedTop = _settings.WindowDockingLocation is 0 or 1 or 2;
         Island = new IosMainWindowIslandView
         {
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        // 外面再包一层 LayoutTransformControl：当悬浮岛内容自然宽度超过屏幕宽度时，
+        // 按比例整体缩小，避免课程表等宽内容被裁掉。
+        _islandFitTransform = new ScaleTransform(1, 1);
+        _islandFitHost = new LayoutTransformControl
+        {
+            Child = Island,
+            LayoutTransform = _islandFitTransform,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = _isDockedTop ? VerticalAlignment.Top : VerticalAlignment.Bottom
         };
-        Root.Children.Add(Island);
+        Root.Children.Add(_islandFitHost);
         UpdateSafeAreaMargin();
+        StartFitTimer();
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
@@ -81,9 +108,51 @@ public partial class IosHudHost : UserControl
         UpdateSafeAreaMargin();
     }
 
+    private void StartFitTimer()
+    {
+        _fitTimer?.Stop();
+        _fitTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(FitCheckIntervalSeconds)
+        };
+        _fitTimer.Tick += (_, _) => UpdateFitScale();
+        _fitTimer.Start();
+        UpdateFitScale();
+    }
+
+    /// <summary>
+    /// 测量悬浮岛内容的自然宽度；超过可用宽度时整体等比缩小，保证所有组件都能显示。
+    /// </summary>
+    private void UpdateFitScale()
+    {
+        if (Island == null || _islandFitTransform == null || _availableWidth <= 0)
+        {
+            return;
+        }
+
+        Island.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        var naturalWidth = Island.DesiredSize.Width;
+        if (double.IsNaN(naturalWidth) || double.IsInfinity(naturalWidth) || naturalWidth <= 0)
+        {
+            return;
+        }
+
+        var fitScale = Math.Min(1, _availableWidth / naturalWidth);
+        if (Math.Abs(fitScale - _appliedFitScale) < FitScaleChangeThreshold)
+        {
+            return;
+        }
+
+        _appliedFitScale = fitScale;
+        _islandFitTransform.ScaleX = fitScale;
+        _islandFitTransform.ScaleY = fitScale;
+        IosStartupDiagnostics.Write(
+            $"HUD island fit scale: {fitScale:F3} (available={_availableWidth:F1}, natural={naturalWidth:F1})");
+    }
+
     private void UpdateSafeAreaMargin()
     {
-        if (Island == null || _settings == null)
+        if (Island == null || _settings == null || _islandFitHost == null)
         {
             return;
         }
@@ -106,11 +175,15 @@ public partial class IosHudHost : UserControl
         var right = Math.Max(0, insets.Right - offsetX);
         var top = _isDockedTop ? Math.Max(0, insets.Top + offsetY) : insets.Top;
         var bottom = _isDockedTop ? insets.Bottom : Math.Max(0, insets.Bottom - offsetY);
-        Island.Margin = new Thickness(left, top, right, bottom);
+        _islandFitHost.Margin = new Thickness(left, top, right, bottom);
+        _availableWidth = Math.Max(1, window.Bounds.Width - left - right);
         IosStartupDiagnostics.Write(
             $"HUD island layout: dockTop={_isDockedTop}, offset=({offsetX},{offsetY}), " +
             $"safeArea=({insets.Left},{insets.Top},{insets.Right},{insets.Bottom}), " +
-            $"margin=({left},{top},{right},{bottom})");
+            $"margin=({left},{top},{right},{bottom}), availableWidth={_availableWidth:F1}");
+
+        // 安全区/宽度变化后立即重新计算自适应缩放。
+        UpdateFitScale();
     }
 
     /// <summary>
