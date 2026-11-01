@@ -4,8 +4,8 @@ using Avalonia;
 using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Media;
+using ClassIsland.Android.Helpers;
 using ClassIsland.Android.Services.Platform;
-using ClassIsland.Core;
 using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
 using ClassIsland.Helpers;
@@ -56,16 +56,8 @@ public class Application : AvaloniaAndroidApplication<App>
             {
                 MaxGpuResourceSizeBytes = SkiaGpuCacheHelper.SizeBytes
             })
-            .With(new FontManagerOptions
-            {
-                FontFallbacks =
-                [
-                    new FontFallback
-                    {
-                        FontFamily = AppBase.FluentIconsFontFamily
-                    }
-                ]
-            })
+            .With<FontManagerOptions>(AndroidFontHelper.GetOptions)
+            .AfterPlatformServicesSetup(_ => AndroidFontHelper.InitializeFallbacks())
             .With(new AndroidPlatformOptions()
             {
                 RenderingMode = BuildRenderingMode(renderingMode)
