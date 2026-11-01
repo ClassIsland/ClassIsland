@@ -24,6 +24,12 @@ public partial class IosHudHost : UserControl
     public IosMainWindowIslandView? Island { get; private set; }
 
     /// <summary>
+    /// HUD 子进程的宿主窗口。HUD 进程没有 UIScene，窗口由 AppDelegate 手动创建并注入，
+    /// 无法通过 <see cref="UIApplication.Windows"/> 取得。
+    /// </summary>
+    public UIWindow? HostWindow { get; set; }
+
+    /// <summary>
     /// 悬浮主界面岛是否已完成初始化。
     /// </summary>
     public bool IsIslandInitialized => Island != null;
@@ -89,8 +95,15 @@ public partial class IosHudHost : UserControl
             : new Thickness(0, 0, 0, insets.Bottom);
     }
 
-    private static UIWindow? GetHostWindow()
+    private UIWindow? GetHostWindow()
     {
+        // HUD 子进程没有 UIScene，手动创建的窗口不会出现在 UIApplication.Windows 里，
+        // 因此优先使用 AppDelegate 注入的窗口引用。
+        if (HostWindow is { } hostWindow)
+        {
+            return hostWindow;
+        }
+
         // Info.plist 没有配置 UIApplicationSceneManifest，App 仍走 AppDelegate 窗口生命周期，
         // 因此没有 UIWindowScene 可取，只能从应用级窗口列表获取 HUD 窗口。
 #pragma warning disable CS0618, CA1422

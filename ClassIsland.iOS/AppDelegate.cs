@@ -245,6 +245,10 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             initWindow.Invoke(null, [window, lifetime]);
             window.MakeKeyAndVisible();
             _hudWindow = window;
+            if (_hudHost != null)
+            {
+                _hudHost.HostWindow = window;
+            }
             IosStartupDiagnostics.Write($"HUD mode: 无场景，已手动创建悬浮窗 (bounds={window.Bounds})");
         }
         catch (Exception exception)
@@ -325,16 +329,24 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             return;
         }
 
-        var window = UIApplication.SharedApplication.Windows.FirstOrDefault();
+        // HUD 子进程没有 UIScene，手动创建的窗口不在 UIApplication.Windows 中，优先用注入的引用。
+        var window = _hudWindow ?? UIApplication.SharedApplication.Windows.FirstOrDefault();
         if (window == null)
         {
             return;
         }
 
+        _hudWindow = window;
+        if (_hudHost != null)
+        {
+            _hudHost.HostWindow = window;
+        }
+
         if (!_hasLoggedHudWindowFound)
         {
             _hasLoggedHudWindowFound = true;
-            IosStartupDiagnostics.Write($"HUD window found: bounds={window.Bounds}, level={window.WindowLevel}");
+            IosStartupDiagnostics.Write(
+                $"HUD window found: bounds={window.Bounds}, level={window.WindowLevel}, hidden={window.Hidden}");
         }
 
         window.BackgroundColor = UIColor.Clear;
