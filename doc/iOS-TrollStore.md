@@ -73,6 +73,22 @@ TrollStore 版与 Sideload 版使用同一个 Bundle ID，因此两者不能同�
 - `ClassIsland/App.axaml.cs`、`ClassIsland/Program.cs`：共享应用新增 `--hud` 模式与只读数据目录。
 - `ClassIsland.iOS/AppDelegate.cs` 中 `#if CLASSISLAND_TROLLSTORE` 分支：只在 TrollStore 发行版注册悬浮主界面服务。
 
+## 手动预览提醒
+
+悬浮岛的提醒由 HUD 宿主进程自己的提醒服务产生，主 App 里的提醒（例如自动化编辑页点击“触发”手动预览、主 App 运行时的提醒）不会自动出现在悬浮岛上。为了让手动预览也能在悬浮岛上看到效果，TrollStore 版增加了一条只针对手动预览的单向通道：
+
+```text
+主 App：自动化编辑页点“触发”
+  → ActionSetRunningControl 给行动项标记 IsPreview
+  → NotificationAction 检测到手动预览且悬浮主界面已启用
+  → 写入 Documents/ClassIsland/HudData/Inbox/<guid>.json（提醒设置）
+HUD 进程：IosHudPreviewNotificationPoller 每秒轮询该目录
+  → 用 NotificationAction.BuildNotificationRequest 构造同样的提醒
+  → 交给 ActionNotificationProvider 在悬浮岛上显示，随后删除请求文件
+```
+
+设计约束：**只转发手动预览**。自动触发（cron、上下课等）在主 App 和 HUD 进程里都会执行，如果无条件把主 App 的提醒转发给 HUD，悬浮岛上会出现重复提醒；用户主动点“触发”时另一进程并不同时执行，因此不会被预览标记干扰。悬浮主界面未启用或版本不支持时不写入收件箱，提醒仍在主 App 内按原逻辑显示。当前只转发“显示提醒”行动（`classisland.showNotification`）；气象类提醒等仍由主 App 处理。
+
 ## Entitlements
 
 主可执行文件使用 [`ClassIsland.iOS/Entitlements.TrollStore.plist`](../ClassIsland.iOS/Entitlements.TrollStore.plist)，在打包后由 `tools/ci/sign-ios-trollstore-ipa.sh` 通过 `ldid -S` 写入。该文件参考 Letterpress、TrollSpeed、FloatingBall 等已验证组合：

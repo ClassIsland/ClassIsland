@@ -9,6 +9,7 @@ using ClassIsland.Core.Models.Notification;
 using ClassIsland.Helpers;
 using ClassIsland.Models.Actions;
 using ClassIsland.Services.NotificationProviders;
+using ClassIsland.Services.Overlay;
 using ClassIsland.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +24,14 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
     protected override async Task OnInvoke()
     {
         await base.OnInvoke();
+
+        // 手动预览且悬浮主界面可用时，把提醒交给 HUD 宿主进程在悬浮岛上显示。
+        // 自动触发不会进入此分支，因此不会和 HUD 自己产生的提醒重复。
+        if (ActionItem.IsPreview && HudPreviewNotificationForwarder.TryForward(Settings))
+        {
+            return;
+        }
+
         var notificationTask = ShowNotificationAsync(Settings);
 
         if (!Settings.IsWaitForCompleteEnabled) return;
@@ -77,36 +86,46 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
     {
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            var request = new NotificationRequest
-            {
-                MaskContent = NotificationContent.CreateTwoIconsMask(settings.Mask,
-                    leftIcon: settings.IsLeftIconEnabled ? settings.LeftIcon ?? "" : "",
-                    rightIcon: settings.IsRightIconEnabled ? settings.RightIcon ?? "" : "",
-                    hasRightIcon: settings.IsRightIconEnabled, factory: x =>
-                {
-                    x.Duration = TimeSpanHelper.FromSecondsSafe(settings.MaskDurationSeconds);
-                    x.IsSpeechEnabled = settings.IsMaskSpeechEnabled;
-                }),
-                OverlayContent = string.IsNullOrEmpty(settings.Content) || settings.ContentDurationSeconds <= 0
-                    ? null
-                    : NotificationContent.CreateSimpleTextContent(settings.Content, factory: x =>
-                    {
-                        x.IsSpeechEnabled = settings.IsContentSpeechEnabled;
-                        x.Duration = TimeSpanHelper.FromSecondsSafe(settings.ContentDurationSeconds);
-                    }),
-                RequestNotificationSettings =
-                {
-                    IsSettingsEnabled = settings.IsAdvancedSettingsEnabled,
-                    IsNotificationEffectEnabled = settings.IsEffectEnabled,
-                    IsNotificationSoundEnabled = settings.IsSoundEffectEnabled,
-                    IsNotificationTopmostEnabled = settings.IsTopmostEnabled,
-                    NotificationSoundPath = settings.CustomSoundEffectPath,
-                    IsSpeechEnabled = true
-                }
-            };
+            var request = BuildNotificationRequest(settings);
             _cancellationTokenSource = request.CancellationTokenSource;
             _completedTokenSource = request.CompletedTokenSource;
             await ActionNotificationProvider.ShowNotificationAsync(request);
         });
+    }
+
+    /// <summary>
+    /// 根据行动设置构造提醒请求。悬浮主界面宿主进程显示转发过来的预览提醒时也使用此方法。
+    /// </summary>
+    /// <param name="settings">显示提醒行动的设置。</param>
+    /// <returns>提醒请求。</returns>
+    public static NotificationRequest BuildNotificationRequest(NotificationActionSettings settings)
+    {
+        return new NotificationRequest
+        {
+            MaskContent = NotificationContent.CreateTwoIconsMask(settings.Mask,
+                leftIcon: settings.IsLeftIconEnabled ? settings.LeftIcon ?? "" : "",
+                rightIcon: settings.IsRightIconEnabled ? settings.RightIcon ?? "" : "",
+                hasRightIcon: settings.IsRightIconEnabled, factory: x =>
+            {
+                x.Duration = TimeSpanHelper.FromSecondsSafe(settings.MaskDurationSeconds);
+                x.IsSpeechEnabled = settings.IsMaskSpeechEnabled;
+            }),
+            OverlayContent = string.IsNullOrEmpty(settings.Content) || settings.ContentDurationSeconds <= 0
+                ? null
+                : NotificationContent.CreateSimpleTextContent(settings.Content, factory: x =>
+                {
+                    x.IsSpeechEnabled = settings.IsContentSpeechEnabled;
+                    x.Duration = TimeSpanHelper.FromSecondsSafe(settings.ContentDurationSeconds);
+                }),
+            RequestNotificationSettings =
+            {
+                IsSettingsEnabled = settings.IsAdvancedSettingsEnabled,
+                IsNotificationEffectEnabled = settings.IsEffectEnabled,
+                IsNotificationSoundEnabled = settings.IsSoundEffectEnabled,
+                IsNotificationTopmostEnabled = settings.IsTopmostEnabled,
+                NotificationSoundPath = settings.CustomSoundEffectPath,
+                IsSpeechEnabled = true
+            }
+        };
     }
 }

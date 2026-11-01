@@ -49,6 +49,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private IosLocationService? _locationService;
     private IosHudOverlayService? _hudOverlayService;
     private IosHudHost? _hudHost;
+    private IosHudPreviewNotificationPoller? _hudPreviewNotificationPoller;
     private UIWindow? _hudWindow;
     private bool _hasLoggedHudWindowFound;
     private DispatcherTimer? _hudWindowRegistrationTimer;
@@ -317,6 +318,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             Dispatcher.UIThread.Post(() =>
             {
                 _hudHost?.InitializeIsland();
+                _hudPreviewNotificationPoller ??= new IosHudPreviewNotificationPoller();
+                _hudPreviewNotificationPoller.Start();
                 StartHudWindowRegistration();
                 StartHudWatchdog();
             }, DispatcherPriority.Loaded);
@@ -533,6 +536,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
             _hudOverlayService?.Shutdown();
             _hudOverlayService = null;
+            _hudPreviewNotificationPoller?.Dispose();
+            _hudPreviewNotificationPoller = null;
             _lessonsNotificationCoordinator?.Dispose();
             _lessonsNotificationCoordinator = null;
             _liveActivityCoordinator?.Dispose();
