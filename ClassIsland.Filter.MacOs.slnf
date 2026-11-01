@@ -3,7 +3,6 @@
     "path": "ClassIsland.sln",
     "projects": [
       "build\\_build.csproj",
-      "ClassIsland.Android\\ClassIsland.Android.csproj",
       "ClassIsland.Core\\ClassIsland.Core.csproj",
       "ClassIsland.Desktop\\ClassIsland.Desktop.csproj",
       "ClassIsland.DocsGenerator\\ClassIsland.DocsGenerator.csproj",
