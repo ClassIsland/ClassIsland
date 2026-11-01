@@ -66,7 +66,7 @@
     
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
-            <controls1:IconText Glyph="&#xF464;" Text="天气预览" Margin="0 0 0 4" />
+            <controls1:IconText Icon="WeatherSunnyRegular" Text="天气预览" Margin="0 0 0 4" />
             
             <Border Padding="20"
                     Background="{DynamicResource ControlFillColorDefaultBrush}"
@@ -94,7 +94,7 @@
                             <StackPanel Spacing="4">
                                 <TextBlock Text="湿度" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
-                                    <ci:FluentIcon Glyph="&#xE794;" FontSize="14" VerticalAlignment="Center" />
+                                    <ci:FluentIcon Icon="DropFilled" FontSize="14" VerticalAlignment="Center" />
                                     <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}" />
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" FontSize="10" />
@@ -104,14 +104,14 @@
                             <StackPanel Spacing="4">
                                 <TextBlock Text="空气质量" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
-                                    <ci:FluentIcon Glyph="&#xEA7D;" FontSize="14" VerticalAlignment="Center" />
+                                    <ci:FluentIcon Icon="LeafTwoFilled" FontSize="14" VerticalAlignment="Center" />
                                     <TextBlock Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}" VerticalAlignment="Center" FontWeight="Medium" />
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Spacing="4">
                                 <TextBlock Text="风力" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
-                                    <ci:FluentIcon Glyph="&#xF43B;" FontSize="14" VerticalAlignment="Center" />
+                                    <ci:FluentIcon Icon="WeatherBlowingSnowRegular" FontSize="14" VerticalAlignment="Center" />
                                     <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}" />
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" FontSize="10" />
@@ -120,7 +120,7 @@
                             </StackPanel>
                         </StackPanel>
                         <Grid Grid.Column="2" VerticalAlignment="Center">
-                            <Button Content="{ci:FluentIcon &#xE0B5;}"
+                            <Button Content="{ci:FluentIcon Icon=ArrowClockwiseRegular}"
                                     ToolTip.Tip="刷新"
                                     Width="40" Height="40"
                                     Theme="{StaticResource TransparentButton}"
@@ -155,9 +155,9 @@
             </Border>
 
             <Separator Margin="0 12 0 4" />
-            <controls1:IconText Glyph="&#xE7C5;" Text="位置设置" Margin="0 0 0 4" />
+            <controls1:IconText Icon="EarthRegular" Text="位置设置" Margin="0 0 0 4" />
             
-            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C5;}"
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource Icon=EarthRegular}"
                                         Header="天气位置"
                                         IsExpanded="True"
                                         Description="设置 ClassIsland 用于查询天气的位置信息及获取方式。">
@@ -170,7 +170,7 @@
                     </ListBox>
                 </controls3:FASettingsExpander.Footer>
                 <!-- 城市选择 -->
-                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xE478;}"
+                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource Icon=CityRegular}"
                                                 Content="城市选择"
                                                 Description="选择当前所在的城市，以用于天气查询。">
                     <controls3:FASettingsExpanderItem.IsVisible>
@@ -185,7 +185,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding ViewModel.SettingsService.Settings.CityName}"
                                        VerticalAlignment="Center" />
-                            <Button Content="{ci:FluentIcon &#xE7C9;}" ToolTip.Tip="编辑城市"
+                            <Button Content="{ci:FluentIcon Icon=EditRegular}" ToolTip.Tip="编辑城市"
                                     Margin="6 0 0 0"
                                     Theme="{StaticResource TransparentButton}"
                                     Click="ButtonEditCurrentCity_OnClick"
@@ -194,7 +194,7 @@
                     </controls3:FASettingsExpanderItem.Footer>
                 </controls3:FASettingsExpanderItem>
                 <!-- 位置坐标 -->
-                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xEB5A;}"
+                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource Icon=MapRegular}"
                                                 Content="位置坐标"
                                                 Description="输入用于获取天气信息的经纬坐标。">
                     <controls3:FASettingsExpanderItem.IsVisible>
@@ -251,11 +251,11 @@
                                         Click="ButtonShowPos_OnClick"
                                         IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
                                         IsVisible="{Binding ViewModel.HideLocationPos}">
-                                    <controls1:IconText Glyph="&#xE813;" Text="显示坐标" />
+                                    <controls1:IconText Icon="EyeRegular" Text="显示坐标" />
                                 </Button>
                             </Grid>
                             <Button Theme="{StaticResource TransparentButton}"
-                                    Content="{ci:FluentIcon &#xEBD2;}"
+                                    Content="{ci:FluentIcon Icon=MyLocationRegular}"
                                     ToolTip.Tip="自动定位"
                                     IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
                                     Click="ButtonGetCurrentPos_OnClick" />
@@ -263,7 +263,7 @@
                     </controls3:FASettingsExpanderItem.Footer>
                 </controls3:FASettingsExpanderItem>
                 <!-- 自动获取位置 -->
-                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xEAEA;}"
+                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource Icon=LocationRippleRegular}"
                                                Content="自动获取位置"
                                                Description="启用后，将在应用每次启动时自动更新位置信息。">
                     <controls3:FASettingsExpanderItem.IsVisible>
@@ -281,10 +281,10 @@
             </controls3:FASettingsExpander>
             
             <Separator Margin="0 12 0 4" />
-            <controls1:IconText Glyph="&#xE713;" Text="外观与高级设置" Margin="0 0 0 4" />
+            <controls1:IconText Icon="DocumentPageTopCenterRegular" Text="外观与高级设置" Margin="0 0 0 4" />
             
             <!-- 天气图标包 -->
-            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE9B0;}"
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource Icon=IconsRegular}"
                                         Header="天气图标包"
                                         Description="调整在显示天气类型时使用的图标外观。">
 
@@ -304,7 +304,7 @@
             </controls3:FASettingsExpander>
 
             <!-- 排除预警 -->
-            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE837;}"
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource Icon=FilterDismissRegular}"
                                         Header="排除的气象预警"
                                         Description="包含以下字符串的预警将不会显示，一行一条排除项。">
                 <controls3:FASettingsExpanderItem Content="排除列表">
@@ -319,7 +319,7 @@
             </controls3:FASettingsExpander>
 
             <!-- TLS 设置 -->
-            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xEAB0;}"
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource Icon=LinkRegular}"
                                        Header="不使用 TLS 协议获取天气"
                                        Description="不建议启用。启用后，应用将通过不安全的 HTTP 协议获取天气信息。">
                 <controls3:FASettingsExpander.Footer>
