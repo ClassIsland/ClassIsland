@@ -548,7 +548,7 @@ public partial class ScheduleDataGrid : TemplatedControl
         {
             return;
         }
-        _mainDataGrid?.ScrollIntoView(WeekClassPlanRows[SelectedClassInfoIndex], _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 1]);
+        _mainDataGrid?.ScrollIntoView(WeekClassPlanRows[SelectedClassInfoIndex], _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 2]);
     }
 
     public void CreateClassPlanByDate(DateTime date)

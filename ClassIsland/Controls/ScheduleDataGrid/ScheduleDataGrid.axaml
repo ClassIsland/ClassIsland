@@ -65,6 +65,8 @@
                                             IsChecked="{Binding SelectedInfo.IsEnabled}">
                                             <CheckBox.IsVisible>
                                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                    <Binding Path="$parent[scheduleDataGrid:ScheduleDataGrid].IsReadonly"
+                                                             Converter="{x:Static BoolConverters.Not}" />
                                                     <Binding Path="SelectedInfo"
                                                              Converter="{x:Static ObjectConverters.NotEqual}"
                                                              ConverterParameter="{x:Static profile:ClassInfo.Empty}" />
