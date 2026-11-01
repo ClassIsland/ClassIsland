@@ -154,6 +154,20 @@ CI_HUD_EXPORT void
 ci_hud_prepare_window(void *ui_window);
 
 /*
+ * 以 ClassIslandHudPassthroughWindow 类直接创建 HUD 窗口并返回 UIWindow* 裸指针。
+ *
+ * 与参考实现一致：窗口在分配时就使用 HUD 子类（而不是先创建普通 UIWindow 再替换类），
+ * UIKit 才会在窗口上屏时按系统窗口/secure 窗口建立可交给 SpringBoard 托管的 CAContext。
+ * 窗口由桥接内部强引用直到进程退出；调用方只负责设置 rootViewController 并
+ * 调用 makeKeyAndVisible（建议在 didFinishLaunching 阶段完成，与参考实现同相位）。
+ *
+ * frame 参数为 UIKit point（默认传 UIScreen.mainScreen.bounds）。返回 NULL 表示创建失败，
+ * 原因见 ci_hud_last_error。
+ */
+CI_HUD_EXPORT void *
+ci_hud_create_window(double frame_x, double frame_y, double width, double height);
+
+/*
  * 把 UIWindow* 注册为 SpringBoard 全局 accessibility 窗口（悬浮在其他 App 之上）。
  *
  * ui_window 必须是当前进程持有的 UIWindow* 裸指针（不加引用计数；桥接内部会强引用

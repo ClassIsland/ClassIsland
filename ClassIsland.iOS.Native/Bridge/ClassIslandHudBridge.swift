@@ -577,6 +577,31 @@ public func ci_hud_prepare_window(_ uiWindow: UnsafeMutableRawPointer?) {
     }
 }
 
+private var hudCreatedWindow: UIWindow?
+
+/// 直接以 ClassIslandHudPassthroughWindow 类 alloc/init 出 HUD 窗口，而不是先创建
+/// 普通 UIWindow 再 object_setClass。参考实现（TrollSpeed/TRHud/XExternalHUD）都在
+/// 分配时就使用 HUD 窗口子类，UIKit 才会在窗口上屏时按系统窗口建立可托管的 CAContext。
+@_cdecl("ci_hud_create_window")
+public func ci_hud_create_window(
+    _ frameX: Double,
+    _ frameY: Double,
+    _ width: Double,
+    _ height: Double
+) -> UnsafeMutableRawPointer? {
+    var result: UnsafeMutableRawPointer?
+    hudRunOnMainThread {
+        let window = ClassIslandHudPassthroughWindow(
+            frame: CGRect(x: frameX, y: frameY, width: width, height: height)
+        )
+        hudPrepareWindow(window)
+        hudCreatedWindow = window
+        result = Unmanaged<UIWindow>.passUnretained(window).toOpaque()
+        hudClearLastError()
+    }
+    return result
+}
+
 private let hudRegistrationLock = NSLock()
 private var hudRegisteredWindow: UIWindow?
 private var hudRegisteredWindowPointer: UnsafeMutableRawPointer?

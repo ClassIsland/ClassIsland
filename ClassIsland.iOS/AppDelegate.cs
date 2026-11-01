@@ -25,6 +25,7 @@ using ClassIsland.Shared;
 using ClassIsland.Views;
 using FluentAvalonia.UI.Controls;
 using Foundation;
+using ObjCRuntime;
 using UIKit;
 using UserNotifications;
 
@@ -204,9 +205,11 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         // 共享代码在 HUD 模式不会导航页面，仅需要一个可用的宿主提供方以满足初始化路径。
         IViewHostProvider.Instance = new IosViewHostProvider(new MobileViewHost());
         lifetime.MainView = _hudHost;
+        // 参考实现都在 didFinishLaunching 阶段创建并上屏 HUD 窗口；这里同步执行，
+        // 保证窗口类、secure 标记与上屏发生在同一启动相位。
+        EnsureHudWindow(lifetime);
         Dispatcher.UIThread.Post(async () =>
         {
-            // HUD 子进程不会被 SpringBoard 分配 UIScene，Avalonia 12 的 iOS 后端不会自动创建窗口。
             EnsureHudWindow(lifetime);
             app.PhonyRootWindow = await GetTopLevelAsync(_hudHost);
             IosStartupDiagnostics.Write("HUD host ready; starting App.Init");
@@ -238,12 +241,26 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
                 return;
             }
 
-            var window = new UIWindow(UIScreen.MainScreen.Bounds);
-            // 窗口必须在 makeKeyAndVisible 之前就换成 HUD 专用窗口类：
-            // UIKit 只有在窗口上屏时按 secure/非托管窗口的声明才会建立可交给
-            // SpringBoard accessibility window hosting 的 CAContext。
-            IosHudNativeBridge.PrepareWindow(window.Handle.Handle);
+            // 直接以 HUD 窗口子类创建窗口（等价于参考实现的 alloc/init HUDWindow 子类），
+            // 而不是先 new UIWindow 再 object_setClass。
+            var bounds = UIScreen.MainScreen.Bounds;
+            var handle = IosHudNativeBridge.CreateWindow(bounds.X, bounds.Y, bounds.Width, bounds.Height);
+            if (handle == 0)
+            {
+                IosStartupDiagnostics.Write(
+                    $"HUD mode: 原生创建悬浮窗失败：{IosHudNativeBridge.GetLastError()}");
+                return;
+            }
+
+            var window = ObjCRuntime.Runtime.GetNSObject<UIWindow>(handle);
+            if (window == null)
+            {
+                IosStartupDiagnostics.Write("HUD mode: 无法包装原生悬浮窗对象");
+                return;
+            }
+
             initWindow.Invoke(null, [window, lifetime]);
+            window.Hidden = false;
             window.MakeKeyAndVisible();
             _hudWindow = window;
             if (_hudHost != null)
@@ -252,6 +269,14 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             }
             IosStartupDiagnostics.Write(
                 $"HUD mode: 无场景，已手动创建悬浮窗 (bounds={window.Bounds}, level={window.WindowLevel})");
+
+            // 参考实现在 makeKeyAndVisible 之后立刻注册；这里先尝试一次，失败时由
+            // AppStarted 后的注册重试定时器继续重试。
+            IosHudNativeBridge.RegisterWindow(window.Handle.Handle);
+            var earlyError = IosHudNativeBridge.GetLastError();
+            IosStartupDiagnostics.Write(string.IsNullOrEmpty(earlyError)
+                ? "HUD window registered to SpringBoard (early)"
+                : $"HUD early window registration failed: {earlyError}");
         }
         catch (Exception exception)
         {
