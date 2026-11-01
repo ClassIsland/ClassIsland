@@ -284,17 +284,17 @@
         </Grid>
         
         <Panel x:Key="ComponentSettingsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}">
-            <TabControl SelectedIndex="{Binding ViewModel.ComponentSettingsTabIndex}">
-                <TabItem IsVisible="False">
+            <ci:ReusableTabControl Classes="no-header" SelectedIndex="{Binding ViewModel.ComponentSettingsTabIndex}">
+                <TabItem>
                     <ci:ComponentPresenter Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings}"
                                            IsPresentingSettings="True" />
                 </TabItem>
-                <TabItem IsVisible="False">
+                <TabItem>
                     <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings, Mode=OneWay}"
                                                          RequestOpenHideRules="ButtonOpenRulesetForComponent_OnClick"
                                                          IsRootComponent="True"/>
                 </TabItem>
-            </TabControl>
+            </ci:ReusableTabControl>
         </Panel>
         <Grid x:Key="MainWindowLineSettingsDrawerTitle" ColumnDefinitions="Auto *">
             <TextBlock Grid.Column="0" Text="主界面行设置" VerticalAlignment="Center" Margin="0 1 0 0"/>

@@ -91,6 +91,6 @@
 | r/loggers/xxx                       | 日志记录器  |
 | r/speech/xxx                        | 语音提供方  |
 | r/attached-settings/xxx             | 附加设置   |
-| r/profile-transfer/xxx              | 附加设置   |
+| r/profile-transfer/xxx              | 档案导入/导出   |
 | r/weather-icons/xxx                 | 天气图标   |
-| r/settings/xxx                      | 天气图标   |
+| r/settings/xxx                      | 应用设置   |

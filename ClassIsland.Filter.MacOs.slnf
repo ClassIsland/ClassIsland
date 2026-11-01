@@ -13,6 +13,7 @@
       "ClassIsland\\ClassIsland.csproj",
       "platforms\\ClassIsland.Platforms.Linux\\ClassIsland.Platforms.Linux.csproj",
       "platforms\\ClassIsland.Platforms.MacOs\\ClassIsland.Platforms.MacOs.csproj",
+      "roslyn\\IconsMappingGenerator\\IconsMappingGenerator.csproj",
       "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj",
       "vendors\\PhainonDistributionCenter.Shared\\PhainonDistributionCenter.Shared.csproj",
       "vendors\\System.Device.Location\\System.Device.Location.csproj"
