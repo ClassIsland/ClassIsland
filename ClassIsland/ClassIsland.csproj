@@ -146,7 +146,7 @@
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
 	</ItemGroup>
-    <ItemGroup Condition="'$(ClassIslandReferencedByAndroid)' == 'true'">
+    <ItemGroup Condition="'$(ClassIslandReferencedByAndroid)' == 'true' Or '$(ClassIslandReferencedByMobile)' == 'true'">
         <AvaloniaResource Remove="Assets\Fonts\HarmonyOS_Sans_SC_*.ttf" />
         <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_*.ttf" />
     </ItemGroup>

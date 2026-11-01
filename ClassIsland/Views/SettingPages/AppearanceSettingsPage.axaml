@@ -470,7 +470,7 @@
                                     <TextBlock.Styles>
                                         <Style Selector="TextBlock">
                                             <Style Selector="^.DefaultFont">
-                                                <Setter Property="Text" Value="{OnPlatform Default='HarmonyOS Sans SC（默认）', Android='系统字体（默认）'}"/>
+                                                <Setter Property="Text" Value="{OnPlatform Default='HarmonyOS Sans SC（默认）', Android='系统字体（默认）', iOS='系统字体（默认）'}"/>
                                             </Style>
                                             <Setter Property="Text" Value="{Binding }" />
                                         </Style>

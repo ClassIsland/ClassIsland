@@ -120,12 +120,11 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             .UseiOS(this)
             .With(new FontManagerOptions
             {
-                DefaultFamilyName = MainWindow.DefaultFontFamilyKey,
                 FontFallbacks =
                 [
                     new FontFallback
                     {
-                        FontFamily = MainWindow.DefaultFontFamily
+                        FontFamily = AppBase.FluentIconsFontFamily
                     }
                 ]
             })
