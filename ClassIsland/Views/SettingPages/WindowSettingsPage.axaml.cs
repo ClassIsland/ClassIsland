@@ -33,17 +33,6 @@ public partial class WindowSettingsPage : SettingsPageBase
     {
         InitializeComponent();
 
-        if (PlatformHelper.IsAppleMobile)
-        {
-            Content = new TextBlock
-            {
-                Text = "该系统不支持",
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-            };
-            return;
-        }
-
         ViewModel = IAppHost.GetService<WindowSettingsViewModel>();
         DataContext = this;
         _taskbarTimer = new DispatcherTimer
