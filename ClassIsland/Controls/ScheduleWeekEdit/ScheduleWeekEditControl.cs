@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
@@ -20,6 +21,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Icons;
 using ClassIsland.Models;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
@@ -34,7 +36,14 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     internal const double RulerWidth = 36;
     private const double MinimumDayWidth = 40;
     private const double MinimumBlockHeight = 18;
+    private const double MinimumGestureScale = 0.2;
+    private const double MaximumGestureScale = 5;
+    private const double ZoomTick = 0.1;
+    private const double ZoomTolerance = 0.0000001;
+    private const double MinimumPinchDistance = 8;
     private static readonly TimeSpan TouchHoldDuration = TimeSpan.FromMilliseconds(500);
+    private static readonly TimeSpan SnapDuration = TimeSpan.FromMilliseconds(200);
+    private static readonly Easing SnapEasing = new SplineEasing(0, 0, 0, 1);
     public static readonly StyledProperty<IEnumerable<ScheduleWeekOccurrence>?> ItemsSourceProperty =
         AvaloniaProperty.Register<ScheduleWeekEditControl, IEnumerable<ScheduleWeekOccurrence>?>(nameof(ItemsSource));
     public static readonly StyledProperty<DateOnly> WeekStartProperty =
@@ -117,6 +126,44 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private MenuFlyout? _openBlockMenu;
     private ScheduleWeekBlock? _tapCandidate;
     private Point _tapOrigin;
+    private readonly Dictionary<IPointer, Point> _touchPoints = [];
+    private PinchState? _pinch;
+    private bool _consumeTouches;
+    private bool _changingTouchCapture;
+    private bool _applyingPinchScale;
+    private bool _touchScrolling;
+
+    public ScheduleWeekEditControl()
+    {
+        AddHandler(PointerPressedEvent, TouchPointerPressed, RoutingStrategies.Tunnel, true);
+        AddHandler(PointerMovedEvent, TouchPointerMoved, RoutingStrategies.Tunnel, true);
+        AddHandler(PointerReleasedEvent, TouchPointerReleased, RoutingStrategies.Tunnel, true);
+        AddHandler(ScrollGestureEvent, (_, _) => _touchScrolling = _touchPoints.Count == 1,
+            RoutingStrategies.Bubble, true);
+        AddHandler(ScrollGestureInertiaStartingEvent, TouchScrollEnded, RoutingStrategies.Bubble, true);
+        AddHandler(ScrollGestureEndedEvent, TouchScrollEnded, RoutingStrategies.Bubble, true);
+    }
+
+    private void TouchScrollEnded(object? sender, RoutedEventArgs e)
+    {
+        // Scroll recognizers receive releases directly; inertia starts after the finger is lifted.
+        // Its later end must not clear a new contact that interrupts the inertia.
+        if (_touchScrolling && !_consumeTouches) _touchPoints.Clear();
+        _touchScrolling = false;
+    }
+
+    private sealed class PinchState(IPointer first, IPointer second, double scale, double anchorMinute)
+    {
+        public IPointer First { get; } = first;
+        public IPointer Second { get; } = second;
+        public double InitialScale { get; } = Math.Clamp(scale, MinimumGestureScale, MaximumGestureScale);
+        public double AnchorMinute { get; } = anchorMinute;
+        public double PreviewScale { get; set; } = scale;
+        public MatrixTransform Transform { get; } = new();
+        public bool IsSnapping { get; set; }
+        public double InitialDistance { get; set; }
+        public double CenterY { get; set; }
+    }
 
     private enum DragKind { Move, Start, End }
     private sealed record DisplayOccurrence(ScheduleWeekOccurrence Source, ScheduleWeekOccurrence Display);
@@ -132,9 +179,13 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
+        CancelPinch();
         CancelDrag();
         if (_canvas != null)
+        {
             _canvas.SizeChanged -= CanvasSizeChanged;
+            _canvas.PropertyChanged -= CanvasPropertyChanged;
+        }
         if (_scrollViewer != null)
             _scrollViewer.ScrollChanged -= ScrollChanged;
         if (_zoomInButton != null) _zoomInButton.Click -= ZoomInClicked;
@@ -166,7 +217,10 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         if (_scrollViewer != null)
             _scrollViewer.ScrollChanged += ScrollChanged;
         if (_canvas != null)
+        {
             _canvas.SizeChanged += CanvasSizeChanged;
+            _canvas.PropertyChanged += CanvasPropertyChanged;
+        }
         Rebuild();
     }
 
@@ -183,6 +237,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     {
         _attached = false;
         _viewportActionVersion++;
+        CancelPinch();
         CancelDrag();
         _openBlockMenu?.Hide();
         _openBlockMenu = null;
@@ -220,12 +275,14 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         }
         else if (change.Property == WeekStartProperty)
         {
+            CancelPinch();
             CancelDrag();
             if (AutoFetchScheduleItems) RefreshAutomaticItems();
             Rebuild();
         }
         else if (change.Property == ScaleProperty || change.Property == IsReadonlyProperty)
         {
+            if (!_applyingPinchScale) CancelPinch();
             CancelDrag();
             Rebuild();
         }
@@ -236,8 +293,16 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
         }
         else if (change.Property == BoundsProperty)
             Rebuild();
-        else if (change.Property == IsVisibleProperty && !IsVisible)
+        else if (change.Property == TemplateProperty)
+        {
+            CancelPinch();
             CancelDrag();
+        }
+        else if (change.Property == IsVisibleProperty && !IsVisible)
+        {
+            CancelPinch();
+            CancelDrag();
+        }
     }
 
     private void ObserveItems()
@@ -371,6 +436,11 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
             ScrollToTime(time);
         }
         TryInitialScroll();
+    }
+
+    private void CanvasPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == BoundsProperty) UpdatePinchPreview();
     }
 
     private void TryInitialScroll()
@@ -707,9 +777,226 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     private static string FormatTime(TimeSpan value) => value == TimeSpan.FromDays(1) ? "24:00" : value.ToString(@"hh\:mm");
     private static double Snap(double minutes) => Math.Round(minutes / 5, MidpointRounding.AwayFromZero) * 5;
 
+    private void TouchPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.Pointer.Type != PointerType.Touch || _scrollViewer == null || _canvas == null) return;
+        if (!_consumeTouches && (e.Source is not Visual visual ||
+            visual != _scrollViewer && !_scrollViewer.IsVisualAncestorOf(visual) ||
+            visual is ScrollBar || visual.GetVisualAncestors().OfType<ScrollBar>().Any()))
+            return;
+
+        if (!_consumeTouches && _pinch is { IsSnapping: true }) CancelPinch();
+        _touchPoints[e.Pointer] = e.GetPosition(_scrollViewer);
+        if (!_consumeTouches && _touchPoints.Count < 2) return;
+
+        _changingTouchCapture = true;
+        try
+        {
+            if (!_consumeTouches)
+            {
+                _consumeTouches = true;
+                CancelDrag();
+                _openBlockMenu?.Hide();
+                _openBlockMenu = null;
+                _pendingScroll = null;
+                _initialScrollCompleted = true;
+                _viewportActionVersion++;
+                var points = _touchPoints.ToArray();
+                var centerY = (points[0].Value.Y + points[1].Value.Y) / 2;
+                _pinch = new PinchState(points[0].Key, points[1].Key, Scale,
+                    (_scrollViewer.Offset.Y + centerY) / Scale)
+                {
+                    CenterY = centerY
+                };
+                _canvas.RenderTransformOrigin = RelativePoint.TopLeft;
+                _canvas.RenderTransform = _pinch.Transform;
+                var distance = Point.Distance(points[0].Value, points[1].Value);
+                if (distance >= MinimumPinchDistance) _pinch.InitialDistance = distance;
+            }
+            // Explicit capture also releases any scroll recognizer holding the first finger.
+            foreach (var pointer in _touchPoints.Keys) pointer.Capture(this);
+        }
+        finally
+        {
+            _changingTouchCapture = false;
+        }
+        e.PreventGestureRecognition();
+        e.Handled = true;
+    }
+
+    private void TouchPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_touchPoints.ContainsKey(e.Pointer) || _scrollViewer == null) return;
+        _touchPoints[e.Pointer] = e.GetPosition(_scrollViewer);
+        if (!_consumeTouches) return;
+        UpdatePinch();
+        e.PreventGestureRecognition();
+        e.Handled = true;
+    }
+
+    private void UpdatePinch()
+    {
+        if (_pinch is not { IsSnapping: false } pinch) return;
+        var first = _touchPoints[pinch.First];
+        var second = _touchPoints[pinch.Second];
+        pinch.CenterY = (first.Y + second.Y) / 2;
+        var distance = Point.Distance(first, second);
+        if (pinch.InitialDistance == 0)
+        {
+            if (distance >= MinimumPinchDistance) pinch.InitialDistance = distance;
+            return;
+        }
+        var scale = Math.Clamp(pinch.InitialScale * distance / pinch.InitialDistance,
+            MinimumGestureScale, MaximumGestureScale);
+        var previousScale = pinch.PreviewScale;
+        pinch.PreviewScale = scale;
+        var direction = scale >= previousScale ? 1 : -1;
+        var tickCount = 0;
+        var committedScale = Scale;
+        for (var tick = direction > 0 ? 2 : 50; tick >= 2 && tick <= 50; tick += direction)
+        {
+            var value = tick * ZoomTick;
+            if (previousScale + ZoomTolerance < value && value <= scale + ZoomTolerance ||
+                scale - ZoomTolerance <= value && value < previousScale - ZoomTolerance)
+            {
+                committedScale = value;
+                tickCount++;
+            }
+        }
+        if (tickCount > 0) ApplyPinchScale(committedScale, pinch);
+        else UpdatePinchPreview();
+        for (var tick = 0; tick < tickCount; tick++) PlatformServices.HapticFeedbackService.PlayTick();
+    }
+
+    private void UpdatePinchPreview()
+    {
+        if (_pinch is not { } pinch || _canvas == null || _scrollViewer == null ||
+            _canvas.TranslatePoint(default, _scrollViewer) is not { } origin)
+            return;
+
+        var offset = Math.Clamp(pinch.AnchorMinute * pinch.PreviewScale - pinch.CenterY, 0,
+            Math.Max(0, 1440 * pinch.PreviewScale - _scrollViewer.Viewport.Height));
+        // The presenter rounds its offset during arrange; compensate using the actual visual origin.
+        var layoutY = origin.Y - pinch.Transform.Matrix.M32;
+        pinch.Transform.Matrix = new Matrix(1, 0, 0, pinch.PreviewScale / Scale, 0, -layoutY - offset);
+    }
+
+    private void ApplyPinchScale(double scale, PinchState pinch)
+    {
+        _applyingPinchScale = true;
+        try
+        {
+            SetCurrentValue(ScaleProperty, scale);
+        }
+        finally
+        {
+            _applyingPinchScale = false;
+        }
+        UpdatePinchPreview();
+        if (_scrollViewer == null) return;
+        // Commit the new extent and anchored offset together, keeping intermediate layout out of rendered frames.
+        _scrollViewer.UpdateLayout();
+        SetViewportOffset(_scrollViewer.Offset.X, pinch.AnchorMinute * Scale - pinch.CenterY);
+        _scrollViewer.UpdateLayout();
+        UpdatePinchPreview();
+    }
+
+    private void TouchPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (!_touchPoints.ContainsKey(e.Pointer)) return;
+        if (!_consumeTouches)
+        {
+            _touchPoints.Remove(e.Pointer);
+            return;
+        }
+        if (_scrollViewer != null) _touchPoints[e.Pointer] = e.GetPosition(_scrollViewer);
+        if (_pinch is { IsSnapping: false } pinch && (pinch.First == e.Pointer || pinch.Second == e.Pointer))
+        {
+            UpdatePinch();
+            var scale = Math.Clamp(Math.Round(pinch.PreviewScale / ZoomTick + ZoomTolerance, MidpointRounding.AwayFromZero) * ZoomTick,
+                MinimumGestureScale, MaximumGestureScale);
+            SnapPinch(pinch, scale);
+        }
+        _touchPoints.Remove(e.Pointer);
+        _changingTouchCapture = true;
+        try
+        {
+            e.Pointer.Capture(null);
+        }
+        finally
+        {
+            _changingTouchCapture = false;
+        }
+        _consumeTouches = _touchPoints.Count > 0;
+        e.PreventGestureRecognition();
+        e.Handled = true;
+    }
+
+    private void SnapPinch(PinchState pinch, double scale)
+    {
+        var from = pinch.PreviewScale;
+        var changed = Math.Abs(scale - from) > ZoomTolerance;
+        pinch.IsSnapping = true;
+        ApplyPinchScale(scale, pinch);
+        if (!changed || IThemeService.AnimationLevel < 1 || IThemeService.IsTransientDisabled ||
+            TopLevel.GetTopLevel(this) is not { } topLevel)
+        {
+            Complete();
+            return;
+        }
+
+        TimeSpan? started = null;
+        topLevel.RequestAnimationFrame(Animate);
+
+        void Animate(TimeSpan timestamp)
+        {
+            if (_pinch != pinch) return;
+            started ??= timestamp;
+            var progress = IThemeService.AnimationLevel < 1 || IThemeService.IsTransientDisabled
+                ? 1 : Math.Clamp((timestamp - started.Value).TotalMilliseconds / SnapDuration.TotalMilliseconds, 0, 1);
+            pinch.PreviewScale = from + (scale - from) * SnapEasing.Ease(progress);
+            UpdatePinchPreview();
+            if (progress < 1) topLevel.RequestAnimationFrame(Animate);
+            else Complete();
+        }
+
+        void Complete()
+        {
+            pinch.PreviewScale = scale;
+            UpdatePinchPreview();
+            if (_canvas != null) _canvas.RenderTransform = null;
+            _pinch = null;
+            if (changed) PlatformServices.HapticFeedbackService.PlayTick();
+        }
+    }
+
+    private void CancelPinch()
+    {
+        _viewportActionVersion++;
+        if (_pinch != null && _canvas != null) _canvas.RenderTransform = null;
+        _pinch = null;
+        _consumeTouches = false;
+        _touchScrolling = false;
+        if (_touchPoints.Count == 0) return;
+        var pointers = _touchPoints.Keys.ToArray();
+        _touchPoints.Clear();
+        _changingTouchCapture = true;
+        try
+        {
+            foreach (var pointer in pointers)
+                if (pointer.Captured == this) pointer.Capture(null);
+        }
+        finally
+        {
+            _changingTouchCapture = false;
+        }
+    }
+
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        if (_consumeTouches) return;
+        if (_pinch is { IsSnapping: true }) CancelPinch();
         if (_drag != null)
         {
             e.PreventGestureRecognition();
@@ -935,6 +1222,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
+        if (_consumeTouches) return;
         if (_drag is not { } drag)
         {
             if (_tapCandidate != null && _canvas != null)
@@ -991,6 +1279,7 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+        if (_consumeTouches) return;
         CancelTouchHold();
         if (_drag is not { } drag)
         {
@@ -1082,12 +1371,15 @@ public sealed class ScheduleWeekEditControl : TemplatedControl
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
+        if (_changingTouchCapture) return;
+        if (_consumeTouches && _touchPoints.ContainsKey(e.Pointer)) CancelPinch();
+        else if (!_touchScrolling) _touchPoints.Remove(e.Pointer);
         if (_drag?.Pointer == e.Pointer) CancelDrag();
     }
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
-        if (e.Key == Key.Escape) { CancelDrag(); e.Handled = true; }
+        if (e.Key == Key.Escape) { CancelPinch(); CancelDrag(); e.Handled = true; }
         else if (e.Key == Key.Delete && !IsReadonly && SelectedScheduleItemId is { } id)
         {
             CancelDrag();

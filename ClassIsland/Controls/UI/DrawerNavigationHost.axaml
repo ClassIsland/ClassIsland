@@ -3,6 +3,8 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              x:Class="ClassIsland.Controls.UI.DrawerNavigationHost">
     <ci:VerticalDrawer x:Name="PART_Drawer"
+                       RequestedWidth="{Binding Bounds.Width, RelativeSource={RelativeSource Self}}"
+                       IsFullScreenGestureEnabled="True"
                        SmokeBackground="True"
                        Focusable="True"
                        KeyboardNavigation.TabNavigation="Cycle"

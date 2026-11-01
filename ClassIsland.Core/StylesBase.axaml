@@ -66,6 +66,10 @@
 
     <!-- Add Styles Here -->
 
+    <Style Selector="Viewbox">
+        <Setter Property="ci:ViewboxLogicalTreeAssist.IsEnabled" Value="True"/>
+    </Style>
+
     <!--日历选择器文字偏移修复-->
     <Style Selector="CalendarDatePicker">
         <Setter Property="Padding" Value="12,5,0,3"/>

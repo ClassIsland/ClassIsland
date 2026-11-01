@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.ViewModels;
 using ClassIsland.Views.RecoveryPages;
 using FluentAvalonia.UI.Navigation;
@@ -27,6 +28,7 @@ public partial class RecoveryWindow : ViewBase
     {
         Instance = this;
         InitializeComponent();
+        FaFrameLifetimeHelper.Attach(MainFrame);
         DataContext = this;
     }
 

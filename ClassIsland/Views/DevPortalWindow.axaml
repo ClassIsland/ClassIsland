@@ -177,6 +177,45 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
+            <TabItem Header="默认字体">
+                <ScrollViewer>
+                    <StackPanel Margin="16" Spacing="12" Loaded="FontProbe_OnLoaded">
+                        <TextBlock Text="系统默认字体探针" FontSize="20" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding ViewModel.FontProbeText}" TextWrapping="Wrap"/>
+                        <Button Content="刷新字体信息" Command="{Binding ViewModel.RefreshFontProbeCommand}"/>
+                        <ci:Field Label="字重（支持 437、563 等任意整数）">
+                            <StackPanel Spacing="8">
+                                <Slider Minimum="{Binding ViewModel.MinimumFontWeight}"
+                                        Maximum="{Binding ViewModel.MaximumFontWeight}"
+                                        Value="{Binding ViewModel.SelectedFontWeight, Mode=TwoWay}"
+                                        TickFrequency="1" IsSnapToTickEnabled="True"
+                                        AutomationProperties.Name="预览字重"/>
+                                <WrapPanel>
+                                    <NumericUpDown Minimum="{Binding ViewModel.MinimumFontWeight}"
+                                                   Maximum="{Binding ViewModel.MaximumFontWeight}"
+                                                   Value="{Binding ViewModel.SelectedFontWeight, Mode=TwoWay}"
+                                                   Increment="1" FormatString="0" Width="160"
+                                                   AutomationProperties.Name="预览字重数值"/>
+                                    <Button Content="重置为 400" Margin="8 0 0 0"
+                                            Command="{Binding ViewModel.ResetFontWeightCommand}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </ci:Field>
+                        <TextBlock Text="固定字重 400" FontWeight="SemiBold"/>
+                        <TextBlock FontFamily="{x:Static FontFamily.Default}" FontWeight="400"
+                                   FontSize="28" TextWrapping="Wrap"
+                                   Text="ClassIsland · Variable Font 0123456789&#10;默认字体 · 春江潮水连海平"/>
+                        <TextBlock Text="{Binding ViewModel.SelectedFontWeight, StringFormat='预览请求字重：{0}'}"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock FontFamily="{x:Static FontFamily.Default}"
+                                   FontWeight="{Binding ViewModel.PreviewFontWeight}"
+                                   FontSize="28" TextWrapping="Wrap"
+                                   Text="ClassIsland · Variable Font 0123456789&#10;默认字体 · 春江潮水连海平"/>
+                        <TextBlock TextWrapping="Wrap"
+                                   Text="可变字体元数据不代表当前渲染器一定支持连续变化。中文可能使用回退字体；请分别观察英文、数字和中文。静态字体也可调节，但可能匹配到离散字重或使用模拟加粗。此处使用 Avalonia 默认字体，不跟随主界面自定义字体设置。"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
             <TabItem Header="提醒">
                 <StackPanel Spacing="6" Width="400" HorizontalAlignment="Left">
                     <ci:Field Label="提醒标题">

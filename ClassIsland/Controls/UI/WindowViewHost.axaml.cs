@@ -10,6 +10,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
+using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
@@ -92,6 +93,9 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private double _inlineHeaderHeight = 32.0;
 
     private static readonly TimeSpan ContentLoadingProgressRingFadeOutDuration = TimeSpan.FromMilliseconds(200);
+
+    public static FuncValueConverter<double, Thickness> TitleBarHeightToMarginConverter { get; } =
+        new(height => new Thickness(0, height, 0, 0));
 
     public static readonly DirectProperty<WindowViewHost, double> InlineHeaderHeightProperty = AvaloniaProperty.RegisterDirect<WindowViewHost, double>(
         nameof(InlineHeaderHeight), o => o.InlineHeaderHeight, (o, v) => o.InlineHeaderHeight = v);

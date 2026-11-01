@@ -17,6 +17,11 @@ public static class PlatformServices
     /// 平台定位服务
     /// </summary>
     public static ILocationService LocationService { get; internal set; } = new LocationServiceStub();
+
+    /// <summary>
+    /// 平台触觉反馈服务
+    /// </summary>
+    public static IHapticFeedbackService HapticFeedbackService { get; internal set; } = new HapticFeedbackServiceStub();
     
     /// <summary>
     /// 平台桌面服务
@@ -43,6 +48,8 @@ public static class PlatformServices
     /// </summary>
     public static IPlatformFilePickerService FilePickerService { get; internal set; } = new AvaloniaDefaultPlatformFilePickerService();
 
+    internal static string BlobRootFolderPath { get; set; } = Path.Combine(".", "Blobs");
+
     /// <summary>
     /// 应用生命周期操作服务
     /// </summary>
@@ -52,7 +59,6 @@ public static class PlatformServices
     /// 启动器服务
     /// </summary>
     public static ILauncherService LauncherService { get; internal set; } = new LauncherServiceStub();
-
     /// <summary>
     /// 系统实时活动服务。非 Apple 平台和不受支持的系统会安全返回 Unsupported。
     /// </summary>
