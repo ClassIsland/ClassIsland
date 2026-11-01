@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Services.UI;
 using ClassIsland.Platforms.Abstraction.Enums;
 
@@ -214,14 +215,15 @@ public abstract class ViewBase : ContentPage
         Hide();
     }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnLoaded(RoutedEventArgs e)
     {
         if (ShowedOnce)
         {
+            // Container queries reconnect as descendants attach; refresh only after the whole view is loaded.
             InvalidChildren(this);
         }
         
-        base.OnAttachedToVisualTree(e);
+        base.OnLoaded(e);
     }
     
     private void InvalidChildren(Visual visual)
@@ -229,7 +231,8 @@ public abstract class ViewBase : ContentPage
         visual.InvalidateVisual();
         if (visual is StyledElement se)
         {
-            s_stylesAppliedField?.SetValue(se, false);
+            AvaloniaUnsafeAccessorHelpers.InvalidateStyles(se, false);
+            se.ApplyStyling();
         }
 
         if (visual is Control control)

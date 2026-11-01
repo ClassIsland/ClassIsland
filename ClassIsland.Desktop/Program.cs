@@ -16,6 +16,7 @@ using Avalonia.Media;
 using ClassIsland.Core;
 using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.Helpers;
@@ -61,6 +62,10 @@ class Program
                 app.Initialized += (_, _) => postInit();
                 app.AppStopping += (_, _) => stopTokenSource.Cancel();
                 return app;
+            })
+            .With(new SkiaOptions
+            {
+                MaxGpuResourceSizeBytes = SkiaGpuCacheHelper.SizeBytes
             })
             .With(new FontManagerOptions
             {

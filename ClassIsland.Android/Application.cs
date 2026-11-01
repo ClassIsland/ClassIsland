@@ -4,10 +4,11 @@ using Avalonia;
 using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Media;
+using ClassIsland.Android.Helpers;
 using ClassIsland.Android.Services.Platform;
-using ClassIsland.Core;
 using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
+using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 
@@ -51,16 +52,12 @@ public class Application : AvaloniaAndroidApplication<App>
             })
             .UseAndroid()
             .UseOverlayAssetLoader()
-            .With(new FontManagerOptions
+            .With(new SkiaOptions
             {
-                FontFallbacks =
-                [
-                    new FontFallback
-                    {
-                        FontFamily = AppBase.FluentIconsFontFamily
-                    }
-                ]
+                MaxGpuResourceSizeBytes = SkiaGpuCacheHelper.SizeBytes
             })
+            .With<FontManagerOptions>(AndroidFontHelper.GetOptions)
+            .AfterPlatformServicesSetup(_ => AndroidFontHelper.InitializeFallbacks())
             .With(new AndroidPlatformOptions()
             {
                 RenderingMode = BuildRenderingMode(renderingMode)

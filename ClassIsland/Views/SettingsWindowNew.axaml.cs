@@ -116,6 +116,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         SettingsService = settingsService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         InitializeComponent();
+        FaFrameLifetimeHelper.Attach(NavigationFrame);
         // SplashScreen = new EmptySplashScreen();
         
         // TitleBar.TitleBarHitTestType = FATitleBarHitTestType.Complex;
@@ -965,8 +966,10 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
         Closed -= ViewBase_OnClosed;
 
+        NavigationFrame.Navigated -= NavigationServiceOnLoadCompleted;
+        NavigationFrame.Navigating -= NavigationServiceOnNavigating;
         NavigationFrame.NavigationPageFactory = null;
-        NavigationFrame.BackStack.Clear();
+        NavigationFrame.IsNavigationStackEnabled = false;
         NavigationFrame.Content = null;
         NavigationView.SelectedItem = null;
         NavigationView.MenuItems.Clear();

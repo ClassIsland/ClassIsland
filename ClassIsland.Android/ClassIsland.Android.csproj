@@ -52,7 +52,7 @@
     <AndroidResource Remove="Resources\mipmap-*\appicon*.png" />
     <AndroidResource Remove="Resources\drawable-nodpi\debug_floating_icon.webp"
                      Condition="'$(Configuration)' != 'Debug'" />
-    <Compile Remove="Controls\AndroidDebugOverlay.cs;Services\AndroidProcessMetrics.cs"
+    <Compile Remove="Controls\AndroidDebugOverlay.cs;Controls\AndroidSkiaGpuMetrics.cs;Services\AndroidProcessMetrics.cs"
              Condition="'$(Configuration)' != 'Debug'" />
     <AndroidResource Include="..\ClassIsland\Assets\Logos\Main.png"
                      Link="Resources\drawable\appicon_foreground.png"

@@ -14,6 +14,10 @@ namespace ClassIsland.Core.Helpers;
 
 internal static class AvaloniaUnsafeAccessorHelpers
 {
+    // Resetting _stylesApplied alone leaves the previous style instances subscribed.
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "InvalidateStyles")]
+    internal static extern void InvalidateStyles(StyledElement element, bool recurse);
+
     // Gesture capture bypasses routed input. Avalonia hides the raw input observer from reference assemblies.
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_PreProcess")]
     internal static extern IObservable<RawInputEventArgs> GetRawInputPreProcess(IInputManager inputManager);
