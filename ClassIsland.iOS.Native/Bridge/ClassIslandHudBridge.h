@@ -140,11 +140,25 @@ CI_HUD_EXPORT const char *
 ci_hud_last_error(void);
 
 /*
+ * 在 UIWindow 上屏（makeKeyAndVisible）之前调用：把窗口类替换为
+ * ClassIslandHudPassthroughWindow，设置 windowLevel = 10000001、透明背景、
+ * clipsToBounds，并声明 secure / 非 App 托管窗口。
+ *
+ * 必须在窗口上屏前调用，UIKit 才会按 secure context 为窗口建立可被 SpringBoard
+ * accessibility window hosting 托管的 CAContext（_boundContext/_contextId）。
+ * 上屏后再替换窗口类只会得到一个普通窗口，拿不到可托管的 CAContext。
+ *
+ * ui_window 为 UIWindow* 裸指针；函数内部切到主线程执行，失败写 ci_hud_last_error。
+ */
+CI_HUD_EXPORT void
+ci_hud_prepare_window(void *ui_window);
+
+/*
  * 把 UIWindow* 注册为 SpringBoard 全局 accessibility 窗口（悬浮在其他 App 之上）。
  *
  * ui_window 必须是当前进程持有的 UIWindow* 裸指针（不加引用计数；桥接内部会强引用
  * 该窗口与 hosting controller，直到进程退出或再次注册别的窗口）。应在窗口已经上屏
- * （拥有 CAContext）之后调用；调用后桥接会把窗口类替换为
+ * （拥有 CAContext）之后调用；调用后桥接会确保窗口类为
  * ClassIslandHudPassthroughWindow（点击穿透、非 App 托管窗口、系统窗口），
  * 设置 windowLevel = 10000001、透明背景，并把 CAContext 设为 secure，
  * 最后调用 SBSAccessibilityWindowHostingController 的

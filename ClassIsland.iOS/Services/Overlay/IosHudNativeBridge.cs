@@ -37,6 +37,10 @@ internal static partial class IosHudNativeBridge
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void RegisterWindow(nint window);
 
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_hud_prepare_window")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial void PrepareWindow(nint window);
+
     [LibraryImport(NativeLibrary, EntryPoint = "ci_hud_initialize_child_lifecycle")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void InitializeChildLifecycle();

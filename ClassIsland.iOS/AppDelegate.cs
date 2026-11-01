@@ -238,10 +238,11 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
                 return;
             }
 
-            var window = new UIWindow(UIScreen.MainScreen.Bounds)
-            {
-                BackgroundColor = UIColor.Clear
-            };
+            var window = new UIWindow(UIScreen.MainScreen.Bounds);
+            // 窗口必须在 makeKeyAndVisible 之前就换成 HUD 专用窗口类：
+            // UIKit 只有在窗口上屏时按 secure/非托管窗口的声明才会建立可交给
+            // SpringBoard accessibility window hosting 的 CAContext。
+            IosHudNativeBridge.PrepareWindow(window.Handle.Handle);
             initWindow.Invoke(null, [window, lifetime]);
             window.MakeKeyAndVisible();
             _hudWindow = window;
@@ -249,7 +250,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             {
                 _hudHost.HostWindow = window;
             }
-            IosStartupDiagnostics.Write($"HUD mode: 无场景，已手动创建悬浮窗 (bounds={window.Bounds})");
+            IosStartupDiagnostics.Write(
+                $"HUD mode: 无场景，已手动创建悬浮窗 (bounds={window.Bounds}, level={window.WindowLevel})");
         }
         catch (Exception exception)
         {

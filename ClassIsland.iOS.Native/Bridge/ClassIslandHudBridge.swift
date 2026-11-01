@@ -527,16 +527,54 @@ public func ci_hud_last_error() -> UnsafePointer<CChar>? {
 /// - `_ignoresHitTest` 返回 true：窗口不参与命中测试，点击穿透到下面的 App；
 /// - `_isWindowServerHostingManaged` 返回 false：窗口上下文不归本进程的
 ///   WindowServer 托管，而是交给 SpringBoard 的 accessibility window hosting；
-/// - `_isSystemWindow` 返回 true：按系统窗口处理（悬浮于其他 App 之上）。
+/// - `_isSystemWindow` 返回 true：按系统窗口处理（悬浮于其他 App 之上）；
+/// - `_isSecure` / `_shouldCreateContextAsSecure` 返回 true：要求 UIKit 为该窗口创建
+///   可供跨进程托管的 secure CAContext。缺少这两项时，插件/无场景进程里的窗口不会
+///   获得 `_boundContext`（TrollSpeed/TRHud 的窗口类都声明了同一组方法）。
 /// 私有方法不在 SDK 头文件中，Swift 无法用 override 声明，直接声明同 selector 的
 /// @objc 方法即可在运行时被 ObjC 消息派发命中。
 @objc(ClassIslandHudPassthroughWindow)
 private final class ClassIslandHudPassthroughWindow: UIWindow {
+    @objc class func _isSecure() -> Bool { true }
+
     @objc func _ignoresHitTest() -> Bool { true }
 
     @objc func _isWindowServerHostingManaged() -> Bool { false }
 
     @objc class func _isSystemWindow() -> Bool { true }
+
+    @objc func _isSecure() -> Bool { true }
+
+    @objc func _shouldCreateContextAsSecure() -> Bool { true }
+}
+
+/// 在窗口上屏前完成类替换与窗口属性设置。窗口的 secure/托管标志必须在
+/// `makeKeyAndVisible` 之前生效，UIKit 才会创建可被 SpringBoard 托管的 CAContext。
+private func hudPrepareWindow(_ window: UIWindow) {
+    if object_getClass(window) != ClassIslandHudPassthroughWindow.self {
+        object_setClass(window, ClassIslandHudPassthroughWindow.self)
+    }
+    window.windowLevel = UIWindow.Level(rawValue: HudConstants.targetWindowLevel)
+    window.backgroundColor = .clear
+    window.isOpaque = false
+    window.clipsToBounds = true
+}
+
+@_cdecl("ci_hud_prepare_window")
+public func ci_hud_prepare_window(_ uiWindow: UnsafeMutableRawPointer?) {
+    guard let uiWindow else {
+        hudSetLastError("ci_hud_prepare_window: ui_window 不能为 NULL。")
+        return
+    }
+    hudRunOnMainThread {
+        let object = Unmanaged<AnyObject>.fromOpaque(uiWindow).takeUnretainedValue()
+        guard let window = object as? UIWindow else {
+            hudSetLastError("ci_hud_prepare_window: 传入的指针不是 UIWindow。")
+            return
+        }
+        hudPrepareWindow(window)
+        hudClearLastError()
+    }
 }
 
 private let hudRegistrationLock = NSLock()
@@ -655,20 +693,15 @@ private func hudRegisterWindowOnMainThread(_ windowPointer: UnsafeMutableRawPoin
         object_setClass(window, ClassIslandHudPassthroughWindow.self)
     }
 
-    window.windowLevel = UIWindow.Level(rawValue: HudConstants.targetWindowLevel)
-    window.backgroundColor = .clear
-    window.isOpaque = false
+    hudPrepareWindow(window)
 
-    guard let boundContext = hudObjectProperty(window, selector: "_boundContext") else {
-        hudSetLastError(
-            "ci_hud_register_window: UIWindow 没有 _boundContext"
-                + "（窗口可能尚未上屏）。"
-        )
-        return
-    }
-    guard hudCallVoidBool(on: boundContext, selector: "setSecure:", value: true) else {
-        hudSetLastError("ci_hud_register_window: CAContext 不支持 setSecure:。")
-        return
+    // _boundContext 在插件/无场景窗口上可能为空（TrollSpeed/TRHud 的窗口类通过
+    // _shouldCreateContextAsSecure 让 UIKit 建立 secure context）。有就设置 secure，
+    // 没有也不直接失败，继续尝试用窗口自身的 CAContext ID 注册。
+    var hasBoundContext = false
+    if let boundContext = hudObjectProperty(window, selector: "_boundContext") {
+        hasBoundContext = true
+        _ = hudCallVoidBool(on: boundContext, selector: "setSecure:", value: true)
     }
 
     guard hudLoadSpringBoardServices() else {
@@ -688,7 +721,7 @@ private func hudRegisterWindowOnMainThread(_ windowPointer: UnsafeMutableRawPoin
     guard let contextID = hudWindowContextID(window) else {
         hudSetLastError(
             "ci_hud_register_window: 无法取得 UIWindow 的 CAContext ID"
-                + "（窗口可能尚未上屏）。"
+                + "（窗口可能尚未上屏），_boundContext=\(hasBoundContext ? "有" : "无")。"
         )
         return
     }
