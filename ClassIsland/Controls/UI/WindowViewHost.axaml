@@ -13,9 +13,6 @@
         d:DataContext="{d:DesignInstance ui:WindowViewHost}"
         EnableMicaWindow="True">
     <ci:MyWindow.Styles>
-        <Style Selector=":is(Window):not(:mobile):inlineHeader ci|VerticalDrawer /template/ Canvas#PART_Canvas">
-            <Setter Property="Margin" Value="{Binding $parent[ui:WindowViewHost].InlineHeaderHeight, Converter={x:Static ui:WindowViewHost.TitleBarHeightToMarginConverter}}"/>
-        </Style>
         <Style Selector=":is(Window):not(:closed)">
             <Setter Property="Title" Value="{Binding #NavigationPage.CurrentPage.Header, FallbackValue='ClassIsland'}"/>
             <Style Selector="^ NavigationPage#NavigationPage /template/ Border#PART_NavigationBar">

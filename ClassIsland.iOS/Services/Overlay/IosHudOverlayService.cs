@@ -128,7 +128,6 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
         {
             if (IosHudNativeBridge.IsRunning() == 1)
             {
-                IosStartupDiagnostics.Write("正在终止旧悬浮主界面宿主");
                 var stopResult = IosHudNativeBridge.Stop();
                 if (stopResult < 0 || IosHudNativeBridge.IsRunning() == 1)
                 {
@@ -136,8 +135,6 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
                         $"无法重启悬浮主界面宿主：旧 HUD 无法终止，result={stopResult}，{IosHudNativeBridge.GetLastError()}");
                     return false;
                 }
-
-                IosStartupDiagnostics.Write("旧悬浮主界面宿主已终止");
             }
 
             var dataDirectory = PrepareSnapshot();

@@ -34,14 +34,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     public Settings Settings
     {
         get => _settings;
-        set
-        {
-            if (OperatingSystem.IsAndroid() && value.MainWindowFont == MainWindow.DefaultFontFamilyKey)
-            {
-                value.MainWindowFont = MainWindow.PlatformDefaultFontFamilyKey;
-            }
-            SetField(ref _settings, value);
-        }
+        set => SetField(ref _settings, value);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

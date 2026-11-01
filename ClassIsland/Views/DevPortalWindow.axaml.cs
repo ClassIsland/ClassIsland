@@ -33,9 +33,6 @@ public partial class DevPortalWindow : ViewBase
         MarkdownEditor.Text = ViewModel.MarkdownText;
     }
 
-    private void FontProbe_OnLoaded(object? sender, RoutedEventArgs e) =>
-        ViewModel.RefreshFontProbeCommand.Execute(null);
-
     private void ButtonSendNotification_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.NotificationHostService.ShowNotification(new NotificationRequest()

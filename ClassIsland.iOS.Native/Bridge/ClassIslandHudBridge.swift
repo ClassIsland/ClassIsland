@@ -69,7 +69,6 @@ private enum HudConstants {
     static let stopGracePeriod: TimeInterval = 0.5
     static let killGracePeriod: TimeInterval = 0.2
     static let dismissalGracePeriod: TimeInterval = 0.6
-    static let stopHelperGracePeriod: TimeInterval = 2.0
     static let pollInterval: TimeInterval = 0.02
     static let parentPollInterval: TimeInterval = 0.5
     static let errorBufferSize = 1024
@@ -437,15 +436,8 @@ private func hudSpawnRootStopHelper(_ targetPid: pid_t) -> Bool {
         return false
     }
 
-    // root helper 需要加载一次 .NET runtime；必须设置上限，避免主 App 的 UI 线程
-    // 因旧 HUD 回收失败而永久卡在 EarlyLoading。
-    if hudWaitForProcessExit(helperPid, timeout: HudConstants.stopHelperGracePeriod) {
-        return true
-    }
-
-    // helper 自身卡住时尽力终止，但不能再等待它，否则会重新引入无限阻塞。
-    _ = kill(helperPid, SIGTERM)
-    return false
+    _ = waitpid(helperPid, nil, 0)
+    return true
 }
 
 private func hudTerminateProcess(_ pid: pid_t) -> HudTerminationResult {

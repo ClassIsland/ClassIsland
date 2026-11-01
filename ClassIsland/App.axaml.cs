@@ -46,7 +46,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
@@ -260,8 +259,6 @@ public partial class App : AppBase, IAppHost
         {
             Directory.CreateDirectory(CommonDirectories.AppRootFolderPath);
         }
-
-        PlatformServices.BlobRootFolderPath = CommonDirectories.AppBlobFolderPath;
 
         if (File.Exists(Path.Combine(CommonDirectories.AppPackageRoot, "ClassIsland" + PlatformExecutableExtension)))
         {
@@ -561,13 +558,6 @@ public partial class App : AppBase, IAppHost
     internal async void Init()
     {
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Initializing;
-        if (System.OperatingSystem.IsAndroid() || System.OperatingSystem.IsIOS() || ApplicationCommand.Mobile)
-        {
-            Styles.Add(new Style(x => x.OfType<ComboBox>())
-            {
-                Setters = { new Setter(ComboBoxAssist.UseDrawerProperty, true) }
-            });
-        }
         var isDesktop = System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux();
         if (isDesktop)
         {
@@ -744,7 +734,7 @@ public partial class App : AppBase, IAppHost
 
         IAppHost.Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
-            .UseContentRoot(System.OperatingSystem.IsAndroid() ? CommonDirectories.AppRootFolderPath : AppContext.BaseDirectory)
+            .UseContentRoot(AppContext.BaseDirectory)
             .ConfigureServices(ConfigureServices)
             .Build();
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;

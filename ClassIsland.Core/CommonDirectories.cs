@@ -44,11 +44,6 @@ public static class CommonDirectories
     public static string AppConfigPath => Path.Combine(AppRootFolderPath, "Config");
 
     /// <summary>
-    /// 应用 Blob 存储目录
-    /// </summary>
-    public static string AppBlobFolderPath => Path.Combine(AppRootFolderPath, "Blobs");
-
-    /// <summary>
     /// 应用缓存目录
     /// </summary>
     public static string AppCacheFolderPath => string.IsNullOrWhiteSpace(OverrideAppCacheFolderPath) 

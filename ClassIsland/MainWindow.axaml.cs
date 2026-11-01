@@ -185,11 +185,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     public const string DefaultFontFamilyKey =
         "avares://ClassIsland/Assets/Fonts/#HarmonyOS Sans SC, avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable";
     
-    public static string PlatformDefaultFontFamilyKey =>
-        OperatingSystem.IsAndroid() ? FontFamily.Default.Name : DefaultFontFamilyKey;
-
-    public static FontFamily DefaultFontFamily { get; } =
-        FontFamily.Parse(PlatformDefaultFontFamilyKey);
+    public static FontFamily DefaultFontFamily { get; }=
+        FontFamily.Parse(DefaultFontFamilyKey);
 
     public NativeMenu MoreOptionsMenu { get; } = [];
 

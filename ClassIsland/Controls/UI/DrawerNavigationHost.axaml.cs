@@ -147,17 +147,7 @@ public partial class DrawerNavigationHost : UserControl
         {
             return;
         }
-        if (_currentView is ComboBoxDrawerPage && CanGoBack)
-        {
-            return;
-        }
 
-        if (property == null || property == ViewHostAssist.DrawerMaxWidthProperty)
-        {
-            PART_Drawer.DrawerMaxWidth = _options.IsMaxWidthSet
-                ? _options.MaxWidth
-                : ViewHostAssist.GetDrawerMaxWidth(_currentView);
-        }
         if (property == null || property == ViewHostAssist.DrawerAllowCollapseProperty)
         {
             PART_Drawer.AllowCollapse = _options.IsAllowCollapseSet
@@ -193,12 +183,6 @@ public partial class DrawerNavigationHost : UserControl
     private void UpdateTitleBar()
     {
         PART_BackButton.IsVisible = CanGoBack;
-        if (_currentView is ComboBoxDrawerPage)
-        {
-            PART_TitlePresenter.Content = _currentView.Header;
-            PART_ActionPresenter.Content = null;
-            return;
-        }
         PART_TitlePresenter.Content = _options.Title ?? _currentView?.Header;
         PART_ActionPresenter.Content = _options.TitleBarContent ??
                                       (_currentView != null &&

@@ -16,12 +16,13 @@ using Avalonia.Media;
 using ClassIsland.Core;
 using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
-using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.Helpers;
 using Pastel;
 using System.Runtime.InteropServices;
+using System.Reflection;
+using Avalonia.Platform;
 using ClassIsland.Desktop.Services.Platform;
 
 
@@ -63,10 +64,6 @@ class Program
                 app.AppStopping += (_, _) => stopTokenSource.Cancel();
                 return app;
             })
-            .With(new SkiaOptions
-            {
-                MaxGpuResourceSizeBytes = SkiaGpuCacheHelper.SizeBytes
-            })
             .With(new FontManagerOptions
             {
                 DefaultFamilyName = MainWindow.DefaultFontFamilyKey,
@@ -92,9 +89,10 @@ class Program
             .WithDeveloperTools()
 #endif
             .UsePlatformDetect()
-            .UseOverlayAssetLoader(overlay =>
+            .AfterPlatformServicesSetup(_ =>
             {
                 var appAssembly = typeof(App).Assembly;
+                var assemblyName = appAssembly.GetName().Name!;
                 var appAssemblyDirectory = Path.GetDirectoryName(appAssembly.Location);
 
                 if (string.IsNullOrEmpty(appAssemblyDirectory))
@@ -104,7 +102,16 @@ class Program
                     ? Path.Combine(appAssemblyDirectory, "..", "Resources", "Assets")
                     : Path.Combine(appAssemblyDirectory, "Assets");
 
-                overlay.RegisterDirectoryOverride(appAssembly, "/Assets/", assetRoot);
+                var fallback = new StandardAssetLoader(appAssembly);
+
+                var overlay = new OverlayAssetLoader(
+                    fallback,
+                    appAssembly,
+                    assemblyName: assemblyName,
+                    avaresPrefix: "/Assets/",
+                    physicalRoot: assetRoot);
+
+                BindAssetLoader(overlay);
             })
             .LogToHostSink();
 
@@ -115,6 +122,31 @@ class Program
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
         .UsePlatformDetect()
         .LogToHostSink();
+
+    private static void BindAssetLoader(IAssetLoader assetLoader)
+    {
+        const BindingFlags flags = BindingFlags.Public
+                                   | BindingFlags.NonPublic
+                                   | BindingFlags.Static
+                                   | BindingFlags.Instance;
+
+        var locatorType = typeof(AvaloniaLocator);
+        var locator = locatorType.GetProperty("CurrentMutable", flags)?.GetValue(null)
+                      ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.CurrentMutable.");
+
+        var bindMethod = locatorType.GetMethod("Bind", flags)?.MakeGenericMethod(typeof(IAssetLoader))
+                         ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.Bind<T>().");
+
+        var registration = bindMethod.Invoke(locator, null)
+                           ?? throw new InvalidOperationException("Unable to bind Avalonia IAssetLoader.");
+
+        var toConstantMethod = registration.GetType()
+                                   .GetMethod("ToConstant", flags)?
+                                   .MakeGenericMethod(typeof(IAssetLoader))
+                               ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.ToConstant<T>().");
+
+        toConstantMethod.Invoke(registration, [assetLoader]);
+    }
 
     static void ActivatePlatforms(out Action postInitCallback, CancellationToken stopToken)
     {

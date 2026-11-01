@@ -20,8 +20,6 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Models.UI;
-using ClassIsland.Services;
-using ClassIsland.Shared;
 using ClassIsland.Views;
 
 namespace ClassIsland.Android.Controls.UI;
@@ -88,8 +86,6 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     private TextPresenter? _focusedTextPresenter;
 
-    private Task? _releaseTask;
-
     public AndroidViewHost(MainActivity activity)
     {
         Activity = activity;
@@ -105,17 +101,10 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     protected override void OnLoaded(RoutedEventArgs e)
     {
-        if (_isClosed)
-        {
-            return;
-        }
         AppBase.Current.PhonyRootWindow = TopLevel.GetTopLevel(this)!;
         Console.WriteLine($"[ELYSIADBG] Get TopLevel = {TopLevel.GetTopLevel(this)}");
         base.OnLoaded(e);
 
-        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
-        AppBase.Current.AppStarted += BackgroundOnAppStarted;
-        BindBackgroundSettings();
         AttachInputPane();
         UpdateFocusedTextPresenter();
         RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
@@ -126,8 +115,6 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     protected override void OnUnloaded(RoutedEventArgs e)
     {
-        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
-        BackgroundLayer.DataContext = null;
         DetachInputPane();
         DetachFocusedTextPresenter();
         RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
@@ -136,68 +123,23 @@ public partial class AndroidViewHost : UserControl, IViewHost
         base.OnUnloaded(e);
     }
 
-    private void BackgroundOnAppStarted(object? sender, EventArgs e) => BindBackgroundSettings();
-
-    private void BindBackgroundSettings() =>
-        BackgroundLayer.DataContext = IAppHost.TryGetService<SettingsService>();
-
-    private async void OnDestroy(object? sender, EventArgs e)
+    private void OnDestroy(object? sender, EventArgs e)
     {
-        try
-        {
-            await ReleaseHostAsync();
-        }
-        catch (Exception exception)
-        {
-            global::Android.Util.Log.Warn(nameof(AndroidViewHost), exception.ToString());
-        }
-    }
-
-    internal Task ReleaseHostAsync() => _releaseTask ??= ReleaseHostCoreAsync();
-
-    private async Task ReleaseHostCoreAsync()
-    {
-        _isClosed = true;
-        IsEnabled = false;
-        Activity.Destroy -= OnDestroy;
-        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
-        BackgroundLayer.DataContext = null;
         DetachInputPane();
         DetachFocusedTextPresenter();
-        RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
-        SizeChanged -= OnHostSizeChanged;
         ResetPageContentOffset();
-        ++_navigationProgressAnimationVersion;
-        var visual = ElementComposition.GetElementVisual(NavigationProgressBarFill);
-        visual?.StopAnimation(nameof(visual.Scale));
-        visual?.StopAnimation(nameof(visual.Opacity));
+        PreClosing(false);
+        _isClosed = true;
         SetCurrentView(null);
-        _drawerPreviousFocus = null;
-        DrawerHost.ClosingRequested -= DrawerHostOnClosingRequested;
-        DrawerHost.Closed -= DrawerHostOnClosed;
-        DrawerHost.Popped -= DrawerHostOnPopped;
-        DrawerHost.BackRequested -= DrawerHostOnBackRequested;
-
-        foreach (var view in ActivatedViews.Concat(DrawerActivatedViews).Distinct().ToArray())
+        DrawerHost.Clear();
+        foreach (var view in DrawerActivatedViews.ToArray())
         {
-            view.ViewDeactivating(WindowCloseReason.Undefined, true, false);
             view.ViewDeactivated();
         }
-        ActivatedViews.Clear();
         DrawerActivatedViews.Clear();
-
-        // NavigationPage ignores stack changes during transitions. Let an in-flight transition finish
-        // before removing pages so it cannot retain the old host's views after a reload.
-        while (!Activity.IsDestroyed && (NavigationPage.IsNavigating || DrawerHost.NavigationPage.IsNavigating))
-        {
-            await Task.Delay(16);
-        }
-        DrawerHost.Clear();
-        await NavigationPage.PopAllModalsAsync(null);
-        foreach (var page in NavigationPage.NavigationStack.ToArray())
-        {
-            NavigationPage.RemovePage(page);
-        }
+        NavigationPage.PopAllModalsAsync(null);
+        NavigationPage.PopToRootAsync(null);
+        NavigationPage.ReplaceAsync(new ContentPage(), null);
     }
 
     public bool HandleBackRequested()
@@ -503,6 +445,38 @@ public partial class AndroidViewHost : UserControl, IViewHost
         public override double Ease(double progress) => easing.Ease(progress);
     }
 
+    private bool PreClosing(bool cancelable)
+    {
+        foreach (var drawerView in DrawerHost.NavigationPage.NavigationStack.OfType<ViewBase>().Reverse())
+        {
+            if (!drawerView.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable))
+            {
+                return true;
+            }
+        }
+
+        var view = ActivatedViews.LastOrDefault();
+        if (view == null)
+        {
+            return false;
+        }
+
+        if (view.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable))
+        {
+            foreach (var view1 in ActivatedViews)
+            {
+                if (view1 != view)
+                {
+                    view.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable);
+                }
+                view1.ViewDeactivated();
+            }
+            return false;
+        }
+
+        return true;
+    }
+
     public void Hide()
     {
         Activity.Finish();
@@ -517,7 +491,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     public bool ActivateView(ViewBase view)
     {
-        if (_isClosed || ActivatedViews.Contains(view))
+        if (ActivatedViews.Contains(view))
         {
             return false;
         }
@@ -649,11 +623,10 @@ public partial class AndroidViewHost : UserControl, IViewHost
                 await NavigationPage.ReplaceAsync(view);
             }
         });
-        if (_isClosed)
+        if (view is SplashView)
         {
-            return;
+            _isFirstViewShowed = true;
         }
-        _isFirstViewShowed = true;
         SetCurrentView(view);
     }
 
@@ -776,7 +749,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     private bool ActivateDrawerView(ViewBase view)
     {
-        if (_isClosed || DrawerActivatedViews.Contains(view) || !view.ViewActivating(this))
+        if (DrawerActivatedViews.Contains(view) || !view.ViewActivating(this))
         {
             return false;
         }
@@ -844,10 +817,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
         {
             await Dispatcher.InvokeAsync(async () =>
             {
-                if (!_isClosed)
-                {
-                    await navigation();
-                }
+                await navigation();
             });
         }
         finally

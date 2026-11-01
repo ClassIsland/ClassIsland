@@ -52,7 +52,6 @@ public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
     public WelcomeWindow()
     {
         InitializeComponent();
-        FaFrameLifetimeHelper.Attach(MainFrame);
         DataContext = this;
         SetWelcomeExperience(false, true, false);
     }
