@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
              xmlns:helpers="clr-namespace:ClassIsland.Core.Helpers;assembly=ClassIsland.Core"
+             xmlns:icons="clr-namespace:ClassIsland.Core.Icons;assembly=ClassIsland.Core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.SettingPages.AdvancedSettingsPage"
              d:DataContext="{d:DesignInstance settingPages:AdvancedSettingsPage}">
@@ -44,6 +45,43 @@
                         <ComboBoxItem>Wgl</ComboBoxItem>
                         <ComboBoxItem>Vulkan</ComboBoxItem>
                     </ComboBox>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
+
+            <controls:FASettingsExpander Header="渲染模式"
+                                        Description="如果遇到画面显示异常，可尝试更改渲染模式。更改后重启应用生效，仅影响此设备。"
+                                        IsVisible="{OnPlatform Default=False, Android=True}">
+                <controls:FASettingsExpander.IconSource>
+                    <ci:FluentIconSource Glyph="{x:Static icons:FluentIcons.DesktopRegular}" />
+                </controls:FASettingsExpander.IconSource>
+                <controls:FASettingsExpander.Footer>
+                    <ComboBox SelectedIndex="{Binding ViewModel.AndroidRenderingModeSelectedIndex, Mode=TwoWay}">
+                        <ComboBoxItem>默认</ComboBoxItem>
+                        <ComboBoxItem>OpenGL</ComboBoxItem>
+                        <ComboBoxItem>Vulkan</ComboBoxItem>
+                        <ComboBoxItem>软件渲染</ComboBoxItem>
+                    </ComboBox>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
+
+            <controls:FASettingsExpander Header="Skia GPU 缓存大小"
+                                        Description="当因界面显示图像较多遇到卡顿时可酌情上调此选项以缓解，过高的缓存配置可能会导致显存/内存占用上升">
+                <controls:FASettingsExpander.IconSource>
+                    <ci:FluentIconSource Glyph="{x:Static icons:FluentIcons.DatabaseRegular}" />
+                </controls:FASettingsExpander.IconSource>
+                <controls:FASettingsExpander.Footer>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Slider Width="130"
+                                Minimum="30" Maximum="512"
+                                Value="{Binding ViewModel.SkiaGpuCacheSizeMb, Mode=TwoWay, Delay=500}"
+                                TickFrequency="1" IsSnapToTickEnabled="True"
+                                SmallChange="1" LargeChange="10"
+                                Classes="auto-tooltip"
+                                ci:SliderDragTooltipAssist.StringFormat="0' MB'"
+                                AutomationProperties.Name="Skia GPU 缓存大小（MB）" />
+                        <TextBlock MinWidth="56" VerticalAlignment="Center"
+                                   Text="{Binding ViewModel.SkiaGpuCacheSizeMb, StringFormat={}{0} MB}" />
+                    </StackPanel>
                 </controls:FASettingsExpander.Footer>
             </controls:FASettingsExpander>
 

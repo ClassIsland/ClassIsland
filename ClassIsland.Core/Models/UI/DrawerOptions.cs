@@ -8,15 +8,26 @@ public sealed class DrawerOptions
 {
     private double? _contentHeightRatio;
     private double? _contentHeight;
+    private double? _maxWidth;
     private bool? _isFullScreen;
     private bool? _allowCollapse;
     private bool? _smokeBackground;
 
     internal bool IsContentHeightRatioSet => _contentHeightRatio.HasValue;
     internal bool IsContentHeightSet { get; private set; }
+    internal bool IsMaxWidthSet => _maxWidth.HasValue;
     internal bool IsFullScreenSet => _isFullScreen.HasValue;
     internal bool IsAllowCollapseSet => _allowCollapse.HasValue;
     internal bool IsSmokeBackgroundSet => _smokeBackground.HasValue;
+
+    /// <summary>
+    /// 抽屉的最大宽度，默认不限制。
+    /// </summary>
+    public double MaxWidth
+    {
+        get => _maxWidth ?? double.PositiveInfinity;
+        init => _maxWidth = value;
+    }
 
     /// <summary>
     /// 抽屉展开高度占宿主高度的比例。默认值 <c>0.5</c>。

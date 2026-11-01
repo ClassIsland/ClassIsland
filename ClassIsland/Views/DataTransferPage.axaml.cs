@@ -190,7 +190,7 @@ public partial class DataTransferPage : UserControl
         {
             throw new Exception("源 ClassIsland 版本必须在 1.7.0.x，才能进行导入。");
         }
-        settings.MainWindowFont = MainWindow.DefaultFontFamilyKey;
+        settings.MainWindowFont = MainWindow.PlatformDefaultFontFamilyKey;
         settings.AutoInstallUpdateNextStartup = false;
         settings.ShowEchoCaveWhenSettingsPageLoading = false;
         if (settings.WeatherIconId == "classisland.weatherIcons.materialDesign")

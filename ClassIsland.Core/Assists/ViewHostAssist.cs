@@ -9,6 +9,19 @@ namespace ClassIsland.Core.Assists;
 public class ViewHostAssist
 {
     /// <summary>
+    /// 抽屉的最大宽度，默认不限制。
+    /// </summary>
+    public static readonly AttachedProperty<double> DrawerMaxWidthProperty =
+        AvaloniaProperty.RegisterAttached<ViewHostAssist, ViewBase, double>("DrawerMaxWidth", double.PositiveInfinity,
+            validate: value => value >= 0);
+
+    /// <inheritdoc cref="DrawerMaxWidthProperty"/>
+    public static double GetDrawerMaxWidth(ViewBase view) => view.GetValue(DrawerMaxWidthProperty);
+
+    /// <inheritdoc cref="DrawerMaxWidthProperty"/>
+    public static void SetDrawerMaxWidth(ViewBase view, double value) => view.SetValue(DrawerMaxWidthProperty, value);
+
+    /// <summary>
     /// 抽屉展开高度占宿主高度的比例。
     /// </summary>
     public static readonly AttachedProperty<double> DrawerContentHeightRatioProperty =

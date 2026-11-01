@@ -32,7 +32,7 @@
                                     BorderThickness="{StaticResource ContentDialogBorderWidth}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     CornerRadius="{TemplateBinding CornerRadius}"
-                                    MaxWidth="480"
+                                    MaxWidth="{TemplateBinding DrawerMaxWidth}"
                                     MinWidth="0"
                                     HorizontalAlignment="Center"
                                     BoxShadow="0 8 32 0 #66000000"

@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Services.UI;
 using ClassIsland.Platforms.Abstraction.Enums;
 
@@ -227,7 +228,8 @@ public abstract class ViewBase : ContentPage
         visual.InvalidateVisual();
         if (visual is StyledElement se)
         {
-            s_stylesAppliedField?.SetValue(se, false);
+            AvaloniaUnsafeAccessorHelpers.InvalidateStyles(se, false);
+            se.ApplyStyling();
         }
 
         if (visual is Control control)

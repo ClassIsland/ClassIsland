@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using ClassIsland.Platforms.Abstraction.Models;
 
 namespace ClassIsland.Platforms.Abstraction.Services;
 
@@ -23,6 +24,15 @@ public interface IPlatformFilePickerService
     /// <returns>可持续读取的本地路径列表。</returns>
     /// <remarks>平台实现可能在转换后释放传入文件，调用方不得继续使用这些对象。</remarks>
     Task<List<string>> MaterializeFilesAsync(IReadOnlyList<IStorageFile> files);
+
+    /// <summary>
+    /// 选取文件并按 SHA-256 存储为 Blob，跳过超出大小限制的文件。
+    /// </summary>
+    /// <param name="options">文件浏览器及大小限制选项</param>
+    /// <param name="root">根窗口</param>
+    /// <returns>按选取顺序排列的 Blob URI 列表；取消或全部超限时为空</returns>
+    /// <exception cref="ArgumentOutOfRangeException">最大文件大小为负数。</exception>
+    Task<List<Uri>> OpenBlobFilesPickerAsync(BlobFilePickerOpenOptions options, TopLevel root);
 
     /// <summary>
     /// 打开文件保存选择器
