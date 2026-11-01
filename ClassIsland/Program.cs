@@ -64,6 +64,7 @@ public static class Program
                 new Option<bool>(["--onboarding"], "应用将继续迎新向导"),
                 new Option<bool>(["--autostartup", "-au"], "自启动模式，检测到程序已运行时直接退出"),
                 new Option<bool>(["--mobile"], "伪移动端模式"),
+                new Option<bool>(["--hud"], "以悬浮主界面宿主进程模式运行（仅 TrollStore 发行版内部使用）"),
             };
             command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
             command.Invoke(args);

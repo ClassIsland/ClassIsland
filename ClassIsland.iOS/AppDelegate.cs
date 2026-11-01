@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
@@ -47,6 +48,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private IosLocationService? _locationService;
     private IosHudOverlayService? _hudOverlayService;
     private IosHudHost? _hudHost;
+    private UIWindow? _hudWindow;
+    private bool _hasLoggedHudWindowFound;
     private DispatcherTimer? _hudWindowRegistrationTimer;
     private DispatcherTimer? _hudWatchdogTimer;
     private int _hudWindowRegistrationAttempts;
@@ -96,7 +99,14 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
         IosStartupDiagnostics.Write("Starting shared AppEntry");
         var buildApp = Program.AppEntry(launchArguments.ToArray());
-        IosStartupDiagnostics.Write("Shared AppEntry completed");
+        if (_isHudProcess && !App.ApplicationCommand.Hud)
+        {
+            // 共享入口的启动参数解析若丢失 --hud（例如上游合并覆盖），HUD 子进程会误走普通移动端
+            // 启动路径并卡在 MainView 加载。这里兜底，保证 HUD 进程一定使用只读快照与启动捷径。
+            IosStartupDiagnostics.Write("HUD mode: 共享入口未识别 --hud，已回退为 HUD 模式");
+            App.ApplicationCommand.Hud = true;
+        }
+        IosStartupDiagnostics.Write($"Shared AppEntry completed (hud={App.ApplicationCommand.Hud})");
         return AppBuilder.Configure<App>(() =>
             {
                 IosStartupDiagnostics.Write("Constructing shared App");
@@ -196,10 +206,51 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         lifetime.MainView = _hudHost;
         Dispatcher.UIThread.Post(async () =>
         {
+            // HUD 子进程不会被 SpringBoard 分配 UIScene，Avalonia 12 的 iOS 后端不会自动创建窗口。
+            EnsureHudWindow(lifetime);
             app.PhonyRootWindow = await GetTopLevelAsync(_hudHost);
             IosStartupDiagnostics.Write("HUD host ready; starting App.Init");
             app.Init();
         });
+    }
+
+    /// <summary>
+    /// 在 HUD 子进程里手动创建 Avalonia 单视图窗口。
+    /// Avalonia 12 的 iOS 后端只在 UIScene 连接时创建 UIWindow；HUD 进程由主 App 通过
+    /// posix_spawn 拉起，永远等不到场景回调，若不补这一步，GetTopLevelAsync 会永久等待 Loaded。
+    /// </summary>
+    private void EnsureHudWindow(ISingleViewApplicationLifetime lifetime)
+    {
+        if (_hudWindow != null || TopLevel.GetTopLevel(_hudHost!) != null)
+        {
+            return;
+        }
+
+        try
+        {
+            var sceneDelegateType = typeof(AvaloniaView).Assembly.GetType("Avalonia.iOS.AvaloniaSceneDelegate");
+            var initWindow = sceneDelegateType?.GetMethod(
+                "InitWindow",
+                BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            if (initWindow == null)
+            {
+                IosStartupDiagnostics.Write("HUD mode: 找不到 AvaloniaSceneDelegate.InitWindow，无法创建悬浮窗");
+                return;
+            }
+
+            var window = new UIWindow(UIScreen.MainScreen.Bounds)
+            {
+                BackgroundColor = UIColor.Clear
+            };
+            initWindow.Invoke(null, [window, lifetime]);
+            window.MakeKeyAndVisible();
+            _hudWindow = window;
+            IosStartupDiagnostics.Write($"HUD mode: 无场景，已手动创建悬浮窗 (bounds={window.Bounds})");
+        }
+        catch (Exception exception)
+        {
+            IosStartupDiagnostics.Write("HUD mode: 手动创建悬浮窗失败", exception);
+        }
     }
 
     private void OnActivated(object? sender, ActivatedEventArgs args)
@@ -231,6 +282,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         IosStartupDiagnostics.Write("App startup completed");
         if (_isHudProcess)
         {
+            IosStartupDiagnostics.Write("HUD mode: app started, initializing island");
             Dispatcher.UIThread.Post(() =>
             {
                 _hudHost?.InitializeIsland();
@@ -277,6 +329,12 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         if (window == null)
         {
             return;
+        }
+
+        if (!_hasLoggedHudWindowFound)
+        {
+            _hasLoggedHudWindowFound = true;
+            IosStartupDiagnostics.Write($"HUD window found: bounds={window.Bounds}, level={window.WindowLevel}");
         }
 
         window.BackgroundColor = UIColor.Clear;
