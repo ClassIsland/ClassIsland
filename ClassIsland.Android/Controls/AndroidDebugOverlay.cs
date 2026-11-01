@@ -5,9 +5,11 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Avalonia.Rendering;
+using Avalonia.Threading;
 using ClassIsland.Android.Services;
 using ClassIsland.Core;
 using ClassIsland.Core.Enums;
+using ClassIsland.Helpers;
 using NativeView = global::Android.Views.View;
 
 namespace ClassIsland.Android.Controls;
@@ -27,6 +29,7 @@ internal sealed class AndroidDebugOverlay : IDisposable
     private PopupWindow? _popup;
     private ScrollView? _panel;
     private TextView? _metricsText;
+    private TextView? _fontProbeText;
     private Button? _reloadButton;
     private AndroidProcessMetrics? _sampler;
     private float _xFraction = 1;
@@ -93,6 +96,22 @@ internal sealed class AndroidDebugOverlay : IDisposable
         if (!_disposed && _activity.ViewHostRoot is { } root)
         {
             root.RendererDiagnostics.DebugOverlays = _overlays;
+            RefreshFontProbe();
+        }
+    }
+
+    private async void RefreshFontProbe()
+    {
+        if (_disposed || _fontProbeText == null)
+        {
+            return;
+        }
+
+        var target = _fontProbeText;
+        var result = await Dispatcher.UIThread.InvokeAsync(DefaultFontProbe.Read);
+        if (!_disposed && _fontProbeText == target)
+        {
+            target.Text = result.DisplayText;
         }
     }
 
@@ -269,15 +288,21 @@ internal sealed class AndroidDebugOverlay : IDisposable
         background.Alpha = 204;
         content.Background = background;
         content.AddView(CreateText($"Android 调试 · PID {(global::Android.OS.Process.MyPid())}", 18));
-        _metricsText = CreateText("进程 RSS：正在采样…\n.NET 托管堆（估算）：正在采样…\nGC 已提交：正在采样…\n原生堆已分配：正在采样…\nCPU：采样中…", 14);
+        _metricsText = CreateText("进程 RSS：正在采样…\n.NET 托管堆（估算）：正在采样…\nGC 已提交：正在采样…\n原生堆已分配：正在采样…\nCPU：采样中…\nSkia GPU 缓存：正在采样…", 14);
         content.AddView(_metricsText);
-        content.AddView(CreateText("内存口径不同，不可直接相加；原生堆不含全部非托管映射。CPU 100% 表示占满一个核心。", 12));
+        content.AddView(CreateText("内存口径不同，不可直接相加；原生堆不含全部非托管映射。Skia GPU 缓存显示已用量 / 上限，不代表总显存占用。CPU 100% 表示占满一个核心。", 12));
+        content.AddView(CreateText("默认字体探针", 18));
+        _fontProbeText = CreateText("正在探测…", 14);
+        content.AddView(_fontProbeText);
+        RefreshFontProbe();
         AddOverlaySwitch(content, "帧率（FPS）", RendererDebugOverlays.Fps);
         AddOverlaySwitch(content, "重绘区域", RendererDebugOverlays.DirtyRects);
         AddOverlaySwitch(content, "布局耗时图", RendererDebugOverlays.LayoutTimeGraph);
         AddOverlaySwitch(content, "渲染耗时图", RendererDebugOverlays.RenderTimeGraph);
+        AddAction(content, "触发完整 GC", CollectGarbageAsync, successMessage: "完整 GC 已完成。");
         content.AddView(CreateText("重载视图宿主将清空导航和未保存的页面状态。", 12));
-        _reloadButton = AddAction(content, "重载 AndroidViewHost", _activity.ReloadViewHostAsync);
+        _reloadButton = AddAction(content, "重载 AndroidViewHost", _activity.ReloadViewHostAsync,
+            successMessage: "视图宿主已重载。");
         AddAction(content, "重启应用", () =>
         {
             AppBase.Current.Restart();
@@ -328,17 +353,34 @@ internal sealed class AndroidDebugOverlay : IDisposable
         content.AddView(toggle);
     }
 
-    private Button AddAction(LinearLayout content, string text, Func<Task> action, bool terminal = false)
+    private async Task CollectGarbageAsync()
+    {
+        await Task.Run(() =>
+        {
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+            GC.WaitForPendingFinalizers();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+        });
+        if (!_disposed && _activity.IsForeground && _popup?.IsShowing == true)
+        {
+            StopSampling();
+            _sampler = new AndroidProcessMetrics();
+            SampleMetrics();
+        }
+    }
+
+    private Button AddAction(LinearLayout content, string text, Func<Task> action, bool terminal = false,
+        string? successMessage = null)
     {
         var button = new Button(_activity) { Text = text };
         button.SetAllCaps(false);
-        button.Click += async (_, _) => await RunActionAsync(action, terminal);
+        button.Click += async (_, _) => await RunActionAsync(action, terminal, successMessage);
         _actionButtons.Add(button);
         content.AddView(button);
         return button;
     }
 
-    private async Task RunActionAsync(Func<Task> action, bool terminal)
+    private async Task RunActionAsync(Func<Task> action, bool terminal, string? successMessage)
     {
         if (_operationInProgress || _disposed)
         {
@@ -352,9 +394,9 @@ internal sealed class AndroidDebugOverlay : IDisposable
             if (!terminal)
             {
                 _operationInProgress = false;
-                if (!_disposed)
+                if (!_disposed && successMessage != null)
                 {
-                    Toast.MakeText(_activity, "视图宿主已重载。", ToastLength.Short)?.Show();
+                    Toast.MakeText(_activity, successMessage, ToastLength.Short)?.Show();
                 }
             }
         }
@@ -424,7 +466,9 @@ internal sealed class AndroidDebugOverlay : IDisposable
         }
         var generation = _sampleGeneration;
         var sampler = _sampler;
-        var result = await Task.Run(sampler.Read);
+        var processMetrics = Task.Run(sampler.Read);
+        var gpuMetrics = await Dispatcher.UIThread.InvokeAsync(() => AndroidSkiaGpuMetrics.ReadAsync(_activity.ViewHostRoot));
+        var result = $"{await processMetrics}\nSkia GPU 缓存：{gpuMetrics}";
         if (_disposed || generation != _sampleGeneration || !_activity.IsForeground || _popup?.IsShowing != true)
         {
             return;
@@ -452,6 +496,7 @@ internal sealed class AndroidDebugOverlay : IDisposable
         }
         _panel = null;
         _metricsText = null;
+        _fontProbeText = null;
         _reloadButton = null;
         _actionButtons.Clear();
         ScheduleFade();

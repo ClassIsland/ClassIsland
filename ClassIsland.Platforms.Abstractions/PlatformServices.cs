@@ -48,6 +48,8 @@ public static class PlatformServices
     /// </summary>
     public static IPlatformFilePickerService FilePickerService { get; internal set; } = new AvaloniaDefaultPlatformFilePickerService();
 
+    internal static string BlobRootFolderPath { get; set; } = Path.Combine(".", "Blobs");
+
     /// <summary>
     /// 应用生命周期操作服务
     /// </summary>

@@ -20,6 +20,8 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.Views;
 
 namespace ClassIsland.Android.Controls.UI;
@@ -111,6 +113,9 @@ public partial class AndroidViewHost : UserControl, IViewHost
         Console.WriteLine($"[ELYSIADBG] Get TopLevel = {TopLevel.GetTopLevel(this)}");
         base.OnLoaded(e);
 
+        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
+        AppBase.Current.AppStarted += BackgroundOnAppStarted;
+        BindBackgroundSettings();
         AttachInputPane();
         UpdateFocusedTextPresenter();
         RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
@@ -121,6 +126,8 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     protected override void OnUnloaded(RoutedEventArgs e)
     {
+        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
+        BackgroundLayer.DataContext = null;
         DetachInputPane();
         DetachFocusedTextPresenter();
         RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
@@ -128,6 +135,11 @@ public partial class AndroidViewHost : UserControl, IViewHost
         ResetPageContentOffset();
         base.OnUnloaded(e);
     }
+
+    private void BackgroundOnAppStarted(object? sender, EventArgs e) => BindBackgroundSettings();
+
+    private void BindBackgroundSettings() =>
+        BackgroundLayer.DataContext = IAppHost.TryGetService<SettingsService>();
 
     private async void OnDestroy(object? sender, EventArgs e)
     {
@@ -148,6 +160,8 @@ public partial class AndroidViewHost : UserControl, IViewHost
         _isClosed = true;
         IsEnabled = false;
         Activity.Destroy -= OnDestroy;
+        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
+        BackgroundLayer.DataContext = null;
         DetachInputPane();
         DetachFocusedTextPresenter();
         RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
