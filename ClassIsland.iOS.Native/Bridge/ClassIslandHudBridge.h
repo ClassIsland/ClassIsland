@@ -106,6 +106,27 @@ ci_hud_initialize_child_lifecycle(void);
 CI_HUD_EXPORT int32_t
 ci_hud_stop_target(int32_t pid);
 
+/*
+ * 仅由 HUD 子进程入口调用：以“手工 UIKit 启动 + __completeAndRunAsPlugin”方式
+ * 启动 UIApplication，取代标准 UIApplicationMain。
+ *
+ * 为什么需要：HUD 子进程由主 App posix_spawn 拉起，没有 SpringBoard/launchd 提供的
+ * UIApplication 启动上下文。直接 UIApplicationMain 得到的应用没有 WindowServer 连接，
+ * UIWindow 拿不到 CAContext（_boundContext），因此无法注册到 SpringBoard，悬浮窗口
+ * 永远不会出现。该函数按 TrollSpeed/TRHud/XExternalHUD 等已验证实现的做法初始化
+ * GraphicsServices/BackBoard，使本进程可以创建真正的全局悬浮窗口。
+ *
+ * app_delegate 是托管侧 AppDelegate 的 NSObject 裸指针（不加引用计数）。函数内部会把
+ * 它设为 UIApplication.delegate；调用方必须保证该对象在进程生命周期内不被回收。
+ * 启动完成后函数进入 CFRunLoopRun，正常情况下不会返回（随进程退出结束）。
+ *
+ * 返回：0 = CFRunLoopRun 结束后返回；
+ *       负数 = 预检查失败（缺少私有符号/选择器、参数无效）。此时尚未初始化 UIKit，
+ *       调用方可以安全回退到标准 UIApplicationMain。
+ */
+CI_HUD_EXPORT int32_t
+ci_hud_run_as_plugin(void *app_delegate);
+
 /* 1 = HUD 子进程正在运行；0 = 没有运行。 */
 CI_HUD_EXPORT int32_t
 ci_hud_is_running(void);

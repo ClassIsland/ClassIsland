@@ -1,3 +1,5 @@
+import CoreFoundation
+import Darwin
 import Foundation
 import ObjectiveC
 import UIKit
@@ -790,4 +792,97 @@ public func ci_hud_stop_target(_ pid: Int32) -> Int32 {
     }
 
     return HudError.terminationForbidden.rawValue
+}
+
+// MARK: - HUD 子进程手工 UIKit 启动（run as plugin）
+
+// HUD 子进程由主 App 通过 posix_spawn 拉起，没有 SpringBoard/launchd 分配的
+// UIApplication 启动上下文。直接调用 UIApplicationMain 只能得到一个没有 WindowServer
+// 连接的“空壳”应用：UIWindow 永远拿不到 CAContext（_boundContext），因此无法注册到
+// SpringBoard，悬浮窗口也就永远不会出现。
+//
+// TrollSpeed / TRHud / XExternalHUD 等已验证实现的做法是手工初始化
+// GraphicsServices/BackBoard，用 __completeAndRunAsPlugin 完成启动，再自行跑 run loop。
+// 本函数按同样流程启动（输入事件部分省略：ClassIsland 的悬浮岛是只读、点击穿透的）。
+private typealias HudVoidProc = @convention(c) () -> Void
+private typealias HudAnyClassProc = @convention(c) (AnyClass) -> Void
+
+private let hudPrivateFrameworkPaths = [
+    "/System/Library/PrivateFrameworks/GraphicsServices.framework/GraphicsServices",
+    "/System/Library/PrivateFrameworks/BackBoardServices.framework/BackBoardServices",
+    "/System/Library/PrivateFrameworks/SpringBoardServices.framework/SpringBoardServices",
+]
+
+/// 解析私有 framework 导出的 C 符号；UIKit 已在进程中，最后回退到 RTLD_DEFAULT。
+private func hudResolvePrivateSymbol(_ name: String) -> UnsafeMutableRawPointer? {
+    for path in hudPrivateFrameworkPaths {
+        if let handle = dlopen(path, RTLD_LAZY), let symbol = dlsym(handle, name) {
+            return symbol
+        }
+    }
+    // RTLD_DEFAULT 等价于 (void *)-2
+    return dlsym(UnsafeMutableRawPointer(bitPattern: -2), name)
+}
+
+@_cdecl("ci_hud_run_as_plugin")
+public func ci_hud_run_as_plugin(_ appDelegatePointer: UnsafeMutableRawPointer?) -> Int32 {
+    guard let appDelegatePointer else {
+        hudSetLastError("ci_hud_run_as_plugin: app_delegate 不能为 NULL。")
+        return HudError.invalidArgument.rawValue
+    }
+
+    let requiredSymbols = [
+        "GSInitialize",
+        "BKSDisplayServicesStart",
+        "UIApplicationInitialize",
+        "UIApplicationInstantiateSingleton",
+    ]
+    var symbols: [String: UnsafeMutableRawPointer] = [:]
+    var missing: [String] = []
+    for name in requiredSymbols {
+        if let symbol = hudResolvePrivateSymbol(name) {
+            symbols[name] = symbol
+        } else {
+            missing.append(name)
+        }
+    }
+    let completionSelector = NSSelectorFromString("__completeAndRunAsPlugin")
+    if class_getInstanceMethod(UIApplication.self, completionSelector) == nil {
+        missing.append("-[UIApplication __completeAndRunAsPlugin]")
+    }
+    guard missing.isEmpty else {
+        // 预检查失败时还没有初始化 UIKit，调用方可以安全回退到标准 UIApplicationMain。
+        hudSetLastError("ci_hud_run_as_plugin: 缺少私有符号：\(missing.joined(separator: ", "))。")
+        return HudError.internalFailure.rawValue
+    }
+
+    let delegateObject = Unmanaged<AnyObject>.fromOpaque(appDelegatePointer).takeUnretainedValue()
+    guard let appDelegate = delegateObject as? UIApplicationDelegate else {
+        hudSetLastError("ci_hud_run_as_plugin: 传入的 AppDelegate 不实现 UIApplicationDelegate。")
+        return HudError.invalidArgument.rawValue
+    }
+
+    // 与 TrollSpeed/TRHud/XExternalHUD 一致的手工启动顺序。
+    _ = UIScreen.main
+    _ = CFRunLoopGetCurrent()
+
+    unsafeBitCast(symbols["GSInitialize"]!, to: HudVoidProc.self)()
+    unsafeBitCast(symbols["BKSDisplayServicesStart"]!, to: HudVoidProc.self)()
+    unsafeBitCast(symbols["UIApplicationInitialize"]!, to: HudVoidProc.self)()
+    unsafeBitCast(
+        symbols["UIApplicationInstantiateSingleton"]!,
+        to: HudAnyClassProc.self
+    )(UIApplication.self)
+
+    UIApplication.shared.delegate = appDelegate
+    let accessibilitySelector = NSSelectorFromString("_accessibilityInit")
+    if UIApplication.shared.responds(to: accessibilitySelector) {
+        _ = UIApplication.shared.perform(accessibilitySelector)
+    }
+
+    _ = RunLoop.current
+    _ = UIApplication.shared.perform(completionSelector)
+    hudClearLastError()
+    CFRunLoopRun()
+    return HudError.ok.rawValue
 }

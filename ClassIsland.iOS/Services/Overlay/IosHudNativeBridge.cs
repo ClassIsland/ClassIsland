@@ -45,6 +45,10 @@ internal static partial class IosHudNativeBridge
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int StopTarget(int pid);
 
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_hud_run_as_plugin")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial int RunAsPlugin(nint appDelegate);
+
     internal static string GetLastError()
     {
         var pointer = LastErrorPointer();
