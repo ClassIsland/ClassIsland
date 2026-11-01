@@ -523,33 +523,27 @@ public func ci_hud_last_error() -> UnsafePointer<CChar>? {
 
 // MARK: - SpringBoard accessibility window 注册
 
-/// 宿主 App 通过 object_setClass 把 Avalonia 的 UIWindow 换成这个类：
+/// 窗口在分配时就是 HUD 子类（由 ci_hud_create_window 创建），UIKit 会按系统窗口处理：
 /// - `_ignoresHitTest` 返回 true：窗口不参与命中测试，点击穿透到下面的 App；
 /// - `_isWindowServerHostingManaged` 返回 false：窗口上下文不归本进程的
 ///   WindowServer 托管，而是交给 SpringBoard 的 accessibility window hosting；
-/// - `_isSystemWindow` 返回 true：按系统窗口处理（悬浮于其他 App 之上）；
-/// - `_isSecure` / `_shouldCreateContextAsSecure` 返回 true：要求 UIKit 为该窗口创建
-///   可供跨进程托管的 secure CAContext。缺少这两项时，插件/无场景进程里的窗口不会
-///   获得 `_boundContext`（TrollSpeed/TRHud 的窗口类都声明了同一组方法）。
+/// - `_isSystemWindow` 返回 true：按系统窗口处理（悬浮于其他 App 之上）。
+/// 注意不要声明 `_isSecure` / `_shouldCreateContextAsSecure`：secure CAContext 会
+/// 禁止 Metal drawable，Avalonia（Metal/OpenGL 渲染）会画不出内容；XExternalHUD 的
+/// 经验也是“secure context = no Metal drawable”。悬浮层不需要防截屏。
 /// 私有方法不在 SDK 头文件中，Swift 无法用 override 声明，直接声明同 selector 的
 /// @objc 方法即可在运行时被 ObjC 消息派发命中。
 @objc(ClassIslandHudPassthroughWindow)
 private final class ClassIslandHudPassthroughWindow: UIWindow {
-    @objc class func _isSecure() -> Bool { true }
-
     @objc func _ignoresHitTest() -> Bool { true }
 
     @objc func _isWindowServerHostingManaged() -> Bool { false }
 
     @objc class func _isSystemWindow() -> Bool { true }
-
-    @objc func _isSecure() -> Bool { true }
-
-    @objc func _shouldCreateContextAsSecure() -> Bool { true }
 }
 
-/// 在窗口上屏前完成类替换与窗口属性设置。窗口的 secure/托管标志必须在
-/// `makeKeyAndVisible` 之前生效，UIKit 才会创建可被 SpringBoard 托管的 CAContext。
+/// 完成窗口属性设置。系统窗口/非托管窗口标志在上屏前生效，UIKit 才会在窗口上屏时
+/// 建立可被 SpringBoard accessibility window hosting 托管的 CAContext。
 private func hudPrepareWindow(_ window: UIWindow) {
     if object_getClass(window) != ClassIslandHudPassthroughWindow.self {
         object_setClass(window, ClassIslandHudPassthroughWindow.self)
@@ -720,14 +714,9 @@ private func hudRegisterWindowOnMainThread(_ windowPointer: UnsafeMutableRawPoin
 
     hudPrepareWindow(window)
 
-    // _boundContext 在插件/无场景窗口上可能为空（TrollSpeed/TRHud 的窗口类通过
-    // _shouldCreateContextAsSecure 让 UIKit 建立 secure context）。有就设置 secure，
-    // 没有也不直接失败，继续尝试用窗口自身的 CAContext ID 注册。
-    var hasBoundContext = false
-    if let boundContext = hudObjectProperty(window, selector: "_boundContext") {
-        hasBoundContext = true
-        _ = hudCallVoidBool(on: boundContext, selector: "setSecure:", value: true)
-    }
+    // 只保留 _boundContext 用作诊断信息：secure CAContext 会禁止 Metal drawable，
+    // 不调用 setSecure:（Avalonia 需要非 secure 上下文才能渲染）。
+    let hasBoundContext = hudObjectProperty(window, selector: "_boundContext") != nil
 
     guard hudLoadSpringBoardServices() else {
         return

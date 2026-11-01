@@ -142,11 +142,14 @@ ci_hud_last_error(void);
 /*
  * 在 UIWindow 上屏（makeKeyAndVisible）之前调用：把窗口类替换为
  * ClassIslandHudPassthroughWindow，设置 windowLevel = 10000001、透明背景、
- * clipsToBounds，并声明 secure / 非 App 托管窗口。
+ * clipsToBounds，并声明系统窗口 / 非 App 托管窗口。
  *
- * 必须在窗口上屏前调用，UIKit 才会按 secure context 为窗口建立可被 SpringBoard
+ * 系统窗口标志必须在窗口上屏前生效，UIKit 才会为窗口建立可被 SpringBoard
  * accessibility window hosting 托管的 CAContext（_boundContext/_contextId）。
  * 上屏后再替换窗口类只会得到一个普通窗口，拿不到可托管的 CAContext。
+ *
+ * 注意不要给窗口声明 secure 上下文：secure CAContext 不允许 Metal drawable，
+ * Avalonia 的 Metal/OpenGL 渲染会没有画面。
  *
  * ui_window 为 UIWindow* 裸指针；函数内部切到主线程执行，失败写 ci_hud_last_error。
  */
@@ -157,7 +160,7 @@ ci_hud_prepare_window(void *ui_window);
  * 以 ClassIslandHudPassthroughWindow 类直接创建 HUD 窗口并返回 UIWindow* 裸指针。
  *
  * 与参考实现一致：窗口在分配时就使用 HUD 子类（而不是先创建普通 UIWindow 再替换类），
- * UIKit 才会在窗口上屏时按系统窗口/secure 窗口建立可交给 SpringBoard 托管的 CAContext。
+ * UIKit 才会在窗口上屏时按系统窗口建立可交给 SpringBoard 托管的 CAContext。
  * 窗口由桥接内部强引用直到进程退出；调用方只负责设置 rootViewController 并
  * 调用 makeKeyAndVisible（建议在 didFinishLaunching 阶段完成，与参考实现同相位）。
  *
@@ -174,9 +177,8 @@ ci_hud_create_window(double frame_x, double frame_y, double width, double height
  * 该窗口与 hosting controller，直到进程退出或再次注册别的窗口）。应在窗口已经上屏
  * （拥有 CAContext）之后调用；调用后桥接会确保窗口类为
  * ClassIslandHudPassthroughWindow（点击穿透、非 App 托管窗口、系统窗口），
- * 设置 windowLevel = 10000001、透明背景，并把 CAContext 设为 secure，
- * 最后调用 SBSAccessibilityWindowHostingController 的
- * registerWindowWithContextID:atLevel:。
+ * 设置 windowLevel = 10000001、透明背景，最后调用
+ * SBSAccessibilityWindowHostingController 的 registerWindowWithContextID:atLevel:。
  *
  * 该函数不返回错误码；任一步失败都会写 ci_hud_last_error 并安全返回（不 crash）。
  * 同一个窗口重复调用是幂等的。
