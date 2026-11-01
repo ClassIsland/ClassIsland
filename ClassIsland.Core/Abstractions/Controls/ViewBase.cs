@@ -215,14 +215,15 @@ public abstract class ViewBase : ContentPage
         Hide();
     }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnLoaded(RoutedEventArgs e)
     {
         if (ShowedOnce)
         {
+            // Container queries reconnect as descendants attach; refresh only after the whole view is loaded.
             InvalidChildren(this);
         }
         
-        base.OnAttachedToVisualTree(e);
+        base.OnLoaded(e);
     }
     
     private void InvalidChildren(Visual visual)
