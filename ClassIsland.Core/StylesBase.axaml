@@ -66,6 +66,10 @@
 
     <!-- Add Styles Here -->
 
+    <Style Selector=":is(ScrollViewer)">
+        <Setter Property="ci:ScrollViewerAssist.IsOverScrollAnimationEnabled" Value="True"/>
+    </Style>
+
     <Style Selector="Viewbox">
         <Setter Property="ci:ViewboxLogicalTreeAssist.IsEnabled" Value="True"/>
     </Style>
