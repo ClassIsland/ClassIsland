@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using ClassIsland.Core.Icons;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Controls;
@@ -23,6 +23,15 @@ public partial class IconText : UserControl
     {
         get => GetValue(GlyphProperty);
         set => SetValue(GlyphProperty, value);
+    }
+    
+    public static readonly StyledProperty<FluentIconKind?> IconProperty =
+        AvaloniaProperty.Register<IconText, FluentIconKind?>(nameof(Icon));
+
+    public FluentIconKind? Icon
+    {
+        get => GetValue(IconProperty);
+        set => SetValue(IconProperty, value);
     }
 
     public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<IconText, string>(
@@ -47,5 +56,17 @@ public partial class IconText : UserControl
     public IconText()
     {
         InitializeComponent();
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == IconProperty)
+        {
+            var kind = change.GetNewValue<FluentIconKind?>();
+            if (kind.HasValue)
+                Glyph = char.ConvertFromUtf32((int)kind.Value);
+        }
     }
 }
