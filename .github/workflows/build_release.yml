@@ -18,7 +18,7 @@ on:
         type: boolean
 
 env:
-  PDC_CLIENT_VERSION: 1.0.1.1
+  PDC_CLIENT_VERSION: 1.0.1.2
   DOTNET_SDK_VERSION: 10.0.302
   MACOS_XCODE_PATH: /Applications/Xcode_26.6.app/Contents/Developer
 
