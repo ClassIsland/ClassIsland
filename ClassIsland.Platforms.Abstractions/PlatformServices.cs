@@ -9,6 +9,11 @@ namespace ClassIsland.Platforms.Abstraction;
 public static class PlatformServices
 {
     /// <summary>
+    /// 平台设备信息服务
+    /// </summary>
+    public static IDeviceInfoService DeviceInfoService { get; internal set; } = new DeviceInfoServiceStub();
+
+    /// <summary>
     /// 平台窗口服务
     /// </summary>
     public static IWindowPlatformService WindowPlatformService { get; internal set; } = new WindowPlatformServiceStub();
