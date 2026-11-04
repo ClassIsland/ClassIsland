@@ -26,6 +26,12 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
 
     private object _audioPlaybackDeviceInitializeLock = new();
 
+    /// <summary>
+    /// 单次音频播放允许占用线程的最长时间。提醒音通常在 1 分钟内结束，
+    /// 这里留出充足余量，只用于兜底"设备异常导致 PlaybackEnded 不触发"的情况。
+    /// </summary>
+    private static readonly TimeSpan PlaybackWaitTimeout = TimeSpan.FromMinutes(2);
+
     public AudioEngine AudioEngine
     {
         get
@@ -117,7 +123,18 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
             tcs.TrySetResult(false);
         });
         player.Play();
-        tcs.Task.Wait();  // 不要在此处 await，否则会导致设备停止过程阻塞，无法完成播放流程。
+        // 不要在此处 await，否则会导致设备停止过程阻塞，无法完成播放流程。
+        // 但必须带上限：设备被拔掉、默认设备切换、或音频驱动卡住时 PlaybackEnded 永远
+        // 不会触发，旧实现的 tcs.Task.Wait() 会把一个线程池线程永久挂在这里。
+        // 一节课接一节课地播放提醒音，线程池就会被逐个耗尽，之后所有 Task.Run
+        // （音频、网络、档案保存）都排队等线程，界面表现为"卡死"，要等运行时
+        // 慢慢注入新线程才恢复——这正是长时间运行后才卡死的主因之一。
+        if (!tcs.Task.Wait(PlaybackWaitTimeout))
+        {
+            Logger.LogWarning(
+                "音频播放等待超时（{Timeout} 秒），已强制结束本次播放并释放播放设备。音频哈希={Hash}",
+                PlaybackWaitTimeout.TotalSeconds, audio.GetHashCode());
+        }
         Logger.LogDebug("结束播放音频 {}", audio.GetHashCode());
         player.PlaybackEnded -= OnPlayerOnPlaybackEnded;
 

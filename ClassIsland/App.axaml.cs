@@ -316,6 +316,17 @@ public partial class App : AppBase, IAppHost
         {
             // ignored
         }
+
+        try
+        {
+            // 设置写入已改为合并延迟写入，退出前必须把还没落盘的改动刷出去，
+            // 否则进程退出时会丢掉最后一次变更（最多 800 ms 内的修改）。
+            IAppHost.TryGetService<SettingsService>()?.FlushPendingSave();
+        }
+        catch (Exception exception)
+        {
+            Debug.WriteLine(exception);
+        }
     }
 
     private void TaskSchedulerOnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)

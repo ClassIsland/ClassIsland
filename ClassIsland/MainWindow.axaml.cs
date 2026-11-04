@@ -135,7 +135,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private DispatcherTimer HighFreqTopmostRecheckTimer { get; } = new()
     {
-        Interval = TimeSpan.FromMilliseconds(1)
+        // 上游这里是 1 ms。DispatcherTimer 是跑在 UI 线程上的，
+        // 1 ms 间隔意味着只要这个模式被打开，界面线程就会被
+        // "SetWindowPos 置顶 + 置底" 的调用刷满（每次都是两次 Win32 调用），
+        // 输入、布局、渲染全部被挤在后面，最终表现为界面卡死。
+        // 100 ms 对"抢回置顶"这个需求已经足够快，同时留给 UI 线程 99% 的空闲。
+        Interval = TimeSpan.FromMilliseconds(100)
     };
 
     private DispatcherTimer TouchInFadingTimer { get; set; } = new();
@@ -491,7 +496,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             return;
         }
-        UpdateTheme();
+        ScheduleThemeUpdate();
         UpdateStyleStates();
         if (e.PropertyName is nameof(ViewModel.Settings.IsMouseInFadingReversed)
                            or nameof(ViewModel.Settings.IsMouseInFadingEnabled))
@@ -725,6 +730,33 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         PseudoClasses.Set(":dock-top", ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2);
         PseudoClasses.Set(":dock-bottom", ViewModel.Settings.WindowDockingLocation is 3 or 4 or 5);
+    }
+
+    private bool _themeUpdateScheduled;
+
+    /// <summary>
+    /// 合并短时间内的多次主题刷新请求。
+    /// </summary>
+    /// <remarks>
+    /// <see cref="UpdateTheme"/> 会重设窗口位置、窗口特性、窗口层级并重建整套主题资源，
+    /// 而 <see cref="SettingsOnPropertyChanged"/> 对**任意**设置项变更都会调用它。
+    /// 只要有一个设置项被高频写入（例如调试时间偏移、音量、鼠标状态），
+    /// 就会演变成每秒几十次的全量主题重建，长时间运行后界面线程被彻底拖死。
+    /// 这里把同一轮消息循环内的多次请求合并成一次。
+    /// </remarks>
+    private void ScheduleThemeUpdate()
+    {
+        if (_themeUpdateScheduled)
+        {
+            return;
+        }
+
+        _themeUpdateScheduled = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _themeUpdateScheduled = false;
+            UpdateTheme();
+        }, DispatcherPriority.Background);
     }
 
     private async void UpdateTheme()

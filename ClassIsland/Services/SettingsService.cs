@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -25,7 +26,7 @@ using ClassIsland.Shared.Protobuf.Enum;
 namespace ClassIsland.Services;
 
 public class SettingsService(ILogger<SettingsService> Logger, IManagementService ManagementService)
-    : INotifyPropertyChanged
+    : INotifyPropertyChanged, IDisposable
 {
     private Settings _settings = new();
 
@@ -178,6 +179,72 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Settings);
     }
 
+    /// <summary>
+    /// 设置写入的合并窗口。
+    /// </summary>
+    /// <remarks>
+    /// 旧实现里每一次设置项变更都会**同步**完成一次 Settings.json 的完整序列化 + 落盘，
+    /// 而这个回调运行在发起修改的线程（通常是 UI 线程）上。
+    /// 只要有一个设置项被高频写入（动画参数、音量、鼠标状态、调试时间偏移等），
+    /// 就会变成每秒几十次的整文件重写；运行时间越长、Settings.json 越大，单次写入越慢，
+    /// 最终把 UI 线程彻底堵死，表现为"用久了就卡死"。
+    /// 这里把连续的变更合并成一次写入；显式调用 <see cref="SaveSettings"/> 仍然立即落盘。
+    /// </remarks>
+    private const int SaveDebounceMilliseconds = 800;
+
+    private readonly object _pendingSaveLock = new();
+    private Timer? _saveTimer;
+    private string _pendingSaveNote = "";
+    private bool _disposed;
+
+    private void ScheduleSave(string note)
+    {
+        if (Design.IsDesignMode || _disposed)
+        {
+            return;
+        }
+
+        lock (_pendingSaveLock)
+        {
+            _pendingSaveNote = note;
+            _saveTimer ??= new Timer(_ => FlushPendingSave(), null, Timeout.Infinite, Timeout.Infinite);
+            _saveTimer.Change(SaveDebounceMilliseconds, Timeout.Infinite);
+        }
+    }
+
+    /// <summary>
+    /// 立即落盘尚未写入的设置变更。应用退出或重启前应调用一次。
+    /// </summary>
+    public void FlushPendingSave()
+    {
+        string note;
+        lock (_pendingSaveLock)
+        {
+            note = _pendingSaveNote;
+            _pendingSaveNote = "";
+        }
+
+        try
+        {
+            SaveSettings(note);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "延迟写入配置文件失败。");
+        }
+    }
+
+    public void Dispose()
+    {
+        lock (_pendingSaveLock)
+        {
+            _disposed = true;
+            _saveTimer?.Dispose();
+            _saveTimer = null;
+        }
+        FlushPendingSave();
+    }
+
 
     public const BindingFlags SettingsPropertiesFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
@@ -269,7 +336,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
                             .GetCustomAttribute<JsonIgnoreAttribute>() != null)
             return;
 
-        SaveSettings(propertyName);
+        ScheduleSave(propertyName);
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
         {
             connection.LogAuditEvent(AuditEvents.AppSettingsUpdated, new AppSettingsUpdated()
