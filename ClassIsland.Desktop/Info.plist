@@ -11,7 +11,7 @@
 	<key>CFBundleName</key>
 	<string>ClassIsland</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>12.0</string>
+	<string>14.0</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
