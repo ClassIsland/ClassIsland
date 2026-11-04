@@ -493,6 +493,12 @@ jobs:
           key: ${{ secrets.METADATA_DEPLOY_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
+      - name: Pin PDC storage DNS
+        shell: bash
+        run: |
+          printf '%s\n' '120.199.84.213 cn-nb1.rains3.com' | sudo tee -a /etc/hosts
+          getent ahostsv4 cn-nb1.rains3.com
+
       - name: Publish App
         shell: pwsh
         env:
