@@ -62,36 +62,37 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
     /// <remarks>
     /// 仅调用一次平台服务是不够的：窗口句柄可能尚未创建，或者
     /// <c>TransparencyLevelHint</c> 在显示后又被 Avalonia 重建了合成层，
-    /// 导致 <c>WS_EX_TRANSPARENT</c> 丢失。此时这个全屏置顶窗口会开始吞掉
+    /// 导致穿透样式丢失。此时这个全屏置顶窗口会开始吞掉
     /// 所有鼠标点击，用户看到的就是"输入框点不动/没反应"。
-    /// 这里在显示后、以及每次播放特效前都重新确认一次扩展样式。
+    /// 这里在显示后、以及每次播放特效前都重新确认一次窗口样式。
+    /// 平台服务的调用必须**跨平台**（Linux 走 XFixes 区域、macOS 走
+    /// <c>NSWindow.IgnoresMouseEvents</c>，都是点击穿透的唯一来源），
+    /// 只有 Win32 扩展样式的补齐是 Windows 专属。
     /// </remarks>
     private void EnsureClickThrough()
     {
-        if (!OperatingSystem.IsWindows())
-        {
-            return;
-        }
-
-        var handle = TryGetPlatformHandle()?.Handle ?? nint.Zero;
-        if (handle == nint.Zero)
-        {
-            return;
-        }
-
         try
         {
             PlatformServices.WindowPlatformService.SetWindowFeature(this,
                 WindowFeatures.Transparent | WindowFeatures.ToolWindow | WindowFeatures.Topmost |
                 WindowFeatures.SkipManagement, true);
 
-            var exStyle = GetWindowExStyle(handle);
-            const long required = WsExTransparent | WsExNoActivate | WsExLayered | WsExToolWindow;
-            if ((exStyle & required) != required)
+            if (OperatingSystem.IsWindows())
             {
-                SetWindowExStyle(handle, exStyle | required);
-                Logger.LogDebug("补齐顶层特效窗口的鼠标穿透样式：0x{Style:X} -> 0x{NewStyle:X}", exStyle,
-                    GetWindowExStyle(handle));
+                // Win32 专属：确认 WS_EX_TRANSPARENT 等扩展样式确实生效
+                // （平台服务偶发丢失这些位时补齐）。
+                var handle = TryGetPlatformHandle()?.Handle ?? nint.Zero;
+                if (handle != nint.Zero)
+                {
+                    var exStyle = GetWindowExStyle(handle);
+                    const long required = WsExTransparent | WsExNoActivate | WsExLayered | WsExToolWindow;
+                    if ((exStyle & required) != required)
+                    {
+                        SetWindowExStyle(handle, exStyle | required);
+                        Logger.LogDebug("补齐顶层特效窗口的鼠标穿透样式：0x{Style:X} -> 0x{NewStyle:X}", exStyle,
+                            GetWindowExStyle(handle));
+                    }
+                }
             }
         }
         catch (Exception ex)
