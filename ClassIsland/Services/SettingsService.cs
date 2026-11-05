@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -25,7 +26,7 @@ using ClassIsland.Shared.Protobuf.Enum;
 namespace ClassIsland.Services;
 
 public class SettingsService(ILogger<SettingsService> Logger, IManagementService ManagementService)
-    : INotifyPropertyChanged
+    : INotifyPropertyChanged, IDisposable
 {
     private Settings _settings = new();
 
@@ -111,6 +112,10 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
         Settings.LastAppVersion = Assembly.GetExecutingAssembly().GetName().Version!;
 
+        // 只有到这里才允许写回：在此之前进程若退出/重启（如 --importV1 中途），
+        // FlushPendingSave 不会把尚未加载完成的（默认）设置刷进 Settings.json。
+        _settingsLoaded = true;
+
         if (requiresRestarting)
         {
             AppBase.Current.Restart();
@@ -170,12 +175,127 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
     public void SaveSettings(string note = "")
     {
+        SaveSettingsCore(note);
+    }
+
+    /// <summary>
+    /// 写盘的统一实现。所有 Settings.json 写入（显式保存与延迟合并写入）都经由此方法，
+    /// 在 <see cref="_saveWriteLock"/> 内单飞执行。
+    /// </summary>
+    /// <remarks>设置尚未加载完成（如启动早期、--import 中途）时拒绝写回，防止默认值覆盖配置文件。</remarks>
+    private void SaveSettingsCore(string note = "")
+    {
         if (Design.IsDesignMode)
         {
             return;
         }
-        Logger.LogInformation(note == "" ? "写入配置文件。" : "写入配置文件：{}", note);
-        ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Settings);
+        if (!_settingsLoaded)
+        {
+            Logger.LogDebug("设置尚未加载完成，跳过写入配置文件。");
+            return;
+        }
+        lock (_saveWriteLock)
+        {
+            Logger.LogInformation(note == "" ? "写入配置文件。" : "写入配置文件：{}", note);
+            ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Settings);
+        }
+    }
+
+    /// <summary>
+    /// 设置写入的合并窗口。
+    /// </summary>
+    /// <remarks>
+    /// 旧实现里每一次设置项变更都会**同步**完成一次 Settings.json 的完整序列化 + 落盘，
+    /// 而这个回调运行在发起修改的线程（通常是 UI 线程）上。
+    /// 只要有一个设置项被高频写入（动画参数、音量、鼠标状态、调试时间偏移等），
+    /// 就会变成每秒几十次的整文件重写；运行时间越长、Settings.json 越大，单次写入越慢，
+    /// 最终把 UI 线程彻底堵死，表现为"用久了就卡死"。
+    /// 这里把连续的变更合并成一次写入；显式调用 <see cref="SaveSettings"/> 仍然立即落盘。
+    /// </remarks>
+    private const int SaveDebounceMilliseconds = 800;
+
+    private readonly object _pendingSaveLock = new();
+    /// <summary>
+    /// 序列化 + 落盘的单一关口：无论写入来自定时器回调（<see cref="FlushPendingSave"/>）
+    /// 还是显式的 <see cref="SaveSettings"/>，文件写入本身只允许一票进入，
+    /// 避免 <c>FileShare.None</c> 下的并发写冲突（两个写线程只有一个能成功）。
+    /// </summary>
+    private readonly object _saveWriteLock = new();
+    private Timer? _saveTimer;
+    private string _pendingSaveNote = "";
+    /// <summary>是否有尚未落盘的合并写入（定时器 armed 或尚未触发）。</summary>
+    private bool _hasPendingSave;
+    /// <summary>
+    /// <see cref="LoadSettingsAsync"/> 是否已经完成。在它完成前禁止任何写回：
+    /// 否则进程在导入/迁移场景中途退出时，会把**默认值**当作用户设置写进
+    /// Settings.json，覆盖刚导入或已存在的配置。
+    /// </summary>
+    private volatile bool _settingsLoaded;
+    private bool _disposed;
+
+    private void ScheduleSave(string note)
+    {
+        if (Design.IsDesignMode || _disposed)
+        {
+            return;
+        }
+
+        lock (_pendingSaveLock)
+        {
+            _pendingSaveNote = note;
+            _hasPendingSave = true;
+            _saveTimer ??= new Timer(_ => FlushPendingSave(), null, Timeout.Infinite, Timeout.Infinite);
+            _saveTimer.Change(SaveDebounceMilliseconds, Timeout.Infinite);
+        }
+    }
+
+    /// <summary>
+    /// 立即落盘尚未写入的设置变更。应用退出或重启前应调用一次。
+    /// 没有待写入的变更、或设置尚未加载完成时，本方法是空操作（不会把默认值刷盘）。
+    /// </summary>
+    public void FlushPendingSave()
+    {
+        string note;
+        lock (_pendingSaveLock)
+        {
+            if (!_hasPendingSave)
+            {
+                return;
+            }
+            note = _pendingSaveNote;
+            _pendingSaveNote = "";
+            _hasPendingSave = false;
+            // 取消定时器：接下来的写入就是这次 flush 本身，防止 timer 再触发一次重复写。
+            _saveTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+
+        try
+        {
+            SaveSettingsCore(note);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "延迟写入配置文件失败。");
+            // 写失败不能吞掉变更：恢复 pending 并重新武装定时器，
+            // 否则这次的设置变更会被静默丢弃。
+            lock (_pendingSaveLock)
+            {
+                _hasPendingSave = true;
+                _pendingSaveNote = note;
+                _saveTimer?.Change(SaveDebounceMilliseconds, Timeout.Infinite);
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        lock (_pendingSaveLock)
+        {
+            _disposed = true;
+            _saveTimer?.Dispose();
+            _saveTimer = null;
+        }
+        FlushPendingSave();
     }
 
 
@@ -269,7 +389,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
                             .GetCustomAttribute<JsonIgnoreAttribute>() != null)
             return;
 
-        SaveSettings(propertyName);
+        ScheduleSave(propertyName);
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
         {
             connection.LogAuditEvent(AuditEvents.AppSettingsUpdated, new AppSettingsUpdated()
