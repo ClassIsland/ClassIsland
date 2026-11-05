@@ -28,6 +28,8 @@ public class Application : AvaloniaAndroidApplication<App>
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
+        NavigationRepeaterAutomationFix.Initialize();
+
         PlatformServices.AppLifetimeService = new AndroidAppLifetimeService();
         PlatformServices.LauncherService = new LauncherService();
         PlatformServices.DesktopToastService = new DesktopToastService();
