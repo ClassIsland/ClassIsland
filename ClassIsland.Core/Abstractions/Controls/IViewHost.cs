@@ -20,6 +20,11 @@ public interface IViewHost
     ViewBase? CurrentView { get; }
 
     /// <summary>
+    /// 主视图可以返回上一视图或退出宿主时为 true。
+    /// </summary>
+    bool CanGoBack => true;
+
+    /// <summary>
     /// 已激活到此宿主的视图。
     /// </summary>
     IReadOnlyCollection<ViewBase> ActivatedViews { get; }

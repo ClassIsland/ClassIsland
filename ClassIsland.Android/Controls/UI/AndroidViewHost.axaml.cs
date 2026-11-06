@@ -34,6 +34,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
     public MainActivity Activity { get; }
 
     public ViewBase? CurrentView => _currentView;
+    bool IViewHost.CanGoBack => NavigationPage.CanGoBack;
     IReadOnlyCollection<ViewBase> IViewHost.ActivatedViews => ActivatedViews;
 
     private HashSet<ViewBase> ActivatedViews { get; } = [];
@@ -202,20 +203,18 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     public bool HandleBackRequested()
     {
-        if (IsDrawerOpen)
+        if (!IsDrawerOpen)
         {
-            _ = NavigateDrawerBack();
-            return true;
+            return NavigationPage.IsNavigating || CurrentView?.TryGoBack() == true;
         }
 
-        var currentView = _currentView ?? ActivatedViews.LastOrDefault();
-        if (currentView != null && NavigationPage.Pages?.Count() > 1)
+        if (CurrentDrawerView is { } drawerView)
         {
-            _ = HideView(currentView);
-            return true;
+            return drawerView.TryGoBack();
         }
 
-        return false;
+        _ = NavigateDrawerBack();
+        return true;
     }
 
     private void AttachInputPane()

@@ -8,6 +8,7 @@
           xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
           xmlns:controls1="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
           xmlns:commands="http://classisland.tech/schemas/xaml/core"
+          xmlns:ui="clr-namespace:ClassIsland.Controls.UI"
           xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
           xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
           xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
@@ -117,27 +118,45 @@
             <Border Height="48" Margin="0 0 8 0">
                 <Grid VerticalAlignment="Center" ColumnDefinitions="Auto,Auto,*,Auto">
                     <StackPanel Orientation="Horizontal" Grid.Column="1"
-                                VerticalAlignment="Center">
+                                VerticalAlignment="Center"
+                                Classes.mobile="{Binding IsMobileMode, RelativeSource={RelativeSource FindAncestor, AncestorType=ui:WindowViewHost}, FallbackValue={OnPlatform Default={x:False}, Android={x:True}}}">
+                        <StackPanel.Styles>
+                            <Style Selector="StackPanel.mobile > Image#WindowIcon">
+                                <Setter Property="IsVisible" Value="False"/>
+                            </Style>
+                            <Style Selector="StackPanel.mobile > TextBlock#WindowTitle">
+                                <Setter Property="IsVisible" Value="True"/>
+                            </Style>
+                            <Style Selector="StackPanel:not(.mobile) > TextBlock#WindowTitle">
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Margin" Value="0 2 0 0"/>
+                            </Style>
+                        </StackPanel.Styles>
                         <Button Name="BackButton"
                                 Grid.Column=""
                                 HorizontalAlignment="Center" VerticalAlignment="Center"
                                 Margin="0 -8 0 -8"
                                 Click="BackButton_OnClick"
-                                IsVisible="{Binding #NavigationFrame.CanGoBack}"
                                 MinWidth="40" Width="48"
                                 ToolTip.Tip="返回"
                                 Classes="nav-back">
+                            <Button.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                    <Binding Path="#NavigationFrame.CanGoBack"/>
+                                    <Binding Path="CanGoBack" RelativeSource="{RelativeSource FindAncestor, AncestorType=NavigationPage}"/>
+                                </MultiBinding>
+                            </Button.IsVisible>
                         </Button>
                         <Button Name="TogglePaneButton"
                                 Grid.Column=""
                                 Theme="{StaticResource PaneToggleButtonStyle}"
                                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                                Margin="0 -8 -8 -8"
+                                Margin="0 -8 0 -8"
                                 Click="TogglePaneButton_OnClick"
                                 IsVisible="{Binding !#NavigationView.IsPaneToggleButtonVisible}"
                                 MinWidth="40" Width="48"/>
                         
-                        <Image Margin="0 4 12 4"
+                        <Image Margin="4 4 12 4"
                                IsHitTestVisible="False"
                                Source="/Assets/AppLogo.png"
                                Width="18" Height="18"
@@ -146,8 +165,8 @@
                                RenderOptions.BitmapInterpolationMode="HighQuality"
                                Classes="custom-titlebar-only"/>
 
-                        <TextBlock Text="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
-                                   FontSize="12" Margin="0 2 0 0"
+                        <TextBlock Name="WindowTitle"
+                                   Text="{Binding}"
                                    IsHitTestVisible="False"
                                    VerticalAlignment="Center"
                                    Classes="custom-titlebar-only"/>
@@ -231,7 +250,7 @@
                                        Margin="4 0 0 0"/>
                         </Grid>
                         <Grid Grid.Row="0" Margin="12 16 18 0" 
-                              IsVisible="{Binding !ViewModel.SelectedPageInfo.HidePageTitle}"
+                              IsVisible="{Binding ViewModel.PageTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                               Classes.FullWidth="{Binding ViewModel.SelectedPageInfo.UseFullWidth}"
                               x:Name="TitleContainer">
                             <Grid.Styles>
@@ -240,12 +259,11 @@
                                 </Style>
                             </Grid.Styles>
                             <TextBlock FontWeight="Normal"
-                                       Text="{Binding ViewModel.SelectedPageInfo.Name}"
+                                       Text="{Binding ViewModel.PageTitle}"
                                        Theme="{StaticResource TitleTextBlockStyle}"/>
                         </Grid>
                         <controls3:FAFrame Grid.Row="1" Content="{Binding ViewModel.FrameContent}"
                                          Navigated="NavigationServiceOnLoadCompleted"
-                                         Navigating="NavigationServiceOnNavigating"
                                          CacheSize="0"
                                          x:Name="NavigationFrame">
                         </controls3:FAFrame>

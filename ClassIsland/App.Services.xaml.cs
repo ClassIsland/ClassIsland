@@ -190,6 +190,7 @@ public partial class App
         services.AddSettingsPage<ManagementCredentialsSettingsPage>();
         services.AddSettingsPage<ManagementPolicySettingsPage>();
         services.AddSettingsPage<ErrorSettingsPage>();
+        services.AddSettingsPage<SettingsNavigationPage>();
         // 主界面组件
         services.AddComponent<TextComponent, TextComponentSettingsControl>();
         services.AddComponent<SeparatorComponent>();

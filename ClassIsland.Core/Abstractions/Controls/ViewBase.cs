@@ -193,26 +193,10 @@ public abstract class ViewBase : ContentPage
 
     private void TopLevelOnBackRequested(object? sender, RoutedEventArgs e)
     {
-        if (e.Handled || AssociatedViewHost == null)
+        if (!e.Handled && TryGoBack())
         {
-            return;
+            e.Handled = true;
         }
-
-        if (AssociatedViewHost.IsDrawerOpen)
-        {
-            if (!ReferenceEquals(AssociatedViewHost.CurrentDrawerView, this))
-            {
-                return;
-            }
-        }
-        else if (!ReferenceEquals(AssociatedViewHost.CurrentView, this))
-        {
-            return;
-        }
-
-        Console.WriteLine("[ELYSIADBG] 听好了！！！！！ BackRequested！！！！！！！！！！");
-        e.Handled = true;
-        Hide();
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -397,6 +381,51 @@ public abstract class ViewBase : ContentPage
     #endregion
 
     #region PublicMethods
+
+    /// <summary>
+    /// 优先在视图内返回，视图内无法处理时交给视图宿主。
+    /// </summary>
+    /// <returns>返回请求已处理时为 true。</returns>
+    public bool TryGoBack()
+    {
+        var host = AssociatedViewHost;
+        if (host == null)
+        {
+            return TryGoBackCore();
+        }
+
+        var isDrawerOpen = host.IsDrawerOpen;
+        var currentView = isDrawerOpen ? host.CurrentDrawerView : host.CurrentView;
+        if (!ReferenceEquals(currentView, this))
+        {
+            return false;
+        }
+
+        if (TryGoBackCore())
+        {
+            return true;
+        }
+
+        if (isDrawerOpen)
+        {
+            _ = host.NavigateDrawerBack();
+            return true;
+        }
+
+        if (!host.CanGoBack)
+        {
+            return false;
+        }
+
+        Hide();
+        return true;
+    }
+
+    /// <summary>
+    /// 尝试在当前视图内部处理返回请求。
+    /// </summary>
+    /// <returns>已处理请求时为 true。返回 false 时由宿主继续处理。</returns>
+    protected virtual bool TryGoBackCore() => false;
 
     /// <summary>
     /// 尝试打开此视图，或将已打开的视图显示到前台。

@@ -74,6 +74,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private ViewBase? _currentView;
 
     public ViewBase? CurrentView => _currentView;
+    bool IViewHost.CanGoBack => !NavigationPage.IsNavigating;
 
     private IDisposable? _currentViewHostPositionObserver;
 
