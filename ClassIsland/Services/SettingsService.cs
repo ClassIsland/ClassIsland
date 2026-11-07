@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Models;
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         get => _settings;
         set
         {
-            if (OperatingSystem.IsAndroid() && value.MainWindowFont == MainWindow.DefaultFontFamilyKey)
+            if (PlatformHelper.IsMobile && value.MainWindowFont == MainWindow.DefaultFontFamilyKey)
             {
                 value.MainWindowFont = MainWindow.PlatformDefaultFontFamilyKey;
             }

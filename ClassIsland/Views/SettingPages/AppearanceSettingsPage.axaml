@@ -39,7 +39,7 @@
                 </controls2:FASettingsExpander.Footer>
             </controls2:FASettingsExpander>
             
-            <StackPanel IsVisible="{OnPlatform Default=False, Android=True}"
+            <StackPanel IsVisible="{OnPlatform Default=False, Android=True, iOS=True}"
                         IsEnabled="{Binding !ViewModel.IsSelectingBackgroundImage}">
                 <controls2:FASettingsExpander Header="背景图片"
                                             Description="在应用内页面显示背景图片。"
@@ -470,7 +470,7 @@
                                     <TextBlock.Styles>
                                         <Style Selector="TextBlock">
                                             <Style Selector="^.DefaultFont">
-                                                <Setter Property="Text" Value="{OnPlatform Default='HarmonyOS Sans SC（默认）', Android='系统字体（默认）'}"/>
+                                                <Setter Property="Text" Value="{OnPlatform Default='HarmonyOS Sans SC（默认）', Android='系统字体（默认）', iOS='系统字体（默认）'}"/>
                                             </Style>
                                             <Setter Property="Text" Value="{Binding }" />
                                         </Style>

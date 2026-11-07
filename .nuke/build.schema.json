@@ -139,6 +139,9 @@
           "type": "string",
           "description": "Arch"
         },
+        "BrandType": {
+          "type": "string"
+        },
         "BuildName": {
           "type": "string",
           "description": "BuildName"
@@ -146,6 +149,22 @@
         "BuildType": {
           "type": "string",
           "description": "BuildType"
+        },
+        "ClassIslandDevelopmentTeam": {
+          "type": "string"
+        },
+        "ClassIslandLiveActivityCodesignProvision": {
+          "type": "string"
+        },
+        "CodesignKey": {
+          "type": "string"
+        },
+        "CodesignProvision": {
+          "type": "string"
+        },
+        "EnableCodeSigning": {
+          "type": "boolean",
+          "description": "Whether the iOS IPA should be code signed. Disable only when producing an unsigned artifact for external signing."
         },
         "Configuration": {
           "type": "string",

@@ -207,6 +207,7 @@
                                 Theme="{StaticResource TransparentButton}"
                                 Content="{ci:FluentIcon &#xE88D;}"
                                 CurrentPath="{Binding ViewModel.SettingsService.Settings.SplashCustomLogoSource, Mode=TwoWay}"
+                                PersistSelection="True"
                                 VerticalAlignment="Center"
                                 FileTypes="{x:Static local:GeneralSettingsPage.ImageFileTypes}"/>
                         </StackPanel>

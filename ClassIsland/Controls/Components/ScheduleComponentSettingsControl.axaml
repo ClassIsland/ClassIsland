@@ -53,7 +53,7 @@
                                     ci:SliderDragTooltipAssist.StringFormat="F2"/>
                         </controls:FASettingsExpanderItem.Footer>
                     </controls:FASettingsExpanderItem>
-                    
+
                 </controls:FASettingsExpander>
 
                 <!-- 显示时间点附加信息 -->

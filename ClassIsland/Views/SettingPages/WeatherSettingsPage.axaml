@@ -63,11 +63,11 @@
             </StackPanel>
         </Grid>
     </controls:SettingsPageBase.Resources>
-    
+
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
             <controls1:IconText Icon="WeatherSunnyRegular" Text="天气预览" Margin="0 0 0 4" />
-            
+
             <Border Padding="20"
                     Background="{DynamicResource ControlFillColorDefaultBrush}"
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
@@ -156,7 +156,7 @@
 
             <Separator Margin="0 12 0 4" />
             <controls1:IconText Icon="EarthRegular" Text="位置设置" Margin="0 0 0 4" />
-            
+
             <controls3:FASettingsExpander IconSource="{ci:FluentIconSource Icon=EarthRegular}"
                                         Header="天气位置"
                                         IsExpanded="True"
@@ -279,10 +279,10 @@
                     </controls3:FASettingsExpanderItem.Footer>
                 </controls3:FASettingsExpanderItem>
             </controls3:FASettingsExpander>
-            
+
             <Separator Margin="0 12 0 4" />
             <controls1:IconText Icon="DocumentPageTopCenterRegular" Text="外观与高级设置" Margin="0 0 0 4" />
-            
+
             <!-- 天气图标包 -->
             <controls3:FASettingsExpander IconSource="{ci:FluentIconSource Icon=IconsRegular}"
                                         Header="天气图标包"
@@ -326,7 +326,7 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.NoTLSWeatherRequests, Mode=TwoWay}" />
                 </controls3:FASettingsExpander.Footer>
             </controls3:FASettingsExpander>
-            
+
             <TextBlock TextWrapping="Wrap" FontSize="12" Classes="l-instructive">
                 要调整天气提醒设置，请转到<ci:NavHyperlink NavTarget="classisland://app/settings/notification">【提醒】页面</ci:NavHyperlink>。
                 要调整主界面上的天气信息显示，请转到<ci:NavHyperlink NavTarget="classisland://app/settings/components">【组件】页面</ci:NavHyperlink>中配置天气简报组件。

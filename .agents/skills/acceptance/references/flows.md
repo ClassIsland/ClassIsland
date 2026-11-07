@@ -108,4 +108,3 @@ still a draft folds into that draft rather than opening a new round. Accepted or
 acceptances must be explicitly reopened
 before starting. Edges describe business transitions; they do not automatically
 schedule execution. Continue to read `lh acceptance feedback <acceptanceId> --actionable` before repairs and publish new rounds into the same acceptance.
-

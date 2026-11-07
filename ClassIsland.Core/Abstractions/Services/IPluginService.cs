@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Shared;
 
@@ -30,6 +31,7 @@ public interface IPluginService
     /// </summary>
     public static FilePickerFileType PluginPackageFileType { get; } = new("ClassIsland 插件包")
     {
-        Patterns = ["*.cipx"]
+        Patterns = PlatformHelper.IsAppleMobile ? null : ["*.cipx"],
+        AppleUniformTypeIdentifiers = ["cn.classisland.plugin-package"]
     };
 }
