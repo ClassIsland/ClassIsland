@@ -13,4 +13,10 @@ public sealed record LessonLiveActivityDetails(
     string Location,
     string TimeText,
     string IntervalTimeText,
-    string? IconPngBase64 = null);
+    string? IconPngBase64 = null)
+{
+    /// <summary>
+    /// 科目设置中的上课教师。
+    /// </summary>
+    public string TeacherName { get; init; } = "";
+}

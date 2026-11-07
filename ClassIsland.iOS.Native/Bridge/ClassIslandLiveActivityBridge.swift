@@ -88,6 +88,7 @@ private struct ClassIslandLiveActivityRequest: Decodable {
     let deepLink: String
     let details: ClassIslandLessonDetails?
     let components: [ClassIslandActivityComponent]?
+    let displayOptions: ClassIslandActivityDisplayOptions?
 
     func makePayload() throws -> ClassIslandLiveActivityPayload {
         guard !intervalId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -134,7 +135,8 @@ private struct ClassIslandLiveActivityRequest: Decodable {
                 endTime: parsedEndTime,
                 deepLink: deepLink,
                 details: details,
-                components: components.map { Array($0.prefix(6)) }
+                components: components.map { Array($0.prefix(6)) },
+                displayOptions: displayOptions
             )
         )
         try payload.validateSize()

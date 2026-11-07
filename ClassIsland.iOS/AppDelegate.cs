@@ -172,8 +172,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             splash.Show();
 
             _liveActivityCoordinator = new LessonsLiveActivityCoordinator(
-                PlatformServices.LiveActivityService,
-                _lessonPreparationTimeline);
+                PlatformServices.LiveActivityService);
             _liveActivityCoordinator.Start();
 
             _lessonsNotificationCoordinator = new IosLessonsNotificationCoordinator(

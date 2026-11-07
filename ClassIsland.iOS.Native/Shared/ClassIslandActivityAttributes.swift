@@ -9,6 +9,46 @@ public struct ClassIslandLessonDetails: Codable, Hashable {
     public let timeText: String
     public let intervalTimeText: String
     public let iconPngBase64: String?
+    public let teacherName: String?
+
+    public init(
+        lessonName: String,
+        location: String,
+        timeText: String,
+        intervalTimeText: String,
+        iconPngBase64: String? = nil,
+        teacherName: String? = nil
+    ) {
+        self.lessonName = lessonName
+        self.location = location
+        self.timeText = timeText
+        self.intervalTimeText = intervalTimeText
+        self.iconPngBase64 = iconPngBase64
+        self.teacherName = teacherName
+    }
+}
+
+@available(iOS 16.1, *)
+public struct ClassIslandActivityDisplayOptions: Codable, Hashable {
+    public let showSubjectName: Bool
+    public let showRemainingTime: Bool
+    public let showTimeRange: Bool
+    public let showLocation: Bool
+    public let showTeacherName: Bool
+
+    public init(
+        showSubjectName: Bool = true,
+        showRemainingTime: Bool = true,
+        showTimeRange: Bool = true,
+        showLocation: Bool = true,
+        showTeacherName: Bool = true
+    ) {
+        self.showSubjectName = showSubjectName
+        self.showRemainingTime = showRemainingTime
+        self.showTimeRange = showTimeRange
+        self.showLocation = showLocation
+        self.showTeacherName = showTeacherName
+    }
 }
 
 @available(iOS 16.1, *)
@@ -78,6 +118,7 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
         public let deepLink: String
         public let details: ClassIslandLessonDetails?
         public let components: [ClassIslandActivityComponent]?
+        public let displayOptions: ClassIslandActivityDisplayOptions?
 
         public init(
             phase: ClassIslandActivityPhase,
@@ -89,7 +130,8 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
             endTime: Date?,
             deepLink: String,
             details: ClassIslandLessonDetails? = nil,
-            components: [ClassIslandActivityComponent]? = nil
+            components: [ClassIslandActivityComponent]? = nil,
+            displayOptions: ClassIslandActivityDisplayOptions? = nil
         ) {
             self.phase = phase
             self.title = title
@@ -101,6 +143,7 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
             self.deepLink = deepLink
             self.details = details
             self.components = components
+            self.displayOptions = displayOptions
         }
     }
 

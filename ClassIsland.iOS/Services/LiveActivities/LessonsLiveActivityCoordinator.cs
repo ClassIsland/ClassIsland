@@ -8,7 +8,6 @@ using ClassIsland.Models.LiveActivities;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models.LiveActivities;
 using ClassIsland.Platforms.Abstraction.Services;
-using ClassIsland.iOS.Services.Notifications;
 using ClassIsland.Services;
 using ClassIsland.Services.LiveActivities;
 using ClassIsland.Shared;
@@ -24,8 +23,7 @@ namespace ClassIsland.iOS.Services.LiveActivities;
 /// 将共享课程状态发布到 ActivityKit；倒计时由系统按绝对起止时间持续渲染。
 /// </summary>
 internal sealed class LessonsLiveActivityCoordinator(
-    ILiveActivityService liveActivityService,
-    LessonPreparationNotificationTimeline lessonPreparationTimeline) : IDisposable
+    ILiveActivityService liveActivityService) : IDisposable
 {
     private static readonly TimeSpan FailureRetryDelay = TimeSpan.FromSeconds(15);
     // 状态变化和课程边界负责正常刷新；低频校验仅用于兜底遗漏的外部变化。
@@ -43,10 +41,10 @@ internal sealed class LessonsLiveActivityCoordinator(
     private ILessonsService? _lessonsService;
     private SettingsService? _settingsService;
     private Settings? _subscribedSettings;
+    private IRealtimeNotificationSettings? _effectiveSettings;
     private IExactTimeService? _exactTimeService;
     private IWeatherService? _weatherService;
     private LessonsLiveActivitySnapshotFactory? _snapshotFactory;
-    private IosLessonNotificationScheduleFactory? _notificationScheduleFactory;
     private ILogger<LessonsLiveActivityCoordinator>? _logger;
     private LessonLiveActivityContent? _lastRequestedContent;
     private Timer? _refreshTimer;
@@ -110,20 +108,11 @@ internal sealed class LessonsLiveActivityCoordinator(
         _snapshotFactory = new LessonsLiveActivitySnapshotFactory(
             _lessonsService,
             exactTimeService);
-        _notificationScheduleFactory = new IosLessonNotificationScheduleFactory(
-            _lessonsService,
-            IAppHost.GetService<IProfileService>(),
-            IAppHost.GetService<INotificationHostService>(),
-            IAppHost.GetService<SettingsService>(),
-            exactTimeService,
-            lessonPreparationTimeline);
         _lessonsService.CurrentTimeStateChanged += OnLessonsStateChanged;
         _lessonsService.PropertyChanged += OnLessonsPropertyChanged;
         ObserveClasses();
         _settingsService.PropertyChanged += OnSettingsServicePropertyChanged;
         SubscribeToSettings();
-        lessonPreparationTimeline.PublicationTimeChanged +=
-            OnPreparationPublicationTimeChanged;
         PlatformServices.SystemEventsService.TimeChanged += OnSystemTimeChanged;
         _refreshTimer = new Timer(
             OnRefreshTimer,
@@ -188,7 +177,8 @@ internal sealed class LessonsLiveActivityCoordinator(
     private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(Settings.LiveActivityComponents) or
-            nameof(Settings.IsLiveActivityLayoutCustomized) or nameof(Settings.LastWeatherInfo))
+            nameof(Settings.IsLiveActivityLayoutCustomized) or nameof(Settings.LastWeatherInfo) ||
+            e.PropertyName?.Contains("RealtimeNotification", StringComparison.Ordinal) == true)
         {
             QueueLessonsRefresh();
         }
@@ -220,8 +210,27 @@ internal sealed class LessonsLiveActivityCoordinator(
         _subscribedSettings.PropertyChanged += OnSettingsPropertyChanged;
     }
 
-    private void OnPreparationPublicationTimeChanged(object? sender, EventArgs e) =>
+    private void OnEffectiveSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e) =>
         QueueLessonsRefresh();
+
+    private void ObserveEffectiveSettings(IRealtimeNotificationSettings settings)
+    {
+        if (ReferenceEquals(_effectiveSettings, settings))
+        {
+            return;
+        }
+
+        if (_effectiveSettings != null && !ReferenceEquals(_effectiveSettings, _subscribedSettings))
+        {
+            _effectiveSettings.PropertyChanged -= OnEffectiveSettingsPropertyChanged;
+        }
+
+        _effectiveSettings = settings;
+        if (!ReferenceEquals(settings, _subscribedSettings))
+        {
+            settings.PropertyChanged += OnEffectiveSettingsPropertyChanged;
+        }
+    }
 
     private void OnSystemTimeChanged(object? sender, EventArgs e)
     {
@@ -287,7 +296,7 @@ internal sealed class LessonsLiveActivityCoordinator(
 
         var gateEntered = false;
         LessonLiveActivityContent? content = null;
-        DateTimeOffset? preparationNotificationTime = null;
+        DateTimeOffset? publicationTime = null;
         try
         {
             await _refreshGate.WaitAsync(_cancellation.Token);
@@ -298,22 +307,28 @@ internal sealed class LessonsLiveActivityCoordinator(
                 return;
             }
 
-            content = CreateContent(_snapshotFactory.Create());
+            var snapshot = _snapshotFactory.Create();
+            var settings = LessonLiveActivitySettingsPolicy.GetEffectiveSettings(
+                _settingsService!.Settings,
+                _lessonsService!,
+                snapshot.IsUpcomingLesson);
+            ObserveEffectiveSettings(settings);
+            content = CreateContent(snapshot, settings);
             if (DateTimeOffset.UtcNow < _retryAfter)
             {
                 return;
             }
 
-            preparationNotificationTime = content.IsUpcomingLesson
-                ? _notificationScheduleFactory?.GetUpcomingClassPreparationTime()
-                : null;
-            content = LessonLiveActivityPublicationPolicy.AlignUpcomingProgressStart(
-                content,
-                preparationNotificationTime);
-            if (!LessonLiveActivityPublicationPolicy.ShouldPublish(
+            publicationTime = LessonLiveActivitySettingsPolicy.GetPublicationTime(content, settings);
+            if (publicationTime is { } progressStart)
+            {
+                content = content with { StartTime = progressStart };
+            }
+
+            if (!LessonLiveActivitySettingsPolicy.ShouldPublish(
                     content,
-                    DateTimeOffset.Now,
-                    preparationNotificationTime))
+                    settings,
+                    DateTimeOffset.Now))
             {
                 if (_activityStateKnown && !_hasVisibleActivity)
                 {
@@ -399,13 +414,13 @@ internal sealed class LessonsLiveActivityCoordinator(
                 _refreshGate.Release();
             }
 
-            ScheduleNextRefresh(content, preparationNotificationTime);
+            ScheduleNextRefresh(content, publicationTime);
         }
     }
 
     private void ScheduleNextRefresh(
         LessonLiveActivityContent? content,
-        DateTimeOffset? preparationNotificationTime)
+        DateTimeOffset? publicationTime)
     {
         if (!_isWorkStarted ||
             _cancellation.IsCancellationRequested ||
@@ -436,10 +451,9 @@ internal sealed class LessonsLiveActivityCoordinator(
         if (content != null)
         {
             if (content.IsUpcomingLesson &&
-                content.Phase == LessonLiveActivityPhase.None &&
-                preparationNotificationTime is { } preparationTime)
+                publicationTime is { } scheduledTime)
             {
-                Consider(preparationTime + BoundaryRefreshLeeway);
+                Consider(scheduledTime + BoundaryRefreshLeeway);
             }
 
             if (content.EndTime is { } endTime)
@@ -514,8 +528,10 @@ internal sealed class LessonsLiveActivityCoordinator(
     }
 
     private LessonLiveActivityContent CreateContent(
-        LessonsLiveActivitySnapshot snapshot)
+        LessonsLiveActivitySnapshot snapshot,
+        IRealtimeNotificationSettings settings)
     {
+        var displayOptions = LessonLiveActivitySettingsPolicy.GetDisplayOptions(settings, snapshot.IsUpcomingLesson);
         var subtitle = RemoveRenderedCountdown(snapshot.Content, snapshot.RemainingText);
         var compactText = snapshot.Title.Contains('·')
             ? snapshot.Title[(snapshot.Title.IndexOf('·') + 1)..].Trim()
@@ -546,6 +562,7 @@ internal sealed class LessonsLiveActivityCoordinator(
             snapshot.EndTime,
             IsUpcomingLesson: snapshot.IsUpcomingLesson)
         {
+            DisplayOptions = displayOptions,
             Details = snapshot.ActivityDetails is { } details
                 ? details with { IconPngBase64 = _iconRenderer.Render(snapshot.LessonIconExpression) }
                 : null,
@@ -554,7 +571,8 @@ internal sealed class LessonsLiveActivityCoordinator(
                 snapshot,
                 _exactTimeService!.GetCurrentLocalDateTime(),
                 _weatherService!.GetWeatherTextByCode(_settingsService.Settings.LastWeatherInfo.Current.Weather),
-                CreateNextLessonDetails())
+                CreateNextLessonDetails(),
+                displayOptions)
         };
     }
 
@@ -570,7 +588,10 @@ internal sealed class LessonsLiveActivityCoordinator(
         var location = _lessonsService?.NextClassInfo?.EffectiveLocation;
         return new LessonLiveActivityDetails(subject.Name,
             string.IsNullOrWhiteSpace(location) ? subject.Location : location,
-            $"{item.StartTime:hh\\:mm}–{item.EndTime:hh\\:mm}", "");
+            $"{item.StartTime:hh\\:mm}–{item.EndTime:hh\\:mm}", "")
+        {
+            TeacherName = subject.TeacherName?.Trim() ?? ""
+        };
     }
 
     private static string RemoveRenderedCountdown(string content, string remainingText)
@@ -700,8 +721,11 @@ internal sealed class LessonsLiveActivityCoordinator(
             _subscribedSettings = null;
         }
 
-        lessonPreparationTimeline.PublicationTimeChanged -=
-            OnPreparationPublicationTimeChanged;
+        if (_effectiveSettings != null)
+        {
+            _effectiveSettings.PropertyChanged -= OnEffectiveSettingsPropertyChanged;
+            _effectiveSettings = null;
+        }
         PlatformServices.SystemEventsService.TimeChanged -= OnSystemTimeChanged;
 
         lock (_refreshTimerLock)

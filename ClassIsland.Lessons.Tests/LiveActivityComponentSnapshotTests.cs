@@ -75,6 +75,53 @@ public sealed class LiveActivityComponentSnapshotTests
     }
 
     [Fact]
+    public void Create_ScheduleRespectsDisplayOptionsWithoutLosingProgressOnlyRows()
+    {
+        var settings = Customized(new LiveActivityComponentSettings { Kind = LiveActivityComponentKind.Schedule });
+        var snapshot = Snapshot() with { ActivityDetails = Details with { TeacherName = "王老师" } };
+        var hidden = new LessonLiveActivityDisplayOptions(false, false, false, false, false);
+        var progress = Assert.Single(LiveActivityComponentSnapshotFactory.Create(settings, snapshot, Now, "晴", Next, hidden)!);
+        Assert.Empty(progress.Text);
+        Assert.Empty(progress.SecondaryText);
+        Assert.Empty(progress.ExtraText);
+        Assert.True(progress.ShowProgress);
+
+        var teacherOnly = hidden with { ShowTeacherName = true };
+        var teacher = Assert.Single(LiveActivityComponentSnapshotFactory.Create(settings, snapshot, Now, "晴", Next, teacherOnly)!);
+        Assert.Equal("王老师", teacher.SecondaryText);
+        Assert.Empty(teacher.Text);
+
+        var timeOnly = hidden with { ShowTimeRange = true };
+        var time = Assert.Single(LiveActivityComponentSnapshotFactory.Create(settings, snapshot, Now, "晴", Next, timeOnly)!);
+        Assert.Equal("14:10–14:55", time.SecondaryText);
+        Assert.Equal("下一节：15:10–15:55", time.ExtraText);
+
+        settings.LiveActivityComponents[0].ShowProgress = false;
+        Assert.Empty(LiveActivityComponentSnapshotFactory.Create(settings, snapshot, Now, "晴", Next, hidden)!);
+    }
+
+    [Fact]
+    public void Create_RemainingTimeOptionHidesOnlyCourseCountdown()
+    {
+        var settings = Customized(
+            new() { Kind = LiveActivityComponentKind.Countdown },
+            new()
+            {
+                Kind = LiveActivityComponentKind.Countdown,
+                UseCustomCountdown = true,
+                TargetDate = new DateTime(2027, 6, 7),
+                CountdownName = "考试"
+            });
+        var options = new LessonLiveActivityDisplayOptions(ShowRemainingTime: false);
+        var item = Assert.Single(LiveActivityComponentSnapshotFactory.Create(settings, Snapshot(), Now, "晴", Next, options)!);
+
+        Assert.Equal("考试", item.Text);
+        Assert.NotNull(item.TargetTime);
+        Assert.Equal(2, LiveActivityComponentSnapshotFactory.Create(
+            settings, Snapshot(), Now, "晴", Next, options with { ShowRemainingTime = true })!.Length);
+    }
+
+    [Fact]
     public void Create_CustomCountdownCarriesAnAbsoluteTargetAndHandlesMissingDate()
     {
         var component = new LiveActivityComponentSettings

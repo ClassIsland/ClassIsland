@@ -2,16 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Icons;
 using ClassIsland.Models;
 using ClassIsland.Models.LiveActivities;
+using ClassIsland.Platforms.Abstraction.Models.LiveActivities;
 using ClassIsland.Services;
+using ClassIsland.Services.LiveActivities;
+using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public partial class LiveActivitySettingsViewModel(SettingsService settingsService) : ObservableObject
+public partial class LiveActivitySettingsViewModel(
+    SettingsService settingsService,
+    IWeatherService? weatherService = null) : ObservableObject
 {
     private Settings? _subscribedSettings;
 
@@ -31,7 +39,35 @@ public partial class LiveActivitySettingsViewModel(SettingsService settingsServi
 
     public ObservableCollection<LiveActivityPreviewItem> PreviewItems { get; } = [];
 
+    public ObservableCollection<LiveActivityPreviewRow> PreviewRows { get; } = [];
+
     public bool CanAddComponent => Components.Count < LiveActivityComponentSettings.MaximumComponents;
+
+    public string PreviewTitle => SettingsService.Settings.CurrentClassRealtimeNotificationShowSubjectName
+        ? "数学"
+        : "正在上课";
+
+    public string PreviewRemainingTime => SettingsService.Settings.CurrentClassRealtimeNotificationShowRemainingTime
+        ? "32:18"
+        : string.Empty;
+
+    public bool PreviewShowPhase => SettingsService.Settings.CurrentClassRealtimeNotificationShowSubjectName;
+
+    public bool PreviewShowRemainingTime => SettingsService.Settings.CurrentClassRealtimeNotificationShowRemainingTime;
+
+    public string PreviewLocation => SettingsService.Settings.CurrentClassRealtimeNotificationShowLocation ? "A301" : "";
+
+    public string PreviewTeacherName => SettingsService.Settings.CurrentClassRealtimeNotificationShowTeacherName ? "张老师" : "";
+
+    public string PreviewTimeRange => SettingsService.Settings.CurrentClassRealtimeNotificationShowTimeRange ? "14:10–14:55" : "";
+
+    public bool PreviewHasMetadata => PreviewLocation.Length > 0 || PreviewTeacherName.Length > 0 || PreviewTimeRange.Length > 0;
+
+    public bool PreviewHasCustomLayout => SettingsService.Settings.IsLiveActivityLayoutCustomized;
+
+    public bool PreviewHasCustomRows => PreviewRows.Count > 0;
+
+    public double PreviewProgressValue => 762.0 / 2700 * 100;
 
     public void Activate()
     {
@@ -72,7 +108,6 @@ public partial class LiveActivitySettingsViewModel(SettingsService settingsServi
         _subscribedSettings = SettingsService.Settings;
         _subscribedSettings.PropertyChanged += SettingsOnPropertyChanged;
         NotifyComponentsChanged();
-        RefreshPreview();
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -82,6 +117,11 @@ public partial class LiveActivitySettingsViewModel(SettingsService settingsServi
         {
             NotifyComponentsChanged();
             SettingsService.SaveSettings("灵动岛展开态组件已更新");
+        }
+        else if (e.PropertyName == nameof(Settings.LastWeatherInfo) ||
+                 e.PropertyName?.Contains("RealtimeNotification", StringComparison.Ordinal) == true)
+        {
+            RefreshPreview();
         }
     }
 
@@ -95,34 +135,122 @@ public partial class LiveActivitySettingsViewModel(SettingsService settingsServi
 
     private void RefreshPreview()
     {
+        OnPropertyChanged(nameof(PreviewTitle));
+        OnPropertyChanged(nameof(PreviewRemainingTime));
+        OnPropertyChanged(nameof(PreviewShowPhase));
+        OnPropertyChanged(nameof(PreviewShowRemainingTime));
+        OnPropertyChanged(nameof(PreviewLocation));
+        OnPropertyChanged(nameof(PreviewTeacherName));
+        OnPropertyChanged(nameof(PreviewTimeRange));
+        OnPropertyChanged(nameof(PreviewHasMetadata));
+        OnPropertyChanged(nameof(PreviewHasCustomLayout));
         PreviewItems.Clear();
-        if (!SettingsService.Settings.IsLiveActivityLayoutCustomized)
+        PreviewRows.Clear();
+        var settings = SettingsService.Settings;
+        var countdownNow = DateTime.Now;
+        var now = countdownNow.Date.AddHours(14).AddMinutes(22).AddSeconds(42);
+        var snapshot = new LessonsLiveActivitySnapshot(
+            TimeState.OnClass, "preview", "上课 · 数学", "", "14:10–14:55", "数",
+            ProgressMax: 2700, Progress: 762, RemainingText: "32:18",
+            StartTime: new DateTimeOffset(now.Date.AddHours(14).AddMinutes(10)),
+            EndTime: new DateTimeOffset(now.Date.AddHours(14).AddMinutes(55)))
         {
-            PreviewItems.Add(new LiveActivityPreviewItem("预览", "开启自定义展开态后显示组件", "", false));
+            ActivityDetails = new LessonLiveActivityDetails("数学", "A301", "14:10–14:55", "")
+            {
+                TeacherName = "张老师"
+            }
+        };
+        var components = LiveActivityComponentSnapshotFactory.Create(
+            settings, snapshot, now,
+            weatherService?.GetWeatherTextByCode(settings.LastWeatherInfo.Current.Weather) ?? "",
+            new LessonLiveActivityDetails("物理", "A302", "15:10–15:55", ""),
+            LessonLiveActivitySettingsPolicy.GetDisplayOptions(settings, isUpcoming: false));
+        if (components == null)
+        {
+            OnPropertyChanged(nameof(PreviewHasCustomRows));
             return;
         }
 
-        foreach (var component in Components.Where(x => x.IsEnabled).Take(LiveActivityComponentSettings.MaximumComponents))
+        var rows = new List<List<LiveActivityPreviewItem>>();
+        foreach (var component in components)
         {
-            var item = component.Kind switch
+            var item = new LiveActivityPreviewItem(component.Kind, component.Text, component.SecondaryText,
+                component.Kind == "separator")
             {
-                LiveActivityComponentKind.Schedule => new LiveActivityPreviewItem(
-                    "课程表", "高等数学 · A301", component.ShowNextLesson ? "下一节：物理 15:10" : "14:10–14:55", false),
-                LiveActivityComponentKind.Date => new LiveActivityPreviewItem("日期", DateTime.Now.ToString("M月d日 ddd"), "", false),
-                LiveActivityComponentKind.Clock => new LiveActivityPreviewItem("时钟", DateTime.Now.ToString("HH:mm"), "", false),
-                LiveActivityComponentKind.Weather => new LiveActivityPreviewItem("天气简报", "☀ 23°C", "多云", false),
-                LiveActivityComponentKind.Countdown => new LiveActivityPreviewItem(
-                    "倒计时", component.UseCustomCountdown ? component.CountdownName : "课程剩余", "32:18", false),
-                LiveActivityComponentKind.Text => new LiveActivityPreviewItem("文本", string.IsNullOrWhiteSpace(component.Text) ? "短文本预览" : component.Text, "", false),
-                LiveActivityComponentKind.Separator => new LiveActivityPreviewItem("", "", "", true),
-                _ => null
+                Glyph = GetPreviewGlyph(component.SymbolName),
+                ExtraText = component.ExtraText,
+                IsSchedule = component.Kind == "schedule",
+                IsCountdown = component.Kind == "countdown",
+                ShowProgress = component.Kind == "schedule" && component.ShowProgress,
+                ValueText = component.Kind == "countdown" ? GetCountdownPreview(component.TargetTime, countdownNow) : ""
             };
-            if (item != null)
+            if (component.Kind == "clock")
+            {
+                item = item with { Text = now.ToString("H:mm:ss", CultureInfo.InvariantCulture) };
+            }
+
+            if (!IsFullWidth(item) && rows.LastOrDefault() is { Count: 1 } previous && !IsFullWidth(previous[0]))
+            {
+                previous.Add(item);
+            }
+            else
+            {
+                rows.Add([item]);
+            }
+        }
+
+        // 与原生展开态相同：优先保留前面的行，超过系统高度预算后不再显示后续组件。
+        var usedHeight = 0;
+        foreach (var row in rows)
+        {
+            var height = row.Max(x => x.IsSeparator ? 14 : x.IsSchedule ? 18 + (x.ShowProgress ? 7 : 0) : 16);
+            var nextHeight = usedHeight + (usedHeight > 0 ? 4 : 0) + height;
+            if (nextHeight > 86)
+            {
+                break;
+            }
+
+            usedHeight = nextHeight;
+            PreviewRows.Add(new LiveActivityPreviewRow(row));
+            foreach (var item in row)
             {
                 PreviewItems.Add(item);
             }
         }
+        OnPropertyChanged(nameof(PreviewHasCustomRows));
     }
+
+    private static bool IsFullWidth(LiveActivityPreviewItem item) => item.IsSchedule || item.Label == "text";
+
+    private static string GetCountdownPreview(double? targetTime, DateTime now)
+    {
+        if (targetTime == null)
+        {
+            return "32:18";
+        }
+
+        var remaining = DateTimeOffset.FromUnixTimeSeconds((long)targetTime.Value) - new DateTimeOffset(now);
+        return remaining <= TimeSpan.Zero
+            ? "已到日期"
+            : $"{(int)remaining.TotalHours}:{remaining.Minutes:00}:{remaining.Seconds:00}";
+    }
+
+    private static string GetPreviewGlyph(string symbolName) => symbolName switch
+    {
+        "book.closed.fill" => FluentIcons.BookFilled,
+        "calendar" => FluentIcons.CalendarRegular,
+        "clock" => FluentIcons.ClockRegular,
+        "hourglass" => FluentIcons.HourglassRegular,
+        "text.alignleft" => FluentIcons.TextAlignLeftRegular,
+        "sun.max.fill" => FluentIcons.WeatherSunnyRegular,
+        "cloud.sun.fill" => FluentIcons.WeatherPartlyCloudyDayRegular,
+        "cloud.snow.fill" => FluentIcons.WeatherSnowRegular,
+        "cloud.bolt.rain.fill" => FluentIcons.WeatherThunderstormRegular,
+        "cloud.rain.fill" => FluentIcons.WeatherRainRegular,
+        "cloud.fog.fill" => FluentIcons.WeatherFogRegular,
+        "cloud.fill" or "cloud" => FluentIcons.WeatherCloudyRegular,
+        _ => ""
+    };
 
     [RelayCommand(CanExecute = nameof(CanAddComponent))]
     private void AddComponent(LiveActivityComponentKind kind)
@@ -168,4 +296,17 @@ public sealed record LiveActivityPreviewItem(
     string Label,
     string Text,
     string SecondaryText,
-    bool IsSeparator);
+    bool IsSeparator)
+{
+    public string Glyph { get; init; } = "";
+    public string ExtraText { get; init; } = "";
+    public string ValueText { get; init; } = "";
+    public bool IsCountdown { get; init; }
+    public bool IsSchedule { get; init; }
+    public bool ShowProgress { get; init; }
+}
+
+public sealed record LiveActivityPreviewRow(IReadOnlyList<LiveActivityPreviewItem> Items)
+{
+    public int Columns => Items.Count;
+}

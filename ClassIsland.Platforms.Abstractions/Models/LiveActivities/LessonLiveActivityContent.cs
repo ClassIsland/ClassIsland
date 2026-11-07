@@ -36,6 +36,11 @@ public sealed record LessonLiveActivityContent(
     public LessonLiveActivityComponent[]? Components { get; init; }
 
     /// <summary>
+    /// 实时活动显示选项；为空时保留原有布局的显示行为。
+    /// </summary>
+    public LessonLiveActivityDisplayOptions? DisplayOptions { get; init; }
+
+    /// <summary>
     /// 比较展示内容，按值比较组件，避免重新生成数组触发无意义的发布。
     /// </summary>
     internal bool HasSameDisplayContent(LessonLiveActivityContent? other) =>

@@ -169,7 +169,7 @@ public partial class App
         services.AddSettingsPage<PrivacySettingsPage>();
         services.AddSettingsPage<RefreshingSettingsPage>();
         services.AddSettingsPage<AdvancedSettingsPage>();
-        if (System.OperatingSystem.IsAndroid() || IsDevelopmentBuild)
+        if (System.OperatingSystem.IsAndroid() || IsDevelopmentBuild && !PlatformHelper.IsAppleMobile)
         {
             services.AddSettingsPage<RealtimeNotificationSettingsPage>();
             services.AddTransient<RealtimeNotificationSettingsViewModel>();
@@ -256,7 +256,7 @@ public partial class App
         // AttachedSettings
         services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
         services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
-        if (System.OperatingSystem.IsAndroid())
+        if (System.OperatingSystem.IsAndroid() || PlatformHelper.IsAppleMobile)
         {
             services.AddAttachedSettingsControl<RealtimeNotificationAttachedSettingsControl>();
         }

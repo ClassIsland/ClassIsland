@@ -178,7 +178,7 @@
                 HorizontalAlignment="Left" Margin="0 8 0 12"
                 Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                 CommandParameter="classisland://app/settings/live-activity?ci_keepHistory=true">
-            <ci:IconText Glyph="{ci:FI WindowRegular}" Text="设置灵动岛展开态组件…" />
+            <ci:IconText Glyph="{ci:FI WindowRegular}" Text="设置灵动岛…" />
         </Button>
         <Grid Grid.Row="1" MaxWidth="{StaticResource SettingsContainerWidth}" ColumnDefinitions="*,Auto">
             <TextBlock Text="以下组件将显示在主界面上，从组件库拖动组件以添加组件。" 

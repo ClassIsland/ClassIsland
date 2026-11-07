@@ -19,7 +19,8 @@ internal static class LiveActivityComponentSnapshotFactory
         LessonsLiveActivitySnapshot snapshot,
         DateTime now,
         string weatherText,
-        LessonLiveActivityDetails? nextLesson)
+        LessonLiveActivityDetails? nextLesson,
+        LessonLiveActivityDisplayOptions? displayOptions = null)
     {
         if (!settings.IsLiveActivityLayoutCustomized)
         {
@@ -33,21 +34,26 @@ internal static class LiveActivityComponentSnapshotFactory
         {
             var display = component.Kind switch
             {
-                LiveActivityComponentKind.Schedule => CreateSchedule(component, snapshot, nextLesson),
+                LiveActivityComponentKind.Schedule => CreateSchedule(component, snapshot, nextLesson, displayOptions),
                 LiveActivityComponentKind.Date => new LessonLiveActivityComponent(
                     "date", now.ToString("M月d日 ddd", ChineseCulture), SymbolName: "calendar"),
                 LiveActivityComponentKind.Clock => new LessonLiveActivityComponent(
                     "clock", SymbolName: "clock",
                     TargetTime: new DateTimeOffset(now.Date).ToUnixTimeSeconds()),
                 LiveActivityComponentKind.Weather => CreateWeather(settings.LastWeatherInfo, weatherText),
-                LiveActivityComponentKind.Countdown => CreateCountdown(component),
+                LiveActivityComponentKind.Countdown when component.UseCustomCountdown ||
+                                                         displayOptions?.ShowRemainingTime != false => CreateCountdown(component),
                 LiveActivityComponentKind.Text => new LessonLiveActivityComponent(
                     "text", TrimText(component.Text), SymbolName: "text.alignleft"),
                 LiveActivityComponentKind.Separator => new LessonLiveActivityComponent("separator"),
                 _ => null
             };
             if (display != null && (display.Kind == "separator" ||
-                                    !string.IsNullOrEmpty(display.Text) || display.TargetTime != null))
+                                    !string.IsNullOrEmpty(display.Text) ||
+                                    !string.IsNullOrEmpty(display.SecondaryText) ||
+                                    !string.IsNullOrEmpty(display.ExtraText) ||
+                                    display.TargetTime != null ||
+                                    display.Kind == "schedule" && display.ShowProgress))
             {
                 components.Add(display);
             }
@@ -59,16 +65,30 @@ internal static class LiveActivityComponentSnapshotFactory
     private static LessonLiveActivityComponent CreateSchedule(
         LiveActivityComponentSettings component,
         LessonsLiveActivitySnapshot snapshot,
-        LessonLiveActivityDetails? nextLesson)
+        LessonLiveActivityDetails? nextLesson,
+        LessonLiveActivityDisplayOptions? displayOptions)
     {
         var details = snapshot.ActivityDetails;
+        var showSubject = displayOptions?.ShowSubjectName != false;
+        var showTimeRange = displayOptions?.ShowTimeRange != false;
+        var nextDescription = string.Join(" ", new[]
+        {
+            showSubject ? nextLesson?.LessonName : null,
+            showTimeRange ? nextLesson?.TimeText : null
+        }.Where(x => !string.IsNullOrWhiteSpace(x)));
         var nextText = component.ShowNextLesson && snapshot.State == TimeState.OnClass && nextLesson != null
-            ? $"下一节：{nextLesson.LessonName} {nextLesson.TimeText}"
+            && nextDescription.Length > 0
+            ? $"下一节：{nextDescription}"
             : string.Empty;
         return new LessonLiveActivityComponent(
             "schedule",
-            TrimText(details?.LessonName ?? snapshot.Title),
-            TrimText(string.Join(" · ", new[] { details?.Location, details?.TimeText }
+            showSubject ? TrimText(details?.LessonName ?? snapshot.Title) : string.Empty,
+            TrimText(string.Join(" · ", new[]
+                {
+                    displayOptions?.ShowLocation != false ? details?.Location : null,
+                    showTimeRange ? details?.TimeText : null,
+                    displayOptions?.ShowTeacherName != false ? details?.TeacherName : null
+                }
                 .Where(x => !string.IsNullOrWhiteSpace(x)))),
             "book.closed.fill",
             TrimText(nextText),

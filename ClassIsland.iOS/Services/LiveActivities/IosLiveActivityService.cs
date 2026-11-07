@@ -100,7 +100,8 @@ internal sealed partial class IosLiveActivityService : ILiveActivityService
                 FormatDate(content.HasProgress ? content.EndTime : null),
                 content.DeepLink,
                 content.Details,
-                content.Components),
+                content.Components,
+                content.DisplayOptions),
             LiveActivityJsonContext.Default.NativeLessonLiveActivityPayload);
 
     private static AvailabilityCheck GetAvailability()

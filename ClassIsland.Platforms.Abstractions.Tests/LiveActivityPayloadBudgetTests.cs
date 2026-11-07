@@ -37,6 +37,47 @@ public sealed class LiveActivityPayloadBudgetTests
     }
 
     [Fact]
+    public void DisplayComparison_EachDisplayOptionAndTeacherChangeTriggersPublication()
+    {
+        var original = Create() with { DisplayOptions = new LessonLiveActivityDisplayOptions() };
+        var changes = new[]
+        {
+            new LessonLiveActivityDisplayOptions(ShowSubjectName: false),
+            new LessonLiveActivityDisplayOptions(ShowRemainingTime: false),
+            new LessonLiveActivityDisplayOptions(ShowTimeRange: false),
+            new LessonLiveActivityDisplayOptions(ShowLocation: false),
+            new LessonLiveActivityDisplayOptions(ShowTeacherName: false)
+        };
+
+        Assert.True(original.HasSameDisplayContent(original with { DisplayOptions = new LessonLiveActivityDisplayOptions() }));
+        Assert.False(original.HasSameDisplayContent(Create()));
+        Assert.All(changes, options => Assert.False(original.HasSameDisplayContent(original with { DisplayOptions = options })));
+        Assert.False(original.HasSameDisplayContent(original with
+        {
+            Details = original.Details! with { TeacherName = "张老师" }
+        }));
+    }
+
+    [Fact]
+    public void Fit_PreservesDisplayOptionsAndTeacherWhileRemovingOversizedIcon()
+    {
+        var original = Create() with
+        {
+            DisplayOptions = new LessonLiveActivityDisplayOptions(false, false, false, false, true),
+            Details = Create().Details! with { TeacherName = "张老师", IconPngBase64 = new string('a', 5000) }
+        };
+
+        var fitted = Fit(original);
+
+        Assert.Null(fitted.Details!.IconPngBase64);
+        Assert.Equal(original.DisplayOptions, fitted.DisplayOptions);
+        Assert.Equal("张老师", fitted.Details.TeacherName);
+        Assert.Equal(original.StartTime, fitted.StartTime);
+        Assert.Equal(original.EndTime, fitted.EndTime);
+        Assert.True(Measure(fitted) <= MaximumBytes);
+    }
+
+    [Fact]
     public void Fit_UnderBudgetPreservesTheOriginalContentAndIcon()
     {
         var original = Create() with
@@ -164,7 +205,8 @@ public sealed class LiveActivityPayloadBudgetTests
         EndTime = content.EndTime?.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture),
         content.DeepLink,
         content.Details,
-        content.Components
+        content.Components,
+        content.DisplayOptions
     }, JsonOptions));
 
     private static LessonLiveActivityContent Create() => new(

@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:viewModels="using:ClassIsland.ViewModels.SettingsPages"
+             x:Class="ClassIsland.Controls.LiveActivityPreviewControl"
+             x:DataType="viewModels:LiveActivitySettingsViewModel"
+             x:CompileBindings="True">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="IslandAccent">#8AD4FF</SolidColorBrush>
+        <SolidColorBrush x:Key="IslandSecondary">#A3B0BD</SolidColorBrush>
+        <ControlTheme x:Key="IslandProgressBar" TargetType="ProgressBar">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="3" />
+                        <Border Name="PART_Indicator" Background="{TemplateBinding Foreground}"
+                                CornerRadius="3" HorizontalAlignment="Left" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+        <DataTemplate x:Key="PreviewItemTemplate" x:DataType="viewModels:LiveActivityPreviewItem">
+            <Grid>
+                <Border IsVisible="{Binding IsSeparator}" Width="1" Height="14"
+                        Background="#29FFFFFF" HorizontalAlignment="Left" />
+                <StackPanel IsVisible="{Binding !IsSeparator}" Spacing="1">
+                    <Grid ColumnDefinitions="16,*" ColumnSpacing="6" MinHeight="16">
+                        <ci:FluentIcon Glyph="{Binding Glyph}" FontSize="12" Width="16"
+                                       Foreground="{StaticResource IslandAccent}" VerticalAlignment="Center" />
+                        <Grid Grid.Column="1" IsVisible="{Binding IsSchedule}"
+                              ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                            <TextBlock Text="{Binding Text}" FontSize="10" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding SecondaryText}" FontSize="10"
+                                       Foreground="{StaticResource IslandSecondary}" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Text="{Binding ExtraText}" FontSize="10" MaxWidth="132"
+                                       Foreground="{StaticResource IslandSecondary}" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        <Grid Grid.Column="1" IsVisible="{Binding IsCountdown}"
+                              ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                            <TextBlock Text="{Binding Text}" FontSize="10" MaxWidth="75" TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource IslandSecondary}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding ValueText}" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{StaticResource IslandAccent}" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        <Grid Grid.Column="1" IsVisible="{Binding !IsSchedule}" IsHitTestVisible="False">
+                            <TextBlock IsVisible="{Binding !IsCountdown}" FontSize="11" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center">
+                                <Run Text="{Binding Text}" />
+                                <Run Text="  " />
+                                <Run Text="{Binding SecondaryText}" FontSize="10"
+                                     Foreground="{StaticResource IslandSecondary}" />
+                            </TextBlock>
+                        </Grid>
+                    </Grid>
+                    <ProgressBar IsVisible="{Binding ShowProgress}" Minimum="0" Maximum="100"
+                                 Theme="{StaticResource IslandProgressBar}"
+                                 Value="{Binding $parent[UserControl].DataContext.PreviewProgressValue}"
+                                 x:CompileBindings="False"
+                                 Height="6" MinHeight="6" Foreground="{StaticResource IslandAccent}"
+                                 Background="#33FFFFFF" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Viewbox Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Left" MaxWidth="360">
+        <Border Width="360" Background="Black" CornerRadius="40" Padding="16 12 16 8"
+                TextElement.Foreground="White" ClipToBounds="True"
+                AutomationProperties.Name="灵动岛展开态预览">
+            <StackPanel Spacing="8">
+                <Grid ColumnDefinitions="34,*,80" MinHeight="46">
+                    <Image Source="/Assets/LiveActivities/ClassIslandBrand.png" Width="26" Height="26"
+                           VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0 8 0 0" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="7"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ci:FluentIcon Glyph="{ci:FI BookFilled}" Width="22" Height="22" FontSize="22"
+                                       Foreground="{StaticResource IslandAccent}" VerticalAlignment="Center" />
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding PreviewTitle}" FontSize="17" FontWeight="SemiBold" />
+                            <TextBlock Text="正在上课" FontSize="12" Foreground="{StaticResource IslandAccent}"
+                                       IsVisible="{Binding PreviewShowPhase}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Text="{Binding PreviewRemainingTime}" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{StaticResource IslandAccent}" Width="72" TextAlignment="Right"
+                               IsVisible="{Binding PreviewShowRemainingTime}" VerticalAlignment="Top" Margin="0 8 0 0" />
+                </Grid>
+                <StackPanel IsVisible="{Binding !PreviewHasCustomLayout}" Spacing="8" Margin="0 0 0 8">
+                    <Grid IsVisible="{Binding PreviewHasMetadata}" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding PreviewLocation, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                <ci:FluentIcon Glyph="{ci:FI LocationRegular}" FontSize="12" Foreground="{StaticResource IslandSecondary}" />
+                                <TextBlock Text="{Binding PreviewLocation}" FontSize="12" Foreground="{StaticResource IslandSecondary}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding PreviewTeacherName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                <ci:FluentIcon Glyph="{ci:FI PersonRegular}" FontSize="12" Foreground="{StaticResource IslandSecondary}" />
+                                <TextBlock Text="{Binding PreviewTeacherName}" FontSize="12" Foreground="{StaticResource IslandSecondary}" />
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="{Binding PreviewTimeRange}" FontSize="12"
+                                   Foreground="{StaticResource IslandSecondary}" />
+                    </Grid>
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding PreviewProgressValue}"
+                                 Theme="{StaticResource IslandProgressBar}"
+                                 Height="6" MinHeight="6" Foreground="{StaticResource IslandAccent}"
+                                 Background="#33FFFFFF" />
+                    <Grid IsVisible="{Binding PreviewShowRemainingTime}" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                        <ci:FluentIcon Glyph="{ci:FI HourglassRegular}" FontSize="12" Foreground="{StaticResource IslandAccent}" />
+                        <TextBlock Grid.Column="1" Text="剩余时间" FontSize="12" Foreground="{StaticResource IslandSecondary}" />
+                        <TextBlock Grid.Column="2" Text="{Binding PreviewRemainingTime}" FontSize="12" FontWeight="Medium" />
+                    </Grid>
+                </StackPanel>
+                <ItemsControl IsVisible="{Binding PreviewHasCustomRows}" ItemsSource="{Binding PreviewRows}" Margin="0 0 0 8">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><StackPanel Spacing="4" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:LiveActivityPreviewRow">
+                            <ItemsControl ItemsSource="{Binding Items}" ItemTemplate="{StaticResource PreviewItemTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate><UniformGrid Rows="1" Columns="{Binding Columns}" ColumnSpacing="12" /></ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+    </Viewbox>
+</UserControl>

@@ -34,21 +34,25 @@ struct ClassIslandLiveActivityWidget: Widget {
                         .padding(.top, ActivityLayout.islandVerticalPadding)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    ClassIslandIslandTimer(state: context.state, isStale: context.classIslandIsStale)
-                        .font(.system(size: 18, weight: .semibold, design: .rounded))
-                        .foregroundStyle(activityAccent)
-                        .frame(width: 72, alignment: .trailing)
-                        .padding(.trailing, ActivityLayout.islandHorizontalPadding)
-                        .padding(.top, ActivityLayout.islandVerticalPadding)
+                    if context.state.showRemainingTime {
+                        ClassIslandIslandTimer(state: context.state, isStale: context.classIslandIsStale)
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
+                            .foregroundStyle(activityAccent)
+                            .frame(width: 72, alignment: .trailing)
+                            .padding(.trailing, ActivityLayout.islandHorizontalPadding)
+                            .padding(.top, ActivityLayout.islandVerticalPadding)
+                    }
                 }
                 DynamicIslandExpandedRegion(.center) {
                     HStack(spacing: 7) {
                         ClassIslandLessonIcon(encodedImage: context.state.details?.iconPngBase64, size: 22)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(context.state.phase == .breaking ? context.state.phase.displayName : context.state.lessonName)
+                            Text(context.state.phase == .breaking ? context.state.phase.displayName : context.state.displayedLessonName)
                                 .font(.headline).lineLimit(1).minimumScaleFactor(0.75)
-                            Text(context.state.phase == .breaking ? "下节课：\(context.state.lessonName)" : context.state.phase.displayName)
-                                .font(.caption).foregroundStyle(activityAccent).lineLimit(1).minimumScaleFactor(0.75)
+                            if context.state.showSubjectName {
+                                Text(context.state.phase == .breaking ? "下节课：\(context.state.lessonName)" : context.state.phase.displayName)
+                                    .font(.caption).foregroundStyle(activityAccent).lineLimit(1).minimumScaleFactor(0.75)
+                            }
                         }
                     }
                     .foregroundStyle(.white)
@@ -66,14 +70,21 @@ struct ClassIslandLiveActivityWidget: Widget {
                         }
                     } else {
                         VStack(alignment: .leading, spacing: ActivityLayout.rowSpacing) {
-                            HStack(alignment: .firstTextBaseline) {
-                                if let location = context.state.details?.location, !location.isEmpty {
-                                    Label(location, systemImage: "mappin.and.ellipse")
+                            if context.state.hasLessonMetadata {
+                                HStack(alignment: .firstTextBaseline) {
+                                    if let location = context.state.displayedLocation {
+                                        Label(location, systemImage: "mappin.and.ellipse")
+                                    }
+                                    if let teacherName = context.state.displayedTeacherName {
+                                        Label(teacherName, systemImage: "person")
+                                    }
+                                    Spacer(minLength: 8)
+                                    if !context.state.displayedTimeText.isEmpty {
+                                        Text(context.state.displayedTimeText).monospacedDigit()
+                                    }
                                 }
-                                Spacer(minLength: 8)
-                                Text(context.state.details?.timeText ?? context.state.detail).monospacedDigit()
+                                .font(.caption).foregroundStyle(activitySecondary).lineLimit(1)
                             }
-                            .font(.caption).foregroundStyle(activitySecondary).lineLimit(1)
                             if context.classIslandIsStale {
                                 ClassIslandStaleNotice()
                             } else {
@@ -89,14 +100,21 @@ struct ClassIslandLiveActivityWidget: Widget {
             } compactLeading: {
                 HStack(spacing: 4) {
                     ClassIslandLessonIcon(encodedImage: context.state.details?.iconPngBase64, size: 17)
-                    Text(context.state.compactText).font(.caption2).lineLimit(1).foregroundStyle(.white)
-                        .frame(maxWidth: 36, alignment: .leading)
+                    if context.state.showSubjectName {
+                        Text(context.state.compactText).font(.caption2).lineLimit(1).foregroundStyle(.white)
+                            .frame(maxWidth: 36, alignment: .leading)
+                    }
                 }
             } compactTrailing: {
-                ClassIslandIslandTimer(state: context.state, isStale: context.classIslandIsStale)
-                    .font(.caption.monospacedDigit()).foregroundStyle(activityAccent)
-                    // 系统倒计时会占满提议宽度，需要在灵动岛区域内限制宽度。
-                    .frame(width: 52, alignment: .trailing)
+                if context.state.showRemainingTime {
+                    ClassIslandIslandTimer(state: context.state, isStale: context.classIslandIsStale)
+                        .font(.caption.monospacedDigit()).foregroundStyle(activityAccent)
+                        // 系统倒计时会占满提议宽度，需要在灵动岛区域内限制宽度。
+                        .frame(width: 52, alignment: .trailing)
+                } else {
+                    Image(systemName: context.classIslandIsStale ? "exclamationmark.triangle.fill" : context.state.phase.symbolName)
+                        .foregroundStyle(context.classIslandIsStale ? .orange : activityAccent)
+                }
             } minimal: {
                 if context.classIslandIsStale {
                     Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
@@ -137,6 +155,9 @@ private struct ClassIslandExpandedComponents: View {
         var rows: [[ClassIslandActivityComponent]] = []
         let supportedKinds = ["schedule", "date", "clock", "weather", "countdown", "text", "separator"]
         for component in components.prefix(6) where supportedKinds.contains(component.kind) {
+            if component.kind == "countdown" && component.targetTime == nil && !state.showRemainingTime {
+                continue
+            }
             if !isFullWidth(component), let last = rows.last, last.count == 1,
                let previous = last.first, !isFullWidth(previous) {
                 rows[rows.count - 1].append(component)
@@ -298,7 +319,7 @@ struct ClassIslandLockScreenView: View {
                 upcomingLesson
                 if isStale {
                     ClassIslandStaleNotice()
-                } else if state.progressRange != nil {
+                } else if state.showRemainingTime && state.progressRange != nil {
                     VStack(spacing: 0) {
                         Label(state.details == nil ? "当前时段剩余" : "距离上课还有", systemImage: "clock")
                             .font(.system(size: 11)).foregroundStyle(activitySecondary)
@@ -325,16 +346,24 @@ struct ClassIslandLockScreenView: View {
             ClassIslandLessonIcon(encodedImage: state.details?.iconPngBase64, size: 26)
             VStack(alignment: .leading, spacing: 3) {
                 Text("当前课程").font(.system(size: 11)).foregroundStyle(activitySecondary)
-                Text(state.lessonName).font(.system(size: 16, weight: .semibold))
+                Text(state.displayedLessonName).font(.system(size: 16, weight: .semibold))
                     .lineLimit(1).minimumScaleFactor(0.75)
+                if let teacherName = state.displayedTeacherName {
+                    Label(teacherName, systemImage: "person")
+                        .font(.system(size: 11)).foregroundStyle(activitySecondary).lineLimit(1)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Rectangle().fill(Color.white.opacity(0.08)).frame(width: 1, height: 32)
-            if let location = state.details?.location, !location.isEmpty {
+            if state.displayedLocation != nil || !state.displayedTimeText.isEmpty {
+                Rectangle().fill(Color.white.opacity(0.08)).frame(width: 1, height: 32)
+            }
+            if let location = state.displayedLocation {
                 ClassIslandInfoColumn(label: "教室", value: location, symbol: "mappin.and.ellipse")
                     .frame(maxWidth: 70, alignment: .leading)
             }
-            ClassIslandInfoColumn(label: "时间", value: state.details?.timeText ?? state.detail, symbol: "clock")
+            if !state.displayedTimeText.isEmpty {
+                ClassIslandInfoColumn(label: "时间", value: state.displayedTimeText, symbol: "clock")
+            }
         }
         .frame(minHeight: 40)
     }
@@ -353,9 +382,21 @@ struct ClassIslandLockScreenView: View {
                 ClassIslandLessonIcon(encodedImage: state.details?.iconPngBase64, size: 24)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(state.details == nil ? "课程" : "下一节").font(.system(size: 11)).foregroundStyle(activitySecondary)
-                    Text(state.lessonName).font(.system(size: 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.75)
-                    Text(state.details?.timeText ?? state.detail)
-                        .font(.system(size: 11)).monospacedDigit().foregroundStyle(activitySecondary).lineLimit(1)
+                    Text(state.displayedLessonName).font(.system(size: 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.75)
+                    if !state.displayedTimeText.isEmpty {
+                        Text(state.displayedTimeText)
+                            .font(.system(size: 11)).monospacedDigit().foregroundStyle(activitySecondary).lineLimit(1)
+                    }
+                    if state.displayOptions != nil {
+                        if let location = state.displayedLocation {
+                            Label(location, systemImage: "mappin.and.ellipse")
+                                .font(.system(size: 11)).foregroundStyle(activitySecondary).lineLimit(1)
+                        }
+                        if let teacherName = state.displayedTeacherName {
+                            Label(teacherName, systemImage: "person")
+                                .font(.system(size: 11)).foregroundStyle(activitySecondary).lineLimit(1)
+                        }
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -432,13 +473,15 @@ private struct ClassIslandProgressView: View {
 private struct ClassIslandRemainingTimeView: View {
     let state: ClassIslandActivityAttributes.ContentState
     var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "hourglass").foregroundStyle(activityAccent)
-            Text("剩余时间").foregroundStyle(activitySecondary)
-            Spacer(minLength: 8)
-            ClassIslandIslandTimer(state: state, isStale: false)
+        if state.showRemainingTime {
+            HStack(spacing: 8) {
+                Image(systemName: "hourglass").foregroundStyle(activityAccent)
+                Text("剩余时间").foregroundStyle(activitySecondary)
+                Spacer(minLength: 8)
+                ClassIslandIslandTimer(state: state, isStale: false)
+            }
+            .font(.system(size: 12, weight: .medium))
         }
-        .font(.system(size: 12, weight: .medium))
     }
 }
 
@@ -449,11 +492,11 @@ private struct ClassIslandIslandTimer: View {
     var body: some View {
         if isStale {
             Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-        } else if let range = state.progressRange {
+        } else if state.showRemainingTime, let range = state.progressRange {
             Text(timerInterval: range, countsDown: true, showsHours: false)
                 .monospacedDigit().multilineTextAlignment(textAlignment).lineLimit(1).minimumScaleFactor(0.75)
         } else {
-            Text(state.compactText).font(.caption2).lineLimit(1)
+            Text(state.showSubjectName ? state.compactText : state.phase.displayName).font(.caption2).lineLimit(1)
         }
     }
 }
@@ -478,9 +521,26 @@ private extension ClassIslandActivityPhase {
 }
 
 private extension ClassIslandActivityAttributes.ContentState {
+    var showSubjectName: Bool { displayOptions?.showSubjectName ?? true }
+    var showRemainingTime: Bool { displayOptions?.showRemainingTime ?? true }
     var lessonName: String { details?.lessonName ?? (compactText.isEmpty ? title : compactText) }
+    var displayedLessonName: String { showSubjectName ? lessonName : phase.displayName }
+    var displayedLocation: String? {
+        guard displayOptions?.showLocation != false, let location = details?.location, !location.isEmpty else { return nil }
+        return location
+    }
+    var displayedTeacherName: String? {
+        guard displayOptions?.showTeacherName != false, let teacherName = details?.teacherName, !teacherName.isEmpty else { return nil }
+        return teacherName
+    }
+    var displayedTimeText: String {
+        displayOptions?.showTimeRange == false ? "" : (details?.timeText ?? detail)
+    }
+    var hasLessonMetadata: Bool {
+        displayedLocation != nil || displayedTeacherName != nil || !displayedTimeText.isEmpty
+    }
     var intervalLabel: String {
-        if let details, !details.intervalTimeText.isEmpty { return details.intervalTimeText }
+        if displayOptions?.showTimeRange != false, let details, !details.intervalTimeText.isEmpty { return details.intervalTimeText }
         return phase.displayName
     }
     var progressRange: ClosedRange<Date>? {

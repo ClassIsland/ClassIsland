@@ -247,7 +247,10 @@ internal sealed class LessonsLiveActivitySnapshotFactory
         return new LessonLiveActivityDetails(
             GetSubjectName(subject, "未命名课程"),
             (string.IsNullOrWhiteSpace(location) ? subject?.Location : location)?.Trim() ?? "",
-            ReferenceEquals(item, TimeLayoutItem.Empty) ? "" : FormatTimeRange(item), "");
+            ReferenceEquals(item, TimeLayoutItem.Empty) ? "" : FormatTimeRange(item), "")
+        {
+            TeacherName = subject?.TeacherName?.Trim() ?? ""
+        };
     }
 
     private string CreateNextClassText(bool includeStartTime)

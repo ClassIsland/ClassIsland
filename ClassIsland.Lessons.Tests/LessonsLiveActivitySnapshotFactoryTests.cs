@@ -16,7 +16,7 @@ public sealed class LessonsLiveActivitySnapshotFactoryTests
     [InlineData(TimeState.None, "   ", "A301")]
     public void Create_UsesEffectiveCourseLocation(TimeState state, string location, string expected)
     {
-        var subject = new Subject { Name = "数学", Location = "A301" };
+        var subject = new Subject { Name = "数学", Location = "A301", TeacherName = " 王老师 " };
         var classInfo = new ClassInfo { Subject = subject, Location = location };
         var item = new TimeLayoutItem
         {
@@ -44,6 +44,7 @@ public sealed class LessonsLiveActivitySnapshotFactoryTests
         var snapshot = factory.Create();
 
         Assert.Equal(expected, snapshot.ActivityDetails?.Location);
+        Assert.Equal("王老师", snapshot.ActivityDetails?.TeacherName);
         classInfo.Location = "C403";
         Assert.Equal("C403", factory.Create().ActivityDetails?.Location);
         classInfo.Location = "";

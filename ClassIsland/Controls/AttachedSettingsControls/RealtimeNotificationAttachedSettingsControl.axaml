@@ -19,7 +19,7 @@
         <TabControl Classes="compact" Padding="0">
             <TabItem Header="即将上课">
                 <StackPanel Spacing="4">
-                    <CheckBox Content="启用即将上课实时通知"
+                    <CheckBox Content="{OnPlatform Default='启用即将上课实时通知', iOS='启用即将上课灵动岛提醒'}"
                               IsChecked="{Binding IsUpcomingClassRealtimeNotificationEnabled, Mode=TwoWay}" />
                     <ci:Field Label="提前提醒时长" Suffix="分钟">
                         <fa:FANumberBox Minimum="0" Maximum="1440" SmallChange="1" LargeChange="10"
@@ -39,7 +39,7 @@
             </TabItem>
             <TabItem Header="课程持续信息">
                 <StackPanel Spacing="4">
-                    <CheckBox Content="启用课程持续实时通知"
+                    <CheckBox Content="{OnPlatform Default='启用课程持续实时通知', iOS='启用课程持续灵动岛信息'}"
                               IsChecked="{Binding IsCurrentClassRealtimeNotificationEnabled, Mode=TwoWay}" />
                     <ci:Field Label="显示的内容">
                         <WrapPanel>

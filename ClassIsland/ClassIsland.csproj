@@ -124,6 +124,10 @@
     <ItemGroup Condition="'$(ClassIslandBundleAssetsInAssembly)' == 'true'">
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="..\ClassIsland.iOS.Native\Extension\Resources\ClassIslandBrand.png"
+                          Link="Assets\LiveActivities\ClassIslandBrand.png" />
+    </ItemGroup>
     <ItemGroup Condition="'$(ClassIslandBundleAssetsInAssembly)' != 'true'">
         <None Update="Assets\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

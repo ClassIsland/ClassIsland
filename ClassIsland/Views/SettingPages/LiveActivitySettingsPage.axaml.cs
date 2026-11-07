@@ -10,8 +10,7 @@ using ClassIsland.ViewModels.SettingsPages;
 
 namespace ClassIsland.Views.SettingPages;
 
-[Group("classisland.mainwindow")]
-[SettingsPageInfo("live-activity", "灵动岛展开态", FluentIcons.WindowRegular, FluentIcons.WindowFilled, SettingsPageCategory.Internal)]
+[SettingsPageInfo("live-activity", "灵动岛", FluentIcons.WindowRegular, FluentIcons.WindowFilled, SettingsPageCategory.Internal)]
 public partial class LiveActivitySettingsPage : SettingsPageBase
 {
     public LiveActivitySettingsViewModel ViewModel { get; } =

@@ -11,20 +11,29 @@ public sealed class LiveActivityContractsTests
     public void Details_PreserveCourseIconAndLocationWhenAligningPreparationTime()
     {
         var start = new DateTimeOffset(2026, 10, 1, 15, 10, 0, TimeSpan.FromHours(8));
-        var details = new LessonLiveActivityDetails("物理", "A301", "15:10–15:55", "14:55–15:10", "aWNvbg==");
+        var details = new LessonLiveActivityDetails("物理", "A301", "15:10–15:55", "14:55–15:10", "aWNvbg==")
+        {
+            TeacherName = "张老师"
+        };
+        var displayOptions = new LessonLiveActivityDisplayOptions(ShowRemainingTime: false);
         var content = CreateContent(start.AddMinutes(-15), start) with
         {
             Phase = LessonLiveActivityPhase.None,
             IsUpcomingLesson = true,
-            Details = details
+            Details = details,
+            DisplayOptions = displayOptions
         };
 
         var aligned = LessonLiveActivityPublicationPolicy.AlignUpcomingProgressStart(content, start.AddMinutes(-5));
 
         Assert.Equal(details, aligned.Details);
+        Assert.Equal("张老师", aligned.Details!.TeacherName);
+        Assert.Equal(displayOptions, aligned.DisplayOptions);
+        Assert.True(aligned.HasProgress);
         Assert.Equal(start.AddMinutes(-5), aligned.StartTime);
         Assert.Equal(start, aligned.EndTime);
         Assert.Null(CreateContent().Details);
+        Assert.Null(CreateContent().DisplayOptions);
     }
 
     [Fact]

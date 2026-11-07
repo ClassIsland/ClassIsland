@@ -20,4 +20,5 @@ internal sealed record NativeLessonLiveActivityPayload(
     string? EndTime,
     string DeepLink,
     LessonLiveActivityDetails? Details,
-    LessonLiveActivityComponent[]? Components);
+    LessonLiveActivityComponent[]? Components,
+    LessonLiveActivityDisplayOptions? DisplayOptions);
