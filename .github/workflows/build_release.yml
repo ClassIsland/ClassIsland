@@ -42,7 +42,7 @@ on:
         type: boolean
 
 env:
-  PDC_CLIENT_VERSION: 1.0.1.0
+  PDC_CLIENT_VERSION: 1.0.1.3
   DOTNET_SDK_VERSION: 10.0.302
   MACOS_XCODE_PATH: /Applications/Xcode_26.6.app/Contents/Developer
 
@@ -850,6 +850,8 @@ jobs:
           S3_Endpoint: ${{ vars.S3_ENDPOINT }}
           S3_Region: ${{ vars.S3_REGION }}
           PDC_Endpoint: ${{ vars.PDC_ENDPOINT }}
+          PDC_MaxParallelism: ${{ vars.PDC_MAX_PARALLELISM || '16' }}
+          PDC_MaxRetries: ${{ vars.PDC_MAX_RETRIES || '5' }}
           PDC_SigningKey: ${{ secrets.PDC_SigningKey }}
           PDC_SigningKeyPs: ""
           PDC_Token: ${{ secrets.PDC_TOKEN }}

@@ -13,6 +13,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.UI;
 using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Extensions;
+using ClassIsland.Helpers;
 using ClassIsland.iOS.Controls;
 using ClassIsland.iOS.Services.LiveActivities;
 using ClassIsland.iOS.Services.Notifications;
@@ -74,9 +75,11 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             ResumeAfterManualTerminationCanceled);
         PlatformServices.FilePickerService = new IosPlatformFilePickerService();
         PlatformServices.LauncherService = new IosLauncherService();
+        PlatformServices.DeviceInfoService = new IosDeviceInfoService();
 
         if (!_isHudProcess)
         {
+            PlatformServices.HapticFeedbackService = new IosHapticFeedbackService();
             UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
             _locationService = new IosLocationService();
             PlatformServices.LocationService = _locationService;
@@ -118,6 +121,11 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
                 return app;
             })
             .UseiOS(this)
+            .UseOverlayAssetLoader()
+            .With(new SkiaOptions
+            {
+                MaxGpuResourceSizeBytes = SkiaGpuCacheHelper.SizeBytes
+            })
             .With(new FontManagerOptions
             {
                 FontFallbacks =

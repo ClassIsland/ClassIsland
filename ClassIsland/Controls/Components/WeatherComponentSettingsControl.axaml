@@ -29,7 +29,7 @@
                                 <ComboBoxItem>天气类型/气温</ComboBoxItem>
                                 <ComboBoxItem>湿度</ComboBoxItem>
                                 <ComboBoxItem>风力</ComboBoxItem>
-                                <ComboBoxItem>AQI</ComboBoxItem>
+                                <ComboBoxItem>空气质量</ComboBoxItem>
                                 <ComboBoxItem>气压</ComboBoxItem>
                                 <ComboBoxItem>体感温度</ComboBoxItem>
                             </ComboBox>

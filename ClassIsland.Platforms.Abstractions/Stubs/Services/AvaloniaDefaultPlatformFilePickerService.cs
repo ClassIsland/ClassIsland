@@ -75,7 +75,7 @@ public class AvaloniaDefaultPlatformFilePickerService : IPlatformFilePickerServi
         ArgumentOutOfRangeException.ThrowIfNegative(options.MaxFileSize);
 
         var maxFileSize = options.MaxFileSize;
-        var files = await root.StorageProvider.OpenFilePickerAsync(options);
+        var files = await OpenBlobStorageFilesPickerAsync(options, root);
         try
         {
             var result = new List<Uri>();
@@ -99,6 +99,13 @@ public class AvaloniaDefaultPlatformFilePickerService : IPlatformFilePickerServi
             }
         }
     }
+
+    /// <summary>
+    /// 选取用于存储 Blob 的文件，供需要原生导入流程的平台重写。
+    /// </summary>
+    protected virtual Task<IReadOnlyList<IStorageFile>> OpenBlobStorageFilesPickerAsync(
+        BlobFilePickerOpenOptions options,
+        TopLevel root) => root.StorageProvider.OpenFilePickerAsync(options);
 
     private static async Task<Uri?> StoreBlobAsync(Stream stream, long maxFileSize, string blobRoot)
     {

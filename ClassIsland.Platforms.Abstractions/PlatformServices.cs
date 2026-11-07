@@ -9,6 +9,11 @@ namespace ClassIsland.Platforms.Abstraction;
 public static class PlatformServices
 {
     /// <summary>
+    /// 平台设备信息服务
+    /// </summary>
+    public static IDeviceInfoService DeviceInfoService { get; internal set; } = new DeviceInfoServiceStub();
+
+    /// <summary>
     /// 平台窗口服务
     /// </summary>
     public static IWindowPlatformService WindowPlatformService { get; internal set; } = new WindowPlatformServiceStub();
@@ -59,6 +64,7 @@ public static class PlatformServices
     /// 启动器服务
     /// </summary>
     public static ILauncherService LauncherService { get; internal set; } = new LauncherServiceStub();
+
     /// <summary>
     /// 系统实时活动服务。非 Apple 平台和不受支持的系统会安全返回 Unsupported。
     /// </summary>

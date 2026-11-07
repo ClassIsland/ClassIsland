@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Platforms.Abstraction.Stubs.Services;
 using ClassIsland.Shared;
@@ -45,6 +46,14 @@ internal sealed class IosPlatformFilePickerService : AvaloniaDefaultPlatformFile
         TopLevel root)
     {
         return OpenAndMaterializeFilesAsync(options, root, MaterializeFilesAsync);
+    }
+
+    protected override Task<IReadOnlyList<IStorageFile>> OpenBlobStorageFilesPickerAsync(
+        BlobFilePickerOpenOptions options,
+        TopLevel root)
+    {
+        var logger = IAppHost.TryGetService<ILogger<IosPlatformFilePickerService>>();
+        return IosDocumentImportPicker.OpenAsync(options, root, logger);
     }
 
     public Task<List<string>> OpenPersistentFilesPickerAsync(

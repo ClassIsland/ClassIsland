@@ -1201,6 +1201,8 @@
                                                     <TabItem Header="编辑课程">
                                                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                                                             <StackPanel Spacing="6" Margin="8">
+                                                                <CheckBox IsChecked="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.IsEnabled}"
+                                                                          IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.IsEmpty, Converter={StaticResource InvertBooleanConverter}}">启用课程？</CheckBox>
                                                                 <ci:Field Label="上课地点">
                                                                     <TextBox
                                                                         Text="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.Location, Mode=TwoWay}"
@@ -1348,6 +1350,8 @@
                                         <TabItem Header="编辑课程">
                                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                                 <StackPanel Spacing="6" Margin="8">
+                                                    <CheckBox IsChecked="{Binding ViewModel.SelectedClassInfo.IsEnabled}"
+                                                              IsEnabled="{Binding !ViewModel.SelectedClassInfo.IsEmpty}">启用课程？</CheckBox>
                                                     <ci:Field Label="上课地点">
                                                         <TextBox Text="{Binding ViewModel.SelectedClassInfo.Location, Mode=TwoWay}"
                                                                  PlaceholderText="{Binding ViewModel.SelectedClassInfo.Subject.Location}"

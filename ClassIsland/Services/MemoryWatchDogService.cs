@@ -65,7 +65,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     [UnsupportedOSPlatform("ios")]
     private static long GetProcessMemoryUsage()
     {
-        var process = Process.GetCurrentProcess();
+        using var process = Process.GetCurrentProcess();
         return OperatingSystem.IsMacOS()
             ? process.WorkingSet64
             : process.PrivateMemorySize64;

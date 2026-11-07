@@ -153,7 +153,7 @@ public partial class App
         services.AddTransient<WelcomeWindow>();
         services.AddTransient<DataTransferWindow>();
         services.AddTransient<ScreenshotHelperWindow>();
-        services.AddSingleton<EditModeView>();
+        services.AddTransient<EditModeView>();
         services.AddTransient<TutorialEditorWindow>();
         services.AddSingleton<TutorialCenterWindow>();
         services.AddTransient<TutorialControllerWindow>();

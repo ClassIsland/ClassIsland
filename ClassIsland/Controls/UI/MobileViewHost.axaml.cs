@@ -20,6 +20,8 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.Views;
 
 namespace ClassIsland.Controls.UI;
@@ -106,9 +108,16 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     protected override void OnLoaded(RoutedEventArgs e)
     {
+        if (_isClosed)
+        {
+            return;
+        }
         AppBase.Current.PhonyRootWindow = TopLevel.GetTopLevel(this)!;
         base.OnLoaded(e);
 
+        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
+        AppBase.Current.AppStarted += BackgroundOnAppStarted;
+        BindBackgroundSettings();
         AttachInputPane();
         UpdateFocusedTextPresenter();
         RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
@@ -119,6 +128,8 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     protected override void OnUnloaded(RoutedEventArgs e)
     {
+        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
+        BackgroundLayer.DataContext = null;
         DetachInputPane();
         DetachFocusedTextPresenter();
         RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
@@ -127,27 +138,78 @@ public partial class MobileViewHost : UserControl, IViewHost
         base.OnUnloaded(e);
     }
 
+    private void BackgroundOnAppStarted(object? sender, EventArgs e) => BindBackgroundSettings();
+
+    private void BindBackgroundSettings() =>
+        BackgroundLayer.DataContext = IAppHost.TryGetService<SettingsService>();
+
     /// <summary>
     /// 通知宿主其原生容器已经销毁。
     /// </summary>
     internal void Destroy()
     {
+        if (_isClosed)
+        {
+            return;
+        }
+
+        _isClosed = true;
+        IsEnabled = false;
+        AppBase.Current.AppStarted -= BackgroundOnAppStarted;
+        BackgroundLayer.DataContext = null;
         DetachInputPane();
         DetachFocusedTextPresenter();
+        RemoveHandler(GotFocusEvent, OnDescendantGotFocus);
+        SizeChanged -= OnHostSizeChanged;
         ResetPageContentOffset();
-        PreClosing(false);
-        _isClosed = true;
+        ++_navigationProgressAnimationVersion;
+        var visual = ElementComposition.GetElementVisual(NavigationProgressBarFill);
+        visual?.StopAnimation(nameof(visual.Scale));
+        visual?.StopAnimation(nameof(visual.Opacity));
         SetCurrentView(null);
-        DrawerHost.Clear();
-        foreach (var view in DrawerActivatedViews.ToArray())
+        _drawerPreviousFocus = null;
+        DrawerHost.ClosingRequested -= DrawerHostOnClosingRequested;
+        DrawerHost.Closed -= DrawerHostOnClosed;
+        DrawerHost.Popped -= DrawerHostOnPopped;
+        DrawerHost.BackRequested -= DrawerHostOnBackRequested;
+
+        foreach (var view in ActivatedViews.Concat(DrawerActivatedViews).Distinct().ToArray())
         {
+            view.ViewDeactivating(WindowCloseReason.Undefined, true, false);
             view.ViewDeactivated();
         }
+        ActivatedViews.Clear();
         DrawerActivatedViews.Clear();
-        _drawerPreviousFocus = null;
-        NavigationPage.PopAllModalsAsync(null);
-        NavigationPage.PopToRootAsync(null);
-        NavigationPage.ReplaceAsync(new ContentPage(), null);
+        ClearDestroyedNavigation();
+    }
+
+    private void ClearDestroyedNavigation()
+    {
+        if (NavigationPage.IsNavigating || DrawerHost.NavigationPage.IsNavigating)
+        {
+            // Avalonia 在过渡期间忽略栈清理；过渡结束后再释放页面引用。
+            NavigationPage.PropertyChanged -= DestroyedNavigationOnPropertyChanged;
+            NavigationPage.PropertyChanged += DestroyedNavigationOnPropertyChanged;
+            DrawerHost.NavigationPage.PropertyChanged -= DestroyedNavigationOnPropertyChanged;
+            DrawerHost.NavigationPage.PropertyChanged += DestroyedNavigationOnPropertyChanged;
+            return;
+        }
+
+        NavigationPage.PropertyChanged -= DestroyedNavigationOnPropertyChanged;
+        DrawerHost.NavigationPage.PropertyChanged -= DestroyedNavigationOnPropertyChanged;
+        DrawerHost.Clear();
+        foreach (var page in NavigationPage.NavigationStack.ToArray())
+        {
+            NavigationPage.RemovePage(page);
+        }
+    }
+
+    private void DestroyedNavigationOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == NavigationPage.IsNavigatingProperty)
+        {
+            ClearDestroyedNavigation();
+        }
     }
 
     private void AttachInputPane()
@@ -435,38 +497,6 @@ public partial class MobileViewHost : UserControl, IViewHost
         public override double Ease(double progress) => easing.Ease(progress);
     }
 
-    private bool PreClosing(bool cancelable)
-    {
-        foreach (var drawerView in DrawerHost.NavigationPage.NavigationStack.OfType<ViewBase>().Reverse())
-        {
-            if (!drawerView.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable) && cancelable)
-            {
-                return true;
-            }
-        }
-
-        var view = ActivatedViews.LastOrDefault();
-        if (view == null)
-        {
-            return false;
-        }
-
-        if (view.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable))
-        {
-            foreach (var view1 in ActivatedViews)
-            {
-                if (view1 != view)
-                {
-                    view1.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable);
-                }
-                view1.ViewDeactivated();
-            }
-            return false;
-        }
-
-        return true;
-    }
-
     public void Hide()
     {
         _hide?.Invoke();
@@ -481,7 +511,7 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     public bool ActivateView(ViewBase view)
     {
-        if (ActivatedViews.Contains(view))
+        if (_isClosed || ActivatedViews.Contains(view))
         {
             return false;
         }
@@ -585,6 +615,10 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     private async Task ShowViewCore(ViewBase view, ViewBase? owner, bool modal)
     {
+        if (_isClosed)
+        {
+            return;
+        }
         if (!ActivatedViews.Contains(view))
         {
             throw new InvalidOperationException("视图必须已经激活到此视图宿主才能显示。");
@@ -613,6 +647,10 @@ public partial class MobileViewHost : UserControl, IViewHost
                 await NavigationPage.ReplaceAsync(view);
             }
         });
+        if (_isClosed)
+        {
+            return;
+        }
         if (view is SplashView)
         {
             _isFirstViewShowed = true;
@@ -637,6 +675,10 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     public async Task<bool> HideView(ViewBase view)
     {
+        if (_isClosed)
+        {
+            return false;
+        }
         if (DrawerActivatedViews.Contains(view))
         {
             if (!Equals(CurrentDrawerView, view))
@@ -708,7 +750,7 @@ public partial class MobileViewHost : UserControl, IViewHost
         try
         {
             await DrawerHost.OpenAsync(view, options);
-            if (IsDrawerOpen && ReferenceEquals(CurrentDrawerView, view))
+            if (!_isClosed && IsDrawerOpen && ReferenceEquals(CurrentDrawerView, view))
             {
                 DrawerHost.NavigationPage.Focus();
             }
@@ -773,7 +815,7 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     private bool ActivateDrawerView(ViewBase view)
     {
-        if (DrawerActivatedViews.Contains(view) || !view.ViewActivating(this))
+        if (_isClosed || DrawerActivatedViews.Contains(view) || !view.ViewActivating(this))
         {
             return false;
         }
@@ -861,7 +903,10 @@ public partial class MobileViewHost : UserControl, IViewHost
         {
             await Dispatcher.InvokeAsync(async () =>
             {
-                await navigation();
+                if (!_isClosed)
+                {
+                    await navigation();
+                }
             });
         }
         finally

@@ -26,16 +26,14 @@ namespace ClassIsland.Views.SettingPages;
 public partial class WeatherSettingsPage : SettingsPageBase
 {
     public WeatherSettingsViewModel ViewModel { get; } = IAppHost.GetService<WeatherSettingsViewModel>();
+    public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
 
     private ILogger<WeatherSettingsPage> Logger => ViewModel.Logger;
 
-    public SettingsService SettingsService { get; }
-
-    public WeatherSettingsPage(SettingsService settingsService, IWeatherService weatherService, ILocationService locationService, ILogger<WeatherSettingsPage> logger)
+    public WeatherSettingsPage()
     {
-        InitializeComponent();
         DataContext = this;
-        SettingsService = settingsService;
+        InitializeComponent();
     }
 
     private void ButtonEditCurrentCity_OnClick(object sender, RoutedEventArgs e)
