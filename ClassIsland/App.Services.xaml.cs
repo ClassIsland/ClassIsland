@@ -42,6 +42,7 @@ using ClassIsland.ViewModels;
 using ClassIsland.ViewModels.EditMode;
 using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Views;
+using ClassIsland.Views.MainViewPages;
 using ClassIsland.Views.SettingPages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -155,6 +156,9 @@ public partial class App
         services.AddTransient<TutorialControllerWindow>();
         services.AddTransient<ISplashProvider, SplashWindow>();
         services.AddTransient<MainView>();
+        services.AddMainViewPage<TodayMainViewPage>();
+        services.AddMainViewPage<WeekMainViewPage>();
+        services.AddMainViewPage<MoreMainViewPage>();
         // 设置页面分组
         services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
