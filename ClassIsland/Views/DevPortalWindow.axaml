@@ -37,6 +37,9 @@
                                         Loaded="TargetTime_OnLoaded"
                                         UseSeconds="True"/>
                             <Button Content="重置" Click="ButtonReset_OnClick"/>
+                            <Button Content="跳转到即将上课提醒"
+                                    ToolTip.Tip="跳到下一次即将上课提醒前 1 秒；当天没有后续提醒时，跳到当天首次提醒前。"
+                                    Click="ButtonJumpToPreparingNotification_OnClick"/>
                         </StackPanel>
                     </ci:Field>
                     <ci:Field Label="测试选择器解析">
@@ -66,6 +69,37 @@
             <TabItem Header="控件">
                 <ScrollViewer>
                     <StackPanel Spacing="6">
+                        <ci:Field Label="MultipleDateSelector">
+                            <StackPanel Spacing="6">
+                                <ci:MultipleDateSelector SelectedDates="{Binding ViewModel.SelectedDates}"
+                                                         Width="{Binding #DateSelectorWidth.Value}" />
+                                <Slider x:Name="DateSelectorWidth" Minimum="60" Maximum="600" Value="236"
+                                        Width="300" HorizontalAlignment="Left" AutomationProperties.Name="日期预览宽度" />
+                                <WrapPanel ItemSpacing="6">
+                                    <Button Content="添加今天" Command="{Binding ViewModel.AddTodayToSelectedDatesCommand}" />
+                                    <Button Content="清空" Command="{Binding ViewModel.ClearSelectedDatesCommand}" />
+                                    <Button Content="替换集合（含重复日期）" Command="{Binding ViewModel.ReplaceSelectedDatesCommand}" />
+                                    <Button Content="设为 null" Command="{Binding ViewModel.SetSelectedDatesToNullCommand}" />
+                                </WrapPanel>
+                                <TextBlock Text="绑定集合中的日期（原始顺序）：" />
+                                <ItemsControl ItemsSource="{Binding ViewModel.SelectedDates}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding StringFormat='yyyy/M/d'}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="独立实例（未绑定）：" />
+                                <ci:MultipleDateSelector />
+                                <ci:MultipleDateSelector />
+                            </StackPanel>
+                        </ci:Field>
+                        <ci:Field Label="IconExpressionEditor">
+                            <StackPanel Spacing="6">
+                                <ci:IconExpressionEditor IconExpression="{Binding ViewModel.IconExpression}" />
+                                <TextBox Text="{Binding ViewModel.IconExpression}" PlaceholderText="图标表达式（双向绑定）" />
+                            </StackPanel>
+                        </ci:Field>
                         <ci:Field Label="ChipListBoxTheme">
                             <ListBox Theme="{StaticResource ChipListBoxTheme}">
                                 <ListBoxItem>大地</ListBoxItem>
@@ -143,6 +177,45 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
+            <TabItem Header="默认字体">
+                <ScrollViewer>
+                    <StackPanel Margin="16" Spacing="12" Loaded="FontProbe_OnLoaded">
+                        <TextBlock Text="系统默认字体探针" FontSize="20" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding ViewModel.FontProbeText}" TextWrapping="Wrap"/>
+                        <Button Content="刷新字体信息" Command="{Binding ViewModel.RefreshFontProbeCommand}"/>
+                        <ci:Field Label="字重（支持 437、563 等任意整数）">
+                            <StackPanel Spacing="8">
+                                <Slider Minimum="{Binding ViewModel.MinimumFontWeight}"
+                                        Maximum="{Binding ViewModel.MaximumFontWeight}"
+                                        Value="{Binding ViewModel.SelectedFontWeight, Mode=TwoWay}"
+                                        TickFrequency="1" IsSnapToTickEnabled="True"
+                                        AutomationProperties.Name="预览字重"/>
+                                <WrapPanel>
+                                    <NumericUpDown Minimum="{Binding ViewModel.MinimumFontWeight}"
+                                                   Maximum="{Binding ViewModel.MaximumFontWeight}"
+                                                   Value="{Binding ViewModel.SelectedFontWeight, Mode=TwoWay}"
+                                                   Increment="1" FormatString="0" Width="160"
+                                                   AutomationProperties.Name="预览字重数值"/>
+                                    <Button Content="重置为 400" Margin="8 0 0 0"
+                                            Command="{Binding ViewModel.ResetFontWeightCommand}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </ci:Field>
+                        <TextBlock Text="固定字重 400" FontWeight="SemiBold"/>
+                        <TextBlock FontFamily="{x:Static FontFamily.Default}" FontWeight="400"
+                                   FontSize="28" TextWrapping="Wrap"
+                                   Text="ClassIsland · Variable Font 0123456789&#10;默认字体 · 春江潮水连海平"/>
+                        <TextBlock Text="{Binding ViewModel.SelectedFontWeight, StringFormat='预览请求字重：{0}'}"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock FontFamily="{x:Static FontFamily.Default}"
+                                   FontWeight="{Binding ViewModel.PreviewFontWeight}"
+                                   FontSize="28" TextWrapping="Wrap"
+                                   Text="ClassIsland · Variable Font 0123456789&#10;默认字体 · 春江潮水连海平"/>
+                        <TextBlock TextWrapping="Wrap"
+                                   Text="可变字体元数据不代表当前渲染器一定支持连续变化。中文可能使用回退字体；请分别观察英文、数字和中文。静态字体也可调节，但可能匹配到离散字重或使用模拟加粗。此处使用 Avalonia 默认字体，不跟随主界面自定义字体设置。"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
             <TabItem Header="提醒">
                 <StackPanel Spacing="6" Width="400" HorizontalAlignment="Left">
                     <ci:Field Label="提醒标题">
@@ -197,6 +270,14 @@
                         </mdxaml:MarkdownScrollViewer.Styles>
                     </mdxaml:MarkdownScrollViewer>
                 </Grid>
+            </TabItem>
+            <TabItem Header="文本性能测试">
+                <StackPanel Margin="16" Spacing="12">
+                    <TextBlock Text="文本渲染与自动滚动 Benchmark" FontSize="20" />
+                    <TextBlock Text="比较 TextBlock 与 Markdown 在不同文本长度、重复数量下的渲染与滚动性能，并导出报告。"
+                               TextWrapping="Wrap" />
+                    <Button Content="打开文本性能测试" Click="ButtonTextBenchmark_OnClick" HorizontalAlignment="Left" />
+                </StackPanel>
             </TabItem>
             <TabItem Header="调课日历">
                 <controls:ScheduleCalendarControl/>

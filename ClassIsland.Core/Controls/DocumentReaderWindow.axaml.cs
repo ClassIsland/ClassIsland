@@ -10,6 +10,7 @@ using Avalonia;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Shared;
@@ -63,26 +64,22 @@ public partial class DocumentReaderWindow : MyWindow
         try
         {
             IsLoading = true;
-            Stream? stream;
             if (Source.Scheme == "avares")
             {
-                stream = AssetLoader.Open(Source);
+                Markdown = await AssetLoader.ReadAllTextAsync(Source);
             }
             else if (Source.Scheme is "http" or "https")
             {
-                stream = await new HttpClient().GetStreamAsync(Source);
+                using var client = new HttpClient();
+                await using var stream = await client.GetStreamAsync(Source);
+                using var reader = new StreamReader(stream);
+                Markdown = await reader.ReadToEndAsync();
             }
             else
             {
                 throw new InvalidOperationException("只支持从资源或 Http 源加载文档。");
             }
 
-            if (stream == null)
-            {
-                throw new ArgumentNullException();
-            }
-            var md = await new StreamReader(stream).ReadToEndAsync();
-            Markdown = md;
         }
         catch (Exception ex)
         {

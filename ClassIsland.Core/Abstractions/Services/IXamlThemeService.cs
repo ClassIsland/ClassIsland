@@ -76,4 +76,6 @@ public interface IXamlThemeService
     double ActualVerticalSafeAreaPx { get; }
     
     internal Window? MainWindow { get; set; }
+
+    internal void SetResourceHost(Border? host);
 }

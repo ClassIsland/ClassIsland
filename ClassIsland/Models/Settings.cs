@@ -28,7 +28,7 @@ using ClassIsland.Services;
 
 namespace ClassIsland.Models;
 
-public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings, IGlobalSpeechSettings
+public partial class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings, IGlobalSpeechSettings
 {
     private int _theme = 2;
     private bool _iscustomBackgroundColorEnabled = false;
@@ -68,6 +68,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isDebugEnabled = false;
     private string _selectedProfile = "Default.json";
     private bool _isMainWindowVisible = true;
+    private bool _isAndroidOverlayEnabled;
+    private string _androidBackgroundImageSource = "";
+    private double _androidBackgroundImageOpacity = 0.1;
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
     private Dictionary<string, string> _releaseChannels = new()
@@ -95,7 +98,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
     private bool _isFallbackModeEnabled = true;
-    private string _mainWindowFont = MainWindow.DefaultFontFamilyKey;
+    private string _mainWindowFont = MainWindow.PlatformDefaultFontFamilyKey;
     private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
     private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
     private WeatherInfo _lastWeatherInfo = new();
@@ -238,6 +241,25 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             _selectedProfile = value;
             OnPropertyChanged();
         }
+    }
+
+    public bool IsAndroidOverlayEnabled
+    {
+        get => _isAndroidOverlayEnabled;
+        set => SetProperty(ref _isAndroidOverlayEnabled, value);
+    }
+
+    public string AndroidBackgroundImageSource
+    {
+        get => _androidBackgroundImageSource;
+        set => SetProperty(ref _androidBackgroundImageSource, value);
+    }
+
+    public double AndroidBackgroundImageOpacity
+    {
+        get => _androidBackgroundImageOpacity;
+        set => SetProperty(ref _androidBackgroundImageOpacity,
+            double.IsFinite(value) ? Math.Clamp(value, 0, 1) : 0.1);
     }
 
     [SettingsInfo("显示主界面", "\uEFBF", order: 1)]
@@ -2676,5 +2698,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             _classPlanEditModeIndex = value;
             OnPropertyChanged();
         }
+    }
+
+    private int _scheduleEditModeIndex;
+
+    public int ScheduleEditModeIndex
+    {
+        get => _scheduleEditModeIndex;
+        set => SetProperty(ref _scheduleEditModeIndex, value);
     }
 }

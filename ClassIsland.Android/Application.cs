@@ -4,8 +4,11 @@ using Avalonia;
 using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Media;
+using ClassIsland.Android.Helpers;
 using ClassIsland.Android.Services.Platform;
+using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
+using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 
@@ -25,8 +28,14 @@ public class Application : AvaloniaAndroidApplication<App>
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
+        NavigationRepeaterAutomationFix.Initialize();
+
         PlatformServices.AppLifetimeService = new AndroidAppLifetimeService();
         PlatformServices.LauncherService = new LauncherService();
+        PlatformServices.DesktopToastService = new DesktopToastService();
+        PlatformServices.LocationService = new LocationService();
+        PlatformServices.HapticFeedbackService = new HapticFeedbackService();
+        PlatformServices.DeviceInfoService = new DeviceInfoService();
 
         var restartParameters = MainActivity.Current?.TryGetTarget(out var mainActivity) == true
             ? mainActivity.Intent?.GetStringArrayExtra(AndroidAppLifetimeService.RestartParametersExtra)
@@ -34,6 +43,9 @@ public class Application : AvaloniaAndroidApplication<App>
         var buildApp = Program.AppEntry(restartParameters is null
             ? ["--mobile"]
             : [.. restartParameters, "--mobile"]);
+        var renderingMode = int.TryParse(GlobalStorageService.GetValue("AndroidRenderingMode"), out var value)
+            ? value
+            : 0;
 
         return AppBuilder.Configure<App>(() =>
             {
@@ -42,25 +54,34 @@ public class Application : AvaloniaAndroidApplication<App>
                 return app;
             })
             .UseAndroid()
-            .With(new FontManagerOptions
+            .UseOverlayAssetLoader()
+            .With(new SkiaOptions
             {
-                DefaultFamilyName = MainWindow.DefaultFontFamilyKey,
-                FontFallbacks =
-                [
-                    new FontFallback
-                    {
-                        FontFamily = MainWindow.DefaultFontFamily
-                    }
-                ]
+                MaxGpuResourceSizeBytes = SkiaGpuCacheHelper.SizeBytes
             })
+            .With<FontManagerOptions>(AndroidFontHelper.GetOptions)
+            .AfterPlatformServicesSetup(_ => AndroidFontHelper.InitializeFallbacks())
             .With(new AndroidPlatformOptions()
             {
-                RenderingMode = [
-                    AndroidRenderingMode.Egl,
-                    AndroidRenderingMode.Vulkan,
-                    AndroidRenderingMode.Software
-                ]
+                RenderingMode = BuildRenderingMode(renderingMode)
             })
             .LogToHostSink();
     }
+
+    private static IReadOnlyList<AndroidRenderingMode> BuildRenderingMode(int userValue) => userValue switch
+    {
+        2 =>
+        [
+            AndroidRenderingMode.Vulkan,
+            AndroidRenderingMode.Egl,
+            AndroidRenderingMode.Software
+        ],
+        3 => [AndroidRenderingMode.Software],
+        _ =>
+        [
+            AndroidRenderingMode.Egl,
+            AndroidRenderingMode.Vulkan,
+            AndroidRenderingMode.Software
+        ]
+    };
 }

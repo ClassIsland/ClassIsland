@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CsesSharp.Models;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -28,6 +29,10 @@ public class Profile : ObservableRecipient
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
     private Guid _id = Guid.NewGuid();
     private ObservableOrderedDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
+    private ObservableOrderedDictionary<Guid, ScheduleItem> _scheduleV2Items = new();
+    private ScheduleType _scheduleType = ScheduleType.Classic;
+    private List<ProfileMigration> _migrations = [];
+    private ObservableOrderedDictionary<DateTime, OrderedScheduleV2> _orderedSchedulesV2 = [];
 
     /// <summary>
     /// 实例化对象
@@ -169,6 +174,7 @@ public class Profile : ObservableRecipient
     {
         foreach (var i in _classPlans)
         {
+            i.Value.Subjects = Subjects;
             i.Value.TimeLayouts = TimeLayouts;
             i.Value.ClassPlans = ClassPlans;
         }
@@ -185,6 +191,7 @@ public class Profile : ObservableRecipient
             if (Equals(value, _subjects)) return;
             _subjects = value;
             OnPropertyChanged();
+            RefreshTimeLayouts();
         }
     }
 
@@ -357,6 +364,62 @@ public class Profile : ObservableRecipient
         {
             if (Equals(value, _orderedSchedules)) return;
             _orderedSchedules = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 课程安排
+    /// </summary>
+    public ObservableOrderedDictionary<Guid, ScheduleItem> ScheduleItems
+    {
+        get => _scheduleV2Items;
+        set
+        {
+            if (Equals(value, _scheduleV2Items)) return;
+            _scheduleV2Items = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 课程模式
+    /// </summary>
+    public ScheduleType ScheduleType
+    {
+        get => _scheduleType;
+        set
+        {
+            if (value == _scheduleType) return;
+            _scheduleType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 档案已应用的迁移。
+    /// </summary>
+    public List<ProfileMigration> Migrations
+    {
+        get => _migrations;
+        set
+        {
+            if (Equals(value, _migrations)) return;
+            _migrations = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 已预定的启用日程
+    /// </summary>
+    public ObservableOrderedDictionary<DateTime, OrderedScheduleV2> OrderedSchedulesV2
+    {
+        get => _orderedSchedulesV2;
+        set
+        {
+            if (Equals(value, _orderedSchedulesV2)) return;
+            _orderedSchedulesV2 = value;
             OnPropertyChanged();
         }
     }

@@ -11,6 +11,9 @@ public class Subject : AttachableSettingsObject
     private string _initial = "";
     private string _teacherName = "";
     private bool _isOutDoor = false;
+    private string _icon = "lucide(\ue54f)";
+    private string _colorHex = "#66ccff";
+    private string _location = "";
     private static readonly HashSet<string> commonCompoundSurnames = new() { "万俟", "司马", "上官", "欧阳", "夏侯", "诸葛", "闻人", "东方", "赫连", "皇甫", "尉迟", "公羊", "澹台", "公冶", "宗政", "濮阳", "淳于", "单于", "太叔", "申屠", "公孙", "仲孙", "轩辕", "令狐", "钟离", "宇文", "长孙", "慕容", "鲜于", "闾丘", "司徒", "司空", "亓官", "司寇", "子车", "颛孙", "端木", "巫马", "公西", "漆雕", "乐正", "壤驷", "公良", "拓跋", "夹谷", "宰父", "谷梁", "段干", "百里", "东郭", "南门", "呼延", "羊舌", "微生", "梁丘", "左丘", "东门", "西门", "南宫", "第五" };
 
     /// <summary>
@@ -70,8 +73,49 @@ public class Subject : AttachableSettingsObject
             OnPropertyChanged();
         }
     }
-    
-    
+
+    /// <summary>
+    /// 科目图标
+    /// </summary>
+    public string Icon
+    {
+        get => _icon;
+        set
+        {
+            if (value == _icon) return;
+            _icon = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 科目主题色
+    /// </summary>
+    public string ColorHex
+    {
+        get => _colorHex;
+        set
+        {
+            if (value == _colorHex) return;
+            _colorHex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 地点
+    /// </summary>
+    public string Location
+    {
+        get => _location;
+        set
+        {
+            if (value == _location) return;
+            _location = value;
+            OnPropertyChanged();
+        }
+    }
+
 
     /// <summary>
     /// 代表后备科目。
@@ -79,7 +123,9 @@ public class Subject : AttachableSettingsObject
     public static readonly Subject Fallback = new()
     {
         Initial = "?",
-        Name = "???"
+        Name = "???",
+        ColorHex = "#FF00FF",
+        Icon = "lucide(\ue086)"
     };
     
     /// <summary>
@@ -88,7 +134,8 @@ public class Subject : AttachableSettingsObject
     public static readonly Subject Empty = new()
     {
         Initial = "",
-        Name = ""
+        Name = "",
+        ColorHex = "#686868"
     };
 
     /// <summary>
@@ -97,7 +144,9 @@ public class Subject : AttachableSettingsObject
     public static readonly Subject Breaking = new()
     {
         Initial = "休",
-        Name = "课间休息"
+        Name = "课间休息",
+        ColorHex = "#aaaaaa",
+        Icon = "lucide(\ue08b)"
     };
 
     /// <summary>

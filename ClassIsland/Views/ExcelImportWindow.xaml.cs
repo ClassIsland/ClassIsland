@@ -230,7 +230,7 @@ public partial class ExcelImportWindow : MyWindow
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         try
         {
-            var stream = File.Open(ExcelSourcePath, FileMode.Open);
+            using var stream = File.Open(ExcelSourcePath, FileMode.Open);
             var sw = new Stopwatch();
             sw.Start();
             App.GetService<IHangService>().AssumeHang();
@@ -241,7 +241,6 @@ public partial class ExcelImportWindow : MyWindow
             catch (Exception e)
             {
                 ViewModel.OpenException = e;
-                stream.Close();
                 if (isFixed)
                 {
                     await ShowDialog("FixExcelFailed");

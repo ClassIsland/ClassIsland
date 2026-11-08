@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
+using ClassIsland.Core.Models.UI;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 
@@ -17,6 +18,11 @@ public interface IViewHost
     /// 当前显示的视图。
     /// </summary>
     ViewBase? CurrentView { get; }
+
+    /// <summary>
+    /// 主视图可以返回上一视图或退出宿主时为 true。
+    /// </summary>
+    bool CanGoBack => true;
 
     /// <summary>
     /// 已激活到此宿主的视图。
@@ -83,4 +89,42 @@ public interface IViewHost
     /// </summary>
     /// <param name="view">要隐藏的视图</param>
     Task<bool> HideView(ViewBase view);
+
+    /// <summary>
+    /// 当前是否有抽屉处于打开状态。
+    /// </summary>
+    bool IsDrawerOpen { get; }
+
+    /// <summary>
+    /// 当前抽屉页面。
+    /// </summary>
+    ViewBase? CurrentDrawerView { get; }
+
+    /// <summary>
+    /// 已激活到抽屉中的视图。
+    /// </summary>
+    IReadOnlyCollection<ViewBase> DrawerActivatedViews { get; }
+
+    /// <summary>
+    /// 在视图宿主中打开抽屉。
+    /// </summary>
+    /// <param name="view">抽屉根页面。</param>
+    /// <param name="options">抽屉显示选项。</param>
+    Task ShowDrawer(ViewBase view, DrawerOptions? options = null);
+
+    /// <summary>
+    /// 在当前抽屉中推入页面。
+    /// </summary>
+    /// <param name="view">要推入的页面。</param>
+    Task PushDrawerView(ViewBase view);
+
+    /// <summary>
+    /// 返回抽屉中的上一页面。根页面返回时关闭抽屉。
+    /// </summary>
+    Task<bool> NavigateDrawerBack();
+
+    /// <summary>
+    /// 关闭当前抽屉。
+    /// </summary>
+    Task<bool> HideDrawer();
 }

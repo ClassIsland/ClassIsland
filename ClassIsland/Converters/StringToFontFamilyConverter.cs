@@ -24,7 +24,7 @@ public class StringToFontFamilyConverter : IValueConverter
         {
             return parameter as string == UseSharedDefaultParameter
                 ? MainWindow.DefaultFontFamily
-                : FontFamily.Parse(MainWindow.DefaultFontFamilyKey);
+                : FontFamily.Parse(MainWindow.PlatformDefaultFontFamilyKey);
         }
     }
 

@@ -79,7 +79,10 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
         {
             var request = new NotificationRequest
             {
-                MaskContent = NotificationContent.CreateTwoIconsMask(settings.Mask, hasRightIcon: false, factory: x =>
+                MaskContent = NotificationContent.CreateTwoIconsMask(settings.Mask,
+                    leftIcon: settings.IsLeftIconEnabled ? settings.LeftIcon ?? "" : "",
+                    rightIcon: settings.IsRightIconEnabled ? settings.RightIcon ?? "" : "",
+                    hasRightIcon: settings.IsRightIconEnabled, factory: x =>
                 {
                     x.Duration = TimeSpanHelper.FromSecondsSafe(settings.MaskDurationSeconds);
                     x.IsSpeechEnabled = settings.IsMaskSpeechEnabled;

@@ -2,6 +2,7 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Layout;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
@@ -39,6 +40,30 @@ internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMulti
 
     public DataTemplate BlankDataTemplate { get; } = new();
 
+    public static readonly StyledProperty<DataTemplate> VerticalExpandedDataTemplateProperty = AvaloniaProperty.Register<LessonsListBoxItemTemplateMultiConverter, DataTemplate>(
+        nameof(VerticalExpandedDataTemplate));
+    public DataTemplate VerticalExpandedDataTemplate
+    {
+        get => GetValue(VerticalExpandedDataTemplateProperty);
+        set => SetValue(VerticalExpandedDataTemplateProperty, value);
+    }
+
+    public static readonly StyledProperty<DataTemplate> VerticalMinimizedDataTemplateProperty = AvaloniaProperty.Register<LessonsListBoxItemTemplateMultiConverter, DataTemplate>(
+        nameof(VerticalMinimizedDataTemplate));
+    public DataTemplate VerticalMinimizedDataTemplate
+    {
+        get => GetValue(VerticalMinimizedDataTemplateProperty);
+        set => SetValue(VerticalMinimizedDataTemplateProperty, value);
+    }
+
+    public static readonly StyledProperty<DataTemplate> VerticalSeparatorDataTemplateProperty = AvaloniaProperty.Register<LessonsListBoxItemTemplateMultiConverter, DataTemplate>(
+        nameof(VerticalSeparatorDataTemplate));
+    public DataTemplate VerticalSeparatorDataTemplate
+    {
+        get => GetValue(VerticalSeparatorDataTemplateProperty);
+        set => SetValue(VerticalSeparatorDataTemplateProperty, value);
+    }
+
 
     public object? Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
@@ -51,14 +76,15 @@ internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMulti
         // [5]: bool             ShowCurrentTimeLayoutItemOnlyOnClass
         // [6]: bool             HideFinishedClass
         // [7]: ICollection<...> ValidTimePoints
-        // [8]: bool             IsLiveUpdatingEnabled
-        if (values.Count < 8)
+        // [8]: Orientation     Orientation
+        if (values.Count < 9)
             return BlankDataTemplate;
         if (values[0] is not int timeType ||
             values[1] is not bool isHideDefault ||
             values[4] is not bool discardHidingDefault ||
             values[5] is not bool showCurrentTimeLayoutItemOnlyOnClass ||
-            values[6] is not bool hideFinishedClass)
+            values[6] is not bool hideFinishedClass ||
+            values[8] is not Orientation orientation)
         {
             return BlankDataTemplate;
         }
@@ -89,13 +115,18 @@ internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMulti
 
         if (timeType == 2)
         {
-            return SeparatorDataTemplate;
+            return orientation == Orientation.Vertical ? VerticalSeparatorDataTemplate : SeparatorDataTemplate;
         }
 
         var hide = (timeType == 1 || (isHideDefault && !discardHidingDefault)) && selectedItem != currentItem;
         if (hide)
         {
             return BlankDataTemplate;
+        }
+
+        if (orientation == Orientation.Vertical)
+        {
+            return selectedItem == currentItem ? VerticalExpandedDataTemplate : VerticalMinimizedDataTemplate;
         }
 
         return selectedItem == currentItem ? ExpandedDataTemplate : MinimizedDataTemplate;

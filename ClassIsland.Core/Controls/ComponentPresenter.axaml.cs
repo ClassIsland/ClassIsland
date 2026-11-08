@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia;
@@ -107,6 +108,8 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     private IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();
 
     private object? _presentingContent;
+    private ComponentSettings? _subscribedSettings;
+    private ObservableCollection<ComponentSettings>? _subscribedChildren;
 
     public ComponentSettings? Settings
     {
@@ -116,22 +119,10 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 
     private void UpdateContent(ComponentSettings? oldSettings, bool isInit)
     {
-        if (oldSettings != null)
-        {
-            oldSettings.PropertyChanged -= SettingsOnPropertyChanged;
-            if (oldSettings.Children != null)
-            {
-                oldSettings.Children.CollectionChanged -= ChildrenOnCollectionChanged;
-            }
-        }
+        UpdateSettingsSubscription(Settings);
         RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
         if (Settings == null)
             return;
-        Settings.PropertyChanged += SettingsOnPropertyChanged;
-        if (Settings.Children != null)
-        {
-            Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
-        }
         var content = IAppHost.GetService<IComponentsService>().GetComponent(Settings, IsPresentingSettings);
         // 理论上展示的内容的数据上下文应为MainWindow，这里不便用前端xaml绑定，故在后台设置。
         if (content != null && IsOnMainWindow)
@@ -163,6 +154,10 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(ComponentSettings.Children))
+        {
+            UpdateChildrenSubscription(Settings?.Children);
+        }
         UpdateTheme();
         if (e.PropertyName == nameof(Settings.RelativeLineNumber))
         {
@@ -258,15 +253,53 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         this.GetObservable(IsOnMainWindowProperty).Subscribe(new AnonymousObserver<bool>(_ => UpdateTheme()));
         this.GetObservable(HideOnRuleProperty).Subscribe(new AnonymousObserver<bool>(_ => UpdateWindowRuleState()));
         AttachedToVisualTree += OnAttachedToVisualTree;
+        DetachedFromVisualTree += OnDetachedFromVisualTree;
     }
 
     private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
+        UpdateSettingsSubscription(Settings);
+        UpdateWindowRuleState();
         PlayFadeInAnimation(this);
+    }
+
+    private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        UpdateSettingsSubscription(null);
+        RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
+    }
+
+    private void UpdateSettingsSubscription(ComponentSettings? settings)
+    {
+        if (_subscribedSettings != null)
+        {
+            _subscribedSettings.PropertyChanged -= SettingsOnPropertyChanged;
+        }
+        UpdateChildrenSubscription(settings?.Children);
+        _subscribedSettings = settings;
+        if (settings == null)
+        {
+            return;
+        }
+        settings.PropertyChanged += SettingsOnPropertyChanged;
+    }
+
+    private void UpdateChildrenSubscription(ObservableCollection<ComponentSettings>? children)
+    {
+        if (_subscribedChildren != null)
+        {
+            _subscribedChildren.CollectionChanged -= ChildrenOnCollectionChanged;
+        }
+        _subscribedChildren = children;
+        if (children != null)
+        {
+            children.CollectionChanged += ChildrenOnCollectionChanged;
+        }
     }
 
     private void UpdateWindowRuleState()
     {
+        RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
         if (HideOnRule)
         {
             CheckHideRule();

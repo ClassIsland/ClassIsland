@@ -43,6 +43,7 @@
                 <ResourceInclude Source="/Assets/Fonts/Fonts.axaml"/>
                 <!-- <ResourceInclude Source="/Themes/Generic.axaml"/> -->
                 <ResourceInclude Source="/Controls/TimeLine/TimeLineListControl.axaml"/>
+                <ResourceInclude Source="/Controls/ScheduleWeekEdit/ScheduleWeekEditControl.axaml"/>
                 <ResourceInclude Source="avares://ClassIsland.Core/ThemeBase.axaml"/>
                 <ResourceInclude Source="/Controls/WeatherIcons/Index.axaml"/>
                 <ResourceInclude Source="/Controls/ScheduleCalendarControl.axaml"/>

@@ -66,7 +66,15 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ matrix.os == 'macos' && env.MACOS_DOTNET_SDK_VERSION || '10.0.x' }}
+          dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+
+      - name: Pin .NET SDK
+        shell: bash
+        run: |
+          # setup-dotnet installs the SDK but does not override global.json selection.
+          dotnet new globaljson --sdk-version "$DOTNET_SDK_VERSION" --roll-forward disable --force
+          dotnet --info
+          test "$(dotnet --version)" = "$DOTNET_SDK_VERSION"
       
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
@@ -75,8 +83,8 @@ jobs:
           xcode-select -p
           xcodebuild -version
           xcodebuild -showsdks
-          dotnet workload install macos --version "$MACOS_DOTNET_SDK_VERSION"
-          test "$(dotnet workload --version)" = "$MACOS_DOTNET_SDK_VERSION"
+          dotnet workload install macos --version "$DOTNET_SDK_VERSION"
+          test "$(dotnet workload --version)" = "$DOTNET_SDK_VERSION"
         
       - name: Add GitHub Package Registry
         run: dotnet nuget add source --username ClassIsland --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
@@ -133,7 +141,15 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+
+      - name: Pin .NET SDK
+        shell: bash
+        run: |
+          # setup-dotnet installs the SDK but does not override global.json selection.
+          dotnet new globaljson --sdk-version "$DOTNET_SDK_VERSION" --roll-forward disable --force
+          dotnet --info
+          test "$(dotnet --version)" = "$DOTNET_SDK_VERSION"
 
       - name: Install JDK 21
         uses: actions/setup-java@v4
@@ -234,8 +250,15 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: |
-            10.0.x
+          dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+
+      - name: Pin .NET SDK
+        shell: bash
+        run: |
+          # setup-dotnet installs the SDK but does not override global.json selection.
+          dotnet new globaljson --sdk-version "$DOTNET_SDK_VERSION" --roll-forward disable --force
+          dotnet --info
+          test "$(dotnet --version)" = "$DOTNET_SDK_VERSION"
 
       - name: Setup philia Environment
         if: ${{ matrix.os == 'linux' }}
@@ -408,7 +431,15 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+
+      - name: Pin .NET SDK
+        shell: bash
+        run: |
+          # setup-dotnet installs the SDK but does not override global.json selection.
+          dotnet new globaljson --sdk-version "$DOTNET_SDK_VERSION" --roll-forward disable --force
+          dotnet --info
+          test "$(dotnet --version)" = "$DOTNET_SDK_VERSION"
 
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
@@ -473,6 +504,8 @@ jobs:
           S3_Endpoint: ${{ vars.S3_ENDPOINT }}
           S3_Region: ${{ vars.S3_REGION }}
           PDC_Endpoint: ${{ vars.PDC_ENDPOINT }}
+          PDC_MaxParallelism: ${{ vars.PDC_MAX_PARALLELISM || '16' }}
+          PDC_MaxRetries: ${{ vars.PDC_MAX_RETRIES || '5' }}
           PDC_SigningKey: ${{ secrets.PDC_SigningKey }}
           PDC_SigningKeyPs: ""
           PDC_Token: ${{ secrets.PDC_TOKEN }}

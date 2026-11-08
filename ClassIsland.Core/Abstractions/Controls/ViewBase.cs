@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Services.UI;
 using ClassIsland.Platforms.Abstraction.Enums;
 
@@ -23,6 +24,7 @@ public abstract class ViewBase : ContentPage
     private TaskCompletionSource? DeActiveTcs { get; set; }
 
     private bool _isShowed = false;
+    private TopLevel? _backRequestedTopLevel;
 
     public static readonly StyledProperty<object?> ResultProperty = AvaloniaProperty.Register<ViewBase, object?>(
         nameof(Result));
@@ -176,7 +178,12 @@ public abstract class ViewBase : ContentPage
     private void OnNavigatedTo(object? sender, NavigatedToEventArgs e)
     {
         Console.WriteLine($"[ELYSIADBG] OnNavigatedTo {this} {TopLevel}");
-        TopLevel?.BackRequested += TopLevelOnBackRequested;
+        UnsubscribeFromBackRequested();
+        _backRequestedTopLevel = TopLevel;
+        if (_backRequestedTopLevel != null)
+        {
+            _backRequestedTopLevel.BackRequested += TopLevelOnBackRequested;
+        }
     }
 
     private void OnNavigatedFrom(object? sender, NavigatedFromEventArgs e)
@@ -186,24 +193,21 @@ public abstract class ViewBase : ContentPage
 
     private void TopLevelOnBackRequested(object? sender, RoutedEventArgs e)
     {
-        if (e.Handled)
+        if (!e.Handled && TryGoBack())
         {
-            return;
+            e.Handled = true;
         }
-
-        Console.WriteLine("[ELYSIADBG] 听好了！！！！！ BackRequested！！！！！！！！！！");
-        e.Handled = true;
-        Hide();
     }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnLoaded(RoutedEventArgs e)
     {
         if (ShowedOnce)
         {
+            // Container queries reconnect as descendants attach; refresh only after the whole view is loaded.
             InvalidChildren(this);
         }
         
-        base.OnAttachedToVisualTree(e);
+        base.OnLoaded(e);
     }
     
     private void InvalidChildren(Visual visual)
@@ -211,7 +215,8 @@ public abstract class ViewBase : ContentPage
         visual.InvalidateVisual();
         if (visual is StyledElement se)
         {
-            s_stylesAppliedField?.SetValue(se, false);
+            AvaloniaUnsafeAccessorHelpers.InvalidateStyles(se, false);
+            se.ApplyStyling();
         }
 
         if (visual is Control control)
@@ -235,7 +240,7 @@ public abstract class ViewBase : ContentPage
         }
         
         Console.WriteLine($"[ELYSIADBG] OnNavigatedFrom {this} {TopLevel}");
-        TopLevel?.BackRequested -= TopLevelOnBackRequested;
+        UnsubscribeFromBackRequested();
     }
 
     internal bool ViewActivating(IViewHost viewHost)
@@ -267,6 +272,7 @@ public abstract class ViewBase : ContentPage
 
     internal void ViewDeactivated()
     {
+        UnsubscribeFromBackRequested();
         var wasShowed = _isShowed;
         var deActiveTcs = DeActiveTcs;
 
@@ -284,6 +290,17 @@ public abstract class ViewBase : ContentPage
         {
             RaiseEvent(new RoutedEventArgs(ClosedEvent));
         }
+    }
+
+    private void UnsubscribeFromBackRequested()
+    {
+        if (_backRequestedTopLevel == null)
+        {
+            return;
+        }
+
+        _backRequestedTopLevel.BackRequested -= TopLevelOnBackRequested;
+        _backRequestedTopLevel = null;
     }
 
     private void ShowCore(ViewBase? owner = null, Window? windowOwner = null, bool modal = false)
@@ -316,15 +333,20 @@ public abstract class ViewBase : ContentPage
         {
             Dispatcher.Invoke(() =>
             {
-                if (ShowedOnce)
-                {
-                    InvalidChildren(this);
-                }
-                
-                _isShowed = true;
-                ShowedOnce = true;
+                ViewShown();
             });
         });
+    }
+
+    internal void ViewShown()
+    {
+        if (ShowedOnce)
+        {
+            InvalidChildren(this);
+        }
+
+        _isShowed = true;
+        ShowedOnce = true;
     }
 
     private async Task ShowModalCore(ViewBase? owner = null, Window? windowOwner = null)
@@ -359,6 +381,51 @@ public abstract class ViewBase : ContentPage
     #endregion
 
     #region PublicMethods
+
+    /// <summary>
+    /// 优先在视图内返回，视图内无法处理时交给视图宿主。
+    /// </summary>
+    /// <returns>返回请求已处理时为 true。</returns>
+    public bool TryGoBack()
+    {
+        var host = AssociatedViewHost;
+        if (host == null)
+        {
+            return TryGoBackCore();
+        }
+
+        var isDrawerOpen = host.IsDrawerOpen;
+        var currentView = isDrawerOpen ? host.CurrentDrawerView : host.CurrentView;
+        if (!ReferenceEquals(currentView, this))
+        {
+            return false;
+        }
+
+        if (TryGoBackCore())
+        {
+            return true;
+        }
+
+        if (isDrawerOpen)
+        {
+            _ = host.NavigateDrawerBack();
+            return true;
+        }
+
+        if (!host.CanGoBack)
+        {
+            return false;
+        }
+
+        Hide();
+        return true;
+    }
+
+    /// <summary>
+    /// 尝试在当前视图内部处理返回请求。
+    /// </summary>
+    /// <returns>已处理请求时为 true。返回 false 时由宿主继续处理。</returns>
+    protected virtual bool TryGoBackCore() => false;
 
     /// <summary>
     /// 尝试打开此视图，或将已打开的视图显示到前台。

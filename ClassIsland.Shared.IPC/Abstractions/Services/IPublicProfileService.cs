@@ -51,6 +51,21 @@ public interface IPublicProfileService
     Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId, DateTime? enableDateTime, bool createTempTimeLayout);
 
     /// <summary>
+    /// 创建指定日期替换另一个课程的分叉课程。
+    /// </summary>
+    /// <param name="scheduleItemId">要分叉的课程 ID。</param>
+    /// <param name="date">替换发生的日期。</param>
+    /// <returns>如果创建成功，则返回新课程的 ID，否则返回 null。</returns>
+    Guid? ForkAndReplaceScheduleItem(Guid scheduleItemId, DateTime date);
+
+    /// <summary>
+    /// 将替换课程转换为普通课程。
+    /// </summary>
+    /// <param name="scheduleItemId">要转换的课程 ID。</param>
+    /// <returns>如果转换成功，则返回 true，否则返回 false。</returns>
+    bool ConvertScheduleItemReplacementToNormal(Guid scheduleItemId);
+
+    /// <summary>
     /// 清空临时层课表
     /// </summary>
     void ClearTempClassPlan();

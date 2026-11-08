@@ -102,10 +102,16 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             return;
         }
-        ResourceLoaderBorder ??= MainWindow?.FindControl<Border>("ResourceLoaderBorder");
+        if (ResourceLoaderBorder == null)
+        {
+            SetResourceHost(MainWindow?.FindControl<Border>("ResourceLoaderBorder"));
+        }
         RootStyles.Clear();
         ResourceLoaderBorder?.Styles.Remove(RootStyles);
-        s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false); 
+        if (ResourceLoaderBorder != null)
+        {
+            s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false);
+        }
         RootStyles = [];
         ResourceLoaderBorder?.Styles.Add(RootStyles);
         var actualSafeAreaPx = 0.0;
@@ -133,6 +139,22 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         }
 
         ActualVerticalSafeAreaPx = actualSafeAreaPx;
+    }
+
+    void IXamlThemeService.SetResourceHost(Border? host)
+    {
+        SetResourceHost(host);
+    }
+
+    private void SetResourceHost(Border? host)
+    {
+        if (ReferenceEquals(ResourceLoaderBorder, host))
+        {
+            return;
+        }
+        ResourceLoaderBorder?.Styles.Remove(RootStyles);
+        RootStyles.Clear();
+        ResourceLoaderBorder = host;
     }
 
     private void LoadThemeFromFile(string themePath)
@@ -435,7 +457,8 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             var mf = pkg.GetEntry("manifest.yml");
             if (mf == null)
                 return;
-            var mfText = new StreamReader(mf.Open()).ReadToEnd();
+            using var reader = new StreamReader(mf.Open());
+            var mfText = reader.ReadToEnd();
             var manifest = deserializer.Deserialize<PluginManifest>(mfText);
             var targetPath = Path.Combine(ThemesPath, manifest.Id);
             if (Directory.Exists(targetPath))

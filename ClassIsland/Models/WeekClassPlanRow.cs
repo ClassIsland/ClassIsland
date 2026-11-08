@@ -6,6 +6,8 @@ namespace ClassIsland.Models;
 public partial class WeekClassPlanRow : ObservableObject
 {
     [ObservableProperty] private TimeLayoutItem _timePoint = TimeLayoutItem.Empty;
+    [ObservableProperty] private ClassInfo _selectedInfo = ClassInfo.Empty;
+
     [ObservableProperty] private ClassInfo _monday = ClassInfo.Empty;
     [ObservableProperty] private ClassInfo _tuesday = ClassInfo.Empty;
     [ObservableProperty] private ClassInfo _wednesday = ClassInfo.Empty;

@@ -1,5 +1,7 @@
+using System.Security.Cryptography;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
 
 namespace ClassIsland.Platforms.Abstraction.Stubs.Services;
@@ -36,6 +38,87 @@ public class AvaloniaDefaultPlatformFilePickerService : IPlatformFilePickerServi
         }
 
         return r;
+    }
+
+    /// <inheritdoc />
+    public async Task<List<Uri>> OpenBlobFilesPickerAsync(BlobFilePickerOpenOptions options, TopLevel root)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentOutOfRangeException.ThrowIfNegative(options.MaxFileSize);
+
+        var maxFileSize = options.MaxFileSize;
+        var files = await root.StorageProvider.OpenFilePickerAsync(options);
+        try
+        {
+            var result = new List<Uri>();
+            var blobRoot = Path.GetFullPath(PlatformServices.BlobRootFolderPath);
+            foreach (var file in files)
+            {
+                await using var stream = await file.OpenReadAsync();
+                if (await StoreBlobAsync(stream, maxFileSize, blobRoot) is { } uri)
+                {
+                    result.Add(uri);
+                }
+            }
+
+            return result;
+        }
+        finally
+        {
+            foreach (var file in files)
+            {
+                file.Dispose();
+            }
+        }
+    }
+
+    private static async Task<Uri?> StoreBlobAsync(Stream stream, long maxFileSize, string blobRoot)
+    {
+        Directory.CreateDirectory(blobRoot);
+        var temporaryPath = Path.Combine(blobRoot, $"{Guid.NewGuid():N}.tmp");
+        try
+        {
+            string hash;
+            using (var hasher = IncrementalHash.CreateHash(HashAlgorithmName.SHA256))
+            {
+                await using var output = new FileStream(temporaryPath, FileMode.CreateNew, FileAccess.Write,
+                    FileShare.None, 81920, FileOptions.Asynchronous | FileOptions.SequentialScan);
+                var buffer = new byte[81920];
+                long size = 0;
+                int count;
+                while ((count = await stream.ReadAsync(buffer.AsMemory())) != 0)
+                {
+                    if (count > maxFileSize - size)
+                    {
+                        return null;
+                    }
+
+                    size += count;
+                    hasher.AppendData(buffer, 0, count);
+                    await output.WriteAsync(buffer.AsMemory(0, count));
+                }
+
+                hash = Convert.ToHexStringLower(hasher.GetHashAndReset());
+            }
+
+            var directory = Path.Combine(blobRoot, hash[..2]);
+            Directory.CreateDirectory(directory);
+            var destination = Path.Combine(directory, hash);
+            try
+            {
+                File.Move(temporaryPath, destination);
+            }
+            catch (IOException) when (File.Exists(destination))
+            {
+                // 相同内容可能已由之前或并发的选取操作存储。
+            }
+
+            return new Uri($"avares://*blobs/sha256/{hash}");
+        }
+        finally
+        {
+            File.Delete(temporaryPath);
+        }
     }
 
     /// <inheritdoc />

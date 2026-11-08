@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace ClassIsland.Shared.Models.Management;
@@ -18,28 +19,62 @@ public class ManagementPolicy : ObservableRecipient
     private bool _allowExitManagement = true;
     private bool _disableEasterEggs = false;
 
+    /// <summary>
+    /// 是否允许使用需要完整档案编辑权限的功能。
+    /// </summary>
+    [JsonIgnore]
+    public bool CanEditProfile =>
+        !DisableProfileEditing &&
+        !DisableProfileClassPlanEditing &&
+        !DisableProfileTimeLayoutEditing &&
+        !DisableProfileSubjectsEditing;
+
     public bool DisableProfileClassPlanEditing
     {
         get => _disableProfileClassPlanEditing;
-        set => SetProperty(ref _disableProfileClassPlanEditing, value);
+        set
+        {
+            if (SetProperty(ref _disableProfileClassPlanEditing, value))
+            {
+                OnPropertyChanged(nameof(CanEditProfile));
+            }
+        }
     }
 
     public bool DisableProfileTimeLayoutEditing
     {
         get => _disableProfileTimeLayoutEditing;
-        set => SetProperty(ref _disableProfileTimeLayoutEditing, value);
+        set
+        {
+            if (SetProperty(ref _disableProfileTimeLayoutEditing, value))
+            {
+                OnPropertyChanged(nameof(CanEditProfile));
+            }
+        }
     }
 
     public bool DisableProfileSubjectsEditing
     {
         get => _disableProfileSubjectsEditing;
-        set => SetProperty(ref _disableProfileSubjectsEditing, value);
+        set
+        {
+            if (SetProperty(ref _disableProfileSubjectsEditing, value))
+            {
+                OnPropertyChanged(nameof(CanEditProfile));
+            }
+        }
     }
 
     public bool DisableProfileEditing
     {
         get => _disableProfileEditing;
-        set => SetProperty(ref _disableProfileEditing, value);
+        set
+        {
+            if (SetProperty(ref _disableProfileEditing, value))
+            {
+                OnPropertyChanged(nameof(CanEditProfile));
+            }
+        }
     }
 
     public bool DisableSettingsEditing

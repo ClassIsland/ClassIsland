@@ -33,6 +33,12 @@ public partial class DevPortalWindow : ViewBase
         MarkdownEditor.Text = ViewModel.MarkdownText;
     }
 
+    private void FontProbe_OnLoaded(object? sender, RoutedEventArgs e) =>
+        ViewModel.RefreshFontProbeCommand.Execute(null);
+
+    private void ButtonTextBenchmark_OnClick(object? sender, RoutedEventArgs e) =>
+        new TextRenderingBenchmarkView().Show();
+
     private void ButtonSendNotification_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.NotificationHostService.ShowNotification(new NotificationRequest()
@@ -73,6 +79,28 @@ public partial class DevPortalWindow : ViewBase
     {
         ViewModel.TargetTime = ViewModel.ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         ViewModel.IsTargetTimeLoaded = true;
+    }
+
+    private void ButtonJumpToPreparingNotification_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var target = ViewModel.GetPreparingNotificationTargetTime(
+            IAppHost.GetService<ILessonsService>(), IAppHost.GetService<IProfileService>());
+        if (target == null)
+        {
+            this.ShowToast(new ToastMessage
+            {
+                Title = "无法跳转",
+                Message = "当天没有可触发即将上课提醒的课程。请检查课表、提醒开关和提前提醒时间。"
+            });
+            return;
+        }
+
+        ViewModel.IsTargetDateLoaded = ViewModel.IsTargetTimeLoaded = false;
+        ViewModel.SettingsService.Settings.DebugTimeOffsetSeconds +=
+            (target.Value - ViewModel.ExactTimeService.GetCurrentLocalDateTime()).TotalSeconds;
+        ViewModel.TargetDate = target.Value.Date;
+        ViewModel.TargetTime = target.Value.TimeOfDay;
+        ViewModel.IsTargetDateLoaded = ViewModel.IsTargetTimeLoaded = true;
     }
 
     private void TimePicker_OnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)

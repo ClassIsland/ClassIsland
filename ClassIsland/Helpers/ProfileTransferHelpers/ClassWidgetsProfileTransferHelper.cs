@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Avalonia.Platform;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Models.External.ClassWidgets;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
@@ -27,8 +27,7 @@ public static class ClassWidgetsProfileTransferHelper
 
     private static Profile ConvertClassWidgets1ProfileToClassIslandProfile(CwProfile profileCw, Profile? profile)
     {
-        var templateJson = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json"))).ReadToEnd();
-        profile ??= JsonSerializer.Deserialize<Profile>(templateJson)!;
+        profile ??= ProfileService.CreateProfile(true);
         
         // Subjects
         var subjectsCache = profile.Subjects.ToDictionary(x => x.Value.Name, x => x.Key);

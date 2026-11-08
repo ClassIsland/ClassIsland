@@ -1,4 +1,3 @@
-using System.Globalization;
 using _Microsoft.Android.Resource.Designer;
 using Android.App;
 using Android.Content;
@@ -8,12 +7,17 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Graphics.Drawable;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
+using ClassIsland.Models;
+using ClassIsland.Models.AttachedSettings;
+using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Android.Services;
 
@@ -38,9 +42,18 @@ public class LessonsForegroundService : Service
     private bool _isWaitingForAppStart;
     private bool _isWorkStarted;
     private NotificationSnapshot? _lastPostedSnapshot;
+    private AndroidOverlayService? _overlayService;
+    private readonly RealtimeNotificationContentBuilder _contentBuilder = new();
+    private (string IconExpression, string ColorHex, string? ProgressEndIcon, string? ProgressEndColorHex)? _requestedIconKey;
+    private CancellationTokenSource? _iconRenderingCancellation;
+    private SubjectNotificationIcons? _subjectIcons;
+
+    private SettingsService? SettingsService { get; set; }
 
     private ILessonsService? LessonsService { get; set; }
     private IExactTimeService? ExactTimeService { get; set; }
+
+    private IProfileService? ProfileService { get; set; }
 
     public override void OnCreate()
     {
@@ -113,33 +126,32 @@ public class LessonsForegroundService : Service
 
         LessonsService = IAppHost.GetService<ILessonsService>();
         ExactTimeService = IAppHost.GetService<IExactTimeService>();
+        SettingsService = IAppHost.GetService<SettingsService>();
+        ProfileService = IAppHost.GetService<IProfileService>();
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         AppBase.Current.AppStopping += CurrentOnAppStopping;
         _isSubscribedToAppStopping = true;
         _isWorkStarted = true;
         RefreshNotification();
-    }
-
-    private static string GetDeltaString(DateTime now, TimeSpan target)
-    {
-        var v = target - now.TimeOfDay;
-        return v.TotalSeconds switch // 显示秒数
+        Dispatcher.UIThread.Post(() =>
         {
-            >= 3600 => $"{Math.Floor(v.TotalHours)}:{v.Minutes:00}:{v.Seconds:00}",
-            >= 60 => $"{v.Minutes}:{v.Seconds:00}",
-            >= 0 => $"{v.Seconds}s",
-            _ => ""
-        };
+            if (_isWorkStarted && _isSubscribedToAppStopping)
+            {
+                _overlayService ??= new AndroidOverlayService(this);
+            }
+        });
     }
 
     private void CurrentOnAppStopping(object? sender, EventArgs e)
     {
+        StopOverlay();
         if (_isSubscribedToAppStopping)
         {
             AppBase.Current.AppStopping -= CurrentOnAppStopping;
             _isSubscribedToAppStopping = false;
         }
 
+        StopNotificationIcons();
         StopForeground(StopForegroundFlags.Remove);
         StopSelf();
     }
@@ -151,7 +163,14 @@ public class LessonsForegroundService : Service
 
     private void RefreshNotification()
     {
-        if (LessonsService == null || ExactTimeService == null)
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(RefreshNotification);
+            return;
+        }
+
+        if (!_isWorkStarted || !_isSubscribedToAppStopping ||
+            LessonsService == null || ExactTimeService == null)
         {
             return;
         }
@@ -162,199 +181,206 @@ public class LessonsForegroundService : Service
             return;
         }
 
+        UpdateSubjectIcons(snapshot);
         if (snapshot == _lastPostedSnapshot)
         {
             return;
         }
 
-        _notificationManager?.Notify(
-            NotificationId,
-            CreateNotification(snapshot));
+        using var notification = CreateNotification(snapshot);
+        _notificationManager?.Notify(NotificationId, notification);
         _lastPostedSnapshot = snapshot;
+    }
+
+    private void UpdateSubjectIcons(NotificationSnapshot snapshot)
+    {
+        (string IconExpression, string ColorHex, string? ProgressEndIcon, string? ProgressEndColorHex)? key = snapshot.HasProgress
+            ? (snapshot.SubjectIcon ?? Subject.Fallback.Icon, snapshot.SubjectColorHex ?? Subject.Fallback.ColorHex,
+                snapshot.ProgressEndIcon, snapshot.ProgressEndColorHex)
+            : null;
+        if (key == _requestedIconKey)
+        {
+            return;
+        }
+
+        ClearNotificationIcons();
+        _requestedIconKey = key;
+        if (key is not { } iconKey)
+        {
+            return;
+        }
+
+        _iconRenderingCancellation = new CancellationTokenSource();
+        _ = RenderSubjectIconsAsync(iconKey, _iconRenderingCancellation.Token);
+    }
+
+    private async Task RenderSubjectIconsAsync(
+        (string IconExpression, string ColorHex, string? ProgressEndIcon, string? ProgressEndColorHex) key,
+        CancellationToken cancellationToken)
+    {
+        SubjectNotificationIcons? icons = null;
+        try
+        {
+            icons = await SubjectNotificationIcons.RenderAsync(
+                key.IconExpression, key.ColorHex, key.ProgressEndIcon, key.ProgressEndColorHex, cancellationToken);
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (cancellationToken.IsCancellationRequested || !_isWorkStarted ||
+                    !_isSubscribedToAppStopping || _requestedIconKey != key)
+                {
+                    return;
+                }
+
+                _subjectIcons = icons;
+                icons = null;
+                // Rendered icons replace the placeholders even when text and progress are unchanged.
+                _lastPostedSnapshot = null;
+                RefreshNotification();
+            }, DispatcherPriority.Normal, cancellationToken);
+        }
+        catch (System.OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (Exception exception)
+        {
+            IAppHost.GetService<ILogger<LessonsForegroundService>>()
+                .LogWarning(exception, "无法渲染科目通知图标，将使用默认图标");
+        }
+        finally
+        {
+            icons?.Dispose();
+        }
+    }
+
+    private void StopNotificationIcons()
+    {
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            ClearNotificationIcons();
+        }
+        else
+        {
+            Dispatcher.UIThread.Post(ClearNotificationIcons);
+        }
+    }
+
+    private void ClearNotificationIcons()
+    {
+        _iconRenderingCancellation?.Cancel();
+        _iconRenderingCancellation?.Dispose();
+        _iconRenderingCancellation = null;
+        _requestedIconKey = null;
+        _subjectIcons?.Dispose();
+        _subjectIcons = null;
     }
 
     private NotificationSnapshot CreateSnapshot()
     {
         var now = ExactTimeService!.GetCurrentLocalDateTime();
-        return LessonsService!.CurrentState switch
+        if (LessonsService!.CurrentState == TimeState.OnClass)
         {
-            TimeState.OnClass => CreateProgressSnapshot(now, isClass: true),
-            TimeState.Breaking when LessonsService?.NextClassTimeLayoutItem != TimeLayoutItem.Empty => CreateUpcomingClassSnapshot(now),
-            TimeState.Breaking => CreateProgressSnapshot(now, isClass: false),
-            TimeState.None when LessonsService?.NextClassTimeLayoutItem != TimeLayoutItem.Empty => CreateUpcomingClassSnapshot(now),
-            TimeState.AfterSchool => new NotificationSnapshot(
-                TimeState.AfterSchool,
-                $"after-school:{now:yyyyMMdd}",
-                "已放学",
-                "好耶！放学了！(≧∀≦)ゞ",
-                string.Empty,
-                "已放学"),
-            _ => new NotificationSnapshot(
-                TimeState.None,
-                $"none:{now:yyyyMMdd}",
-                "当前无课程",
-                "ClassIsland 正在后台运行",
-                string.Empty,
-                "")
-        };
-    }
-
-    private NotificationSnapshot CreateProgressSnapshot(DateTime now, bool isClass)
-    {
-        var item = LessonsService!.CurrentTimeLayoutItem;
-        var duration = item.EndTime - item.StartTime;
-        var state = isClass ? TimeState.OnClass : TimeState.Breaking;
-        var intervalKey = CreateIntervalKey(state, item, now);
-
-        if (ReferenceEquals(item, TimeLayoutItem.Empty) || duration <= TimeSpan.Zero)
+            var item = LessonsService.CurrentTimeLayoutItem;
+            if (!ReferenceEquals(item, TimeLayoutItem.Empty) && item.EndTime > item.StartTime)
+            {
+                var settings = GetEffectiveSettings(isUpcoming: false);
+                return CreateCourseSnapshot(now, item, LessonsService.CurrentSubject,
+                    LessonsService.CurrentClassInfo, settings, isUpcoming: false);
+            }
+        }
+        else if (LessonsService.CurrentState is TimeState.Breaking or TimeState.None)
         {
-            var fallbackTitle = isClass
-                ? $"上课 · {GetSubjectName(LessonsService.CurrentSubject, "未命名课程")}"
-                : $"课间 · {item.BreakNameText}";
-            var fallbackContent = isClass
-                ? LessonsService.CurrentSubject?.TeacherName
-                : CreateNextClassText(includeStartTime: true);
-            return new NotificationSnapshot(
-                state,
-                intervalKey,
-                fallbackTitle,
-                string.IsNullOrWhiteSpace(fallbackContent)
-                    ? isClass ? "上课中" : "课间休息中"
-                    : fallbackContent,
-                ReferenceEquals(item, TimeLayoutItem.Empty)
-                    ? string.Empty
-                    : FormatTimeRange(item),
-                "???");
+            var item = LessonsService.NextClassTimeLayoutItem;
+            var settings = GetEffectiveSettings(isUpcoming: true);
+            var remaining = item.StartTime - now.TimeOfDay;
+            if (!ReferenceEquals(item, TimeLayoutItem.Empty) &&
+                item.EndTime > item.StartTime && remaining > TimeSpan.Zero &&
+                remaining <= TimeSpan.FromMinutes(settings.UpcomingClassRealtimeNotificationLeadMinutes))
+            {
+                return CreateCourseSnapshot(now, item, LessonsService.NextClassSubject,
+                    LessonsService.NextClassInfo, settings, isUpcoming: true);
+            }
+
+            if (LessonsService.CurrentState == TimeState.Breaking)
+            {
+                var breakItem = LessonsService.CurrentTimeLayoutItem;
+                if (!ReferenceEquals(breakItem, TimeLayoutItem.Empty) && breakItem.EndTime > breakItem.StartTime)
+                {
+                    return CreateCourseSnapshot(now, breakItem, LessonsService.CurrentSubject,
+                        null, GetEffectiveSettings(isUpcoming: false), isUpcoming: false);
+                }
+            }
         }
 
-        var totalSeconds = (int)Math.Clamp(
-            Math.Ceiling(duration.TotalSeconds),
-            1,
-            int.MaxValue);
-        var progressSeconds = (int)Math.Clamp(
-            Math.Floor((now.TimeOfDay - item.StartTime).TotalSeconds),
-            0,
-            totalSeconds);
-        var remainingSeconds = totalSeconds - progressSeconds;
+        return new NotificationSnapshot(
+            LessonsService.CurrentState,
+            $"background:{now:yyyyMMdd}:{LessonsService.CurrentState}",
+            "ClassIsland",
+            "ClassIsland 正在后台运行",
+            "ClassIsland",
+            string.Empty);
+    }
+
+    private IRealtimeNotificationSettings GetEffectiveSettings(bool isUpcoming)
+    {
+        var attached = IAttachedSettingsHostService.GetAttachedSettingsByPriority<RealtimeNotificationAttachedSettings>(
+            Guid.Parse(RealtimeNotificationAttachedSettings.SettingsId),
+            isUpcoming ? LessonsService!.NextClassSubject : LessonsService!.CurrentSubject,
+            isUpcoming ? LessonsService.NextClassTimeLayoutItem : LessonsService.CurrentTimeLayoutItem,
+            LessonsService.CurrentClassPlan,
+            LessonsService.CurrentClassPlan?.TimeLayout);
+        return (IRealtimeNotificationSettings?)attached ?? SettingsService!.Settings;
+    }
+
+    private NotificationSnapshot CreateCourseSnapshot(
+        DateTime now,
+        TimeLayoutItem item,
+        Subject? subject,
+        ClassInfo? classInfo,
+        IRealtimeNotificationSettings settings,
+        bool isUpcoming)
+    {
+        var state = isUpcoming ? TimeState.None : LessonsService!.CurrentState;
+        var intervalKey = CreateIntervalKey(state, item, now);
+        var targetTime = isUpcoming ? item.StartTime : item.EndTime;
+        var duration = isUpcoming
+            ? TimeSpan.FromMinutes(settings.UpcomingClassRealtimeNotificationLeadMinutes)
+            : item.EndTime - item.StartTime;
+        var totalSeconds = (int)Math.Clamp(Math.Ceiling(duration.TotalSeconds), 1, int.MaxValue);
+        var remainingSeconds = (int)Math.Clamp(
+            Math.Ceiling((targetTime - now.TimeOfDay).TotalSeconds), 0, totalSeconds);
+        var progressSeconds = totalSeconds - remainingSeconds;
         var progressPercent = (int)Math.Round(
             progressSeconds * 100.0 / totalSeconds,
             MidpointRounding.AwayFromZero);
-        var remainingText = FormatDuration(remainingSeconds);
-
-        string title;
-        string content;
-        string shortTitle;
-        if (isClass)
-        {
-            var subjectName = GetSubjectName(
-                LessonsService.CurrentSubject,
-                "未命名课程");
-            var teacherName = LessonsService.CurrentSubject?.TeacherName;
-            title = $"上课 · {subjectName}";
-            shortTitle = $"{subjectName} -{GetDeltaString(now, item.EndTime)}";
-            content = string.IsNullOrWhiteSpace(teacherName)
-                ? $"剩余 {remainingText}"
-                : $"{teacherName} · 剩余 {remainingText}";
-        }
-        else
-        {
-            title = $"课间 · {item.BreakNameText}";
-            var nextClassText = CreateNextClassText(includeStartTime: true);
-            shortTitle = $"{item.BreakNameText} -{GetDeltaString(now, item.EndTime)}";
-            content = string.IsNullOrEmpty(nextClassText)
-                ? $"剩余 {remainingText}"
-                : $"{nextClassText} · 剩余 {remainingText}";
-        }
+        var content = _contentBuilder.Build(settings, subject, classInfo, item,
+            RealtimeNotificationContentBuilder.FormatDuration(remainingSeconds),
+            isUpcoming, intervalKey, System.Environment.TickCount64);
+        var nextSubject = RealtimeNotificationContentBuilder.GetNextClassSubject(
+            LessonsService!.CurrentClassPlan, ProfileService!.Profile.Subjects,
+            LessonsService.CurrentTimeLayoutItem, now.TimeOfDay);
 
         return new NotificationSnapshot(
             state,
             intervalKey,
-            title,
-            content,
-            FormatTimeRange(item),
-            shortTitle,
-            totalSeconds,
-            progressSeconds,
+            content.ExpandedTitle,
+            content.ExpandedContent,
+            content.Summary,
+            content.CriticalText,
+            100,
             progressPercent,
-            remainingText);
-    }
-
-    private NotificationSnapshot CreateUpcomingClassSnapshot(DateTime now)
-    {
-        var nextItem = LessonsService!.NextClassTimeLayoutItem;
-        var hasNextClass = !ReferenceEquals(nextItem, TimeLayoutItem.Empty) &&
-                           nextItem.EndTime > nextItem.StartTime;
-        var nextSubjectName = GetSubjectName(LessonsService.NextClassSubject, string.Empty);
-        
-        var item = LessonsService!.CurrentTimeLayoutItem == TimeLayoutItem.Empty
-            ? LessonsService!.CurrentClassPlan?.TimeLayout?.Layouts
-                .Reverse()
-                .FirstOrDefault(i =>
-                    i.TimeType == 0 &&
-                    i.EndTime < now.TimeOfDay)
-            : LessonsService!.CurrentTimeLayoutItem;
-        var startTime = item?.StartTime ?? now.TimeOfDay;
-        var duration = nextItem.StartTime - startTime;
-        var totalSeconds = (int)Math.Clamp(
-            Math.Ceiling(duration.TotalSeconds),
-            1,
-            int.MaxValue);
-        var progressSeconds = (int)Math.Clamp(
-            Math.Floor((now.TimeOfDay - startTime).TotalSeconds),
-            0,
-            totalSeconds);
-        var remainingSeconds = totalSeconds - progressSeconds;
-        var progressPercent = (int)Math.Round(
-            progressSeconds * 100.0 / totalSeconds,
-            MidpointRounding.AwayFromZero);
-        var remainingText = FormatDuration(remainingSeconds);
-
-        if (hasNextClass && !string.IsNullOrEmpty(nextSubjectName))
-        {
-            return new NotificationSnapshot(
-                TimeState.None,
-                CreateIntervalKey(TimeState.None, nextItem, now),
-                $"下一节 · {nextSubjectName}",
-                $"{FormatTime(nextItem.StartTime)} 开始",
-                FormatTimeRange(nextItem),
-                $">{nextSubjectName} -{GetDeltaString(now, nextItem.StartTime)}",
-                totalSeconds,
-                progressSeconds,
-                progressPercent,
-                remainingText);
-        }
-
-        return new NotificationSnapshot(
-            TimeState.None,
-            $"none:{now:yyyyMMdd}",
-            "当前无课程",
-            "ClassIsland 正在后台运行",
-            string.Empty,
-            "");
-    }
-
-    private string CreateNextClassText(bool includeStartTime)
-    {
-        var nextItem = LessonsService!.NextClassTimeLayoutItem;
-        if (ReferenceEquals(nextItem, TimeLayoutItem.Empty) ||
-            nextItem.EndTime <= nextItem.StartTime)
-        {
-            return string.Empty;
-        }
-
-        var name = GetSubjectName(LessonsService.NextClassSubject, string.Empty);
-        if (string.IsNullOrEmpty(name))
-        {
-            return string.Empty;
-        }
-
-        return includeStartTime
-            ? $"下一节：{name} {FormatTime(nextItem.StartTime)}"
-            : $"下一节：{name}";
+            progressPercent,
+            isUpcoming
+                ? settings.IsUpcomingClassRealtimeNotificationEnabled
+                : state == TimeState.OnClass && settings.IsCurrentClassRealtimeNotificationEnabled,
+            subject?.Icon ?? Subject.Fallback.Icon,
+            subject?.ColorHex ?? Subject.Fallback.ColorHex,
+            nextSubject?.Icon,
+            nextSubject?.ColorHex);
     }
 
     public override void OnDestroy()
     {
+        StopOverlay();
         if (_isWaitingForAppStart)
         {
             AppBase.Current.AppStarted -= CurrentOnAppStarted;
@@ -377,8 +403,25 @@ public class LessonsForegroundService : Service
         _lastPostedSnapshot = null;
         LessonsService = null;
         ExactTimeService = null;
+        SettingsService = null;
+        ProfileService = null;
+        StopNotificationIcons();
 
         base.OnDestroy();
+    }
+
+    private void StopOverlay()
+    {
+        var overlay = _overlayService;
+        _overlayService = null;
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            overlay?.Dispose();
+        }
+        else
+        {
+            Dispatcher.UIThread.Post(() => overlay?.Dispose());
+        }
     }
 
     public override IBinder? OnBind(Intent? intent)
@@ -408,29 +451,38 @@ public class LessonsForegroundService : Service
 
     private Notification CreateNotification(NotificationSnapshot snapshot)
     {
-        var builder = new NotificationCompat.Builder(this, NotificationChannelId);
-        builder.SetSmallIcon(ResourceConstant.Drawable.ic_logo_monochrome);
-        builder.SetContentTitle(snapshot.Title);
-        builder.SetContentText(snapshot.Content);
+        using var builder = new NotificationCompat.Builder(this, NotificationChannelId);
+        builder.SetSmallIcon(ResourceConstant.Drawable.ic_logo_monochrome_notification);
+        if (snapshot.HasProgress)
+        {
+            builder.SetColor(SubjectNotificationIcons.GetThemeColor(snapshot.SubjectColorHex));
+            if (_subjectIcons != null)
+            {
+                using var icon = IconCompat.CreateWithBitmap(_subjectIcons.Monochrome);
+                builder.SetSmallIcon(icon);
+                builder.SetLargeIcon(_subjectIcons.Color);
+            }
+        }
+        builder.SetContentTitle(snapshot.HasProgress ? snapshot.Summary : snapshot.Title);
+        builder.SetContentText(snapshot.HasProgress
+            ? $"{snapshot.Title} {snapshot.Content}"
+            : snapshot.Content);
         builder.SetOngoing(true);
         builder.SetOnlyAlertOnce(true);
         builder.SetSilent(true);
         builder.SetPriority(NotificationCompat.PriorityHigh);
-        builder.SetCategory(NotificationCompat.CategoryProgress);
+        builder.SetCategory(snapshot.HasProgress
+            ? NotificationCompat.CategoryProgress
+            : NotificationCompat.CategoryService);
         builder.SetColorized(false);
         builder.SetContentIntent(CreateContentIntent());
         builder.SetDeleteIntent(CreateDeleteIntent(snapshot.IntervalKey));
-
-        if (!string.IsNullOrWhiteSpace(snapshot.SubText))
-        {
-            builder.SetSubText(snapshot.SubText);
-        }
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Baklava && snapshot.HasProgress)
         {
             ConfigureLiveUpdate(builder, snapshot);
         }
-        else if (Build.VERSION.SdkInt < BuildVersionCodes.Baklava)
+        else if (Build.VERSION.SdkInt < BuildVersionCodes.Baklava && snapshot.HasProgress)
         {
             ConfigureCustomNotification(builder, snapshot);
         }
@@ -442,22 +494,25 @@ public class LessonsForegroundService : Service
         NotificationCompat.Builder builder,
         NotificationSnapshot snapshot)
     {
-        var style = new NotificationCompat.ProgressStyle();
+        using var style = new NotificationCompat.ProgressStyle();
+        var segment = new NotificationCompat.ProgressStyle.Segment(snapshot.ProgressMax);
+        segment.SetColor(SubjectNotificationIcons.GetThemeColor(snapshot.SubjectColorHex));
         style.SetProgressSegments(
         [
-            new NotificationCompat.ProgressStyle.Segment(snapshot.ProgressMax)
+            segment
         ]);
         style.SetProgress(snapshot.Progress);
+        if (_subjectIcons?.ProgressEnd is { } progressEnd)
+        {
+            using var icon = IconCompat.CreateWithBitmap(progressEnd);
+            style.SetProgressEndIcon(icon);
+        }
 
         builder.SetStyle(style);
-        builder.SetRequestPromotedOngoing(true);
-        builder.SetWhen(
-            Java.Lang.JavaSystem.CurrentTimeMillis() +
-            snapshot.RemainingSeconds * 1000L);
-        builder.SetShortCriticalText(snapshot.ShortTitle);
-        builder.SetShowWhen(true);
-        builder.SetUsesChronometer(true);
-        builder.SetChronometerCountDown(true);
+        // Disabling promotion keeps the foreground service and course progress notification active.
+        builder.SetRequestPromotedOngoing(snapshot.RequestPromotion);
+        builder.SetShortCriticalText(snapshot.CriticalText);
+        builder.SetShowWhen(false);
     }
 
     private void ConfigureCustomNotification(
@@ -473,16 +528,28 @@ public class LessonsForegroundService : Service
 
         compactViews.SetTextViewText(
             ResourceConstant.Id.notification_title,
-            snapshot.Title);
-        compactViews.SetTextViewText(
+            snapshot.Summary);
+        compactViews.SetViewVisibility(
             ResourceConstant.Id.notification_content,
-            snapshot.Content);
+            ViewStates.Gone);
+        compactViews.SetViewVisibility(
+            ResourceConstant.Id.notification_remaining,
+            ViewStates.Gone);
         expandedViews.SetTextViewText(
             ResourceConstant.Id.notification_title,
             snapshot.Title);
         expandedViews.SetTextViewText(
             ResourceConstant.Id.notification_content,
             snapshot.Content);
+        var progressEnd = _subjectIcons?.ProgressEnd;
+        var iconVisibility = progressEnd != null ? ViewStates.Visible : ViewStates.Gone;
+        compactViews.SetViewVisibility(ResourceConstant.Id.notification_progress_end_icon, iconVisibility);
+        expandedViews.SetViewVisibility(ResourceConstant.Id.notification_progress_end_icon, iconVisibility);
+        if (progressEnd != null)
+        {
+            compactViews.SetImageViewBitmap(ResourceConstant.Id.notification_progress_end_icon, progressEnd);
+            expandedViews.SetImageViewBitmap(ResourceConstant.Id.notification_progress_end_icon, progressEnd);
+        }
 
         var progressVisibility = snapshot.HasProgress
             ? ViewStates.Visible
@@ -496,40 +563,20 @@ public class LessonsForegroundService : Service
 
         if (snapshot.HasProgress)
         {
-            compactViews.SetViewVisibility(
-                ResourceConstant.Id.notification_content,
-                ViewStates.Gone);
-            compactViews.SetViewVisibility(
-                ResourceConstant.Id.notification_remaining,
-                ViewStates.Visible);
-            compactViews.SetTextViewText(
-                ResourceConstant.Id.notification_remaining,
-                $"剩余 {snapshot.RemainingText}");
             compactViews.SetProgressBar(
                 ResourceConstant.Id.notification_progress,
                 snapshot.ProgressMax,
                 snapshot.Progress,
                 false);
-
-            expandedViews.SetTextViewText(
-                ResourceConstant.Id.notification_time_range,
-                snapshot.SubText);
             expandedViews.SetTextViewText(
                 ResourceConstant.Id.notification_progress_percent,
                 $"{snapshot.ProgressPercent}%");
-            expandedViews.SetTextViewText(
-                ResourceConstant.Id.notification_remaining,
-                $"剩余 {snapshot.RemainingText}");
             expandedViews.SetProgressBar(
                 ResourceConstant.Id.notification_progress,
                 snapshot.ProgressMax,
                 snapshot.Progress,
                 false);
-
-            builder.SetProgress(
-                snapshot.ProgressMax,
-                snapshot.Progress,
-                false);
+            builder.SetProgress(snapshot.ProgressMax, snapshot.Progress, false);
         }
 
         builder.SetCustomContentView(compactViews);
@@ -589,60 +636,31 @@ public class LessonsForegroundService : Service
         DateTime now) =>
         $"{now:yyyyMMdd}:{state}:{item.StartTime.Ticks}:{item.EndTime.Ticks}";
 
-    private static string GetSubjectName(
-        Subject? subject,
-        string fallback)
-    {
-        if (subject == null ||
-            ReferenceEquals(subject, Subject.Fallback) ||
-            string.IsNullOrWhiteSpace(subject.Name) ||
-            subject.Name == Subject.Fallback.Name)
-        {
-            return fallback;
-        }
-
-        return subject.Name.Trim();
-    }
-
-    private static string FormatTimeRange(TimeLayoutItem item) =>
-        $"{FormatTime(item.StartTime)}–{FormatTime(item.EndTime)}";
-
-    private static string FormatTime(TimeSpan time) =>
-        time.ToString(@"hh\:mm", CultureInfo.InvariantCulture);
-
-    private static string FormatDuration(int seconds)
-    {
-        var duration = TimeSpan.FromSeconds(Math.Max(0, seconds));
-        return duration.TotalHours >= 1
-            ? $"{(int)duration.TotalHours}:{duration.Minutes:00}:{duration.Seconds:00}"
-            : $"{duration.Minutes:00}:{duration.Seconds:00}";
-    }
-
     private sealed record NotificationSnapshot(
         TimeState State,
         string IntervalKey,
         string Title,
         string Content,
-        string SubText,
-        string ShortTitle,
+        string Summary,
+        string CriticalText,
         int ProgressMax = 0,
         int Progress = 0,
         int ProgressPercent = 0,
-        string RemainingText = "")
+        bool RequestPromotion = false,
+        string? SubjectIcon = null,
+        string? SubjectColorHex = null,
+        string? ProgressEndIcon = null,
+        string? ProgressEndColorHex = null)
     {
         public bool HasProgress => ProgressMax > 0;
-
-        public int RemainingSeconds => HasProgress
-            ? Math.Max(0, ProgressMax - Progress)
-            : 0;
 
         public static NotificationSnapshot Loading { get; } = new(
             TimeState.None,
             "loading",
             "ClassIsland",
             "正在加载课程状态…",
-            string.Empty,
-            "...");
+            "正在加载课程状态…",
+            string.Empty);
     }
 }
 

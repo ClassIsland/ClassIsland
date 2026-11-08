@@ -1,0 +1,98 @@
+<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.RealtimeNotificationSettingsPage"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:local="using:ClassIsland.Views.SettingPages"
+                     xmlns:icons="using:ClassIsland.Core.Icons"
+                     xmlns:fa="using:FluentAvalonia.UI.Controls"
+                     x:DataType="local:RealtimeNotificationSettingsPage"
+                     x:CompileBindings="True"
+                     Loaded="Page_OnLoaded"
+                     Unloaded="Page_OnUnloaded">
+    <ci:SettingsPageBase.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Bitmap x:Key="PreviewImage">/Assets/RealtimeNotificationDemo/Light.webp</Bitmap>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Bitmap x:Key="PreviewImage">/Assets/RealtimeNotificationDemo/Dark.webp</Bitmap>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </ci:SettingsPageBase.Resources>
+    <ci:SettingsPageBase.Styles>
+        <Style Selector="WrapPanel > CheckBox">
+            <Setter Property="Margin" Value="0 0 12 4" />
+        </Style>
+    </ci:SettingsPageBase.Styles>
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro" Spacing="8">
+            <fa:FAInfoBar Title="通知尚未开启"
+                          Message="请在系统设置中允许 ClassIsland 发送通知，以便在通知栏查看课程进度和实时通知。"
+                          Severity="Warning"
+                          IsClosable="False"
+                          IsOpen="{Binding ViewModel.IsNotificationPermissionMissing, Mode=OneWay}"
+                          IsVisible="{Binding ViewModel.IsNotificationPermissionMissing, Mode=OneWay}">
+                <fa:FAInfoBar.ActionButton>
+                    <Button Content="开启通知"
+                            Command="{Binding ViewModel.OpenNotificationPermissionSettingsCommand}" />
+                </fa:FAInfoBar.ActionButton>
+            </fa:FAInfoBar>
+            
+            <StackPanel Spacing="8" Classes="items-halign-center" HorizontalAlignment="Center" Margin="0 0 0 8">
+                <Image Source="{DynamicResource PreviewImage}" Stretch="Uniform" MaxHeight="200"/>
+                <TextBlock Text="在通知区域常驻显示课程信息，并在特定时间点提升为实时通知显示在屏幕顶端。具体外观和行为因系统而异。" TextWrapping="Wrap" TextAlignment="Center"
+                           Classes="l-instructive" FontSize="12" LineHeight="16"/>
+            </StackPanel>
+            
+            <fa:FASettingsExpander Header="即将上课提醒"
+                                   Description="在上课前指定时间内，将课程进度通知提升为实时通知。"
+                                   IconSource="{ci:FluentIconSource {x:Static icons:FluentIcons.AlertRegular}}"
+                                   IsExpanded="True">
+                <fa:FASettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding SettingsService.Settings.IsUpcomingClassRealtimeNotificationEnabled, Mode=TwoWay}" />
+                </fa:FASettingsExpander.Footer>
+                <fa:FASettingsExpanderItem Content="提前提醒时长" Description="设为 0 分钟时，不提前显示课程提醒。">
+                    <fa:FASettingsExpanderItem.Footer>
+                        <ci:Field Suffix="分钟">
+                            <fa:FANumberBox Minimum="0" Maximum="1440" SmallChange="1" LargeChange="10"
+                                             SpinButtonPlacementMode="Compact"
+                                             Value="{Binding SettingsService.Settings.UpcomingClassRealtimeNotificationLeadMinutes, Mode=TwoWay, Converter={x:Static ci:NotNaNConverter.Instance}}" />
+                        </ci:Field>
+                    </fa:FASettingsExpanderItem.Footer>
+                </fa:FASettingsExpanderItem>
+                <fa:FASettingsExpanderItem Content="显示的内容">
+                    <fa:FASettingsExpanderItem.Footer>
+                        <WrapPanel>
+                            <CheckBox Content="课程名" IsChecked="{Binding SettingsService.Settings.UpcomingClassRealtimeNotificationShowSubjectName, Mode=TwoWay}" />
+                            <CheckBox Content="剩余时间" IsChecked="{Binding SettingsService.Settings.UpcomingClassRealtimeNotificationShowRemainingTime, Mode=TwoWay}" />
+                            <CheckBox Content="持续时间" IsChecked="{Binding SettingsService.Settings.UpcomingClassRealtimeNotificationShowTimeRange, Mode=TwoWay}" />
+                            <CheckBox Content="上课地点" IsChecked="{Binding SettingsService.Settings.UpcomingClassRealtimeNotificationShowLocation, Mode=TwoWay}" />
+                            <CheckBox Content="上课教师" IsChecked="{Binding SettingsService.Settings.UpcomingClassRealtimeNotificationShowTeacherName, Mode=TwoWay}" />
+                        </WrapPanel>
+                    </fa:FASettingsExpanderItem.Footer>
+                </fa:FASettingsExpanderItem>
+            </fa:FASettingsExpander>
+            <fa:FASettingsExpander Header="课程持续信息"
+                                   Description="上课期间，将课程进度通知提升为实时通知。"
+                                   IconSource="{ci:FluentIconSource {x:Static icons:FluentIcons.ClockRegular}}"
+                                   IsExpanded="True">
+                <fa:FASettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding SettingsService.Settings.IsCurrentClassRealtimeNotificationEnabled, Mode=TwoWay}" />
+                </fa:FASettingsExpander.Footer>
+                <fa:FASettingsExpanderItem Content="显示的内容">
+                    <fa:FASettingsExpanderItem.Footer>
+                        <WrapPanel>
+                            <CheckBox Content="课程名" IsChecked="{Binding SettingsService.Settings.CurrentClassRealtimeNotificationShowSubjectName, Mode=TwoWay}" />
+                            <CheckBox Content="剩余时间" IsChecked="{Binding SettingsService.Settings.CurrentClassRealtimeNotificationShowRemainingTime, Mode=TwoWay}" />
+                            <CheckBox Content="持续时间" IsChecked="{Binding SettingsService.Settings.CurrentClassRealtimeNotificationShowTimeRange, Mode=TwoWay}" />
+                            <CheckBox Content="上课地点" IsChecked="{Binding SettingsService.Settings.CurrentClassRealtimeNotificationShowLocation, Mode=TwoWay}" />
+                            <CheckBox Content="上课教师" IsChecked="{Binding SettingsService.Settings.CurrentClassRealtimeNotificationShowTeacherName, Mode=TwoWay}" />
+                        </WrapPanel>
+                    </fa:FASettingsExpanderItem.Footer>
+                </fa:FASettingsExpanderItem>
+            </fa:FASettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

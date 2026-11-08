@@ -40,7 +40,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     /// <returns>主应用程序所使用的内存占用大小(Bytes)</returns>
     public static long GetMemoryUsage()
     {
-        var process = Process.GetCurrentProcess();
+        using var process = Process.GetCurrentProcess();
         return OperatingSystem.IsMacOS()
             ? process.WorkingSet64
             : process.PrivateMemorySize64;

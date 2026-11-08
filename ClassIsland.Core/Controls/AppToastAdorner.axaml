@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Core.Controls.AppToastAdorner"
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *" ClipToBounds="True">
         <!-- Gap for Windows title bar -->
         <Border Height="32" Grid.Row="0" Classes="custom-titlebar-only"/>
         
@@ -16,7 +16,7 @@
                       HorizontalAlignment="Right"
                       VerticalAlignment="Stretch"
                       MaxWidth="400"
-                      ClipToBounds="True"
+                      ClipToBounds="False"
                       Margin="4">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -41,7 +41,7 @@
                                 <Setter Property="Opacity" Value="1"/>
                                 <Setter Property="RenderTransform" Value="translateY(0px)"/>
                             </Style>
-                            <Style Selector="Border#Root.open.closed">
+                            <Style Selector="Border#Root.open.closed:not(.swipe-closing)">
                                 <Setter Property="Opacity" Value="0"/>
                                 <Setter Property="RenderTransform" Value="translateY(0px)"/>
                             </Style>
@@ -57,18 +57,23 @@
                                 <AddClassAction ClassName="closed"/>
                             </DataTriggerBehavior>
                         </Interaction.Behaviors>
-                        <controls:FAInfoBar Severity="{Binding Severity}"
-                                          Title="{Binding Title}"
-                                          Message="{Binding Message}"
-                                          ActionButton="{Binding ActionContent}"
-                                          IsEnabled="{Binding IsOpen}"
-                                          IsClosable="{Binding CanUserClose}" 
-                                          IsOpen="True"
-                                          IsVisible="{Binding $self.IsOpen}"
-                                          Margin="0 0 0 4"
-                                          HorizontalAlignment="Right"
-                                          CloseButtonCommand="{Binding CloseToastCommand, RelativeSource={RelativeSource AncestorType=ci:AppToastAdorner}}"
-                                          CloseButtonCommandParameter="{Binding}"/>
+                        <Border RenderTransformOrigin="50%, 50%" HorizontalAlignment="Right">
+                            <Interaction.Behaviors>
+                                <ci:ToastSwipeBehavior/>
+                            </Interaction.Behaviors>
+                            <controls:FAInfoBar Severity="{Binding Severity}"
+                                              Title="{Binding Title}"
+                                              Message="{Binding Message}"
+                                              ActionButton="{Binding ActionContent}"
+                                              IsEnabled="{Binding IsOpen}"
+                                              IsClosable="{Binding CanUserClose}"
+                                              IsOpen="True"
+                                              IsVisible="{Binding $self.IsOpen}"
+                                              Margin="0 0 0 4"
+                                              HorizontalAlignment="Right"
+                                              CloseButtonCommand="{Binding CloseToastCommand, RelativeSource={RelativeSource AncestorType=ci:AppToastAdorner}}"
+                                              CloseButtonCommandParameter="{Binding}"/>
+                        </Border>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

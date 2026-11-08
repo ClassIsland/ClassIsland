@@ -63,6 +63,7 @@ namespace ClassIsland.Controls;
 
 // [ContentProperty("Content")]
 [TemplatePart(Name = "PART_GridWrapper", Type = typeof(Grid))]
+[TemplatePart(Name = "PART_NotificationWrapper", Type = typeof(Control))]
 [PseudoClasses(":dock-left", ":dock-right", ":dock-center", ":dock-top", ":dock-bottom",
     ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out")]
 public class MainWindowLine : ContentControl, INotificationConsumer
@@ -75,7 +76,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         get => GetValue(HideOnRuleProperty);
         set => SetValue(HideOnRuleProperty, value);
     }
-    
+
     public static readonly StyledProperty<Core.Models.Ruleset.Ruleset?> HidingRulesProperty = AvaloniaProperty.Register<MainWindowLine, Core.Models.Ruleset.Ruleset?>(
         nameof(HidingRules));
 
@@ -116,8 +117,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         get => GetValue(LastStoryboardNameProperty);
         set => SetValue(LastStoryboardNameProperty, value);
-    
-}
+
+    }
 
     public static readonly StyledProperty<bool> IsOverlayOpenProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(IsOverlayOpen));
@@ -125,9 +126,9 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         get => GetValue(IsOverlayOpenProperty);
         set => SetValue(IsOverlayOpenProperty, value);
-    
-}
-    
+
+    }
+
     public static readonly StyledProperty<double> BackgroundWidthProperty = AvaloniaProperty.Register<MainWindowLine, double>(
         nameof(BackgroundWidth));
 
@@ -145,14 +146,14 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         get => GetValue(WindowDockingLocationProperty);
         set => SetValue(WindowDockingLocationProperty, value);
     }
-    
+
     public static readonly StyledProperty<bool> IsMainLineProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(IsMainLine));
     public bool IsMainLine
     {
         get => GetValue(IsMainLineProperty);
         set => SetValue(IsMainLineProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<bool> IsNotificationEnabledProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
@@ -163,7 +164,19 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         get => GetValue(IsNotificationEnabledProperty);
         set => SetValue(IsNotificationEnabledProperty, value);
     }
-    
+
+    public static readonly StyledProperty<TimeSpan> NotificationExitDurationProperty =
+        AvaloniaProperty.Register<MainWindowLine, TimeSpan>(nameof(NotificationExitDuration));
+
+    /// <summary>
+    /// 提醒结束后保留内容的时长，供主题完成退出动画。
+    /// </summary>
+    public TimeSpan NotificationExitDuration
+    {
+        get => GetValue(NotificationExitDurationProperty);
+        set => SetValue(NotificationExitDurationProperty, value);
+    }
+
     public static readonly StyledProperty<bool> IsMouseInProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(IsMouseIn));
 
@@ -179,8 +192,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         get => GetValue(LineNumberProperty);
         set => SetValue(LineNumberProperty, value);
-    
-}
+
+    }
 
     public static readonly StyledProperty<bool> IsAllComponentsHidProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(IsAllComponentsHid));
@@ -188,8 +201,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         get => GetValue(IsAllComponentsHidProperty);
         set => SetValue(IsAllComponentsHidProperty, value);
-    
-}
+
+    }
 
     public static readonly StyledProperty<bool> IsLineFadedProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(IsLineFaded));
@@ -197,8 +210,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         get => GetValue(IsLineFadedProperty);
         set => SetValue(IsLineFadedProperty, value);
-    
-}
+
+    }
 
     public static readonly StyledProperty<MainWindowLineSettings> SettingsProperty = AvaloniaProperty.Register<MainWindowLine, MainWindowLineSettings>(
         nameof(Settings));
@@ -251,7 +264,9 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private bool _isOverlayOpen = false;
     private bool _isUnloading = false;
-    
+    private CancellationTokenSource? _notificationExitCancellation;
+    private Task? _notificationExitAnimation;
+
     private DateTime _firstProcessNotificationsTime = DateTime.MinValue;
 
     private INotificationHostService NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
@@ -265,10 +280,19 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     private bool _isTemplateApplied = false;
 
     private MainWindow? _mainWindow;
+    private IMainWindowNotificationVisibilityHost? _notificationVisibilityHost;
 
+    /// <summary>
+    /// 桌面主窗口。跨平台消费者应使用 <see cref="HostTopLevel"/> 获取宿主。
+    /// </summary>
     public MainWindow MainWindow => _mainWindow ??= TopLevel.GetTopLevel(this) as MainWindow ??
         this.FindAncestorOfType<MainWindow>() ??
         throw new InvalidOperationException("MainWindowLine is not attached to MainWindow.");
+
+    /// <summary>
+    /// 当前实际宿主，支持桌面窗口和嵌入式主界面。
+    /// </summary>
+    public TopLevel? HostTopLevel => TopLevel.GetTopLevel(this);
 
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
 
@@ -282,19 +306,24 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private ISpeechService SpeechService { get; } = IAppHost.GetService<ISpeechService>();
 
-    private ITopmostEffectPlayer TopmostEffectWindow { get; } = IAppHost.GetService<ITopmostEffectPlayer>();
+    private ITopmostEffectPlayer? _topmostEffectPlayer;
+
+    private ITopmostEffectPlayer TopmostEffectWindow =>
+        _topmostEffectPlayer ??= IAppHost.GetService<ITopmostEffectPlayer>();
 
     private IAudioService AudioService { get; } = IAppHost.GetService<IAudioService>();
 
     private Grid? GridWrapper;
-    
+
+    private Control? _notificationWrapper;
+
     private PixelPoint _centerPointCache = new PixelPoint(0, 0);
 
     private object TopmostLock { get; } = new();
 
     public static FuncValueConverter<double, Thickness> DoubleToThicknessTopConverter { get; } =
         new(x => new Thickness(0, x, 0, 0));
-    
+
     public static FuncValueConverter<double, Thickness> DoubleToThicknessBottomConverter { get; } =
         new(x => new Thickness(0, 0, 0, x));
 
@@ -305,7 +334,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        ComponentPresenter.ComponentVisibilityChangedEvent.AddClassHandler(typeof(MainWindowLine), 
+        AddHandler(ComponentPresenter.ComponentVisibilityChangedEvent,
             UpdateVisibilityState, RoutingStrategies.Bubble);
         this.GetObservable(HidingRulesProperty).Subscribe(new AnonymousObserver<Core.Models.Ruleset.Ruleset?>(_ => UpdateRuleState()));
         this.GetObservable(HideOnRuleProperty).Subscribe(new AnonymousObserver<bool>(_ => UpdateRuleState()));
@@ -315,6 +344,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         this.GetObservable(IsMouseInProperty)
             .Skip(1)
             .Subscribe(_ => UpdateFadeStatus());
+        this.GetObservable(LineNumberProperty)
+            .Subscribe(_ => UpdateNotificationConsumerRegistration());
         this.GetObservable(PointerOverProperty)
             .Subscribe(_ => UpdateFadeStatus());
         this.GetObservable(SettingsProperty)
@@ -342,6 +373,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     }
     private void UpdateRuleState()
     {
+        RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
         if (HideOnRule)
         {
             CheckHideRule();
@@ -381,7 +413,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         {
             return;
         }
-        
+
         var compositionVisual = ElementComposition.GetElementVisual(control);
         if (compositionVisual == null)
         {
@@ -459,12 +491,18 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         _isUnloading = false;
-        _mainWindow = TopLevel.GetTopLevel(this) as MainWindow ?? this.FindAncestorOfType<MainWindow>() ??
-            throw new InvalidOperationException("MainWindowLine is not attached to MainWindow.");
-        MainWindow.MousePosChanged += MainWindowOnMousePosChanged;
-        MainWindow.RawInputEvent += MainWindowOnRawInputEvent;
-        MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
+        _mainWindow = HostTopLevel as MainWindow ?? this.FindAncestorOfType<MainWindow>();
+        _notificationVisibilityHost = _mainWindow == null
+            ? this.GetVisualAncestors().OfType<IMainWindowNotificationVisibilityHost>().FirstOrDefault()
+            : null;
+        if (_mainWindow != null)
+        {
+            _mainWindow.MousePosChanged += MainWindowOnMousePosChanged;
+            _mainWindow.RawInputEvent += MainWindowOnRawInputEvent;
+            _mainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
+        }
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateRuleState();
         UpdateSettingsSubscriptions(Settings);
         UpdateHiddenState();
         UpdateFadeStatus();
@@ -476,10 +514,17 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
         _isUnloading = true;
-        MainWindow.MousePosChanged -= MainWindowOnMousePosChanged;
-        MainWindow.RawInputEvent -= MainWindowOnRawInputEvent;
-        MainWindow.MainWindowAnimationEvent -= MainWindowOnMainWindowAnimationEvent;
+        _notificationExitCancellation?.Cancel();
+        _notificationExitAnimation = null;
+        if (_mainWindow != null)
+        {
+            _mainWindow.MousePosChanged -= MainWindowOnMousePosChanged;
+            _mainWindow.RawInputEvent -= MainWindowOnRawInputEvent;
+            _mainWindow.MainWindowAnimationEvent -= MainWindowOnMainWindowAnimationEvent;
+            _mainWindow.ReleaseTopmostLock(TopmostLock);
+        }
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        _notificationVisibilityHost?.ReleaseTopmostLock(TopmostLock);
         NotificationHostService.UnregisterNotificationConsumer(this);
         UpdateSettingsSubscriptions(null);
         foreach (var ticket in _notificationPlayingTickets)
@@ -489,10 +534,19 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         }
         _notificationQueue.Clear();
         _notificationPlayingTickets.Clear();
+        TouchInFadingTimer.Stop();
+        RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
+        _isLoadCompleted = false;
+        _mainWindow = null;
+        _notificationVisibilityHost = null;
     }
-    
+
     private void MySettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(MainWindowLineSettings.IsMainLine))
+        {
+            UpdateNotificationConsumerRegistration();
+        }
         if (e.PropertyName == nameof(MainWindowLineSettings.Children) && _subscribedSettings != null)
         {
             UpdateChildrenSubscription(_subscribedSettings.Children);
@@ -501,9 +555,19 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         UpdateStyles();
     }
 
+    private void UpdateNotificationConsumerRegistration()
+    {
+        if (!_isLoadCompleted || _isUnloading || Settings == null)
+        {
+            return;
+        }
+        NotificationHostService.UnregisterNotificationConsumer(this);
+        NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : LineNumber);
+    }
+
     private void UpdateStyles()
     {
-        if (Settings == null || !IsLoaded) 
+        if (Settings == null || !IsLoaded)
             return;
         MainWindowCustomizableNodeHelper.ApplyStyles(this, Settings);
 
@@ -530,6 +594,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         var mouseIn = OperatingSystem.IsMacOS() ? PointerOver : IsMouseIn;
         IsLineFaded =
+            !OperatingSystem.IsAndroid() &&
             SettingsService.Settings.IsMouseInFadingEnabled &&
             (mouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
     }
@@ -548,24 +613,24 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         switch (e.Data)
         {
             case RawInputDigitizerData digitizerData:
-            {
-                var contacts = digitizerData.Contacts;
-                //Logger.LogTrace("TOUCH {}", string.Join(", ", contacts.ToList().Select(x => $"({x.X}, {x.Y} + {x.Width})")));
-                var r = IsMouseIn =
-                    contacts.ToList().Exists(x => GetMouseStatusByPos(new Point(x.X, x.Y)));
-                if (SettingsService.Settings.TouchInFadingDurationMs > 0 && r)
                 {
-                    TouchInFadingTimer.Stop();
-                    TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
-                    TouchInFadingTimer.Start();
-                }
+                    var contacts = digitizerData.Contacts;
+                    //Logger.LogTrace("TOUCH {}", string.Join(", ", contacts.ToList().Select(x => $"({x.X}, {x.Y} + {x.Width})")));
+                    var r = IsMouseIn =
+                        contacts.ToList().Exists(x => GetMouseStatusByPos(new Point(x.X, x.Y)));
+                    if (SettingsService.Settings.TouchInFadingDurationMs > 0 && r)
+                    {
+                        TouchInFadingTimer.Stop();
+                        TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
+                        TouchInFadingTimer.Start();
+                    }
 
-                if (!r)
-                {
-                    TouchInFadingTimer.Stop();
+                    if (!r)
+                    {
+                        TouchInFadingTimer.Stop();
+                    }
+                    break;
                 }
-                break;
-            }
             case RawInputMouseData mouseData:
                 //Logger.LogTrace("MOUSE ({}, {}) {}", mouseData.Mouse.LastX, mouseData.Mouse.LastY, mouseData.Mouse.Buttons);
                 //if (TouchInFadingTimer.IsEnabled)
@@ -600,7 +665,10 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
+        _notificationExitCancellation?.Cancel();
+        _notificationExitAnimation = null;
         Logger.LogTrace("已应用控件模板");
+        _notificationWrapper = e.NameScope.Find<Control>("PART_NotificationWrapper");
         if (this.GetTemplateChildren().OfType<Grid>().FirstOrDefault(x => x.Name == "PART_GridWrapper") is { } wrapper)
         {
             if (GridWrapper is not null)
@@ -612,6 +680,56 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             wrapper.Loaded += GridWrapperOnLoaded;
         }
         base.OnApplyTemplate(e);
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == NotificationExitDurationProperty ||
+            change.Property == IsNotificationEnabledProperty ||
+            change.Property == MainWindowStylesAssist.MainWindowInEditModeProperty)
+        {
+            _notificationExitCancellation?.Cancel();
+        }
+    }
+
+    internal void RegisterNotificationExitAnimation(Task animation)
+    {
+        _notificationExitAnimation = animation;
+    }
+
+    private async Task WaitForNotificationExitAsync()
+    {
+        var duration = NotificationExitDuration;
+        if (duration <= TimeSpan.Zero || IThemeService.AnimationLevel == 0 || _isUnloading ||
+            !IsNotificationEnabled || MainWindowStylesAssist.GetMainWindowInEditMode(this))
+        {
+            return;
+        }
+
+        // Request cancellation starts the exit animation; only consumer teardown should interrupt this wait.
+        using var cancellation = new CancellationTokenSource();
+        _notificationExitCancellation = cancellation;
+        var animation = _notificationExitAnimation;
+        try
+        {
+            // A layout animation starts on a render tick, which can be later than the state change.
+            await (animation ?? Task.Delay(duration, cancellation.Token)).WaitAsync(cancellation.Token);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            if (_notificationExitCancellation == cancellation)
+            {
+                _notificationExitCancellation = null;
+            }
+            if (_notificationExitAnimation == animation)
+            {
+                _notificationExitAnimation = null;
+            }
+        }
     }
 
     private void GridWrapperOnLoaded(object? sender, RoutedEventArgs e)
@@ -644,11 +762,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private bool GetMouseStatusByPos(Point ptr)
     {
-        if (GridWrapper == null || !GridWrapper.IsAttachedToVisualTree())
+        if (_mainWindow == null || GridWrapper == null || !GridWrapper.IsAttachedToVisualTree())
         {
             return false;
         }
-        MainWindow.GetCurrentDpi(out var dpiX, out var dpiY);
+        _mainWindow.GetCurrentDpi(out var dpiX, out var dpiY);
         var scale = SettingsService.Settings.Scale;
         //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
         var root = GridWrapper.PointToScreen(new Point(0, 0));
@@ -659,7 +777,23 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         var cr = cx + cw;
         var cb = cy + ch;
 
-        return (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+        if (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb)
+        {
+            return true;
+        }
+
+        if (_notificationWrapper is not { IsEffectivelyVisible: true, Opacity: > 0 } notification ||
+            !notification.IsAttachedToVisualTree() || notification.Bounds.Width <= 0 || notification.Bounds.Height <= 0)
+        {
+            return false;
+        }
+
+        // Use the animated bubble bounds without changing the main row's background or effect origin.
+        var notificationRoot = notification.PointToScreen(default);
+        var notificationRight = notificationRoot.X + notification.Bounds.Width * dpiX * scale;
+        var notificationBottom = notificationRoot.Y + notification.Bounds.Height * dpiY * scale;
+        return notificationRoot.X <= ptr.X && notificationRoot.Y <= ptr.Y &&
+               ptr.X <= notificationRight && ptr.Y <= notificationBottom;
     }
 
     public void ReceiveNotifications(IReadOnlyList<NotificationPlayingTicket> notificationRequests)
@@ -680,29 +814,26 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
         ProcessNotification();
     }
-    
+
     private void PreProcessNotificationContent(NotificationContent content)
     {
-        if (content.ContentTemplateResourceKey != null && 
+        if (content.ContentTemplateResourceKey != null &&
             this.TryFindResource(content.ContentTemplateResourceKey, out var template))
         {
             content.ContentTemplate = template as DataTemplate;
         }
     }
-    
+
     private PixelPoint GetCenter()
     {
-        // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
-        if (TopLevel.GetTopLevel(GridWrapper) == null)
+        var wrapper = _notificationWrapper ?? GridWrapper;
+        // 切换组件配置或重建模板期间，保留上一次可用的屏幕中心位置。
+        if (wrapper == null || TopLevel.GetTopLevel(wrapper) == null)
         {
             return _centerPointCache;
         }
-        var p = GridWrapper?.PointToScreen(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2));
-        if (p == null)
-        {
-            return _centerPointCache;
-        }
-        return _centerPointCache = p.Value;
+
+        return _centerPointCache = wrapper.PointToScreen(new Point(wrapper.Bounds.Width / 2, wrapper.Bounds.Height / 2));
     }
 
     private async void ProcessNotification()
@@ -737,14 +868,14 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             var request = CurrentNotificationRequest = ticket.Request;
             var settings = ticket.Settings;
             Logger.LogTrace("nid = {notificationId}, tid={ticketId}", request.GetHashCode(), ticket.GetHashCode());
-            
+
             var mask = request.MaskContent;
             var overlay = request.OverlayContent;
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent, request.OverlayContent);
             var cancellationToken = request.CancellationTokenSource.Token;
 
             PreProcessNotificationContent(mask);
-            
+
             try
             {
                 if (request.MaskContent.Duration > TimeSpan.Zero && !cancellationToken.IsCancellationRequested)
@@ -757,19 +888,21 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     MaskContent = request.MaskContent;  // 加载 Mask 元素
                     if (settings.IsNotificationTopmostEnabled && SettingsService.Settings.AllowNotificationTopmost)
                     {
-                        MainWindow.AcquireTopmostLock(TopmostLock);
+                        _mainWindow?.AcquireTopmostLock(TopmostLock);
+                        _notificationVisibilityHost?.AcquireTopmostLock(TopmostLock);
                     }
                     else
                     {
-                        MainWindow.ReleaseTopmostLock(TopmostLock);
+                        _mainWindow?.ReleaseTopmostLock(TopmostLock);
+                        _notificationVisibilityHost?.ReleaseTopmostLock(TopmostLock);
                     }
-                    
+
                     PseudoClasses.Set(":mask-anim", true);
                     PseudoClasses.Set(":mask-in", true);
                     PseudoClasses.Set(":overlay-anim", false);
 
                     // 播放提醒特效
-                    if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
+                    if (_mainWindow != null && settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
                         !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible && !request.MaskSession.HasSoundsPlayed)
                     {
                         var center = GetCenter();
@@ -815,13 +948,18 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 PseudoClasses.Set(":overlay-out", true);
                 PseudoClasses.Set(":overlay-in", false);
             }
-            
+
             _notificationPlayingTickets.Remove(ticket);
-            var notifications = NotificationHostService.PullNotificationRequests();
-            foreach (var newRequest in notifications)
+            PullPendingNotifications();
+
+            if (_notificationQueue.Count == 0 && notificationsShowed)
             {
-                _notificationQueue.Enqueue(newRequest);
-                _notificationPlayingTickets.Add(newRequest);
+                await WaitForNotificationExitAsync();
+                if (!_isUnloading && NotificationExitDuration > TimeSpan.Zero)
+                {
+                    // The consumer stays occupied during exit, so the host may have received more requests.
+                    PullPendingNotifications();
+                }
             }
         }
 
@@ -833,7 +971,17 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             await stopNotificationSoundCts.CancelAsync();
         }
         stopNotificationSoundCts?.Dispose();
-        MainWindow.ReleaseTopmostLock(TopmostLock);
+        _mainWindow?.ReleaseTopmostLock(TopmostLock);
+        _notificationVisibilityHost?.ReleaseTopmostLock(TopmostLock);
+    }
+
+    private void PullPendingNotifications()
+    {
+        foreach (var request in NotificationHostService.PullNotificationRequests())
+        {
+            _notificationQueue.Enqueue(request);
+            _notificationPlayingTickets.Add(request);
+        }
     }
 
     public int QueuedNotificationCount => _notificationQueue.Count;

@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Extensions;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
@@ -20,22 +24,6 @@ namespace ClassIsland.Services;
 
 public class LessonsService : ObservableRecipient, ILessonsService
 {
-    private ClassPlan? _currentClassPlan;
-    private int _currentSelectedIndex = -1;
-    private Subject _nextSubject = Subject.Fallback;
-    private TimeLayoutItem _nextBreakingLayoutItem = TimeLayoutItem.Empty;
-    private TimeSpan _onClassLeftTime = TimeSpan.Zero;
-    private TimeState _currentStatus = TimeState.None;
-    private TimeState _currentOverlayStatus = TimeState.None;
-    private TimeLayoutItem _currentTimeLayoutItem = TimeLayoutItem.Empty;
-    private Subject? _currentSubject;
-    private bool _isClassPlanEnabled = true;
-    private TimeState _currentOverlayEventStatus = TimeState.None;
-    private bool _isClassPlanLoaded = false;
-    private bool _isLessonConfirmed = false;
-    private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
-    private TimeLayoutItem _nextClassTimeLayoutItem = TimeLayoutItem.Empty;
-
     private DispatcherTimer MainTimer
     {
         get;
@@ -50,21 +38,21 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     public ClassPlan? CurrentClassPlan
     {
-        get => _currentClassPlan;
-        set => SetProperty(ref _currentClassPlan, value);
+        get;
+        set => SetProperty(ref field, value);
     }
 
     public int CurrentSelectedIndex
     {
-        get => _currentSelectedIndex;
-        set => SetProperty(ref _currentSelectedIndex, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = -1;
 
     public Subject NextClassSubject
     {
-        get => _nextSubject;
-        set => SetProperty(ref _nextSubject, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = Subject.Fallback;
 
     //public TimeLayoutItem NextTimeLayoutItem
     //{
@@ -74,68 +62,540 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     public TimeLayoutItem NextBreakingTimeLayoutItem
     {
-        get => _nextBreakingLayoutItem;
-        set => SetProperty(ref _nextBreakingLayoutItem, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = TimeLayoutItem.Empty;
 
     public TimeLayoutItem NextClassTimeLayoutItem
     {
-        get => _nextClassTimeLayoutItem;
-        set => SetProperty(ref _nextClassTimeLayoutItem, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = TimeLayoutItem.Empty;
 
     public TimeSpan OnClassLeftTime
     {
-        get => _onClassLeftTime;
-        set => SetProperty(ref _onClassLeftTime, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = TimeSpan.Zero;
 
     public TimeState CurrentState
     {
-        get => _currentStatus;
-        set => SetProperty(ref _currentStatus, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = TimeState.None;
 
     public TimeState CurrentOverlayStatus
     {
-        get => _currentOverlayStatus;
-        set => SetProperty(ref _currentOverlayStatus, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = TimeState.None;
 
     public TimeLayoutItem CurrentTimeLayoutItem
     {
-        get => _currentTimeLayoutItem;
-        set => SetProperty(ref _currentTimeLayoutItem, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = TimeLayoutItem.Empty;
 
     public Subject? CurrentSubject
     {
-        get => _currentSubject;
-        set => SetProperty(ref _currentSubject, value);
+        get;
+        set => SetProperty(ref field, value);
+    }
+
+    public ClassInfo? CurrentClassInfo
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+
+    public ClassInfo? NextClassInfo
+    {
+        get;
+        set => SetProperty(ref field, value);
     }
 
     public bool IsClassPlanEnabled
     {
-        get => _isClassPlanEnabled;
-        set => SetProperty(ref _isClassPlanEnabled, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = true;
 
     public bool IsClassPlanLoaded
     {
-        get => _isClassPlanLoaded;
-        set => SetProperty(ref _isClassPlanLoaded, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = false;
 
     public bool IsLessonConfirmed
     {
-        get => _isLessonConfirmed;
-        set => SetProperty(ref _isLessonConfirmed, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = false;
 
     public TimeSpan OnBreakingTimeLeftTime
     {
-        get => _onBreakingTimeLeftTime;
-        set => SetProperty(ref _onBreakingTimeLeftTime, value);
+        get;
+        set => SetProperty(ref field, value);
+    } = TimeSpan.Zero;
+
+    public Dictionary<DateOnly, WeakReference<ClassPlan>> ConvertedScheduleItemsCache { get; } = new();
+
+    public HashSet<DateOnly> DirtyScheduleItemDates { get; } = [];
+
+    private readonly Dictionary<Guid, ScheduleItemSubscription> _scheduleItemSubscriptions = new();
+    private readonly SerialDisposable _scheduleProfileSubscription = new();
+    private readonly IDisposable? _scheduleProfileServiceSubscription;
+    private IDisposable? _scheduleItemsCollectionSubscription;
+    private readonly CompositeDisposable _orderedScheduleSubscriptions = new();
+
+    private sealed class ScheduleItemSubscription(ScheduleItem item, TimeRule ruleSnapshot) : IDisposable
+    {
+        public ScheduleItem Item { get; } = item;
+        public TimeRule RuleSnapshot { get; set; } = ruleSnapshot;
+        public ScheduleItemReplacementTarget? ReplacementTargetSnapshot { get; set; }
+        public TimeRule? ObservedRule { get; set; }
+        public ObservableCollection<DateOnly>? ObservedEnableDates { get; set; }
+        public ObservableCollection<DateOnly>? ObservedExcludedDates { get; set; }
+        public ObservableCollection<DateOnly>? ObservedAdditionalDates { get; set; }
+        public IDisposable? ItemPropertySubscription { get; set; }
+        public IDisposable? RulePropertySubscription { get; set; }
+        public IDisposable? EnableDatesCollectionSubscription { get; set; }
+        public IDisposable? ExcludedDatesCollectionSubscription { get; set; }
+        public IDisposable? AdditionalDatesCollectionSubscription { get; set; }
+
+        public void Dispose()
+        {
+            ItemPropertySubscription?.Dispose();
+            RulePropertySubscription?.Dispose();
+            EnableDatesCollectionSubscription?.Dispose();
+            ExcludedDatesCollectionSubscription?.Dispose();
+            AdditionalDatesCollectionSubscription?.Dispose();
+        }
+    }
+
+    private static TimeRule CreateTimeRuleSnapshot(TimeRule rule)
+    {
+        return new TimeRule
+        {
+            Type = rule.Type,
+            RestrictsEnableRange = rule.RestrictsEnableRange,
+            RangeEnd = rule.RangeEnd,
+            RangeStart = rule.RangeStart,
+            WeekDay = rule.WeekDay,
+            WeekCountDiv = rule.WeekCountDiv,
+            WeekCountDivTotal = rule.WeekCountDivTotal,
+            EnableDates = new ObservableCollection<DateOnly>(rule.EnableDates),
+            ExcludedDates = new ObservableCollection<DateOnly>(rule.ExcludedDates),
+            AdditionalDates = new ObservableCollection<DateOnly>(rule.AdditionalDates),
+            LoopCycleDays = rule.LoopCycleDays,
+            LoopOffsetDays = rule.LoopOffsetDays
+        };
+    }
+
+    private void ObserveScheduleProfile()
+    {
+        var profile = Profile;
+        _scheduleProfileSubscription.Disposable = Observable
+            .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                handler => profile.PropertyChanged += handler,
+                handler => profile.PropertyChanged -= handler)
+            .Where(x => x.EventArgs.PropertyName is nameof(Profile.ScheduleType) or nameof(Profile.ScheduleItems)
+                or nameof(Profile.OrderedSchedulesV2))
+            .Subscribe(_ => UpdateScheduleModeSubscriptions());
+        UpdateScheduleModeSubscriptions();
+    }
+
+    private void UpdateScheduleModeSubscriptions()
+    {
+        ReleaseScheduleItemSubscriptions();
+
+        var scheduleItems = Profile.ScheduleItems;
+        foreach (var (id, scheduleItem) in scheduleItems)
+        {
+            SubscribeScheduleItem(id, scheduleItem);
+        }
+
+        _scheduleItemsCollectionSubscription = Observable
+            .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => scheduleItems.CollectionChanged += handler,
+                handler => scheduleItems.CollectionChanged -= handler)
+            .Subscribe(x => OnScheduleItemsCollectionChanged(x.EventArgs));
+
+        UpdateOrderedScheduleSubscriptions();
+    }
+
+    private void UpdateOrderedScheduleSubscriptions()
+    {
+        _orderedScheduleSubscriptions.Clear();
+        var schedules = Profile.OrderedSchedulesV2;
+        _orderedScheduleSubscriptions.Add(Observable
+            .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => schedules.CollectionChanged += handler,
+                handler => schedules.CollectionChanged -= handler)
+            .Subscribe(_ => UpdateOrderedScheduleSubscriptions()));
+        foreach (var schedule in schedules.Values.Distinct())
+        {
+            _orderedScheduleSubscriptions.Add(Observable
+                .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                    handler => schedule.PropertyChanged += handler,
+                    handler => schedule.PropertyChanged -= handler)
+                .Subscribe(_ => InvalidateAllScheduleItemDates()));
+        }
+        InvalidateAllScheduleItemDates();
+    }
+
+    private void ReleaseScheduleItemSubscriptions()
+    {
+        _orderedScheduleSubscriptions.Clear();
+        _scheduleItemsCollectionSubscription?.Dispose();
+        _scheduleItemsCollectionSubscription = null;
+        foreach (var subscription in _scheduleItemSubscriptions.Values)
+        {
+            subscription.Dispose();
+        }
+        _scheduleItemSubscriptions.Clear();
+    }
+
+    private void SubscribeScheduleItem(Guid id, ScheduleItem scheduleItem)
+    {
+        if (_scheduleItemSubscriptions.Remove(id, out var oldSubscription))
+        {
+            oldSubscription.Dispose();
+        }
+
+        var subscription = new ScheduleItemSubscription(
+            scheduleItem,
+            CreateTimeRuleSnapshot(scheduleItem.EnableRule))
+        {
+            ReplacementTargetSnapshot = scheduleItem.ReplacementTarget
+        };
+        _scheduleItemSubscriptions.Add(id, subscription);
+        subscription.ItemPropertySubscription = Observable
+            .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                handler => scheduleItem.PropertyChanged += handler,
+                handler => scheduleItem.PropertyChanged -= handler)
+            .Subscribe(_ => OnScheduleItemChanged(subscription));
+        ResetScheduleItemRuleSubscriptions(subscription);
+    }
+
+    private void UnsubscribeScheduleItem(Guid id)
+    {
+        if (_scheduleItemSubscriptions.Remove(id, out var subscription))
+        {
+            subscription.Dispose();
+        }
+    }
+
+    private void ResetScheduleItemRuleSubscriptions(ScheduleItemSubscription subscription)
+    {
+        subscription.RulePropertySubscription?.Dispose();
+
+        var rule = subscription.Item.EnableRule;
+        subscription.ObservedRule = rule;
+        subscription.RulePropertySubscription = Observable
+            .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                handler => rule.PropertyChanged += handler,
+                handler => rule.PropertyChanged -= handler)
+            .Subscribe(_ => OnScheduleItemChanged(subscription));
+        ResetScheduleItemDateSubscriptions(subscription);
+    }
+
+    private void ResetScheduleItemDateSubscriptions(ScheduleItemSubscription subscription)
+    {
+        subscription.EnableDatesCollectionSubscription?.Dispose();
+        subscription.ExcludedDatesCollectionSubscription?.Dispose();
+        subscription.AdditionalDatesCollectionSubscription?.Dispose();
+
+        var enableDates = subscription.Item.EnableRule.EnableDates;
+        subscription.ObservedEnableDates = enableDates;
+        subscription.EnableDatesCollectionSubscription = Observable
+            .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => enableDates.CollectionChanged += handler,
+                handler => enableDates.CollectionChanged -= handler)
+            .Subscribe(_ => OnScheduleItemChanged(subscription));
+
+        var excludedDates = subscription.Item.EnableRule.ExcludedDates;
+        subscription.ObservedExcludedDates = excludedDates;
+        subscription.ExcludedDatesCollectionSubscription = Observable
+            .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => excludedDates.CollectionChanged += handler,
+                handler => excludedDates.CollectionChanged -= handler)
+            .Subscribe(_ => OnScheduleItemChanged(subscription));
+
+        var additionalDates = subscription.Item.EnableRule.AdditionalDates;
+        subscription.ObservedAdditionalDates = additionalDates;
+        subscription.AdditionalDatesCollectionSubscription = Observable
+            .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => additionalDates.CollectionChanged += handler,
+                handler => additionalDates.CollectionChanged -= handler)
+            .Subscribe(_ => OnScheduleItemChanged(subscription));
+    }
+
+    private void OnScheduleItemChanged(ScheduleItemSubscription subscription)
+    {
+        var replacementTarget = subscription.Item.ReplacementTarget;
+        InvalidateScheduleItemDates([subscription.RuleSnapshot, subscription.Item.EnableRule],
+            GetReplacementTargetDates(subscription.ReplacementTargetSnapshot?.Date, replacementTarget?.Date));
+        subscription.RuleSnapshot = CreateTimeRuleSnapshot(subscription.Item.EnableRule);
+        subscription.ReplacementTargetSnapshot = replacementTarget;
+
+        if (!ReferenceEquals(subscription.ObservedRule, subscription.Item.EnableRule))
+        {
+            ResetScheduleItemRuleSubscriptions(subscription);
+        }
+        else if (!ReferenceEquals(subscription.ObservedEnableDates, subscription.Item.EnableRule.EnableDates)
+                 || !ReferenceEquals(subscription.ObservedExcludedDates, subscription.Item.EnableRule.ExcludedDates)
+                 || !ReferenceEquals(subscription.ObservedAdditionalDates, subscription.Item.EnableRule.AdditionalDates))
+        {
+            ResetScheduleItemDateSubscriptions(subscription);
+        }
+    }
+
+    private void OnScheduleItemsCollectionChanged(NotifyCollectionChangedEventArgs args)
+    {
+        if (args.Action == NotifyCollectionChangedAction.Move)
+        {
+            return;
+        }
+
+        var oldItems = args.OldItems?.OfType<KeyValuePair<Guid, ScheduleItem>>().ToList() ?? [];
+        var newItems = args.NewItems?.OfType<KeyValuePair<Guid, ScheduleItem>>().ToList() ?? [];
+        var affectedRules = new List<TimeRule>();
+        var affectedReplacementDates = new HashSet<DateOnly>();
+
+        if (args.Action == NotifyCollectionChangedAction.Reset)
+        {
+            affectedRules.AddRange(_scheduleItemSubscriptions.Values.Select(x => x.RuleSnapshot));
+            affectedRules.AddRange(Profile.ScheduleItems.Values.Select(x => x.EnableRule));
+            affectedReplacementDates.UnionWith(_scheduleItemSubscriptions.Values
+                .Select(x => x.ReplacementTargetSnapshot?.Date)
+                .Where(x => x.HasValue)
+                .Select(x => DateOnly.FromDateTime(x!.Value)));
+            affectedReplacementDates.UnionWith(Profile.ScheduleItems.Values
+                .Select(x => x.ReplacementTarget?.Date)
+                .Where(x => x.HasValue)
+                .Select(x => DateOnly.FromDateTime(x!.Value)));
+        }
+        else
+        {
+            foreach (var (id, scheduleItem) in oldItems)
+            {
+                affectedRules.Add(_scheduleItemSubscriptions.TryGetValue(id, out var subscription)
+                    && ReferenceEquals(subscription.Item, scheduleItem)
+                        ? subscription.RuleSnapshot
+                        : CreateTimeRuleSnapshot(scheduleItem.EnableRule));
+                if (scheduleItem.ReplacementTarget is { } target)
+                    affectedReplacementDates.Add(DateOnly.FromDateTime(target.Date));
+            }
+            affectedRules.AddRange(newItems.Select(x => x.Value.EnableRule));
+            foreach (var (_, scheduleItem) in newItems)
+            {
+                if (scheduleItem.ReplacementTarget is { } target)
+                    affectedReplacementDates.Add(DateOnly.FromDateTime(target.Date));
+            }
+        }
+
+        InvalidateScheduleItemDates(affectedRules, affectedReplacementDates);
+
+        if (args.Action == NotifyCollectionChangedAction.Reset)
+        {
+            foreach (var subscription in _scheduleItemSubscriptions.Values)
+            {
+                subscription.Dispose();
+            }
+            _scheduleItemSubscriptions.Clear();
+            foreach (var (id, scheduleItem) in Profile.ScheduleItems)
+            {
+                SubscribeScheduleItem(id, scheduleItem);
+            }
+            return;
+        }
+
+        foreach (var (id, _) in oldItems)
+        {
+            UnsubscribeScheduleItem(id);
+        }
+        foreach (var (id, scheduleItem) in newItems)
+        {
+            SubscribeScheduleItem(id, scheduleItem);
+        }
+    }
+
+    private static HashSet<DateOnly> GetReplacementTargetDates(params DateTime?[] dates) =>
+        dates.Where(x => x.HasValue)
+            .Select(x => DateOnly.FromDateTime(x!.Value))
+            .ToHashSet();
+
+    private void InvalidateScheduleItemDates(IEnumerable<TimeRule> rules,
+        IEnumerable<DateOnly>? replacementTargetDates = null)
+    {
+        PruneConvertedScheduleItemsCache();
+        var affectedRules = rules.Select(CreateTimeRuleSnapshot).ToList();
+        var affectedReplacementDates = replacementTargetDates?.ToHashSet() ?? new HashSet<DateOnly>();
+        // An adjusted day depends on its source's original rules, not on the target day's rules.
+        Predicate<DateOnly> isDateAffected = date =>
+        {
+            if (affectedReplacementDates.Contains(date))
+            {
+                return true;
+            }
+            if (Profile.OrderedSchedulesV2.TryGetValue(date.ToDateTime(TimeOnly.MinValue), out var schedule))
+            {
+                if (schedule.SetEmpty) return false;
+                date = DateOnly.FromDateTime(schedule.SourceDate);
+            }
+            return affectedRules.Any(rule => IsTimeRuleSatisfied(rule, date.ToDateTime(TimeOnly.MinValue)));
+        };
+        foreach (var date in ConvertedScheduleItemsCache.Keys)
+        {
+            if (isDateAffected(date))
+            {
+                DirtyScheduleItemDates.Add(date);
+            }
+        }
+        ScheduleItemsInvalidated?.Invoke(this, isDateAffected);
+    }
+
+    private void InvalidateAllScheduleItemDates()
+    {
+        PruneConvertedScheduleItemsCache();
+        DirtyScheduleItemDates.UnionWith(ConvertedScheduleItemsCache.Keys);
+        ScheduleItemsInvalidated?.Invoke(this, _ => true);
+    }
+
+    public OrderedDictionary<Guid, ScheduleItem> GetScheduleItemsByDate(DateOnly date)
+    {
+        var displayDate = date;
+        if (Profile.OrderedSchedulesV2.TryGetValue(date.ToDateTime(TimeOnly.MinValue), out var order))
+        {
+            if (order.SetEmpty)
+            {
+                return [];
+            }
+            date = DateOnly.FromDateTime(order.SourceDate);
+        }
+
+        var activeItems = Profile.ScheduleItems
+            .Where(x =>
+            {
+                var ruleDate = x.Value.ReplacementTarget == null ? date : displayDate;
+                return IsTimeRuleSatisfied(x.Value.EnableRule, ruleDate.ToDateTime(TimeOnly.MinValue));
+            })
+            .ToList();
+        var suppressedIds = Profile.ScheduleItems.Values
+            .Where(x => x.ReplacementTarget is { } target &&
+                        DateOnly.FromDateTime(target.Date) == displayDate)
+            .Select(x => x.ReplacementTarget!.ScheduleItemId)
+            .ToHashSet();
+        var activeReplacementIds = activeItems
+            .Where(x => !suppressedIds.Contains(x.Key) &&
+                        x.Value.ReplacementTarget is { } target &&
+                        DateOnly.FromDateTime(target.Date) == displayDate)
+            .GroupBy(x => x.Value.ReplacementTarget!.ScheduleItemId)
+            .ToDictionary(x => x.Key, x => x.Last().Key);
+
+        var items = activeItems
+            .Where(x => !suppressedIds.Contains(x.Key))
+            .Where(x =>
+            {
+                if (x.Value.ReplacementTarget is not { } target
+                    || DateOnly.FromDateTime(target.Date) != displayDate)
+                {
+                    return true;
+                }
+                return activeReplacementIds.TryGetValue(target.ScheduleItemId, out var replacementId)
+                       && replacementId == x.Key;
+            })
+            .OrderBy(x => x.Value.StartTime);
+        return new OrderedDictionary<Guid, ScheduleItem>(items);
+    }
+
+    private ClassPlan? GetConvertedClassPlanFromScheduleItemsByDate(DateOnly date)
+    {
+        ClassPlan? classPlan = null;
+        if (ConvertedScheduleItemsCache.TryGetValue(date, out var cpRef)
+            && cpRef.TryGetTarget(out classPlan)
+            && !DirtyScheduleItemDates.Contains(date))
+        {
+            return classPlan;
+        }
+
+        var scheduleItems = 
+            GetScheduleItemsByDate(date)
+                .ToList();
+
+        if (scheduleItems.Count <= 0)
+        {
+            DirtyScheduleItemDates.Remove(date);
+            ConvertedScheduleItemsCache.Remove(date);
+            return null;
+        }
+
+        var phonyTimeLayoutId = classPlan?.TimeLayoutId ?? Guid.NewGuid();
+        var timeLayout = classPlan?.TimeLayout ?? new TimeLayout()
+        {
+            Name = date.ToString()
+        };
+        classPlan ??= new ClassPlan()
+        {
+            Name = date.ToString(),
+            TimeLayouts = new ObservableOrderedDictionary<Guid, TimeLayout>()
+            {
+                {phonyTimeLayoutId, timeLayout}
+            },
+            TimeLayoutId = phonyTimeLayoutId
+        };
+        classPlan.Subjects = Profile.Subjects;
+
+        timeLayout.Layouts.Clear();
+        for (var i = 0; i < scheduleItems.Count; i++)
+        {
+            var (_, item) = scheduleItems[i];
+            if (i > 0)
+            {
+                var (_, prev) = scheduleItems[i - 1];
+                timeLayout.Layouts.Add(new TimeLayoutItem()
+                {
+                    StartTime = prev.EndTime,
+                    EndTime = item.StartTime,
+                    TimeType = 1
+                });
+            }
+            timeLayout.Layouts.Add(new TimeLayoutItem()
+            {
+                StartTime = item.StartTime,
+                EndTime = item.EndTime,
+                TimeType = 0
+            });
+        }
+
+        classPlan.RefreshClassesList();
+        for (int i = 0; i < scheduleItems.Count; i++)
+        {
+            var (_, item) = scheduleItems[i];
+            classPlan.Classes[i].SubjectId = item.SubjectId;
+            classPlan.Classes[i].Location = item.Location;
+            classPlan.Classes[i].IsEnabled = item.IsEnabled;
+        }
+        classPlan.MakeValidTimeLayoutItemsDirty();
+
+        DirtyScheduleItemDates.Remove(date);
+        ConvertedScheduleItemsCache[date] = new WeakReference<ClassPlan>(classPlan);
+
+        return classPlan;
+    }
+
+    private void PruneConvertedScheduleItemsCache()
+    {
+        var dates = ConvertedScheduleItemsCache
+            .Where(x => !x.Value.TryGetTarget(out _))
+            .Select(x => x.Key)
+            .ToList();
+
+        foreach (var rm in dates)
+        {
+            ConvertedScheduleItemsCache.Remove(rm);
+        }
     }
 
     public ClassPlan? GetClassPlanByDate(DateTime date) => GetClassPlanByDate(date, out _);
@@ -143,6 +603,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
     public ClassPlan? GetClassPlanByDate(DateTime date, out Guid? guid)
     {
         guid = null;
+        if (Profile.ScheduleType == ScheduleType.Schedule)
+        {
+            return GetConvertedClassPlanFromScheduleItemsByDate(DateOnly.FromDateTime(date));
+        }
+
         // 加载临时层（弃用）
         // 现在临时层使用预定临时课表的加载逻辑。
         //if (Profile is { IsOverlayClassPlanEnabled: true, OverlayClassPlanId: not null } &&
@@ -204,6 +669,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     public event EventHandler? OnBreakingTime;
     public event EventHandler? OnAfterSchool;
     public event EventHandler? CurrentTimeStateChanged;
+    public event EventHandler<Predicate<DateOnly>>? ScheduleItemsInvalidated;
 
     public void DebugTriggerOnClass() => OnClass?.Invoke(this, EventArgs.Empty);
     public void DebugTriggerOnBreakingTime() => OnBreakingTime?.Invoke(this, EventArgs.Empty);
@@ -238,6 +704,17 @@ public class LessonsService : ObservableRecipient, ILessonsService
         CurrentTimeStateChanged += (sender, args) => RulesetService.NotifyStatusChanged();
         PropertyChanged += OnPropertyChanged;
         PropertyChanging += OnPropertyChanging;
+
+        if (ProfileService is INotifyPropertyChanged observableProfileService)
+        {
+            _scheduleProfileServiceSubscription = Observable
+                .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                    handler => observableProfileService.PropertyChanged += handler,
+                    handler => observableProfileService.PropertyChanged -= handler)
+                .Where(x => x.EventArgs.PropertyName is nameof(ProfileService.Profile) or null or "")
+                .Subscribe(_ => ObserveScheduleProfile());
+        }
+        ObserveScheduleProfile();
 
 
         CurrentTimeStateChanged += async (_, _) =>
@@ -405,6 +882,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         TimeState? currentState = null;
         Subject? currentSubject = null;
         Subject? nextClassSubject = null;
+        ClassInfo? currentClassInfo = null;
+        ClassInfo? nextClassInfo = null;
         TimeLayoutItem? currentTimeLayoutItem = null;
         TimeLayoutItem? nextClassTimeLayoutItem = null;
         TimeLayoutItem? nextBreakingTimeLayoutItem = null;
@@ -444,10 +923,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 currentState = TimeState.OnClass;
 
                 var i0 = GetClassIndex((int)currentSelectedIndex);
-                if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0 &&
-                    Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
+                if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0)
                 {
-                    currentSubject = subject;
+                    currentClassInfo = CurrentClassPlan.Classes[i0];
+                    if (Profile.Subjects.TryGetValue(currentClassInfo.SubjectId, out var subject))
+                    {
+                        currentSubject = subject;
+                    }
                 }
             }
             else if (currentTimeLayoutItem.TimeType == 1)
@@ -466,9 +948,14 @@ public class LessonsService : ObservableRecipient, ILessonsService
         if (nextClassTimeLayoutItem != null)
         {
             var i0 = GetClassIndex(layout.IndexOf(nextClassTimeLayoutItem));
-            if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0 &&
-                Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
-                nextClassSubject = subject;
+            if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0)
+            {
+                nextClassInfo = CurrentClassPlan.Classes[i0];
+                if (Profile.Subjects.TryGetValue(nextClassInfo.SubjectId, out var subject))
+                {
+                    nextClassSubject = subject;
+                }
+            }
         }
         nextBreakingTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 1 &&
@@ -491,6 +978,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         CurrentState = currentState ?? TimeState.None;
         CurrentSubject = currentSubject ?? Subject.Fallback;
         NextClassSubject = nextClassSubject ?? Subject.Fallback;
+        CurrentClassInfo = currentClassInfo;
+        NextClassInfo = nextClassInfo;
         CurrentTimeLayoutItem = currentTimeLayoutItem ?? TimeLayoutItem.Empty;
         NextClassTimeLayoutItem = nextClassTimeLayoutItem ?? TimeLayoutItem.Empty;
         NextBreakingTimeLayoutItem = nextBreakingTimeLayoutItem ?? TimeLayoutItem.Empty;
@@ -542,9 +1031,9 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     public TimeState CurrentOverlayEventStatus
     {
-        get => _currentOverlayEventStatus;
-        set => SetProperty(ref _currentOverlayEventStatus, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = TimeState.None;
 
     private void LoadCurrentClassPlan()
     {
@@ -591,34 +1080,48 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
-        if (plan.TimeRule.RestrictsEnableRange
-            && (plan.TimeRule.RangeStart > DateOnly.FromDateTime(time) || plan.TimeRule.RangeEnd < DateOnly.FromDateTime(time)))
+        return IsTimeRuleSatisfied(plan.TimeRule, time);
+    }
+
+    private bool IsTimeRuleSatisfied(TimeRule rule, DateTime time)
+    {
+        var date = DateOnly.FromDateTime(time);
+        if (rule.AdditionalDates.Contains(date))
+        {
+            return true;
+        }
+        if (rule.ExcludedDates.Contains(date))
         {
             return false;
         }
 
-        switch (plan.TimeRule.Type)
+        if (rule.RestrictsEnableRange
+            && (rule.RangeStart > date || rule.RangeEnd < date))
+        {
+            return false;
+        }
+
+        switch (rule.Type)
         {
             case TimeRule.TimeRuleType.Weekly:
-                if (plan.TimeRule.WeekDay != (int)time.DayOfWeek)
+                if (rule.WeekDay != (int)time.DayOfWeek)
                 {
                     return false;
                 }
-                if (plan.TimeRule.WeekCountDivTotal > SettingsService.Settings.MultiWeekRotationMaxCycle)
+                if (rule.WeekCountDivTotal > SettingsService.Settings.MultiWeekRotationMaxCycle)
                     return false;
-                if (plan.TimeRule.WeekCountDiv == 0)
+                if (rule.WeekCountDiv == 0)
                     return true;
                 var rotation = GetCyclePositionsByDate(time);
-                return plan.TimeRule.WeekCountDiv == rotation[plan.TimeRule.WeekCountDivTotal];
+                return rule.WeekCountDiv == rotation[rule.WeekCountDivTotal];
             case TimeRule.TimeRuleType.Date:
-                return plan.TimeRule.EnableDates.Contains(DateOnly.FromDateTime(time));
+                return rule.EnableDates.Contains(date);
             case TimeRule.TimeRuleType.Loop:
                 var days = (time.Date - Settings.SingleWeekStartTime).Days;
-                return days % Math.Max(plan.TimeRule.LoopCycleDays, 1) == plan.TimeRule.LoopOffsetDays;
+                return days % Math.Max(rule.LoopCycleDays, 1) == rule.LoopOffsetDays;
             default:
                 return false;
         }
-        
     }
 
     /// <summary>

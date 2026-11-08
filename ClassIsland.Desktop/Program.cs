@@ -16,13 +16,12 @@ using Avalonia.Media;
 using ClassIsland.Core;
 using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.Helpers;
 using Pastel;
 using System.Runtime.InteropServices;
-using System.Reflection;
-using Avalonia.Platform;
 using ClassIsland.Desktop.Services.Platform;
 
 
@@ -64,6 +63,10 @@ class Program
                 app.AppStopping += (_, _) => stopTokenSource.Cancel();
                 return app;
             })
+            .With(new SkiaOptions
+            {
+                MaxGpuResourceSizeBytes = SkiaGpuCacheHelper.SizeBytes
+            })
             .With(new FontManagerOptions
             {
                 DefaultFamilyName = MainWindow.DefaultFontFamilyKey,
@@ -89,10 +92,9 @@ class Program
             .WithDeveloperTools()
 #endif
             .UsePlatformDetect()
-            .AfterPlatformServicesSetup(_ =>
+            .UseOverlayAssetLoader(overlay =>
             {
                 var appAssembly = typeof(App).Assembly;
-                var assemblyName = appAssembly.GetName().Name!;
                 var appAssemblyDirectory = Path.GetDirectoryName(appAssembly.Location);
 
                 if (string.IsNullOrEmpty(appAssemblyDirectory))
@@ -102,16 +104,7 @@ class Program
                     ? Path.Combine(appAssemblyDirectory, "..", "Resources", "Assets")
                     : Path.Combine(appAssemblyDirectory, "Assets");
 
-                var fallback = new StandardAssetLoader(appAssembly);
-
-                var overlay = new OverlayAssetLoader(
-                    fallback,
-                    appAssembly,
-                    assemblyName: assemblyName,
-                    avaresPrefix: "/Assets/",
-                    physicalRoot: assetRoot);
-
-                BindAssetLoader(overlay);
+                overlay.RegisterDirectoryOverride(appAssembly, "/Assets/", assetRoot);
             })
             .LogToHostSink();
 
@@ -123,31 +116,6 @@ class Program
         .UsePlatformDetect()
         .LogToHostSink();
 
-    private static void BindAssetLoader(IAssetLoader assetLoader)
-    {
-        const BindingFlags flags = BindingFlags.Public
-                                   | BindingFlags.NonPublic
-                                   | BindingFlags.Static
-                                   | BindingFlags.Instance;
-
-        var locatorType = typeof(AvaloniaLocator);
-        var locator = locatorType.GetProperty("CurrentMutable", flags)?.GetValue(null)
-                      ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.CurrentMutable.");
-
-        var bindMethod = locatorType.GetMethod("Bind", flags)?.MakeGenericMethod(typeof(IAssetLoader))
-                         ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.Bind<T>().");
-
-        var registration = bindMethod.Invoke(locator, null)
-                           ?? throw new InvalidOperationException("Unable to bind Avalonia IAssetLoader.");
-
-        var toConstantMethod = registration.GetType()
-                                   .GetMethod("ToConstant", flags)?
-                                   .MakeGenericMethod(typeof(IAssetLoader))
-                               ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.ToConstant<T>().");
-
-        toConstantMethod.Invoke(registration, [assetLoader]);
-    }
-
     static void ActivatePlatforms(out Action postInitCallback, CancellationToken stopToken)
     {
         postInitCallback = () => { };
@@ -155,6 +123,7 @@ class Program
         PlatformServices.LauncherService = new LauncherService();
 #if Platforms_Windows
         PlatformServices.WindowPlatformService = new WindowPlatformService();
+        PlatformServices.DeviceInfoService = new DeviceInfoService();
         PlatformServices.LocationService = new LocationService();
         PlatformServices.DesktopService = new DesktopService();
         PlatformServices.SystemEventsService = new SystemEventsService();
@@ -170,6 +139,7 @@ class Program
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);
+        PlatformServices.DeviceInfoService = new DeviceInfoService();
         PlatformServices.WindowPlatformService = windowPlatformService;
         PlatformServices.DesktopService = new DesktopService();
         var desktopToastService = new DesktopToastService();
@@ -182,6 +152,7 @@ class Program
 #endif
 #if Platforms_MacOs
         var service = new WindowPlatformServices();
+        PlatformServices.DeviceInfoService = new DeviceInfoService();
         PlatformServices.WindowPlatformService = service;
         PlatformServices.LocationService = new LocationService();
         PlatformServices.DesktopToastService = new DesktopToastService();

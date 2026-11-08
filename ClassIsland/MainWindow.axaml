@@ -120,6 +120,7 @@
                 <NativeMenu>
                     <NativeMenuItem Header="DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
                     <NativeMenuItem Header="DevPortal" Click="NativeMenuItemDebugDevPortal_OnClick"/>
+                    <NativeMenuItem Header="打开 MainView" Click="NativeMenuItemDebugOpenMainView_OnClick"/>
                     <NativeMenuItem Header="截图工具" Click="NativeMenuItemDebugOpenScreenshotWindow_OnClick"/>
                     <NativeMenuItem Header="教程编辑器" Click="NativeMenuItemOpenTutorialEditor_OnClick"/>
                     <NativeMenuItemSeparator/>
@@ -133,14 +134,14 @@
     </Window.Resources>
     <Window.Styles>
         <Style Selector="Grid#GridRoot">
-            <Setter Property="IsVisible">
+            <Setter Property="local:MainWindow.IsContentVisibleRequested">
                 <MultiBinding Converter="{x:Static BoolConverters.Or}">
                     <Binding Path="SettingsService.Settings.IsMainWindowVisible"/>
                     <Binding Path="ViewModel.IsEditMode"/>
                 </MultiBinding>
             </Setter>
             <Style Selector="^.ExplicitShowed.OverlayOpened">
-                <Setter Property="IsVisible">
+                <Setter Property="local:MainWindow.IsContentVisibleRequested">
                     <MultiBinding Converter="{x:Static BoolConverters.Or}">
                         <Binding Path="SettingsService.Settings.IsMainWindowVisible"/>
                         <Binding Path="ViewModel.IsEditMode"/>
@@ -149,17 +150,17 @@
             </Style>
             <Style Selector="^.BasicHidingMode:not(.ExplicitShowed)">
                 <Style Selector="^.HideOnClass.StateOnClass">
-                    <Setter Property="IsVisible" Value="{Binding ViewModel.IsEditMode}"/>
+                    <Setter Property="local:MainWindow.IsContentVisibleRequested" Value="{Binding ViewModel.IsEditMode}"/>
                 </Style>
                 <Style Selector="^.HideOnMaxWindow.ForegroundMaxWindow">
-                    <Setter Property="IsVisible" Value="{Binding ViewModel.IsEditMode}"/>
+                    <Setter Property="local:MainWindow.IsContentVisibleRequested" Value="{Binding ViewModel.IsEditMode}"/>
                 </Style>
                 <Style Selector="^.HideOnFullscreen.ForegroundFullscreen">
-                    <Setter Property="IsVisible" Value="{Binding ViewModel.IsEditMode}"/>
+                    <Setter Property="local:MainWindow.IsContentVisibleRequested" Value="{Binding ViewModel.IsEditMode}"/>
                 </Style>
             </Style>
             <Style Selector="^.AdvancedHidingMode.HideRuleSatisfied:not(.ExplicitShowed)">
-                <Setter Property="IsVisible" Value="{Binding ViewModel.IsEditMode}"/>
+                <Setter Property="local:MainWindow.IsContentVisibleRequested" Value="{Binding ViewModel.IsEditMode}"/>
             </Style>
         </Style>
         <Style Selector=":is(Window):not(:edit-mode) :is(Control)">
@@ -606,7 +607,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <Button Theme="{StaticResource TransparentButton}"
                             x:Name="ButtonResetView"
-                            Command="{Binding #ZoomBorder.ResetMatrix}">
+                            Command="{Binding #ZoomBorder.ResetCommand}">
                         <ci:IconText Glyph="&#xE12F;" Text="重置视图" />
                     </Button>
                     <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}"

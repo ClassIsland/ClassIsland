@@ -404,11 +404,11 @@ public partial class ScheduleDataGrid : TemplatedControl
         }
 
         var currentColumn = _mainDataGrid.CurrentColumn;
-        if (currentColumn == _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 1] || _mainDataGrid.SelectedItem == null)
+        if (currentColumn == _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 2] || _mainDataGrid.SelectedItem == null)
         {
             return;
         }
-        _mainDataGrid.CurrentColumn = _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 1];
+        _mainDataGrid.CurrentColumn = _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 2];
     }
 
     private void UpdateTimePoints()
@@ -416,6 +416,7 @@ public partial class ScheduleDataGrid : TemplatedControl
         foreach (var row in WeekClassPlanRows)
         {
             row.TimePoint = TimeLayoutItem.Empty;
+            row.SelectedInfo = ClassInfo.Empty;
         }
         var classPlan = SelectedClassPlan 
                         ?? ClassPlansCache[1] 
@@ -428,6 +429,7 @@ public partial class ScheduleDataGrid : TemplatedControl
         for (int i = 0; i < Math.Min(classPlan.Classes.Count, WeekClassPlanRows.Count); i++)
         {
             WeekClassPlanRows[i].TimePoint = classPlan.Classes[i].CurrentTimeLayoutItem;
+            WeekClassPlanRows[i].SelectedInfo = classPlan.Classes[i];
         }
     }
     
@@ -546,7 +548,7 @@ public partial class ScheduleDataGrid : TemplatedControl
         {
             return;
         }
-        _mainDataGrid?.ScrollIntoView(WeekClassPlanRows[SelectedClassInfoIndex], _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 1]);
+        _mainDataGrid?.ScrollIntoView(WeekClassPlanRows[SelectedClassInfoIndex], _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 2]);
     }
 
     public void CreateClassPlanByDate(DateTime date)

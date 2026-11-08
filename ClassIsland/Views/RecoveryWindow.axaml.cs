@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.ViewModels;
 using ClassIsland.Views.RecoveryPages;
 using FluentAvalonia.UI.Navigation;
@@ -19,12 +20,15 @@ public partial class RecoveryWindow : ViewBase
 
     public event EventHandler? CompleteInitialized;
 
+    internal bool OpenBackupOnStartup { get; init; }
+
     public RecoveryViewModel ViewModel { get; } = new();
 
     public RecoveryWindow()
     {
         Instance = this;
         InitializeComponent();
+        FaFrameLifetimeHelper.Attach(MainFrame);
         DataContext = this;
     }
 
@@ -46,8 +50,15 @@ public partial class RecoveryWindow : ViewBase
         {
             MainFrame = MainFrame
         };
-        home.Loaded += (o, args) => CompleteInitialized?.Invoke(this, EventArgs.Empty);
-        MainFrame.Content = home;
+        var initialPage = OpenBackupOnStartup
+            ? new RecoverBackupPage
+            {
+                MainFrame = MainFrame,
+                LastPage = home
+            }
+            : (Avalonia.Controls.UserControl)home;
+        initialPage.Loaded += (o, args) => CompleteInitialized?.Invoke(this, EventArgs.Empty);
+        MainFrame.Content = initialPage;
     }
 
     private void NavigationServiceOnNavigated(object sender, FANavigationEventArgs e)
