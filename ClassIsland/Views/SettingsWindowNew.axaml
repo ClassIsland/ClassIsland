@@ -142,7 +142,7 @@
                                 Classes="nav-back">
                             <Button.IsVisible>
                                 <MultiBinding Converter="{x:Static BoolConverters.Or}">
-                                    <Binding Path="#NavigationFrame.CanGoBack"/>
+                                    <Binding Path="#SettingsWindowRoot.ViewModel.CanGoBack"/>
                                     <Binding Path="CanGoBack" RelativeSource="{RelativeSource FindAncestor, AncestorType=NavigationPage}"/>
                                 </MultiBinding>
                             </Button.IsVisible>
@@ -262,11 +262,20 @@
                                        Text="{Binding ViewModel.PageTitle}"
                                        Theme="{StaticResource TitleTextBlockStyle}"/>
                         </Grid>
-                        <controls3:FAFrame Grid.Row="1" Content="{Binding ViewModel.FrameContent}"
-                                         Navigated="NavigationServiceOnLoadCompleted"
-                                         CacheSize="0"
-                                         x:Name="NavigationFrame">
-                        </controls3:FAFrame>
+                        <NavigationPage Grid.Row="1"
+                                        x:Name="SettingsPageHost"
+                                        IsGestureEnabled="False"
+                                        CurrentPageChanged="SettingsPageHost_OnCurrentPageChanged">
+                            <NavigationPage.PageTransition>
+                                <controls:CompositionPageTransition Duration="0:0:0.25"
+                                                                    Orientation="Vertical"
+                                                                    SlideDistance="100"
+                                                                    SlideOut="False"
+                                                                    SlideInEasing="0,0 0,1"
+                                                                    FadeInEasing="0,0 0,1"
+                                                                    FadeOutEasing="0,0 0,1"/>
+                            </NavigationPage.PageTransition>
+                        </NavigationPage>
                     </Grid>
                 </controls:DrawerHost>
             </controls3:FANavigationView>
