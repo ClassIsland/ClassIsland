@@ -58,4 +58,9 @@ public interface INotificationSettings
         get;
         set;
     }
+    
+    /// <summary>
+    /// 提醒效果 ID
+    /// </summary>
+    public string NotificationEffectId { get; set; }
 }

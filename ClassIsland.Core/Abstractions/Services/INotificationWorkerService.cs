@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using ClassIsland.Core.Models.Notification;
 
 namespace ClassIsland.Core.Abstractions.Services;
@@ -8,5 +9,6 @@ namespace ClassIsland.Core.Abstractions.Services;
 public interface INotificationWorkerService
 {
     internal NotificationPlayingTicket CreateTicket(NotificationRequest request);
-    
+
+    public static ObservableCollection<NotificationEffectRegisterInfo> RegisteredEffects { get; } = [];
 }

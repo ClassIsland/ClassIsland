@@ -14,6 +14,7 @@
                            xmlns:system="clr-namespace:System;assembly=System.Runtime"
                            xmlns:ci="http://classisland.tech/schemas/xaml/core"
                            xmlns:registry="clr-namespace:ClassIsland.Core.Services.Registry;assembly=ClassIsland.Core"
+                           xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
                            xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                            xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Collections"
                            xmlns:storage="clr-namespace:Avalonia.Platform.Storage;assembly=Avalonia.Base"
@@ -295,6 +296,20 @@
                                         <CheckBox Content="默认启用" IsChecked="{Binding ViewModel.SettingsService.Settings.IsNotificationEffectEnabled}"
                                                   Margin="0 0 0 6" />
                                     </controls3:FASettingsExpanderItem>
+                                    <controls3:FASettingsExpanderItem Content="提醒特效">
+                                        <controls3:FASettingsExpanderItem.Footer>
+                                            <ComboBox ItemsSource="{x:Static services:INotificationWorkerService.RegisteredEffects}"
+                                                      SelectedValueBinding="{Binding Id}"
+                                                      SelectedValue="{Binding ViewModel.SettingsService.Settings.NotificationEffectId, Mode=TwoWay}"
+                                                      AutomationProperties.Name="提醒特效">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Name}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </controls3:FASettingsExpanderItem.Footer>
+                                    </controls3:FASettingsExpanderItem>
                                     <controls3:FASettingsExpanderItem
                                         Description="提醒特效渲染时的精度，使用较低的精度性能可以获得较好的性能。"
                                         Content="提醒特效渲染精度"
@@ -447,11 +462,32 @@
                                         <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xEA2F;}"
                                                                     IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
                                                                     Header="启用提醒强调特效"
-                                                                    Description="启用后，发出提醒时会播放全屏强调特效。">
+                                                                    Description="启用后，发出提醒时会播放全屏强调特效。"
+                                                                    IsExpanded="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=OneWay}">
                                             <controls3:FASettingsExpander.Footer>
                                                 <ToggleSwitch
                                                     IsChecked="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=TwoWay}" />
                                             </controls3:FASettingsExpander.Footer>
+                                            <controls3:FASettingsExpanderItem Content="覆盖提醒效果">
+                                                <controls3:FASettingsExpanderItem.Footer>
+                                                    <StackPanel Orientation="Horizontal" Spacing="8" Classes="items-valign-center">
+                                                        <ComboBox ItemsSource="{x:Static services:INotificationWorkerService.RegisteredEffects}"
+                                                                  SelectedValueBinding="{Binding Id}"
+                                                                  SelectedValue="{Binding ProviderSettings.NotificationEffectId, Mode=TwoWay}"
+                                                                  IsEnabled="{Binding ProviderSettings.OverridesNotificationEffectId}"
+                                                                  AutomationProperties.Name="提醒特效">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding Name}" />
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                        <ToggleSwitch
+                                                            IsChecked="{Binding ProviderSettings.OverridesNotificationEffectId, Mode=TwoWay}"
+                                                            AutomationProperties.Name="覆盖提醒特效" />
+                                                    </StackPanel>
+                                                </controls3:FASettingsExpanderItem.Footer>
+                                            </controls3:FASettingsExpanderItem>
                                         </controls3:FASettingsExpander>
 
                                         <!-- 启用提醒音效 -->

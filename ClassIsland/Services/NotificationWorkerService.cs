@@ -42,6 +42,7 @@ public class NotificationWorkerService : INotificationWorkerService
     private IExactTimeService ExactTimeService { get; }
     private ILessonsService LessonsService { get; }
     private ILogger<NotificationWorkerService> Logger { get; }
+    public ITopmostEffectPlayer TopmostEffectPlayer { get; }
 
     private List<(NotificationRequest request, bool overlay)> PlayingRequests { get; } = [];
     
@@ -50,7 +51,8 @@ public class NotificationWorkerService : INotificationWorkerService
         SettingsService settingsService,
         IExactTimeService exactTimeService,
         ILessonsService lessonsService,
-        ILogger<NotificationWorkerService> logger)
+        ILogger<NotificationWorkerService> logger,
+        ITopmostEffectPlayer topmostEffectPlayer)
     {
         SpeechService = speechService;
         AudioService = audioService;
@@ -58,7 +60,8 @@ public class NotificationWorkerService : INotificationWorkerService
         ExactTimeService = exactTimeService;
         LessonsService = lessonsService;
         Logger = logger;
-        
+        TopmostEffectPlayer = topmostEffectPlayer;
+
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
     }
 
@@ -120,6 +123,10 @@ public class NotificationWorkerService : INotificationWorkerService
             settings = i;
             break;
         }
+        
+        var effectId = settings is not NotificationSettings ns || ns.OverridesNotificationEffectId 
+            ? settings.NotificationEffectId
+            : request.EffectId ?? SettingsService.Settings.NotificationEffectId;
 
         var cancellationCompletedSource = new TaskCompletionSource();
         cancellationTokenSource.Token.Register(() =>
@@ -139,7 +146,21 @@ public class NotificationWorkerService : INotificationWorkerService
             Request = request,
             Settings = settings,
             CancellationTokenSource = cancellationTokenSource,
-            CancellationCompletedCompletionSource = cancellationCompletedSource
+            CancellationCompletedCompletionSource = cancellationCompletedSource,
+            TryPlayNotificationEffect = context =>
+            {
+                if (!settings.IsNotificationEffectEnabled || !SettingsService.Settings.AllowNotificationEffect)
+                {
+                    return;
+                }
+                var effectFactory = INotificationWorkerService.RegisteredEffects.FirstOrDefault(x => x.Id == effectId)?
+                    .Factory;
+                if (effectFactory?.Invoke(context) is not {} effect)
+                {
+                    return;
+                }
+                TopmostEffectPlayer.PlayEffect(effect);
+            }
         };
         return ticket;
     }

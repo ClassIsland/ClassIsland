@@ -47,8 +47,12 @@ public class NotificationPlayingTicket : ObservableRecipient
     /// 取消完成时触发
     /// </summary>
     public required TaskCompletionSource CancellationCompletedCompletionSource { internal get; init; }
-    
 
+    /// <summary>
+    /// 按需播放提醒特效
+    /// </summary>
+    public required Action<NotificationEffectContext> TryPlayNotificationEffect { get; init; }
+    
     /// <summary>
     /// 取消本次播放任务。取消后，提醒将被退回至提醒主机，并移交给其它提醒消费者播放。
     /// </summary>
