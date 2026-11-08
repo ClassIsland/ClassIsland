@@ -361,6 +361,7 @@ public partial class App
         // 提醒效果
         services.AddNotificationEffect("classisland.ripple", "波纹", RippleEffect.Create);
         services.AddNotificationEffect("classisland.confetti", "下彩带", ConfettiEffect.Create);
+        services.AddNotificationEffect("classisland.starFountain", "星星喷泉", StarFountainEffect.Create);
         // Plugins
         if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {
