@@ -7,6 +7,12 @@ namespace ClassIsland.iOS.Services.Notifications;
 /// </summary>
 internal sealed class IosNotificationCenterDelegate : UNUserNotificationCenterDelegate
 {
+    public event Action<Uri>? NavigationRequested;
+
+    internal IosNotificationMutationGate NotificationMutationGate { get; } = new();
+
+    public void RegisterCategories() => IosNotificationActions.RegisterCategories();
+
     public override void WillPresentNotification(
         UNUserNotificationCenter center,
         UNNotification notification,
@@ -24,12 +30,29 @@ internal sealed class IosNotificationCenterDelegate : UNUserNotificationCenterDe
         completionHandler(presentationOptions);
     }
 
-    public override void DidReceiveNotificationResponse(
+    public override async void DidReceiveNotificationResponse(
         UNUserNotificationCenter center,
         UNNotificationResponse response,
         Action completionHandler)
     {
-        // iOS 会负责将应用带到前台；当前课程页面不需要额外的原生导航状态。
-        completionHandler();
+        try
+        {
+            var uri = await IosNotificationActions.HandleResponseAsync(
+                center,
+                response,
+                NotificationMutationGate);
+            if (uri != null)
+            {
+                NavigationRequested?.Invoke(uri);
+            }
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"处理 iOS 通知操作时发生异常：{exception}");
+        }
+        finally
+        {
+            completionHandler();
+        }
     }
 }

@@ -11,7 +11,8 @@ internal static class AppNavigationUriParser
             "settings",
             "profile",
             "live-activity",
-            "helps"
+            "helps",
+            "system"
         };
 
     public static bool TryParseClassIslandUri(string? value, out Uri? uri)

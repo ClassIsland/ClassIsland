@@ -11,4 +11,6 @@ internal sealed record IosLessonNotificationRequest(
     Guid ChannelId,
     bool PlaySound,
     bool IsCatchUp = false,
-    string? ChainId = null);
+    string? ChainId = null,
+    DateOnly? ScheduleDate = null,
+    DateTimeOffset? ActionExpiresAt = null);

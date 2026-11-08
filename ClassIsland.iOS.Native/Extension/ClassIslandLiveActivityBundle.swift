@@ -5,5 +5,6 @@ import WidgetKit
 struct ClassIslandLiveActivityBundle: WidgetBundle {
     var body: some Widget {
         ClassIslandLiveActivityWidget()
+        ClassIslandScheduleWidget()
     }
 }

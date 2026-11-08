@@ -66,6 +66,10 @@
 
     <!-- Add Styles Here -->
 
+    <Style Selector=":is(controls|FAItemsRepeater)">
+        <Setter Property="ci:FaItemsRepeaterAutomationAssist.IsEnabled" Value="True"/>
+    </Style>
+
     <Style Selector=":is(ScrollViewer)">
         <Setter Property="ci:ScrollViewerAssist.IsOverScrollAnimationEnabled" Value="True"/>
     </Style>

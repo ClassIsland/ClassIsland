@@ -10,9 +10,9 @@
 #
 # 处理流程：
 #   1. 解包 IPA，定位 Payload 下唯一的 .app；
-#   2. 用传入的 entitlements 为主可执行文件执行 ldid -S；
-#   3. PlugIns 下每个 .appex 的宿主可执行文件使用 appex 自带的 Entitlements.plist，
-#      没有时使用空 entitlements；
+#   2. 为传入的主程序 entitlements 补充实际 Bundle ID 对应的共享 App Group，再执行 ldid -S；
+#   3. Widget Extension 仅携带同一个共享 App Group；其他 .appex 使用自带的
+#      Entitlements.plist，没有时使用空 entitlements；
 #   4. 其余嵌套 Mach-O 二进制（Frameworks、dylib 等）同样用空 entitlements 签名，
 #      避免未签名嵌套二进制在 TrollStore 安装后加载失败；
 #   5. 重新打包为 <原名>-TrollStore-signed.ipa，并生成同名 .sha256 文件。
@@ -95,6 +95,11 @@ read_plist_string() {
 }
 
 app_bundle_name="$(basename "$app_bundle")"
+app_bundle_id="$(read_plist_string "$app_bundle/Info.plist" CFBundleIdentifier)"
+if [[ -z "$app_bundle_id" || "$app_bundle_id" == *[!A-Za-z0-9.-]* ]]; then
+  die "Info.plist does not declare a valid CFBundleIdentifier: $app_bundle/Info.plist"
+fi
+shared_app_group="group.$app_bundle_id.shared"
 app_executable="$(read_plist_string "$app_bundle/Info.plist" CFBundleExecutable)"
 if [[ -z "$app_executable" ]]; then
   die "Info.plist does not declare CFBundleExecutable: $app_bundle/Info.plist"
@@ -113,6 +118,17 @@ cat > "$empty_entitlements" <<'PLIST'
 </plist>
 PLIST
 
+host_entitlements="$work_root/host-entitlements.plist"
+cp "$entitlements_path" "$host_entitlements"
+"$plist_buddy" -c 'Delete :com.apple.security.application-groups' "$host_entitlements" 2>/dev/null || true
+"$plist_buddy" -c 'Add :com.apple.security.application-groups array' "$host_entitlements"
+"$plist_buddy" -c "Add :com.apple.security.application-groups:0 string $shared_app_group" "$host_entitlements"
+
+widget_entitlements="$work_root/widget-entitlements.plist"
+cp "$empty_entitlements" "$widget_entitlements"
+"$plist_buddy" -c 'Add :com.apple.security.application-groups array' "$widget_entitlements"
+"$plist_buddy" -c "Add :com.apple.security.application-groups:0 string $shared_app_group" "$widget_entitlements"
+
 signed_binaries="$work_root/signed-binaries.txt"
 : > "$signed_binaries"
 signed_count=0
@@ -127,7 +143,7 @@ sign_binary() {
 }
 
 # 主可执行文件是唯一需要 TrollStore entitlements 的二进制。
-sign_binary "$app_binary" "$entitlements_path"
+sign_binary "$app_binary" "$host_entitlements"
 
 appex_count=0
 for appex in "$app_bundle"/PlugIns/*.appex; do
@@ -145,7 +161,14 @@ for appex in "$app_bundle"/PlugIns/*.appex; do
     continue
   fi
 
-  if [[ -f "$appex/Entitlements.plist" ]]; then
+  appex_point="$(read_plist_string "$appex/Info.plist" NSExtension:NSExtensionPointIdentifier)"
+  if [[ "$appex_point" == "com.apple.widgetkit-extension" ]]; then
+    appex_bundle_id="$(read_plist_string "$appex/Info.plist" CFBundleIdentifier)"
+    if [[ "$appex_bundle_id" != "$app_bundle_id.LiveActivityExtension" ]]; then
+      die "Widget Extension bundle identifier does not match its host: $appex_bundle_id"
+    fi
+    appex_entitlements="$widget_entitlements"
+  elif [[ -f "$appex/Entitlements.plist" ]]; then
     appex_entitlements="$appex/Entitlements.plist"
   else
     appex_entitlements="$empty_entitlements"

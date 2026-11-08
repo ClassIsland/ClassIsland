@@ -11,6 +11,9 @@ public sealed class AppNavigationUriParserTests
     [InlineData("classisland://app/settings/notification?ci_keepHistory=true")]
     [InlineData("classisland://app/profile/timeLayouts")]
     [InlineData("classisland://app/helps")]
+    [InlineData("classisland://app/system/schedule?date=2026-11-08&lesson=0")]
+    [InlineData("classisland://app/system/settings")]
+    [InlineData("classisland://app/system/notifications?enabled=false")]
     public void TryParseClassIslandUri_AcceptsAbsoluteAppLinks(string value)
     {
         Assert.True(AppNavigationUriParser.TryParseClassIslandUri(value, out var uri));

@@ -29,7 +29,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private readonly LessonPreparationNotificationTimeline _lessonPreparationTimeline;
     private readonly CancellationTokenSource _cancellation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
-    private readonly IosNotificationMutationGate _notificationMutationGate = new();
+    private readonly IosNotificationMutationGate _notificationMutationGate;
     private readonly IosLessonNotificationScheduler _scheduler;
     private readonly DispatcherTimer _refreshDebounceTimer;
     private readonly DispatcherTimer _attachedSettingsScanTimer;
@@ -61,10 +61,12 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
 
     public IosLessonsNotificationCoordinator(
         IosNotificationAuthorizationService authorizationService,
-        LessonPreparationNotificationTimeline lessonPreparationTimeline)
+        LessonPreparationNotificationTimeline lessonPreparationTimeline,
+        IosNotificationMutationGate? notificationMutationGate = null)
     {
         _authorizationService = authorizationService;
         _lessonPreparationTimeline = lessonPreparationTimeline;
+        _notificationMutationGate = notificationMutationGate ?? new IosNotificationMutationGate();
         _scheduler = new IosLessonNotificationScheduler(
             lessonPreparationTimeline,
             _notificationMutationGate);
@@ -260,6 +262,10 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         var shouldUseSystemNotifications = candidateRequests.Count > 0;
         var authorized = shouldUseSystemNotifications &&
                          await _authorizationService.RequestAuthorizationIfNeededAsync();
+        await IosNotificationActions.SetSchedulingEnabledAsync(
+            schedulingEnabled && (!shouldUseSystemNotifications || authorized),
+            _notificationMutationGate,
+            cancellationToken);
         IReadOnlyList<IosLessonNotificationRequest> requests = authorized
             ? candidateRequests
             : Array.Empty<IosLessonNotificationRequest>();

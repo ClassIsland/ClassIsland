@@ -20,6 +20,12 @@
 		A1000000000000000000000A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* WidgetKit.framework */; };
 		A1000000000000000000000C /* ClassIslandHudBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* ClassIslandHudBridge.swift */; };
 		A1000000000000000000000D /* ClassIslandHudBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* ClassIslandHudBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A10000000000000000000010 /* ClassIslandSystemSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* ClassIslandSystemSnapshot.swift */; };
+		A10000000000000000000011 /* ClassIslandSystemIntegrationBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000011 /* ClassIslandSystemIntegrationBridge.swift */; };
+		A10000000000000000000012 /* ClassIslandActionIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* ClassIslandActionIntents.swift */; };
+		A10000000000000000000013 /* ClassIslandSystemSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* ClassIslandSystemSnapshot.swift */; };
+		A10000000000000000000014 /* ClassIslandQueryIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000013 /* ClassIslandQueryIntents.swift */; };
+		A10000000000000000000015 /* ClassIslandScheduleWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* ClassIslandScheduleWidget.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +44,11 @@
 		A2000000000000000000000C /* ClassIslandLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = ClassIslandLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000000000000000000000E /* ClassIslandHudBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandHudBridge.swift; sourceTree = "<group>"; };
 		A2000000000000000000000F /* ClassIslandHudBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassIslandHudBridge.h; sourceTree = "<group>"; };
+		A20000000000000000000010 /* ClassIslandSystemSnapshot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandSystemSnapshot.swift; sourceTree = "<group>"; };
+		A20000000000000000000011 /* ClassIslandSystemIntegrationBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandSystemIntegrationBridge.swift; sourceTree = "<group>"; };
+		A20000000000000000000012 /* ClassIslandActionIntents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandActionIntents.swift; sourceTree = "<group>"; };
+		A20000000000000000000013 /* ClassIslandQueryIntents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandQueryIntents.swift; sourceTree = "<group>"; };
+		A20000000000000000000014 /* ClassIslandScheduleWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandScheduleWidget.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				A20000000000000000000001 /* ClassIslandActivityAttributes.swift */,
+				A20000000000000000000010 /* ClassIslandSystemSnapshot.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -88,6 +100,8 @@
 				A20000000000000000000003 /* ClassIslandLiveActivityBridge.h */,
 				A2000000000000000000000E /* ClassIslandHudBridge.swift */,
 				A2000000000000000000000F /* ClassIslandHudBridge.h */,
+				A20000000000000000000011 /* ClassIslandSystemIntegrationBridge.swift */,
+				A20000000000000000000012 /* ClassIslandActionIntents.swift */,
 			);
 			path = Bridge;
 			sourceTree = "<group>";
@@ -98,6 +112,8 @@
 				A2000000000000000000000D /* ClassIslandBrand.png */,
 				A20000000000000000000004 /* ClassIslandLiveActivityBundle.swift */,
 				A20000000000000000000005 /* ClassIslandLiveActivityWidget.swift */,
+				A20000000000000000000013 /* ClassIslandQueryIntents.swift */,
+				A20000000000000000000014 /* ClassIslandScheduleWidget.swift */,
 				A20000000000000000000006 /* Info.plist */,
 				A20000000000000000000007 /* ClassIslandLiveActivityExtension.entitlements */,
 			);
@@ -193,10 +209,11 @@
 			};
 			buildConfigurationList = A70000000000000000000001 /* Build configuration list for PBXProject "ClassIsland.iOS.Native" */;
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = "zh-Hans";
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				"zh-Hans",
 				Base,
 			);
 			mainGroup = A40000000000000000000001;
@@ -236,6 +253,9 @@
 				A10000000000000000000001 /* ClassIslandActivityAttributes.swift in Sources */,
 				A10000000000000000000002 /* ClassIslandLiveActivityBridge.swift in Sources */,
 				A1000000000000000000000C /* ClassIslandHudBridge.swift in Sources */,
+				A10000000000000000000010 /* ClassIslandSystemSnapshot.swift in Sources */,
+				A10000000000000000000011 /* ClassIslandSystemIntegrationBridge.swift in Sources */,
+				A10000000000000000000012 /* ClassIslandActionIntents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,6 +266,9 @@
 				A10000000000000000000005 /* ClassIslandActivityAttributes.swift in Sources */,
 				A10000000000000000000006 /* ClassIslandLiveActivityBundle.swift in Sources */,
 				A10000000000000000000007 /* ClassIslandLiveActivityWidget.swift in Sources */,
+				A10000000000000000000013 /* ClassIslandSystemSnapshot.swift in Sources */,
+				A10000000000000000000014 /* ClassIslandQueryIntents.swift in Sources */,
+				A10000000000000000000015 /* ClassIslandScheduleWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,7 +332,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "ClassIsland Live Activity Bridge";
+				INFOPLIST_KEY_CFBundleDisplayName = ClassIsland;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -344,7 +367,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "ClassIsland Live Activity Bridge";
+				INFOPLIST_KEY_CFBundleDisplayName = ClassIsland;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (

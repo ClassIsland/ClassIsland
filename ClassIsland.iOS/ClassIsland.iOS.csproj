@@ -62,6 +62,8 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
+    <CustomEntitlements Include="com.apple.security.application-groups"
+                        Type="StringArray" Value="group.$(ApplicationId).shared" />
   </ItemGroup>
 
   <ItemGroup>
@@ -167,6 +169,23 @@
            Text="SoundFlow miniaudio.framework is missing from the iOS app bundle." />
     <MakeDir Directories="$(_SoundFlowResolverDirectory)" />
     <Exec Command="/bin/ln -sfn &quot;../../../../Frameworks/miniaudio.framework/miniaudio&quot; &quot;$(_SoundFlowResolverAlias)&quot;" />
+  </Target>
+
+  <Target Name="EmbedClassIslandAppIntentsMetadata"
+          AfterTargets="_CreateAppBundle"
+          BeforeTargets="CoreCodesign"
+          Condition="$([MSBuild]::IsOSPlatform('osx')) And '$(RuntimeIdentifier)' == 'ios-arm64'">
+    <PropertyGroup>
+      <_ClassIslandAppIntentsMetadata>$(AppBundleDir)/Frameworks/ClassIslandLiveActivityBridge.framework/Metadata.appintents</_ClassIslandAppIntentsMetadata>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(_ClassIslandAppIntentsMetadata)/extract.actionsdata')"
+           Text="ClassIsland App Intents metadata is missing from the embedded Swift framework." />
+    <ItemGroup>
+      <_ClassIslandAppIntentsFile Include="$(_ClassIslandAppIntentsMetadata)/extract.actionsdata;$(_ClassIslandAppIntentsMetadata)/version.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_ClassIslandAppIntentsFile)" DestinationFolder="$(AppBundleDir)/Metadata.appintents" />
+    <!-- 重新生成宿主的短语索引，避免沿用 framework 的 Bundle Identifier。 -->
+    <Exec Command="/usr/bin/xcrun appintentsnltrainingprocessor --infoplist-path &quot;$(AppBundleDir)/Info.plist&quot; --temp-dir-path &quot;$(IntermediateOutputPath)system-intents-ssu&quot; --bundle-id &quot;$(ApplicationId)&quot; --product-path &quot;$(AppBundleDir)&quot; --extracted-metadata-path &quot;$(AppBundleDir)/Metadata.appintents&quot; --archive-ssu-assets" />
   </Target>
 
   <Target Name="EmbedIosSwiftRuntimeLibraries"

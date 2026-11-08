@@ -17,6 +17,7 @@ namespace ClassIsland.Lessons.Tests;
 internal sealed class TestLessonsService : ILessonsService
 {
     public Func<DateTime, ClassPlan?> GetPlan { get; init; } = _ => null;
+    public Func<DateOnly, OrderedDictionary<Guid, ScheduleItem>> GetSchedule { get; init; } = _ => throw new NotSupportedException();
     public ClassInfo? CurrentClassInfo { get; set; }
     public ClassInfo? NextClassInfo { get; set; }
     public ClassPlan? CurrentClassPlan { get; set; }
@@ -50,7 +51,7 @@ internal sealed class TestLessonsService : ILessonsService
         return GetPlan(date);
     }
     public ObservableCollection<int> GetCyclePositionsByDate(DateTime? referenceTime = null) => throw new NotSupportedException();
-    public OrderedDictionary<Guid, ScheduleItem> GetScheduleItemsByDate(DateOnly date) => throw new NotSupportedException();
+    public OrderedDictionary<Guid, ScheduleItem> GetScheduleItemsByDate(DateOnly date) => GetSchedule(date);
     public void StartMainTimer() => throw new NotSupportedException();
     public void StopMainTimer() => throw new NotSupportedException();
     void ILessonsService.DebugTriggerOnClass() => throw new NotSupportedException();

@@ -93,6 +93,8 @@ HUD 进程：IosHudPreviewNotificationPoller 每秒轮询该目录
 
 主可执行文件使用 [`ClassIsland.iOS/Entitlements.TrollStore.plist`](../ClassIsland.iOS/Entitlements.TrollStore.plist)，在打包后由 `tools/ci/sign-ios-trollstore-ipa.sh` 通过 `ldid -S` 写入。该文件参考 Letterpress、TrollSpeed、FloatingBall 等已验证组合：
 
+签名脚本还会根据宿主实际 Bundle ID 为主程序与课程小组件扩展写入同一个 `group.<Bundle ID>.shared` App Group，供小组件和快捷指令读取课表快照。扩展不会获得主程序的 TrollStore 私有权限。
+
 | Key | 用途 |
 | --- | --- |
 | `platform-application` | 使 App 以平台二进制身份运行，解除平台签名限制，是 TrollStore 增强能力的核心。 |
@@ -180,8 +182,8 @@ bash tools/ci/sign-ios-trollstore-ipa.sh \
 脚本行为：
 
 1. 解包 IPA，定位 `Payload/` 下唯一的 `.app`。
-2. 用传入的 entitlements 为**主可执行文件**执行 `ldid -S<entitlements>`。
-3. `PlugIns/*.appex` 的宿主可执行文件使用 appex 自带的 `Entitlements.plist`，没有则使用空 entitlements；appex 缺少宿主二进制时打印警告并跳过。
+2. 复制传入的 entitlements，按宿主实际 Bundle ID 补充 App Group，再为**主可执行文件**执行 `ldid -S`。
+3. `PlugIns/*.appex` 的宿主可执行文件使用 appex 自带的 `Entitlements.plist`，没有则从空 entitlements 开始；课程小组件扩展补充与宿主一致的 App Group。appex 缺少宿主二进制时打印警告并跳过。
 4. 其余嵌套 Mach-O（`Frameworks/` 下的 framework 与 dylib 等）统一用空 entitlements 签名，避免未签名嵌套二进制在安装后加载失败。
 5. 重新打包为 `<原文件名>-TrollStore-signed.ipa`，并生成同名 `.sha256` 文件，同时打印 SHA-256。
 
@@ -223,8 +225,8 @@ SHA-256: 34e0adc4...
 
 1. 与 Sideload 相同的 Release 解释器构建与 unsigned IPA 校验（`tools/ci/verify-ios-ipa.sh` 已支持 `TrollStore`，并使用 `bin/TrollStore/` 的宿主程序集做对比）；
 2. 下载固定版本的 [ProcursusTeam/ldid](https://github.com/ProcursusTeam/ldid) **macOS arm64** 资产（`ldid_macosx_arm64`，`LDID_VERSION` / `LDID_SHA256` 固定），校验 SHA-256；`macos-26` runner 是 arm64，但注意不能下载 `releases/latest/download/ldid`（该资产是 iphoneos 二进制，会被 macOS 以 `Killed: 9` 终止）。下载后用 `codesign --force --sign -` 做 ad-hoc 重签再执行；
-3. `tools/ci/sign-ios-trollstore-ipa.sh` 用 `ClassIsland.iOS/Entitlements.TrollStore.plist` 对主可执行文件做 ldid 假签名，其余 Mach-O 使用空 entitlements；
-4. `tools/ci/verify-ios-trollstore-ipa.sh` 校验签名结果：主二进制必须包含 `platform-application`、`com.apple.springboard.accessibility-window-hosting`、`com.apple.private.persona-mgmt` 等必需 entitlements 与 IOKit/Metal 例外，不得包含被 iOS 15/A12+ 封禁的 `com.apple.private.cs.debugger` / `dynamic-codesigning` / `com.apple.private.skip-library-validation`；app bundle 内所有 Mach-O 都必须已签名；
+3. `tools/ci/sign-ios-trollstore-ipa.sh` 用 `ClassIsland.iOS/Entitlements.TrollStore.plist` 加宿主 App Group 对主可执行文件做 ldid 假签名；课程小组件扩展保留匹配的 App Group，其余 framework/dylib 使用空 entitlements；
+4. `tools/ci/verify-ios-trollstore-ipa.sh` 校验签名结果：主二进制必须包含 `platform-application`、`com.apple.springboard.accessibility-window-hosting`、`com.apple.private.persona-mgmt` 等必需 entitlements 与 IOKit/Metal 例外，不得包含被 iOS 15/A12+ 封禁的 `com.apple.private.cs.debugger` / `dynamic-codesigning` / `com.apple.private.skip-library-validation`；宿主与课程小组件扩展必须使用匹配的 App Group，app bundle 内所有 Mach-O 都必须已签名；
 5. 用签名后的 IPA 覆盖 unsigned 产物，保持 artifact 命名不变：`out_app_ios_arm64_selfContained_ipa_TrollStore.ipa`（内容为 ldid signed IPA），随附同名 `.sha256`。
 
 要点：

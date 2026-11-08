@@ -19,6 +19,7 @@ using ClassIsland.iOS.Services.LiveActivities;
 using ClassIsland.iOS.Services.Notifications;
 using ClassIsland.iOS.Services.Overlay;
 using ClassIsland.iOS.Services.Platform;
+using ClassIsland.iOS.Services.SystemIntegration;
 using ClassIsland.iOS.Services.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Services;
@@ -37,7 +38,7 @@ namespace ClassIsland.iOS;
 /// 当进程以 <c>--hud</c> 启动时，改为承载系统级悬浮主界面宿主。
 /// </summary>
 [Register("AppDelegate")]
-public sealed class AppDelegate : AvaloniaAppDelegate<App>
+public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
 {
     private readonly bool _isHudProcess = IosHudMode.IsHudProcess;
     private LessonsLiveActivityCoordinator? _liveActivityCoordinator;
@@ -57,7 +58,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private DispatcherTimer? _hudWatchdogTimer;
     private int _hudWindowRegistrationAttempts;
     private App? _app;
-    private Uri? _pendingNavigationUri;
+    private readonly Queue<Uri> _pendingNavigationUris = new();
     private bool _isAppNavigationReady;
 
     protected override AppBuilder CreateAppBuilder()
@@ -81,6 +82,10 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         {
             PlatformServices.HapticFeedbackService = new IosHapticFeedbackService();
             UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
+            _notificationCenterDelegate.RegisterCategories();
+            _notificationCenterDelegate.NavigationRequested += RequestNavigation;
+            IosSystemIntegrationBridge.NavigationRequested += RequestNavigation;
+            TryRegisterSystemNavigation();
             _locationService = new IosLocationService();
             PlatformServices.LocationService = _locationService;
             PlatformServices.LiveActivityService = new IosLiveActivityService();
@@ -160,6 +165,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             }
 
             var viewHost = new MobileViewHost();
+            _systemNavigationService = new IosSystemNavigationService(viewHost);
             IViewHostProvider.Instance = new IosViewHostProvider(viewHost);
             lifetime.MainView = viewHost;
             _activatableLifetime = app.TryGetFeature<IActivatableLifetime>();
@@ -177,7 +183,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
             _lessonsNotificationCoordinator = new IosLessonsNotificationCoordinator(
                 _notificationAuthorizationService,
-                _lessonPreparationTimeline);
+                _lessonPreparationTimeline,
+                _notificationCenterDelegate.NotificationMutationGate);
             _lessonsNotificationCoordinator.Start();
 
             Dispatcher.UIThread.Post(async () =>
@@ -298,6 +305,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             return;
         }
 
+        ConsumePendingSystemNavigation();
         if (args is not ProtocolActivatedEventArgs protocolArguments ||
             !AppNavigationUriParser.TryParseClassIslandUri(
                 protocolArguments.Uri.AbsoluteUri,
@@ -306,13 +314,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             return;
         }
 
-        if (!_isAppNavigationReady)
-        {
-            _pendingNavigationUri = uri;
-            return;
-        }
-
-        QueueNavigation(uri!);
+        RequestNavigation(uri!);
     }
 
     private void OnAppStarted(object? sender, EventArgs e)
@@ -334,14 +336,11 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
 
         _locationService?.SetApplicationReady();
         _hudOverlayService?.ResumeIfEnabled();
+        _systemIntegrationCoordinator = new IosSystemIntegrationCoordinator();
+        _systemIntegrationCoordinator.Start();
         _isAppNavigationReady = true;
-        if (_pendingNavigationUri is not { } uri)
-        {
-            return;
-        }
-
-        _pendingNavigationUri = null;
-        QueueNavigation(uri);
+        ConsumePendingSystemNavigation();
+        while (_pendingNavigationUris.TryDequeue(out var uri)) QueueNavigation(uri);
     }
 
     private void StartHudWindowRegistration()
@@ -427,10 +426,15 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
         _hudWatchdogTimer.Start();
     }
 
-    private static void QueueNavigation(Uri uri)
+    private void QueueNavigation(Uri uri)
     {
-        Dispatcher.UIThread.Post(() =>
+        Dispatcher.UIThread.Post(async () =>
         {
+            if (uri.AbsolutePath.StartsWith("/system/", StringComparison.Ordinal))
+            {
+                if (_systemNavigationService != null) await _systemNavigationService.NavigateAsync(uri);
+                return;
+            }
             if (IAppHost.TryGetService<IUriNavigationService>() is { } navigationService)
             {
                 navigationService.NavigateWrapped(uri);
@@ -546,6 +550,11 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             _hudPreviewNotificationPoller = null;
             _lessonsNotificationCoordinator?.Dispose();
             _lessonsNotificationCoordinator = null;
+            _notificationCenterDelegate.NavigationRequested -= RequestNavigation;
+            IosSystemIntegrationBridge.NavigationRequested -= RequestNavigation;
+            if (_systemNavigationRegistered) IosSystemIntegrationBridge.UnregisterNavigation();
+            _systemIntegrationCoordinator?.Dispose();
+            _systemIntegrationCoordinator = null;
             _liveActivityCoordinator?.Dispose();
             _liveActivityCoordinator = null;
             _systemEventsService?.Dispose();

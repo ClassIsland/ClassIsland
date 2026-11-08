@@ -256,6 +256,10 @@ internal sealed class IosLessonNotificationScheduleFactory(
                 date + lesson.Item.StartTime,
                 logicalNow,
                 systemNow);
+            var endAt = IosNotificationTimeMapper.ToSystemTime(
+                date + lesson.Item.EndTime,
+                logicalNow,
+                systemNow);
             var identifierPrefix = CreateIdentifierPrefix(
                 date,
                 lesson.Item,
@@ -302,7 +306,9 @@ internal sealed class IosLessonNotificationScheduleFactory(
                         IosNotificationSchedulingPolicy.PrepareOnClassChannelId,
                         prepareDelivery.PlaySound,
                         fireAt != plannedPrepareAt,
-                        identifierPrefix));
+                        identifierPrefix,
+                        DateOnly.FromDateTime(date),
+                        startAt));
                 }
             }
 
@@ -318,7 +324,9 @@ internal sealed class IosLessonNotificationScheduleFactory(
                     lessonText,
                     IosNotificationSchedulingPolicy.OnClassChannelId,
                     onClassDelivery.PlaySound,
-                    ChainId: identifierPrefix));
+                    ChainId: identifierPrefix,
+                    ScheduleDate: DateOnly.FromDateTime(date),
+                    ActionExpiresAt: endAt));
             }
         }
 
@@ -356,7 +364,12 @@ internal sealed class IosLessonNotificationScheduleFactory(
                 EnsureText(effectiveSettings.ClassOffMaskText, "课间休息"),
                 body,
                 IosNotificationSchedulingPolicy.OnBreakingChannelId,
-                breakingDelivery.PlaySound));
+                breakingDelivery.PlaySound,
+                ScheduleDate: DateOnly.FromDateTime(date),
+                ActionExpiresAt: IosNotificationTimeMapper.ToSystemTime(
+                    date + breakItem.EndTime,
+                    logicalNow,
+                    systemNow)));
         }
     }
 

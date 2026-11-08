@@ -120,6 +120,41 @@ public sealed class IosLessonNotificationScheduleFactoryTests
         Assert.All(after, request => Assert.Contains("B302", request.Body));
     }
 
+    [Fact]
+    public void Create_NotificationActionsUseLogicalDateAndMappedLessonBoundaries()
+    {
+        var fixture = new NotificationFixture();
+
+        var requests = fixture.Factory.Create();
+        var preparation = Assert.Single(requests,
+            request => request.ChannelId == IosNotificationSchedulingPolicy.PrepareOnClassChannelId);
+        var onClass = Assert.Single(requests,
+            request => request.ChannelId == IosNotificationSchedulingPolicy.OnClassChannelId);
+
+        Assert.Equal(new DateOnly(2026, 10, 26), preparation.ScheduleDate);
+        Assert.Equal(preparation.ScheduleDate, onClass.ScheduleDate);
+        Assert.Equal(onClass.FireAt, preparation.ActionExpiresAt);
+        Assert.Equal(onClass.FireAt.AddMinutes(45), onClass.ActionExpiresAt);
+    }
+
+    [Fact]
+    public void Create_BreakNotificationActionExpiresAtEndOfBreak()
+    {
+        var fixture = new NotificationFixture();
+        fixture.Layout.Layouts.Insert(0, new TimeLayoutItem
+        {
+            TimeType = 1,
+            StartTime = TimeSpan.FromHours(7.5),
+            EndTime = TimeSpan.FromHours(8)
+        });
+
+        var request = Assert.Single(fixture.Factory.Create(),
+            request => request.ChannelId == IosNotificationSchedulingPolicy.OnBreakingChannelId);
+
+        Assert.Equal(new DateOnly(2026, 10, 26), request.ScheduleDate);
+        Assert.Equal(request.FireAt.AddMinutes(30), request.ActionExpiresAt);
+    }
+
     private sealed class NotificationFixture
     {
         private static readonly DateTime LogicalNow = new(2026, 10, 26, 7, 0, 0);

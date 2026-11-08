@@ -1,0 +1,165 @@
+import AppIntents
+import CoreSpotlight
+import Foundation
+import UniformTypeIdentifiers
+import WidgetKit
+
+public typealias ClassIslandSystemNavigationCallback = @convention(c) (UnsafePointer<CChar>?) -> Void
+
+private let systemIntegrationLock = NSLock()
+private var systemIntegrationError: UnsafeMutablePointer<CChar>?
+private var systemPendingCommand: UnsafeMutablePointer<CChar>?
+private var systemNavigationCallback: ClassIslandSystemNavigationCallback?
+private let systemIndexQueue = DispatchQueue(label: "cn.classisland.system-search")
+private let systemIndexGate = DispatchSemaphore(value: 1)
+private var systemIndexSnapshot: ClassIslandSystemSnapshot?
+private var systemIndexNeedsRetry = true
+private var systemShortcutClassPlans: [ClassIslandSystemClassPlan]?
+
+private func setSystemIntegrationError(_ message: String?) {
+    systemIntegrationLock.lock()
+    defer { systemIntegrationLock.unlock() }
+    free(systemIntegrationError)
+    systemIntegrationError = message.flatMap { strdup($0) }
+}
+
+@_cdecl("ci_system_integration_last_error")
+public func ci_system_integration_last_error() -> UnsafePointer<CChar>? {
+    systemIntegrationError.map { UnsafePointer($0) }
+}
+
+/// 返回 1 表示快照已写入共享容器；索引失败仅影响搜索，不阻止小组件更新。
+@_cdecl("ci_system_integration_publish")
+public func ci_system_integration_publish(_ json: UnsafePointer<CChar>?) -> Int32 {
+    guard let json, let data = String(validatingCString: json)?.data(using: .utf8),
+          data.count <= 2_097_152 else {
+        setSystemIntegrationError("System integration payload is invalid or exceeds 2 MB.")
+        return 0
+    }
+    do {
+        let snapshot = try JSONDecoder().decode(ClassIslandSystemSnapshot.self, from: data)
+        try snapshot.validate()
+        let previous = ClassIslandSystemSnapshotStore.load()
+        let url = try ClassIslandSystemSnapshotStore.fileURL(
+            named: ClassIslandSystemSnapshotStore.snapshotFileName)
+        try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        if previous?.lessons != snapshot.lessons || previous?.classPlans != snapshot.classPlans
+            || previous?.notificationsEnabled != snapshot.notificationsEnabled
+            || previous?.validUntil != snapshot.validUntil {
+            WidgetCenter.shared.reloadTimelines(ofKind: "ClassIslandSchedule")
+        }
+        systemIntegrationLock.lock()
+        let shouldIndex = systemIndexNeedsRetry || systemIndexSnapshot?.lessons != snapshot.lessons
+            || systemIndexSnapshot?.classPlans != snapshot.classPlans
+        if shouldIndex {
+            systemIndexSnapshot = snapshot
+            systemIndexNeedsRetry = false
+        }
+        let shouldRefreshShortcutParameters = systemShortcutClassPlans != snapshot.classPlans
+        systemShortcutClassPlans = snapshot.classPlans
+        systemIntegrationLock.unlock()
+        if shouldIndex {
+            systemIndexQueue.async { indexSystemSnapshot(snapshot) }
+        }
+        if #available(iOS 16.0, *), shouldRefreshShortcutParameters {
+            ClassIslandActionShortcuts.updateAppShortcutParameters()
+        }
+        setSystemIntegrationError(nil)
+        return 1
+    } catch {
+        setSystemIntegrationError(String(describing: error))
+        return 0
+    }
+}
+
+@_cdecl("ci_system_integration_register_navigation")
+public func ci_system_integration_register_navigation(_ callback: ClassIslandSystemNavigationCallback?) {
+    systemIntegrationLock.lock()
+    systemNavigationCallback = callback
+    systemIntegrationLock.unlock()
+}
+
+/// 指针由原生层保管，调用方读取 UTF-8 字符串后不应释放。
+@_cdecl("ci_system_integration_consume_pending")
+public func ci_system_integration_consume_pending() -> UnsafePointer<CChar>? {
+    systemIntegrationLock.lock()
+    defer { systemIntegrationLock.unlock() }
+    free(systemPendingCommand)
+    systemPendingCommand = nil
+    guard let url = try? ClassIslandSystemSnapshotStore.fileURL(
+        named: ClassIslandSystemSnapshotStore.pendingCommandFileName),
+          let command = try? String(contentsOf: url, encoding: .utf8),
+          let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+          let modifiedAt = attributes[.modificationDate] as? Date else { return nil }
+    try? FileManager.default.removeItem(at: url)
+    guard Date.now.timeIntervalSince(modifiedAt) < 120 else { return nil }
+    systemPendingCommand = strdup(command)
+    return systemPendingCommand.map { UnsafePointer($0) }
+}
+
+enum ClassIslandSystemCommandHandoff {
+    @MainActor
+    static func request(_ command: String) throws {
+        let url = try ClassIslandSystemSnapshotStore.fileURL(
+            named: ClassIslandSystemSnapshotStore.pendingCommandFileName)
+        try Data(command.utf8).write(
+            to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        systemIntegrationLock.lock()
+        let callback = systemNavigationCallback
+        systemIntegrationLock.unlock()
+        if let callback {
+            command.withCString { callback($0) }
+            try? FileManager.default.removeItem(at: url)
+        }
+    }
+}
+
+private func indexSystemSnapshot(_ snapshot: ClassIslandSystemSnapshot) {
+    systemIndexGate.wait()
+    guard CSSearchableIndex.isIndexingAvailable() else {
+        finishSystemIndexUpdate(succeeded: false)
+        return
+    }
+    let domain = "cn.classisland.schedule"
+    let lessonItems = snapshot.lessons.filter { $0.endDate > .now }.map { lesson in
+        let attributes = CSSearchableItemAttributeSet(contentType: .text)
+        attributes.title = lesson.subject
+        attributes.contentDescription = "\(lesson.startDate.formatted(date: .abbreviated, time: .shortened)) – \(lesson.endDate.formatted(date: .omitted, time: .shortened))\(lesson.location.isEmpty ? "" : " · \(lesson.location)")"
+        attributes.keywords = ["ClassIsland", "课程", "课表", lesson.subject, lesson.location]
+        attributes.contentURL = lesson.deepLink
+        let item = CSSearchableItem(uniqueIdentifier: lesson.url, domainIdentifier: domain, attributeSet: attributes)
+        item.expirationDate = lesson.endDate
+        return item
+    }
+    let planItems = snapshot.classPlans.map { plan in
+        let attributes = CSSearchableItemAttributeSet(contentType: .text)
+        attributes.title = plan.name
+        attributes.contentDescription = "在 ClassIsland 中查看课表"
+        attributes.keywords = ["ClassIsland", "课表", plan.name]
+        attributes.contentURL = URL(string: plan.url)
+        let item = CSSearchableItem(uniqueIdentifier: plan.url, domainIdentifier: domain, attributeSet: attributes)
+        item.expirationDate = Date(timeIntervalSince1970: snapshot.validUntil)
+        return item
+    }
+    let index = CSSearchableIndex.default()
+    index.deleteSearchableItems(withDomainIdentifiers: [domain]) { error in
+        guard error == nil else {
+            NSLog("ClassIsland: Failed to replace schedule search index: %@", String(describing: error))
+            finishSystemIndexUpdate(succeeded: false)
+            return
+        }
+        index.indexSearchableItems(lessonItems + planItems) { error in
+            if let error {
+                NSLog("ClassIsland: Failed to index schedule: %@", String(describing: error))
+            }
+            finishSystemIndexUpdate(succeeded: error == nil)
+        }
+    }
+}
+
+private func finishSystemIndexUpdate(succeeded: Bool) {
+    systemIntegrationLock.lock()
+    systemIndexNeedsRetry = !succeeded
+    systemIntegrationLock.unlock()
+    systemIndexGate.signal()
+}

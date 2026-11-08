@@ -475,6 +475,7 @@ internal sealed class IosLessonNotificationScheduler(
             CategoryIdentifier = CategoryIdentifier,
             ThreadIdentifier = CategoryIdentifier
         };
+        IosNotificationActions.ConfigureContent(content, request);
         if (request.PlaySound)
         {
             content.Sound = UNNotificationSound.Default;
@@ -694,10 +695,7 @@ internal sealed class IosLessonNotificationScheduler(
         return fireAt == request.FireAt &&
                string.Equals(content.Title, request.Title, StringComparison.Ordinal) &&
                string.Equals(content.Body, request.Body, StringComparison.Ordinal) &&
-               string.Equals(
-                   content.CategoryIdentifier,
-                   CategoryIdentifier,
-                   StringComparison.Ordinal) &&
+               IosNotificationActions.ContentMatches(content, request) &&
                string.Equals(
                    content.ThreadIdentifier,
                    CategoryIdentifier,

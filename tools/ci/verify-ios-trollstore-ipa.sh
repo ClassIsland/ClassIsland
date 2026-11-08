@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# 校验 ldid 签名后的 TrollStore IPA：主可执行文件必须带完整 entitlements，
-# 且 app bundle 内所有 Mach-O 二进制都已签名。
+# 校验 ldid 签名后的 TrollStore IPA：主程序必须带完整 TrollStore entitlements，
+# Widget Extension 仅携带与主程序一致的 App Group，且所有 Mach-O 二进制都已签名。
 #
 # 用法：
 #   tools/ci/verify-ios-trollstore-ipa.sh <signed-ipa> <expected-application-id>
@@ -72,11 +72,13 @@ if [[ ! -s "$entitlements_file" ]]; then
   exit 1
 fi
 
-python3 - "$entitlements_file" "$expected_application_id" "$app_bundle" <<'PYTHON'
+python3 - "$entitlements_file" "$expected_application_id" "$app_bundle" "$ldid_path" <<'PYTHON'
 import plistlib
+from pathlib import Path
+import subprocess
 import sys
 
-entitlements_path, expected_application_id, app_bundle = sys.argv[1:4]
+entitlements_path, expected_application_id, app_bundle, ldid_path = sys.argv[1:5]
 required_true = [
     "platform-application",
     "com.apple.private.security.no-sandbox",
@@ -104,6 +106,12 @@ with open(entitlements_path, "rb") as handle:
     entitlements = plistlib.load(handle)
 if not isinstance(entitlements, dict):
     errors.append("the embedded entitlements blob is not a dictionary")
+    entitlements = {}
+
+app_group_key = "com.apple.security.application-groups"
+expected_app_groups = [f"group.{expected_application_id}.shared"]
+if entitlements.get(app_group_key) != expected_app_groups:
+    errors.append(f"the host App Group must be {expected_app_groups!r}")
 
 for key in required_true:
     if entitlements.get(key) is not True:
@@ -125,6 +133,30 @@ if info.get("CFBundleIdentifier") != expected_application_id:
         f"{info.get('CFBundleIdentifier')!r} (expected {expected_application_id!r})"
     )
 
+widget_count = 0
+for extension in sorted(Path(app_bundle, "PlugIns").glob("*.appex")):
+    with (extension / "Info.plist").open("rb") as handle:
+        extension_info = plistlib.load(handle)
+    extension_point = extension_info.get("NSExtension", {}).get("NSExtensionPointIdentifier")
+    if extension_point != "com.apple.widgetkit-extension":
+        continue
+    widget_count += 1
+    if extension_info.get("CFBundleIdentifier") != f"{expected_application_id}.LiveActivityExtension":
+        errors.append(f"Widget Extension bundle identifier does not match its host: {extension.name}")
+    extension_binary = extension / extension_info.get("CFBundleExecutable", "")
+    if not extension_binary.is_file():
+        errors.append(f"Widget Extension executable is missing: {extension.name}")
+        continue
+    result = subprocess.run([ldid_path, "-e", str(extension_binary)], capture_output=True)
+    try:
+        extension_entitlements = plistlib.loads(result.stdout) if result.returncode == 0 else None
+    except (plistlib.InvalidFileException, ValueError):
+        extension_entitlements = None
+    if extension_entitlements != {app_group_key: expected_app_groups}:
+        errors.append(
+            f"Widget Extension must carry only the host App Group, without TrollStore privileges: {extension.name}"
+        )
+
 if errors:
     for error in errors:
         print(f"::error::{error}")
@@ -132,11 +164,12 @@ if errors:
 
 print(
     f"Verified TrollStore entitlements for {expected_application_id}: "
-    f"{len(required_true)} required keys present, banned keys absent."
+    f"{len(required_true)} required keys present, banned keys absent; "
+    f"{widget_count} Widget Extension(s) share the host App Group."
 )
 PYTHON
 
-# 所有 Mach-O 二进制都必须已签名（主程序使用 TrollStore entitlements，其余用空 entitlements）。
+# 所有 Mach-O 二进制都必须已签名；Widget 仅使用共享 App Group，framework/dylib 等使用空 entitlements。
 mach_o_binaries="$verify_directory/mach-o-binaries.txt"
 find "$app_bundle" -type f -exec /usr/bin/file {} + 2>/dev/null \
   | grep 'Mach-O' \

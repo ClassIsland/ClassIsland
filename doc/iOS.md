@@ -1,6 +1,6 @@
 # iOS / iPadOS 开发与构建
 
-ClassIsland 的 iPhone 与 iPad 主界面由 Avalonia 统一实现。Swift 代码只存在于 ActivityKit bridge 和 Widget Extension 中；业务代码通过 `ClassIsland.Platforms.Abstraction` 提供的纯 C# API 调用实时活动与灵动岛。
+ClassIsland 的 iPhone 与 iPad 主界面由 Avalonia 统一实现。Swift bridge 和 Widget Extension 负责实时活动、小组件、快捷指令与系统搜索，共享 C# 业务代码负责排课和应用内操作。
 
 TrollStore 发行版（系统级悬浮主界面、ldid 签名与安装）见 [iOS-TrollStore.md](iOS-TrollStore.md)。
 
@@ -28,6 +28,8 @@ Beta 和 Dev 的 Bundle ID 同样在原有 ID 后附加 `.sideload`。两种发�
 App Store 版在编译时移除插件加载器，并关闭安装处理、插件初始化、市场下载与刷新；复制插件到沙盒、恢复旧设置或打开插件链接都不会启用它。解释器本身可以用于应用内置代码，不代表开启外部插件功能。
 
 普通编译验证（需要与 .NET iOS SDK 匹配的 Xcode）：
+
+本地如使用 Xcode 26.3，可选用已安装的 `$HOME/.cache/classisland/dotnet-10.0.202` 工具链，设置步骤见 [iOS-TrollStore.md 的构建说明](iOS-TrollStore.md#构建)。系统默认 `dotnet` 的 workload 可能要求不同版本的 Xcode。
 
 ```sh
 dotnet build ClassIsland.iOS/ClassIsland.iOS.csproj -c Debug -p:ClassIslandIosDistribution=Sideload -p:EnableCodeSigning=false -m:1
@@ -69,6 +71,31 @@ Windows 可以编译和测试 C# 层，但无法执行 Xcode、构建 Widget Ext
 iOS 最多保留 64 条 pending local notifications。ClassIsland 为其它系统通知预留 4 条，每次按时间顺序提交最近 60 条课程提醒，并向后扫描最多 60 天以填满这个窗口。应用进入前台、课表或提醒设置改变、NTP 同步结果改变、系统时间或时区改变时会立即重排；应用保持活跃时还会每 6 小时补齐一次。进入后台时，应用会申请一次有时限的 iOS background task，以完成挂起前最后一次重排并立即释放执行租约。
 
 `DispatcherTimer` 在应用被 iOS 挂起后不会继续执行，上述短期 background task 也不是周期任务，因此滚动窗口不会在无限期后台状态中自行补充。用户重新打开或切回 ClassIsland 后会自动补齐，无需手动操作。需要长期完全不启动应用仍持续更新计划时，必须增加服务端 push 或合适的 iOS BackgroundTasks 方案，但系统仍不保证后台任务准点执行。
+
+课程通知支持“查看课表”。课程仍有足够有效时间时，还会显示“5 分钟后提醒”；准备上课提醒不能推迟到上课后，上课提醒不能推迟到下课后，课间提醒不能推迟到课间结束后。推迟通知不能再次推迟，关闭课程提醒或系统通知权限后会清除尚未送达的推迟通知。
+
+## 小组件、快捷指令与系统搜索
+
+应用启动后会同步未来 7 天的课程快照。桌面小组件支持小、中、大尺寸，锁屏支持矩形和行内样式；显示当前或下一节课、地点及当天剩余课程。轻点小组件或其中的课程可打开对应日期的课表和课程详情。系统扩展最低支持 iOS/iPadOS 16.1，具体小组件位置由系统提供。
+
+“快捷指令”可查询下一节课、查询今日课表、打开今日课表、设置课程提醒和选择临时课表。查询无需打开应用；修改提醒和选择课表会打开 ClassIsland，并沿用应用内的管理权限验证。选择临时课表仅适用于传统课表模式，已有临时课表时需在应用内处理。
+
+Spotlight 可按科目、地点或课表名称搜索已同步内容。课程结果打开对应日期及课程；课表名称结果打开档案中的相应课表。冷启动时会等待应用初始化完成后再跳转。
+
+iPad 的系统菜单提供以下命令，也可通过外接键盘使用：
+
+| 命令 | 快捷键 |
+| --- | --- |
+| 今日课表 | `Command + T` |
+| 前一天 / 后一天 | `Command + [` / `Command + ]` |
+| 编辑档案 | `Command + Shift + E` |
+| 设置 | `Command + ,` |
+
+快照由共享排课服务生成，课程、档案、提醒设置和时间变化后会重新同步。应用被挂起后，小组件依靠 WidgetKit 时间线在上下课和午夜切换显示；系统刷新可能延迟。快照超过 7 天有效期后会提示打开应用更新，不会把旧课表当作当前课表继续展示。
+
+宿主和 Widget Extension 必须同时具有 `group.<实际宿主 Bundle ID>.shared` App Group entitlement，并在签名描述文件中启用相同的组。Dev、Beta、正式版及 `.sideload` 版本按各自实际 Bundle ID 隔离。构建会把 Swift framework 的 App Intents 元数据放入宿主，再以宿主身份生成 Siri 短语索引；只复制 framework 本身不足以让前台操作被系统发现。TrollStore 签名脚本会为宿主与扩展写入匹配的 App Group。
+
+本机回归可运行 `ClassIsland.Platforms.Abstractions.Tests` 中的 URI 和通知策略测试，以及 `ClassIsland.Lessons.Tests` 中的 `SystemScheduleSnapshotFactoryTests`、`IosLessonNotificationScheduleFactoryTests` 和 `FaItemsRepeaterAutomationTests`。Swift 快照边界测试位于 `ClassIsland.iOS.Native/Tests/ClassIslandSystemSnapshotTests.swift`。真机仍需验证小组件图库、Siri/快捷指令发现、Spotlight 冷启动与热启动跳转、菜单命令、通知操作和开启 VoiceOver 后的首次启动。
 
 ## 自动化中的打开行动
 
