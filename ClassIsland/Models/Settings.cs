@@ -1001,6 +1001,12 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
 
     #region Appearence
 
+    [ObservableProperty] private bool _isMainWindowThemeOverrideEnabled;
+    [ObservableProperty] private int _mainWindowTheme;
+    [ObservableProperty] private bool _isMainWindowColorSourceOverrideEnabled;
+    [ObservableProperty] private int _mainWindowColorSource = 1;
+    [ObservableProperty] private Color _mainWindowPrimaryColor = Colors.DeepSkyBlue;
+
     [SettingsInfo("应用主题", "\uE5CB", enums:["跟随系统", "明亮", "黑暗"], order: 1)]
     public int Theme
     {

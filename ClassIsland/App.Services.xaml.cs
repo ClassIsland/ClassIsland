@@ -66,7 +66,8 @@ public partial class App
         // services.AddSingleton<WallpaperPickingService>();
         services.AddSingleton<INotificationHostService, NotificationHostService>();
         services.AddSingleton<INotificationWorkerService, NotificationWorkerService>();
-        services.AddSingleton<IThemeService, ThemeService>();
+        services.AddSingleton<ThemeService>();
+        services.AddSingleton<IThemeService>(provider => provider.GetRequiredService<ThemeService>());
         services.AddSingleton<MiniInfoProviderHostService>();
         services.AddSingleton<IWeatherService, WeatherService>();
         services.AddSingleton<FileFolderService>();
@@ -119,6 +120,7 @@ public partial class App
         services.AddSingleton<ClassIsland.Models.HomeDateSelectionState>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
+        services.AddTransient<InterfaceSettingsViewModel>();
         services.AddTransient<ClockSettingsViewModel>();
         services.AddTransient<AdvancedSettingsViewModel>();
         services.AddTransient<AboutSettingsViewModel>();
@@ -171,6 +173,7 @@ public partial class App
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
         // 设置页面
         services.AddSettingsPage<GeneralSettingsPage>();
+        services.AddSettingsPage<InterfaceSettingsPage>();
         services.AddSettingsPage<ClockSettingsPage>();
         services.AddSettingsPage<StorageSettingsPage>();
         services.AddSettingsPage<PrivacySettingsPage>();
