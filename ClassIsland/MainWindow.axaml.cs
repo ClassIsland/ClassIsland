@@ -287,7 +287,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         TaskBarIconService.MainTaskBarIcon.Clicked += MainTaskBarIconOnClicked;
-        if (!OperatingSystem.IsMacOS())
+        if (OperatingSystem.IsMacOS())
+        {
+            var icons = TrayIcon.GetIcons(AppBase.Current) ?? new TrayIcons();
+            if (!icons.Contains(TaskBarIconService.MainTaskBarIcon))
+            {
+                icons.Add(TaskBarIconService.MainTaskBarIcon);
+            }
+            TrayIcon.SetIcons(AppBase.Current, icons);
+        }
+        else
         {
             PopupHelper.DisablePopupsRequested += (_, _) =>
             {
@@ -358,7 +367,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         base.Show();
         UpdateWindowPos();
         Win32Properties.AddWndProcHookCallback(this, ProcWnd);
-        Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.ApplicationIdle);
+        // 启动异常应交给全局异常处理器，不能留在无人观察的任务中。
+        Dispatcher.UIThread.Post(PostInit, DispatcherPriority.ApplicationIdle);
     }
 
     protected override void OnInitialized()
