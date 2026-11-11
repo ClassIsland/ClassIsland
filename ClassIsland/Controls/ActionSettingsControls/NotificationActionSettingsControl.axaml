@@ -7,6 +7,7 @@
                               xmlns:ci="http://classisland.tech/schemas/xaml/core"
                               xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
                               xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions"
+                              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
                               xmlns:controls="clr-namespace:ClassIsland.Controls">
     <ci:ActionSettingsControlBase.Resources>
         <ScrollViewer x:Key="NotificationActionSettingsDrawer"
@@ -82,6 +83,25 @@
                               IsChecked="{Binding Settings.IsTopmostEnabled}" />
                     <CheckBox Content="启用提醒特效"
                               IsChecked="{Binding Settings.IsEffectEnabled}" />
+                    <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="8"
+                          Margin="0 0 0 4"
+                          IsEnabled="{Binding Settings.IsEffectEnabled}">
+                        <CheckBox Content="覆盖提醒特效"
+                                  IsChecked="{Binding Settings.OverridesNotificationEffectId}" />
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{x:Static services:INotificationWorkerService.RegisteredEffects}"
+                                  SelectedValueBinding="{Binding Id}"
+                                  SelectedValue="{Binding Settings.NotificationEffectId, Mode=TwoWay}"
+                                  IsEnabled="{Binding Settings.OverridesNotificationEffectId}"
+                                  AutomationProperties.Name="提醒特效">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
                     <CheckBox Margin="0 0 0 4"
                               Content="启用提醒音效"
                               IsChecked="{Binding Settings.IsSoundEffectEnabled}" />

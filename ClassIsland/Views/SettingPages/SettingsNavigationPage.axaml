@@ -1,0 +1,37 @@
+<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.SettingsNavigationPage"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:local="using:ClassIsland.Views.SettingPages"
+                     xmlns:fa="using:FluentAvalonia.UI.Controls"
+                     xmlns:icons="using:ClassIsland.Core.Icons"
+                     x:CompileBindings="True">
+    <ScrollViewer>
+        <StackPanel Classes="settings-container">
+            <ItemsControl x:Name="SectionsList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="local:SettingsNavigationSection">
+                        <StackPanel>
+                            <Separator IsVisible="{Binding ShowSeparator}" Margin="0 8"/>
+                            <ItemsControl ItemsSource="{Binding Nodes}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="4"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="local:SettingsNavigationNode">
+                                        <fa:FASettingsExpander Header="{Binding Name}"
+                                                               IconSource="{Binding IconSource}"
+                                                               ActionIconSource="{ci:FluentIconSource {x:Static icons:FluentIcons.ChevronRightRegular}}"
+                                                               IsClickEnabled="True" Click="Node_OnClick"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

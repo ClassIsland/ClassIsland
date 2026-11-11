@@ -12,10 +12,8 @@ using Avalonia.VisualTree;
 namespace ClassIsland.Core.Controls;
 
 /// <summary>
-/// A composition-backed page transition that visually matches the
-/// <c>PageSlide</c> + <c>CrossFade</c> composite transition: the outgoing page
-/// slides horizontally out while fading out, and the incoming page slides in
-/// from the opposite side while fading in.
+/// A composition-backed cross-fade with an incoming slide and an optional
+/// outgoing slide.
 /// </summary>
 /// <remarks>
 /// Composition animations are not driven by the UI thread: they are serialized
@@ -49,6 +47,21 @@ public class CompositionPageTransition : IPageTransition
     /// Duration of both the slide and fade animations.
     /// </summary>
     public TimeSpan Duration { get; set; } = TimeSpan.FromMilliseconds(250);
+
+    /// <summary>
+    /// Axis along which the pages slide.
+    /// </summary>
+    public PageSlide.SlideAxis Orientation { get; set; } = PageSlide.SlideAxis.Horizontal;
+
+    /// <summary>
+    /// Slide distance in device-independent pixels. When unset, uses the size of the page host.
+    /// </summary>
+    public double? SlideDistance { get; set; }
+
+    /// <summary>
+    /// Whether the outgoing page slides while fading out.
+    /// </summary>
+    public bool SlideOut { get; set; } = true;
 
     /// <summary>
     /// Easing applied to the outgoing page's slide animation.
@@ -106,8 +119,10 @@ public class CompositionPageTransition : IPageTransition
         }
 
         var parent = from.GetVisualParent() ?? to.GetVisualParent();
-        var distance = parent?.Bounds.Width
-                       ?? Math.Max(from.Bounds.Width, to.Bounds.Width);
+        var vertical = Orientation == PageSlide.SlideAxis.Vertical;
+        var distance = SlideDistance ?? (vertical
+            ? parent?.Bounds.Height ?? Math.Max(from.Bounds.Height, to.Bounds.Height)
+            : parent?.Bounds.Width ?? Math.Max(from.Bounds.Width, to.Bounds.Width));
 
         if (distance <= 0)
         {
@@ -134,15 +149,20 @@ public class CompositionPageTransition : IPageTransition
 
         // PageSlide replaces the render transform with a translation starting at
         // zero, so start from zero instead of the visual's base translation.
-        StartSlideAnimation(
-            fromCompositionVisual,
-            new Vector3D(),
-            new Vector3D(forward ? -distance : distance, 0, 0),
-            SlideOutEasing);
+        var offset = forward ? distance : -distance;
+        var slideOffset = vertical ? new Vector3D(0, offset, 0) : new Vector3D(offset, 0, 0);
+        if (SlideOut)
+        {
+            StartSlideAnimation(
+                fromCompositionVisual,
+                new Vector3D(),
+                -slideOffset,
+                SlideOutEasing);
+        }
 
         StartSlideAnimation(
             toCompositionVisual,
-            new Vector3D(forward ? distance : -distance, 0, 0),
+            slideOffset,
             new Vector3D(),
             SlideInEasing);
 

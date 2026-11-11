@@ -783,8 +783,11 @@ public partial class App : AppBase, IAppHost
             return;
         }
         var spanLoadingSettings = spanLaunching.StartChild("startup-loading-settings");
-        await GetService<SettingsService>().LoadSettingsAsync();
-        Settings = GetService<SettingsService>().Settings;
+        var settingsService = GetService<SettingsService>();
+        await settingsService.LoadSettingsAsync();
+        Settings = settingsService.Settings;
+        GetService<ThemeService>().Initialize(settingsService);
+        _ = IAppHost.TryGetService<IAccentPickerService>();
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
         Settings.DiagnosticStartupCount++;
 
@@ -868,8 +871,6 @@ public partial class App : AppBase, IAppHost
         {
             await GetService<DiagnosticService>().ExportDiagnosticData(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"ClassIsland_DiagnosticData_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip"), false);
         }
-        // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
-        
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
         

@@ -139,6 +139,11 @@ public class NotificationRequest : ObservableRecipient
             OnPropertyChanged();
         }
     }
+    
+    /// <summary>
+    /// 要使用的提醒效果 ID，留空则使用全局设置值。
+    /// </summary>
+    public string? EffectId { get; set; }
 
     internal NotificationRequest? ChainedNextRequest { get; set; }
 
