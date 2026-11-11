@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using ClassIsland.Controls.UI;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -78,6 +79,7 @@ public partial class SubjectPickerView : ViewBase
             return;
         }
 
+        var owner = host is DrawerNavigationHost { Owner: { } drawerOwner } ? drawerOwner : host;
         var menu = new MenuFlyout();
         var manage = new MenuItem
         {
@@ -93,9 +95,9 @@ public partial class SubjectPickerView : ViewBase
 
             await host.HideDrawer();
             var view = new SubjectManagementView();
-            if (host.ActivateView(view))
+            if (owner.ActivateView(view))
             {
-                await host.ShowView(view);
+                await owner.ShowView(view);
             }
         };
         menu.Items.Add(manage);

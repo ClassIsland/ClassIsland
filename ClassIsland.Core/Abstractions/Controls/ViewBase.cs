@@ -303,9 +303,9 @@ public abstract class ViewBase : ContentPage
         _backRequestedTopLevel = null;
     }
 
-    private void ShowCore(ViewBase? owner = null, Window? windowOwner = null, bool modal = false)
+    private Task ShowCore(ViewBase? owner = null, Window? windowOwner = null, bool modal = false)
     {
-        if (AssociatedViewHost == null)
+        if (AssociatedViewHost is not { } host)
         {
             throw new InvalidOperationException("只有在该视图被激活到视图宿主后才能显示此视图。");
         }
@@ -315,27 +315,30 @@ public abstract class ViewBase : ContentPage
             throw new InvalidOperationException("视图已被显示时不能再次被显示。");
         }
 
-        Task? task;
+        Task task;
         if (windowOwner != null && modal)
         {
-            task = AssociatedViewHost.ShowViewModal(this, windowOwner);
+            task = host.ShowViewModal(this, windowOwner);
         }
         else if (owner != null && modal)
         {
-            task = AssociatedViewHost.ShowViewModal(this, owner);
+            task = host.ShowViewModal(this, owner);
         }
         else
         {
-            task = AssociatedViewHost.ShowView(this, owner);
+            task = host.ShowView(this, owner);
         }
 
-        task.ContinueWith(_ =>
+        return MarkShownAsync();
+
+        async Task MarkShownAsync()
         {
-            Dispatcher.Invoke(() =>
+            await task;
+            if (ReferenceEquals(AssociatedViewHost, host) && !_isShowed)
             {
                 ViewShown();
-            });
-        });
+            }
+        }
     }
 
     internal void ViewShown()
@@ -361,20 +364,27 @@ public abstract class ViewBase : ContentPage
             throw new InvalidOperationException("视图已被显示时不能再次被显示。");
         }
 
-        var deActiveTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        DeActiveTcs = deActiveTcs;
+        await ShowAndWaitForDeactivationAsync(() => ShowCore(owner, windowOwner, true));
+    }
+
+    internal async Task ShowAndWaitForDeactivationAsync(Func<Task> show)
+    {
+        var ownsCompletion = DeActiveTcs == null;
+        var completion = DeActiveTcs ??= new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         try
         {
-            ShowCore(owner, windowOwner, true);
-            await deActiveTcs.Task;
+            await show();
+            if (AssociatedViewHost != null)
+            {
+                await completion.Task;
+            }
         }
-        catch
+        finally
         {
-            if (ReferenceEquals(DeActiveTcs, deActiveTcs))
+            if (ownsCompletion && ReferenceEquals(DeActiveTcs, completion))
             {
                 DeActiveTcs = null;
             }
-            throw;
         }
     }
 
@@ -456,7 +466,7 @@ public abstract class ViewBase : ContentPage
         {
             ViewManagementService.Instance.ActivateView(this);
         }
-        ShowCore(owner);
+        _ = ShowCore(owner);
     }
 
     /// <summary>

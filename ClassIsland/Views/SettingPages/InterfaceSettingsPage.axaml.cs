@@ -165,20 +165,13 @@ public partial class InterfaceSettingsPage : SettingsPageBase
 
     private async Task ShowAccentDrawerAsync(IViewHost host, ViewBase view)
     {
-        var closed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        void OnClosed(object? sender, RoutedEventArgs e) => closed.TrySetResult();
-
         _isAccentDrawerActive = true;
-        view.Closed += OnClosed;
         try
         {
-            await host.ShowDrawer(view);
-            if (ReferenceEquals(host.CurrentDrawerView, view))
-                await closed.Task;
+            await host.ShowDrawerModal(view);
         }
         finally
         {
-            view.Closed -= OnClosed;
             _isAccentDrawerActive = false;
         }
     }
