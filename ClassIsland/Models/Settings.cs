@@ -1061,13 +1061,40 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
             if (Equals(value, _wallpaperColorPlatte)) return;
             _wallpaperColorPlatte = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedPlatte));
         }
     }
 
     [JsonIgnore]
-    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1
+    public Color SelectedPlatte => SelectedPlatteIndex < 0 || SelectedPlatteIndex >= WallpaperColorPlatte.Count
         ? Colors.DodgerBlue
         : WallpaperColorPlatte[SelectedPlatteIndex];
+
+    internal void SetExtractedAccent(Color color, Action save)
+    {
+        var palette = _wallpaperColorPlatte;
+        var index = _selectedPlatteIndex;
+        if (index == 0 && palette.Count == 1 && palette[0] == color)
+            return;
+
+        _wallpaperColorPlatte = [color];
+        _selectedPlatteIndex = 0;
+        try
+        {
+            save();
+        }
+        catch
+        {
+            _wallpaperColorPlatte = palette;
+            _selectedPlatteIndex = index;
+            throw;
+        }
+
+        OnPropertyChanged(nameof(WallpaperColorPlatte));
+        if (index != 0)
+            OnPropertyChanged(nameof(SelectedPlatteIndex));
+        OnPropertyChanged(nameof(SelectedPlatte));
+    }
 
     public int SelectedPlatteIndex
     {
@@ -1077,6 +1104,7 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
             if (value == _selectedPlatteIndex) return;
             _selectedPlatteIndex = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedPlatte));
         }
     }
 

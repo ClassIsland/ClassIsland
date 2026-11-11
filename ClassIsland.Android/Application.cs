@@ -11,6 +11,8 @@ using ClassIsland.Extensions;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
+using ClassIsland.Core.Abstractions.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Android;
 
@@ -50,6 +52,8 @@ public class Application : AvaloniaAndroidApplication<App>
         return AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
+                app.ConfigurePlatformServices = services =>
+                    services.AddSingleton<IAccentPickerService, AndroidAccentPickerService>();
                 app.OperatingSystem = "android";
                 return app;
             })

@@ -58,12 +58,14 @@ namespace ClassIsland;
 
 public partial class App
 {
+    internal Action<IServiceCollection>? ConfigurePlatformServices { get; set; }
+
     private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
+        ConfigurePlatformServices?.Invoke(services);
         services.AddSingleton<SettingsService>();
         services.AddSingleton<UpdateService>();
         services.AddSingleton<ITaskBarIconService, TaskBarIconService>();
-        // services.AddSingleton<WallpaperPickingService>();
         services.AddSingleton<INotificationHostService, NotificationHostService>();
         services.AddSingleton<INotificationWorkerService, NotificationWorkerService>();
         services.AddSingleton<ThemeService>();

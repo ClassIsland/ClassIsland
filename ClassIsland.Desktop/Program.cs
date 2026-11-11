@@ -23,6 +23,9 @@ using ClassIsland.Shared.Helpers;
 using Pastel;
 using System.Runtime.InteropServices;
 using ClassIsland.Desktop.Services.Platform;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Platforms.Abstraction.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace ClassIsland.Desktop;
@@ -50,6 +53,7 @@ class Program
         var r =  AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
+                app.ConfigurePlatformServices = ConfigurePlatformServices;
 #if Platforms_Windows
                 app.OperatingSystem = "windows";
 #endif
@@ -111,6 +115,17 @@ class Program
         return r.StartWithClassicDesktopLifetime(args);
     }
     
+    private static void ConfigurePlatformServices(IServiceCollection services)
+    {
+        services.AddSingleton<IAccentPickerService, DesktopAccentPickerService>();
+#if Platforms_Windows
+        services.AddSingleton<IScreenshotService, ScreenshotService>();
+#endif
+#if Platforms_Windows || Platforms_Linux || Platforms_MacOs
+        services.AddSingleton<IDesktopAccentImageSource, DesktopAccentImageSource>();
+#endif
+    }
+
     // AppBuilder for designer
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
         .UsePlatformDetect()
