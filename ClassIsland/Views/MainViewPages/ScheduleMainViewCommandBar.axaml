@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             x:Class="ClassIsland.Views.MainViewPages.ScheduleMainViewCommandBar">
+    <StackPanel Orientation="Horizontal" Spacing="0">
+        <Button x:Name="EditScheduleButton" Theme="{StaticResource TransparentButton}"
+                IsVisible="{Binding CanStartScheduleEditing}"
+                ToolTip.Tip="编辑课表" Click="EditScheduleButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI EditRegular}"/>
+        </Button>
+        <Button x:Name="AddScheduleButton" Theme="{StaticResource TransparentButton}"
+                IsVisible="{Binding CanAddScheduleItem}"
+                ToolTip.Tip="新增课程" Click="AddScheduleButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI AddRegular}"/>
+        </Button>
+        <Button x:Name="FinishEditingButton" Theme="{StaticResource TransparentButton}"
+                IsVisible="{Binding IsScheduleEditing}"
+                ToolTip.Tip="完成编辑" Click="FinishEditingButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI CheckmarkRegular}"/>
+        </Button>
+        <Button x:Name="MainMoreButton" Theme="{StaticResource TransparentButton}"
+                ToolTip.Tip="更多选项" Click="MainMoreButton_OnClick">
+            <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+        </Button>
+    </StackPanel>
+</UserControl>

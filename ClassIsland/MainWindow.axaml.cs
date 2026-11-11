@@ -93,11 +93,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         get;
     }
 
-    private IThemeService ThemeService
-    {
-        get;
-    }
-
     public INotificationHostService NotificationHostService
     {
         get;
@@ -218,7 +213,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         SettingsService = settingsService;
         TaskBarIconService = taskBarIconService;
         NotificationHostService = notificationHostService;
-        ThemeService = themeService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         ComponentsService = componentsService;
@@ -243,7 +237,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（1）");
-        // UpdateTheme();
+        if (themeService is ThemeService appThemeService)
+        {
+            appThemeService.SetMainWindowThemeHost(this);
+        }
         UserPrefrenceUpdateStopwatch.Start();
         AppBase.Current.PlatformSettings!.ColorValuesChanged += OnSystemEventsOnUserPreferenceChanged;
         AppBase.Current.AppStopping += (sender, args) => AppBase.Current.PlatformSettings!.ColorValuesChanged -= OnSystemEventsOnUserPreferenceChanged;
@@ -287,7 +284,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         TaskBarIconService.MainTaskBarIcon.Clicked += MainTaskBarIconOnClicked;
-        if (!OperatingSystem.IsMacOS())
+        if (OperatingSystem.IsMacOS())
+        {
+            var icons = TrayIcon.GetIcons(AppBase.Current) ?? new TrayIcons();
+            if (!icons.Contains(TaskBarIconService.MainTaskBarIcon))
+            {
+                icons.Add(TaskBarIconService.MainTaskBarIcon);
+            }
+            TrayIcon.SetIcons(AppBase.Current, icons);
+        }
+        else
         {
             PopupHelper.DisablePopupsRequested += (_, _) =>
             {
@@ -358,7 +364,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         base.Show();
         UpdateWindowPos();
         Win32Properties.AddWndProcHookCallback(this, ProcWnd);
-        Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.ApplicationIdle);
+        // 启动异常应交给全局异常处理器，不能留在无人观察的任务中。
+        Dispatcher.UIThread.Post(PostInit, DispatcherPriority.ApplicationIdle);
     }
 
     protected override void OnInitialized()
@@ -746,29 +753,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         UpdateWindowPos();
         UpdateWindowFeatures();
         UpdateWindowLayer();
-
-        var primary = (Color?)Colors.DodgerBlue;
-        switch (ViewModel.Settings.ColorSource)
-        {
-            case 0: //custom
-                primary = ViewModel.Settings.PrimaryColor;
-                break;
-            case 1: // 壁纸主题色
-            case 3: // 屏幕主题色
-                primary = ViewModel.Settings.SelectedPlatte;
-                break;
-            case 2:
-                try
-                {
-                    primary = null;
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "获取系统主题色失败。");
-                }
-                break;
-        }
-        ThemeService.SetTheme(ViewModel.Settings.Theme, primary);
 
         if (ResourceLoaderBorder != null)
         {

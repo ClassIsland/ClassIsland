@@ -11,6 +11,8 @@ using ClassIsland.Extensions;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
+using ClassIsland.Core.Abstractions.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Android;
 
@@ -28,11 +30,14 @@ public class Application : AvaloniaAndroidApplication<App>
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
+        NavigationRepeaterAutomationFix.Initialize();
+
         PlatformServices.AppLifetimeService = new AndroidAppLifetimeService();
         PlatformServices.LauncherService = new LauncherService();
         PlatformServices.DesktopToastService = new DesktopToastService();
         PlatformServices.LocationService = new LocationService();
         PlatformServices.HapticFeedbackService = new HapticFeedbackService();
+        PlatformServices.DeviceInfoService = new DeviceInfoService();
 
         var restartParameters = MainActivity.Current?.TryGetTarget(out var mainActivity) == true
             ? mainActivity.Intent?.GetStringArrayExtra(AndroidAppLifetimeService.RestartParametersExtra)
@@ -47,6 +52,8 @@ public class Application : AvaloniaAndroidApplication<App>
         return AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
+                app.ConfigurePlatformServices = services =>
+                    services.AddSingleton<IAccentPickerService, AndroidAccentPickerService>();
                 app.OperatingSystem = "android";
                 return app;
             })

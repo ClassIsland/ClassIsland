@@ -1,0 +1,56 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             x:Class="ClassIsland.Views.SettingPages.WallpaperWindowPicker"
+             Header="选择壁纸窗口"
+             ci:ViewHostAssist.DrawerMaxWidth="{StaticResource SettingsContainerWidth}"
+             ci:ViewHostAssist.DrawerIsFullScreen="True"
+             ci:ViewHostAssist.DrawerContentHeightRatio="0.7">
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto">
+        <StackPanel>
+            <WrapPanel ItemSpacing="8">
+                <CheckBox x:Name="FullScreenOnly" Content="仅显示覆盖屏幕的窗口" IsChecked="True"
+                          IsCheckedChanged="Filter_OnChanged"/>
+                <Button Content="刷新窗口" Click="Refresh_OnClick"/>
+            </WrapPanel>
+            <ProgressBar x:Name="Loading" IsIndeterminate="True" IsVisible="False"
+                         AutomationProperties.Name="正在加载窗口"/>
+            <TextBlock x:Name="Status" TextWrapping="Wrap"
+                       IsVisible="{Binding !!$self.Text}"/>
+        </StackPanel>
+        <ListBox x:Name="Candidates" Grid.Row="1" SelectionChanged="Candidates_OnSelectionChanged"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 AutomationProperties.Name="壁纸窗口列表">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel>
+                        <Interaction.Behaviors>
+                            <BehaviorCollection>
+                                <ci:WrapPanelAutoResizeBehavior TargetWidth="180"/>
+                            </BehaviorCollection>
+                        </Interaction.Behaviors>
+                    </WrapPanel>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="4">
+                        <Image Source="{Binding Thumbnail}" Height="80" Stretch="Uniform"/>
+                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="{Binding ClassName}" TextTrimming="CharacterEllipsis" Opacity="0.75"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ci:Field Grid.Row="2" Label="窗口类名">
+            <TextBox x:Name="ClassNameInput" Watermark="留空时使用系统桌面窗口"
+                     AutomationProperties.Name="窗口类名"/>
+        </ci:Field>
+        <Separator Grid.Row="3" Margin="0 4"/>
+        <StackPanel Grid.Row="4" Margin="0 4 0 8" Orientation="Horizontal" Spacing="8"
+                    HorizontalAlignment="Right">
+            <Button Content="取消" Padding="16 6" Click="Cancel_OnClick"/>
+            <Button Content="确定" Padding="16 6" Classes="accent" Click="Confirm_OnClick"/>
+        </StackPanel>
+    </Grid>
+</ci:ViewBase>

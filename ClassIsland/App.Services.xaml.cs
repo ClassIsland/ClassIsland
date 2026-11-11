@@ -1,12 +1,15 @@
 using System;
 using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Templates;
+using ClassIsland.Controls;
 using ClassIsland.Controls.ActionSettingsControls;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Controls.Components;
 using ClassIsland.Controls.EditMode;
+using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Controls.ProfileTransferProviders;
 using ClassIsland.Controls.RuleSettingsControls;
@@ -42,6 +45,7 @@ using ClassIsland.ViewModels;
 using ClassIsland.ViewModels.EditMode;
 using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Views;
+using ClassIsland.Views.MainViewPages;
 using ClassIsland.Views.SettingPages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -54,15 +58,18 @@ namespace ClassIsland;
 
 public partial class App
 {
+    internal Action<IServiceCollection>? ConfigurePlatformServices { get; set; }
+
     private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
+        ConfigurePlatformServices?.Invoke(services);
         services.AddSingleton<SettingsService>();
         services.AddSingleton<UpdateService>();
         services.AddSingleton<ITaskBarIconService, TaskBarIconService>();
-        // services.AddSingleton<WallpaperPickingService>();
         services.AddSingleton<INotificationHostService, NotificationHostService>();
         services.AddSingleton<INotificationWorkerService, NotificationWorkerService>();
-        services.AddSingleton<IThemeService, ThemeService>();
+        services.AddSingleton<ThemeService>();
+        services.AddSingleton<IThemeService>(provider => provider.GetRequiredService<ThemeService>());
         services.AddSingleton<MiniInfoProviderHostService>();
         services.AddSingleton<IWeatherService, WeatherService>();
         services.AddSingleton<FileFolderService>();
@@ -115,6 +122,7 @@ public partial class App
         services.AddSingleton<ClassIsland.Models.HomeDateSelectionState>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
+        services.AddTransient<InterfaceSettingsViewModel>();
         services.AddTransient<ClockSettingsViewModel>();
         services.AddTransient<AdvancedSettingsViewModel>();
         services.AddTransient<AboutSettingsViewModel>();
@@ -132,11 +140,15 @@ public partial class App
         services.AddTransient<DebugPageViewModel>();
         services.AddTransient<RefreshingSettingsViewModel>();
         // Views
-        services.AddTransient<ITopmostEffectPlayer>(x => x.GetRequiredService<TopmostEffectWindow>());
+        services.AddSingleton<ITopmostEffectPlayer, PhonyTopmostEffectPlayer>();
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
+        {
+            services.AddTransient<ITopmostEffectPlayer>(x => x.GetRequiredService<TopmostEffectWindow>());
+            services.AddSingleton<TopmostEffectWindow>();
+        }
         services.AddSingleton<MainWindow>();
         // services.AddTransient<SplashWindowBase, SplashWindow>();
         // services.AddTransient<FeatureDebugWindow>();
-        services.AddSingleton<TopmostEffectWindow>();
         services.AddSingleton<AppLogsWindow>();
         services.AddTransientView<SettingsWindowNew>();
         services.AddTransientView<ProfileSettingsWindow>();
@@ -155,11 +167,15 @@ public partial class App
         services.AddTransient<TutorialControllerWindow>();
         services.AddTransient<ISplashProvider, SplashWindow>();
         services.AddTransient<MainView>();
+        services.AddMainViewPage<TodayMainViewPage>();
+        services.AddMainViewPage<WeekMainViewPage>();
+        services.AddMainViewPage<MoreMainViewPage>();
         // 设置页面分组
         services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
         // 设置页面
         services.AddSettingsPage<GeneralSettingsPage>();
+        services.AddSettingsPage<InterfaceSettingsPage>();
         services.AddSettingsPage<ClockSettingsPage>();
         services.AddSettingsPage<StorageSettingsPage>();
         services.AddSettingsPage<PrivacySettingsPage>();
@@ -190,6 +206,7 @@ public partial class App
         services.AddSettingsPage<ManagementCredentialsSettingsPage>();
         services.AddSettingsPage<ManagementPolicySettingsPage>();
         services.AddSettingsPage<ErrorSettingsPage>();
+        services.AddSettingsPage<SettingsNavigationPage>();
         // 主界面组件
         services.AddComponent<TextComponent, TextComponentSettingsControl>();
         services.AddComponent<SeparatorComponent>();
@@ -346,6 +363,10 @@ public partial class App
             // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.sp.json"));
             services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.getStarted.json"));
         }
+        // 提醒效果
+        services.AddNotificationEffect("classisland.ripple", "波纹", RippleEffect.Create);
+        services.AddNotificationEffect("classisland.confetti", "下彩带", ConfettiEffect.Create);
+        services.AddNotificationEffect("classisland.starFountain", "星星喷泉", StarFountainEffect.Create);
         // Plugins
         if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {

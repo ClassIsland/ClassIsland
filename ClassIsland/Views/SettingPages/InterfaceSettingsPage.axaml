@@ -1,0 +1,202 @@
+<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.InterfaceSettingsPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <controls:SettingsPageBase.Resources>
+        <ci:ColorToColorPickerBrushConverter x:Key="AccentSwatchBrush"/>
+    </controls:SettingsPageBase.Resources>
+
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro">
+            <StackPanel IsVisible="{OnPlatform Default=False, Android=True}"
+                        IsEnabled="{Binding !ViewModel.IsSelectingBackgroundImage}">
+                <controls2:FASettingsExpander Header="背景图片"
+                                            Description="在应用内页面显示背景图片。"
+                                            IconSource="{ci:FluentIconSource {ci:FI ImageRegular}}">
+                    <controls2:FASettingsExpander.Footer>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="选择图片" Click="SelectBackgroundImage_OnClick"/>
+                            <Button Content="移除" Click="RemoveBackgroundImage_OnClick"
+                                    IsEnabled="{Binding !!ViewModel.SettingsService.Settings.AndroidBackgroundImageSource}"/>
+                        </StackPanel>
+                    </controls2:FASettingsExpander.Footer>
+                    <controls2:FASettingsExpanderItem Content="图片不透明度"
+                                                    Description="{Binding ViewModel.SettingsService.Settings.AndroidBackgroundImageOpacity, Converter={x:Static local:InterfaceSettingsPage.BackgroundImageOpacityDescriptionConverter}}">
+                        <controls2:FASettingsExpanderItem.Footer>
+                            <StackPanel Orientation="Horizontal" Spacing="8"
+                                        IsEnabled="{Binding !!ViewModel.SettingsService.Settings.AndroidBackgroundImageSource}">
+                                <Slider Width="130" Minimum="0" Maximum="1"
+                                        Value="{Binding ViewModel.SettingsService.Settings.AndroidBackgroundImageOpacity, Mode=TwoWay}"
+                                        TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                        SmallChange="0.05" LargeChange="0.1"
+                                        Classes="auto-tooltip"
+                                        ci:SliderDragTooltipAssist.StringFormat="P0"
+                                        AutomationProperties.Name="背景图片不透明度"/>
+                                <TextBlock MinWidth="40" VerticalAlignment="Center"
+                                           Text="{Binding ViewModel.SettingsService.Settings.AndroidBackgroundImageOpacity, StringFormat={}{0:P0}}"/>
+                            </StackPanel>
+                        </controls2:FASettingsExpanderItem.Footer>
+                    </controls2:FASettingsExpanderItem>
+                </controls2:FASettingsExpander>
+                <controls2:FAInfoBar Severity="Error" IsClosable="False"
+                                    IsOpen="{Binding !!ViewModel.BackgroundImageError}" IsVisible="{Binding $self.IsOpen}"
+                                    Message="{Binding ViewModel.BackgroundImageError}"/>
+            </StackPanel>
+
+            <controls2:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI DarkThemeRegular}}"
+                                        Header="应用主题"
+                                        Description="控制应用的明暗主题。">
+                <controls2:FASettingsExpander.Footer>
+                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}"
+                              HorizontalContentAlignment="Left">
+                        <controls1:IconText Glyph="{ci:FI DesktopRegular}" Text="跟随系统"/>
+                        <controls1:IconText Glyph="{ci:FI WeatherSunnyRegular}" Text="明亮"/>
+                        <controls1:IconText Glyph="{ci:FI WeatherMoonRegular}" Text="黑暗"/>
+                    </ComboBox>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
+
+            <controls2:FASettingsExpander x:Name="AccentSourceSettings" IconSource="{ci:FluentIconSource {ci:FI ColorRegular}}"
+                                        Header="主题色来源"
+                                        Description="选择应用界面的主题色。">
+                <controls2:FASettingsExpander.Footer>
+                    <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.ColorSource, Mode=TwoWay}"
+                              AutomationProperties.Name="主题色来源"
+                              SelectionChanged="AccentSource_OnSelectionChanged">
+                        <ComboBoxItem>
+                            <controls1:IconText Glyph="{ci:FI PaintBrushRegular}" Text="自定义"/>
+                        </ComboBoxItem>
+                        <ComboBoxItem IsEnabled="{Binding ViewModel.AccentPicker.SupportsWallpaper}">
+                            <controls1:IconText Glyph="{ci:FI WallpaperRegular}" Text="壁纸主题色"/>
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <controls1:IconText Glyph="{ci:FI DesktopRegular}" Text="系统"/>
+                        </ComboBoxItem>
+                        <ComboBoxItem IsEnabled="{Binding ViewModel.AccentPicker.SupportsScreen}">
+                            <controls1:IconText Glyph="{ci:FI ScreenshotRegular}" Text="屏幕主题色"/>
+                        </ComboBoxItem>
+                    </ComboBox>
+                </controls2:FASettingsExpander.Footer>
+
+                <controls2:FASettingsExpanderItem IconSource="{ci:FluentIconSource {ci:FI ColorFillRegular}}"
+                                                    Content="强调色"
+                                                    IsVisible="{Binding ViewModel.SettingsService.Settings.ColorSource, Converter={x:Static local:InterfaceSettingsPage.IsCustomSource}}">
+                    <controls2:FASettingsExpanderItem.Footer>
+                        <ColorPicker Color="{Binding ViewModel.SettingsService.Settings.PrimaryColor, Mode=TwoWay}"
+                                     AutomationProperties.Name="自定义强调色"/>
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+
+                <controls2:FASettingsExpanderItem IconSource="{ci:FluentIconSource {ci:FI ColorFillRegular}}" Content="当前主题色">
+                    <controls2:FASettingsExpanderItem.IsVisible>
+                        <MultiBinding Converter="{x:Static local:InterfaceSettingsPage.ShowAccentControls}">
+                            <Binding Path="ViewModel.SettingsService.Settings.ColorSource"/>
+                            <Binding Path="ViewModel.AccentPicker.SupportsWallpaper"/>
+                            <Binding Path="ViewModel.AccentPicker.SupportsScreen"/>
+                        </MultiBinding>
+                    </controls2:FASettingsExpanderItem.IsVisible>
+                    <controls2:FASettingsExpanderItem.Footer>
+                        <Grid RowDefinitions="Auto,Auto">
+                            <WrapPanel ItemSpacing="8" LineSpacing="4">
+                                <Border Width="30" Height="30" CornerRadius="6" VerticalAlignment="Center"
+                                        Background="{Binding ViewModel.SettingsService.Settings.SelectedPlatte, Converter={StaticResource AccentSwatchBrush}}"
+                                        ToolTip.Tip="{Binding ViewModel.SettingsService.Settings.SelectedPlatte}"/>
+                                <Button Content="刷新" Click="RefreshAccent_OnClick"
+                                        IsEnabled="{Binding !ViewModel.AccentPicker.IsWorking}"/>
+                                <Button Content="预览提取结果" Click="PreviewAccent_OnClick"
+                                        IsVisible="{Binding ViewModel.AccentPicker.SupportsPreview}"
+                                        IsEnabled="{Binding !!ViewModel.AccentPicker.LastResult}"/>
+                            </WrapPanel>
+                            <ProgressBar Grid.Row="1" IsIndeterminate="True" IsVisible="{Binding ViewModel.AccentPicker.IsWorking}"
+                                         AutomationProperties.Name="正在提取主题色"/>
+                        </Grid>
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+
+                <controls2:FASettingsExpanderItem IconSource="{ci:FluentIconSource {ci:FI ArrowSyncRegular}}"
+                                                    Content="自动提取壁纸主题色"
+                                                    Description="适合随时间变化的壁纸。">
+                    <controls2:FASettingsExpanderItem.IsVisible>
+                        <MultiBinding Converter="{x:Static local:InterfaceSettingsPage.ShowWallpaperControls}">
+                            <Binding Path="ViewModel.SettingsService.Settings.ColorSource"/>
+                            <Binding Path="ViewModel.AccentPicker.SupportsWallpaper"/>
+                        </MultiBinding>
+                    </controls2:FASettingsExpanderItem.IsVisible>
+                    <controls2:FASettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsWallpaperAutoUpdateEnabled, Mode=TwoWay}"
+                                      AutomationProperties.Name="自动提取壁纸主题色"/>
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+
+                <controls2:FASettingsExpanderItem IconSource="{ci:FluentIconSource {ci:FI ClockRegular}}"
+                                                    Content="自动提取间隔"
+                                                    Description="两次自动提取之间的时间，单位为秒。">
+                    <controls2:FASettingsExpanderItem.IsVisible>
+                        <MultiBinding Converter="{x:Static local:InterfaceSettingsPage.ShowAccentInterval}">
+                            <Binding Path="ViewModel.SettingsService.Settings.ColorSource"/>
+                            <Binding Path="ViewModel.SettingsService.Settings.IsWallpaperAutoUpdateEnabled"/>
+                            <Binding Path="ViewModel.AccentPicker.SupportsWallpaper"/>
+                            <Binding Path="ViewModel.AccentPicker.SupportsScreen"/>
+                        </MultiBinding>
+                    </controls2:FASettingsExpanderItem.IsVisible>
+                    <controls2:FASettingsExpanderItem.Footer>
+                        <NumericUpDown Width="130" Minimum="1" Maximum="36000" Increment="1" FormatString="0"
+                                       Value="{Binding ViewModel.SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={x:Static local:InterfaceSettingsPage.AccentIntervalConverter}}"
+                                       AutomationProperties.Name="自动提取间隔（秒）"/>
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+
+                <controls2:FASettingsExpanderItem IconSource="{ci:FluentIconSource {ci:FI SettingsRegular}}"
+                                                    Content="兼容模式"
+                                                    Description="从系统壁纸文件取色，适用于静态壁纸。">
+                    <controls2:FASettingsExpanderItem.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="ViewModel.CanBrowseWallpaperWindows"/>
+                            <Binding Path="ViewModel.SettingsService.Settings.ColorSource" Converter="{x:Static local:InterfaceSettingsPage.IsWallpaperSource}"/>
+                        </MultiBinding>
+                    </controls2:FASettingsExpanderItem.IsVisible>
+                    <controls2:FASettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsFallbackModeEnabled, Mode=TwoWay}"
+                                      AutomationProperties.Name="壁纸取色兼容模式"/>
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+                <controls2:FASettingsExpanderItem IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                                    Content="壁纸窗口"
+                                                    Description="动态壁纸可选择对应的窗口。留空时使用系统桌面窗口。">
+                    <controls2:FASettingsExpanderItem.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="ViewModel.CanBrowseWallpaperWindows"/>
+                            <Binding Path="ViewModel.SettingsService.Settings.ColorSource" Converter="{x:Static local:InterfaceSettingsPage.IsWallpaperSource}"/>
+                            <Binding Path="!ViewModel.SettingsService.Settings.IsFallbackModeEnabled"/>
+                        </MultiBinding>
+                    </controls2:FASettingsExpanderItem.IsVisible>
+                    <controls2:FASettingsExpanderItem.Footer>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock VerticalAlignment="Center" MaxWidth="160" TextTrimming="CharacterEllipsis"
+                                       Text="{Binding ViewModel.SettingsService.Settings.WallpaperClassName}"/>
+                            <Button Content="浏览…" Click="BrowseWallpaperWindows_OnClick"/>
+                        </StackPanel>
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+            </controls2:FASettingsExpander>
+
+            <controls2:FAInfoBar IsClosable="False" Severity="Informational" IsVisible="{Binding $self.IsOpen}"
+                                Message="此设备无法使用当前取色来源。可以选择系统或自定义主题色。">
+                <controls2:FAInfoBar.IsOpen>
+                    <MultiBinding Converter="{x:Static local:InterfaceSettingsPage.ShowUnsupportedAccent}">
+                        <Binding Path="ViewModel.SettingsService.Settings.ColorSource"/>
+                        <Binding Path="ViewModel.AccentPicker.SupportsWallpaper"/>
+                        <Binding Path="ViewModel.AccentPicker.SupportsScreen"/>
+                    </MultiBinding>
+                </controls2:FAInfoBar.IsOpen>
+            </controls2:FAInfoBar>
+            <controls2:FAInfoBar IsOpen="{Binding !!ViewModel.AccentError}" IsVisible="{Binding $self.IsOpen}"
+                                Message="{Binding ViewModel.AccentError}" IsClosable="False" Severity="Warning"/>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

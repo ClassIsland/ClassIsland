@@ -306,6 +306,10 @@ public partial class MyWindow : FAAppWindow
             {
                 return;
             }
+            var confettiAdorner = new ConfettiAdorner();
+            layer.Children.Add(confettiAdorner);
+            AdornerLayer.SetAdornedElement(confettiAdorner, element);
+
             var appToastAdorner = state.AppToastAdorner = new AppToastAdorner(GetTopLevel(window)!);
             layer.Children.Add(appToastAdorner);
             AdornerLayer.SetAdornedElement(appToastAdorner, element);

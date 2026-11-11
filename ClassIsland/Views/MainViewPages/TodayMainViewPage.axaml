@@ -1,0 +1,90 @@
+<ci:MainViewPageBase xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:attachedSettings="using:ClassIsland.Core.Models.AttachedSettings"
+                     xmlns:appControls="using:ClassIsland.Controls"
+                     x:Class="ClassIsland.Views.MainViewPages.TodayMainViewPage"
+                     Header="{Binding MainViewHeader}">
+    <ci:MainViewPageBase.Styles>
+        <Style Selector="TextBlock#HomeScheduleSummary.adjusted">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+        </Style>
+        <Style Selector="ci|LessonsListBox#HomeLessonsList">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="ci|LessonsListBox#HomeLessonsList ListBoxItem">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
+    </ci:MainViewPageBase.Styles>
+    <Border>
+        <Border.Styles>
+            <Style Selector="appControls|HomeDatePicker#HomeCalendar">
+                <Setter Property="MaxHeight" Value="{Binding #HomeContent.Bounds.Height, Converter={x:Static appControls:HomeDatePicker.AvailableHeightConverter}}"/>
+                <Setter Property="Grid.ColumnSpan" Value="2"/>
+            </Style>
+            <Style Selector="ScrollViewer#HomeLessons">
+                <Setter Property="Grid.Row" Value="1"/>
+                <Setter Property="Grid.ColumnSpan" Value="2"/>
+            </Style>
+            <Style Selector="Grid#HomeContent.wide">
+                <Setter Property="ColumnSpacing" Value="12"/>
+                <Setter Property="Margin" Value="56,16,16,16"/>
+            </Style>
+            <Style Selector="Grid#HomeContent.wide > appControls|HomeDatePicker#HomeCalendar">
+                <Setter Property="IsExpandedPermanently" Value="True"/>
+                <Setter Property="Width" Value="300"/>
+                <Setter Property="Grid.ColumnSpan" Value="1"/>
+                <Setter Property="Grid.RowSpan" Value="2"/>
+                <Setter Property="MaxHeight" Value="Infinity"/>
+                <Setter Property="VerticalAlignment" Value="Top"/>
+            </Style>
+            <Style Selector="Grid#HomeContent.wide > ScrollViewer#HomeLessons">
+                <Setter Property="Grid.Row" Value="0"/>
+                <Setter Property="Grid.Column" Value="1"/>
+                <Setter Property="Grid.ColumnSpan" Value="1"/>
+                <Setter Property="Grid.RowSpan" Value="2"/>
+            </Style>
+        </Border.Styles>
+        <Grid x:Name="HomeContent" RowDefinitions="Auto,*" ColumnDefinitions="Auto,*"
+              Classes.wide="{Binding !$parent[ci:AdaptiveNavigationView].IsNarrow}">
+            <appControls:HomeDatePicker x:Name="HomeCalendar"/>
+            <ScrollViewer x:Name="HomeLessons" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="*,Auto" Margin="0 4">
+                        <TextBlock x:Name="HomeScheduleSummary" Classes="l-instructive"
+                                   Classes.adjusted="{Binding HasDisplayedScheduleAdjustment}"
+                                   Text="{Binding DisplayedScheduleSummary}"
+                                   VerticalAlignment="Center" Margin="16,0,8,0" TextWrapping="Wrap"/>
+                        <Button Grid.Column="1" HorizontalAlignment="Right" Theme="{StaticResource TransparentButton}"
+                                ToolTip.Tip="调整所选日期课程" AutomationProperties.Name="调整所选日期课程"
+                                IsVisible="{Binding IsScheduleAdjustmentVisible}"
+                                IsEnabled="{Binding CanAdjustSchedule}"
+                                Click="ButtonAdjustSchedule_OnClick">
+                            <ci:FluentIcon Glyph="{ci:FI MoreHorizontalRegular}"/>
+                        </Button>
+                    </Grid>
+                    <Panel Grid.Row="1">
+                        <ci:LessonsListBox x:Name="HomeLessonsList"
+                                           ClassPlan="{Binding DisplayedClassPlan}"
+                                           Subjects="{Binding ProfileService.Profile.Subjects}"
+                                           SelectedIndex="{Binding DisplayedSelectedIndex, Mode=OneWay}"
+                                           IsHitTestVisible="True"
+                                           IsLiveUpdatingEnabled="{Binding IsViewingToday}"
+                                           FadeCompletedClasses="{Binding IsViewingToday}"
+                                           IsVisible="{Binding HasDisplayedLessons}"
+                                           Orientation="Vertical">
+                            <ci:LessonsListBox.LessonControlSettings>
+                                <attachedSettings:LessonControlAttachedSettings ExtraInfoType="4"/>
+                            </ci:LessonsListBox.LessonControlSettings>
+                        </ci:LessonsListBox>
+                        <Border Background="Transparent"
+                                Tapped="HomeLessonsList_OnTapped"/>
+                        <TextBlock Text="这一天没有课程安排" Margin="16,32" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   IsVisible="{Binding !HasDisplayedLessons}"/>
+                    </Panel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</ci:MainViewPageBase>
