@@ -16,6 +16,8 @@ public partial class NotificationActionSettings : ObservableRecipient
     private double _contentDurationSeconds = 10.0;
     private bool _isEffectEnabled = true;
     private bool _isAdvancedSettingsEnabled = false;
+    [ObservableProperty] private bool _overridesNotificationEffectId;
+    [ObservableProperty] private string _notificationEffectId = "classisland.ripple";
     [ObservableProperty] bool _isWaitForCompleteEnabled = false;
     [ObservableProperty] private bool _isLeftIconEnabled = true;
     [ObservableProperty] private bool _isRightIconEnabled = false;
