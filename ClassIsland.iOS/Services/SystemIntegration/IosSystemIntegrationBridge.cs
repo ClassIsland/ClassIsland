@@ -33,6 +33,8 @@ internal static partial class IosSystemIntegrationBridge
         }
     }
 
+    public static void ReloadWidgets() => ReloadWidgetsNative();
+
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void OnNavigationRequested(nint pointer)
     {
@@ -57,6 +59,9 @@ internal static partial class IosSystemIntegrationBridge
 
     [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_publish", StringMarshalling = StringMarshalling.Utf8)]
     private static partial int PublishNative(string json);
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_reload_widgets")]
+    private static partial void ReloadWidgetsNative();
 
     [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_last_error")]
     private static partial nint GetLastErrorNative();

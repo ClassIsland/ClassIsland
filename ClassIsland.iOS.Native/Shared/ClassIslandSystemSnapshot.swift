@@ -103,7 +103,7 @@ enum ClassIslandSystemSnapshotError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .sharedContainerUnavailable:
-            return "无法读取课表，请先打开 ClassIsland。"
+            return "无法读取课表：当前签名未启用共享数据（App Group），请检查侧载签名设置。"
         case .invalidSnapshot, .refreshRequired:
             return "课表需要更新，请打开 ClassIsland 后重试。"
         }
@@ -123,9 +123,53 @@ enum ClassIslandSystemSnapshotStore {
         return "group.\(hostIdentifier).shared"
     }
 
+    /// 依次尝试的 App Group：先用按 Bundle ID 推导的组，再用描述文件实际授予的组。
+    /// 侧载签名工具可能改写 Bundle ID 或 App Group，宿主与扩展都优先读取宿主描述文件，保证选中同一个组。
+    static var candidateGroupIdentifiers: [String] {
+        var identifiers = [groupIdentifier]
+        let bundles = [hostBundleURL, Bundle.main.bundleURL]
+        for bundle in bundles {
+            for identifier in provisionedAppGroups(in: bundle) where !identifiers.contains(identifier) {
+                identifiers.append(identifier)
+            }
+        }
+        return identifiers
+    }
+
+    static var containerURL: URL? { resolvedContainerURL }
+
+    private static let resolvedContainerURL: URL? = candidateGroupIdentifiers.lazy.compactMap {
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: $0)
+    }.first
+
+    private static var hostBundleURL: URL {
+        let bundle = Bundle.main.bundleURL
+        guard bundle.pathExtension == "appex" else { return bundle }
+        return bundle.deletingLastPathComponent().deletingLastPathComponent()
+    }
+
+    static func provisionedAppGroups(in bundle: URL) -> [String] {
+        guard let data = try? Data(contentsOf: bundle.appendingPathComponent("embedded.mobileprovision")) else {
+            return []
+        }
+        return provisionedAppGroups(fromProfile: data)
+    }
+
+    /// 描述文件是 CMS 签名包裹的 XML plist，只需取出其中的 plist 读取 Entitlements。
+    static func provisionedAppGroups(fromProfile data: Data) -> [String] {
+        guard let start = data.range(of: Data("<?xml".utf8)),
+              let end = data.range(of: Data("</plist>".utf8), in: start.lowerBound..<data.endIndex),
+              let plist = try? PropertyListSerialization.propertyList(
+                  from: data[start.lowerBound..<end.upperBound], format: nil) as? [String: Any],
+              let entitlements = plist["Entitlements"] as? [String: Any],
+              let groups = entitlements["com.apple.security.application-groups"] as? [String] else {
+            return []
+        }
+        return groups.sorted()
+    }
+
     static func fileURL(named name: String) throws -> URL {
-        guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: groupIdentifier) else {
+        guard let container = containerURL else {
             throw ClassIslandSystemSnapshotError.sharedContainerUnavailable
         }
         return container.appendingPathComponent(name, isDirectory: false)

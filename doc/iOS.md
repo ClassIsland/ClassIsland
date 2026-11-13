@@ -95,6 +95,8 @@ iPad 的系统菜单提供以下命令，也可通过外接键盘使用：
 
 宿主和 Widget Extension 必须同时具有 `group.<实际宿主 Bundle ID>.shared` App Group entitlement，并在签名描述文件中启用相同的组。Dev、Beta、正式版及 `.sideload` 版本按各自实际 Bundle ID 隔离。构建会把 Swift framework 的 App Intents 元数据放入宿主，再以宿主身份生成 Siri 短语索引；只复制 framework 本身不足以让前台操作被系统发现。TrollStore 签名脚本会为宿主与扩展写入匹配的 App Group。
 
+侧载签名工具改写 Bundle ID 或 App Group 时，宿主与扩展会改用宿主 `embedded.mobileprovision` 中授予的 App Group（按名称排序后取第一个可用组）。通配符（`*`）描述文件无法包含 App Group，此时小组件会提示“当前签名未启用共享数据”，需要为宿主和 `.LiveActivityExtension` 分别创建显式 App ID 并启用同一个 App Group。同步失败的原因会写入应用日志。
+
 本机回归可运行 `ClassIsland.Platforms.Abstractions.Tests` 中的 URI 和通知策略测试，以及 `ClassIsland.Lessons.Tests` 中的 `SystemScheduleSnapshotFactoryTests`、`IosLessonNotificationScheduleFactoryTests` 和 `FaItemsRepeaterAutomationTests`。Swift 快照边界测试位于 `ClassIsland.iOS.Native/Tests/ClassIslandSystemSnapshotTests.swift`。真机仍需验证小组件图库、Siri/快捷指令发现、Spotlight 冷启动与热启动跳转、菜单命令、通知操作和开启 VoiceOver 后的首次启动。
 
 ## 自动化中的打开行动

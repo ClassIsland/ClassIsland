@@ -66,10 +66,21 @@ public func ci_system_integration_publish(_ json: UnsafePointer<CChar>?) -> Int3
         }
         setSystemIntegrationError(nil)
         return 1
+    } catch ClassIslandSystemSnapshotError.sharedContainerUnavailable {
+        let groups = ClassIslandSystemSnapshotStore.candidateGroupIdentifiers.joined(separator: ", ")
+        setSystemIntegrationError(
+            "App Group container is unavailable. The signing entitlements must include one of: \(groups).")
+        return 0
     } catch {
         setSystemIntegrationError(String(describing: error))
         return 0
     }
+}
+
+/// 小组件可能缓存了读取失败时的时间线；快照内容未变时 publish 不会刷新，应用回到前台时由宿主显式刷新。
+@_cdecl("ci_system_integration_reload_widgets")
+public func ci_system_integration_reload_widgets() {
+    WidgetCenter.shared.reloadTimelines(ofKind: "ClassIslandSchedule")
 }
 
 @_cdecl("ci_system_integration_register_navigation")

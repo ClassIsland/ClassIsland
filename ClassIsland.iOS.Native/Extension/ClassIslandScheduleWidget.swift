@@ -4,6 +4,7 @@ import WidgetKit
 struct ClassIslandScheduleEntry: TimelineEntry {
     let date: Date
     let snapshot: ClassIslandSystemSnapshot?
+    var isSharedContainerUnavailable = false
 
     var lesson: ClassIslandSystemLesson? { snapshot?.currentOrNextLesson(at: date) }
     var isStale: Bool { snapshot.map { !$0.isCurrent(at: date) } ?? false }
@@ -15,16 +16,23 @@ struct ClassIslandScheduleProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (ClassIslandScheduleEntry) -> Void) {
-        completion(context.isPreview ? previewEntry : ClassIslandScheduleEntry(
-            date: .now, snapshot: ClassIslandSystemSnapshotStore.load()))
+        completion(context.isPreview ? previewEntry : currentEntry(at: .now))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<ClassIslandScheduleEntry>) -> Void) {
         let now = Date.now
-        let snapshot = ClassIslandSystemSnapshotStore.load()
-        let dates = snapshot?.timelineDates(after: now) ?? [now]
-        let entries = dates.map { ClassIslandScheduleEntry(date: $0, snapshot: snapshot) }
+        let entry = currentEntry(at: now)
+        let dates = entry.snapshot?.timelineDates(after: now) ?? [now]
+        let entries = dates.map {
+            ClassIslandScheduleEntry(date: $0, snapshot: entry.snapshot,
+                                     isSharedContainerUnavailable: entry.isSharedContainerUnavailable)
+        }
         completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(21_600))))
+    }
+
+    private func currentEntry(at date: Date) -> ClassIslandScheduleEntry {
+        ClassIslandScheduleEntry(date: date, snapshot: ClassIslandSystemSnapshotStore.load(),
+                                 isSharedContainerUnavailable: ClassIslandSystemSnapshotStore.containerURL == nil)
     }
 
     private var previewEntry: ClassIslandScheduleEntry {
@@ -170,12 +178,14 @@ private struct ClassIslandScheduleWidgetView: View {
     }
 
     private var statusTitle: String {
+        if entry.isSharedContainerUnavailable { return "无法读取课表" }
         if entry.snapshot == nil { return "打开 App 同步课表" }
         if entry.isStale { return "课表需要更新" }
         return "暂无课程"
     }
 
     private var statusDetail: String {
+        if entry.isSharedContainerUnavailable { return "当前签名未启用共享数据（App Group），请检查侧载签名设置" }
         if entry.snapshot == nil || entry.isStale { return "轻点打开 ClassIsland 更新" }
         return "已同步的课表中没有接下来的课程"
     }
