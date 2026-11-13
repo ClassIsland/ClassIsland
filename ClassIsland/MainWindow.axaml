@@ -257,8 +257,15 @@
 
                                 <LayoutTransformControl.LayoutTransform>
                                     <TransformGroup>
-                                        <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
-                                                        ScaleY="{Binding ViewModel.Settings.Scale, Mode=OneWay}" />
+                                        <ScaleTransform ScaleX="{Binding ViewModel.ActualScale, Mode=OneWay}"
+                                                        ScaleY="{Binding ViewModel.ActualScale, Mode=OneWay}">
+                                            <ScaleTransform.Transitions>
+                                                <Transitions>
+                                                    <DoubleTransition Property="ScaleX" Duration="0:0:0.25" Easing="CubicEaseOut" />
+                                                    <DoubleTransition Property="ScaleY" Duration="0:0:0.25" Easing="CubicEaseOut" />
+                                                </Transitions>
+                                            </ScaleTransform.Transitions>
+                                        </ScaleTransform>
                                         <SkewTransform />
                                         <RotateTransform />
                                         <TranslateTransform />

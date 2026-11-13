@@ -189,6 +189,19 @@ public partial class MainViewModel : ObservableRecipient
         }
     }
 
+    private double _actualScale = 1.0;
+
+    public double ActualScale
+    {
+        get => _actualScale;
+        set
+        {
+            if (value.Equals(_actualScale)) return;
+            _actualScale = value;
+            OnPropertyChanged();
+        }
+    }
+
     public double GridRootTop
     {
         get => _gridRootTop;

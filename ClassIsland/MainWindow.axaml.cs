@@ -229,6 +229,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
+        GridRoot.SizeChanged += (_, _) => UpdateAutoScale();
         InitializeContentVisibilityAnimation();
         var span = SentrySdk.GetSpan()?.StartChild("startup-initialize-mainWindow");
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
@@ -510,6 +511,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                            or nameof(ViewModel.Settings.IsMouseInFadingEnabled))
         {
             UpdateFadeStatus();
+        }
+        if (e.PropertyName is nameof(ViewModel.Settings.Scale)
+                           or nameof(ViewModel.Settings.IsAutoScaleEnabled))
+        {
+            UpdateAutoScale(immediate: true);
         }
     }
 
@@ -868,7 +874,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
-        var scale = ViewModel.Settings.Scale;
+        var scale = ViewModel.ActualScale;
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
         
@@ -933,7 +939,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
-        var scale = ViewModel.Settings.Scale;
+        var scale = ViewModel.ActualScale;
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
 
@@ -1003,8 +1009,138 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         LayoutContainerGrid.Height = height;
     }
     
+    private static readonly TimeSpan AutoScaleBufferTime = TimeSpan.FromSeconds(1.5);
+    private const double AutoScaleBufferWidthPercent = 0.05;
+    private DispatcherTimer? _autoScaleRestoreTimer;
+    private DateTime? _autoScaleShrinkStartTime;
+    private double _autoScalePeakWidth;
+
+    private bool _isUpdatingAutoScale;
+
+    private void UpdateAutoScale(bool immediate = false)
+    {
+        if (_isUpdatingAutoScale)
+        {
+            return;
+        }
+        _isUpdatingAutoScale = true;
+        try
+        {
+            UpdateAutoScaleCore(immediate);
+        }
+        finally
+        {
+            _isUpdatingAutoScale = false;
+        }
+    }
+
+    private void UpdateAutoScaleCore(bool immediate)
+    {
+        if (!ViewModel.Settings.IsAutoScaleEnabled || ViewModel.IsWindowMode || GridRoot == null)
+        {
+            ResetAutoScaleToTarget();
+            return;
+        }
+
+        var screen = GetSelectedScreenSafe();
+        if (screen == null)
+        {
+            ViewModel.ActualScale = ViewModel.Settings.Scale;
+            return;
+        }
+
+        GridRoot.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        var unscaledWidth = GridRoot.DesiredSize.Width;
+        if (unscaledWidth <= 0)
+        {
+            ViewModel.ActualScale = ViewModel.Settings.Scale;
+            return;
+        }
+
+        var desiredScale = ComputeDesiredAutoScale(unscaledWidth, screen);
+        ApplyAutoScale(desiredScale, unscaledWidth, immediate);
+    }
+
+    private void ResetAutoScaleToTarget()
+    {
+        _autoScaleShrinkStartTime = null;
+        _autoScaleRestoreTimer?.Stop();
+        ViewModel.ActualScale = ViewModel.Settings.Scale;
+    }
+
+    private double ComputeDesiredAutoScale(double unscaledWidth, Screen screen)
+    {
+        GetCurrentDpi(out var dpiX, out _);
+        var screenArea = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds : screen.WorkingArea;
+        var maxScreenWidth = screenArea.Width / dpiX;
+        var targetScale = ViewModel.Settings.Scale;
+        if (unscaledWidth * targetScale <= maxScreenWidth)
+        {
+            return targetScale;
+        }
+        return Math.Max(0.1, Math.Min(targetScale, maxScreenWidth / unscaledWidth));
+    }
+
+    private void ApplyAutoScale(double desiredScale, double unscaledWidth, bool immediate)
+    {
+        var currentScale = ViewModel.ActualScale;
+        if (desiredScale < currentScale - 0.001 || immediate)
+        {
+            CommitAutoScale(desiredScale, unscaledWidth);
+            return;
+        }
+
+        if (desiredScale <= currentScale + 0.001)
+        {
+            _autoScaleShrinkStartTime = null;
+            _autoScaleRestoreTimer?.Stop();
+            return;
+        }
+
+        _autoScaleShrinkStartTime ??= DateTime.UtcNow;
+        var elapsed = DateTime.UtcNow - _autoScaleShrinkStartTime.Value;
+        var widthDropPercent = _autoScalePeakWidth > 0
+            ? (_autoScalePeakWidth - unscaledWidth) / _autoScalePeakWidth
+            : 0;
+
+        if (elapsed >= AutoScaleBufferTime || widthDropPercent >= AutoScaleBufferWidthPercent)
+        {
+            CommitAutoScale(desiredScale, unscaledWidth);
+            return;
+        }
+
+        ScheduleAutoScaleRestoreTimer(AutoScaleBufferTime - elapsed);
+    }
+
+    private void CommitAutoScale(double scale, double unscaledWidth)
+    {
+        ViewModel.ActualScale = scale;
+        _autoScalePeakWidth = unscaledWidth;
+        _autoScaleShrinkStartTime = null;
+        _autoScaleRestoreTimer?.Stop();
+    }
+
+    private void ScheduleAutoScaleRestoreTimer(TimeSpan interval)
+    {
+        _autoScaleRestoreTimer ??= new DispatcherTimer();
+        _autoScaleRestoreTimer.Interval = interval;
+        _autoScaleRestoreTimer.Tick -= AutoScaleRestoreTimerOnTick;
+        _autoScaleRestoreTimer.Tick += AutoScaleRestoreTimerOnTick;
+        if (!_autoScaleRestoreTimer.IsEnabled)
+        {
+            _autoScaleRestoreTimer.Start();
+        }
+    }
+
+    private void AutoScaleRestoreTimerOnTick(object? sender, EventArgs e)
+    {
+        _autoScaleRestoreTimer?.Stop();
+        UpdateWindowPos();
+    }
+
     private void UpdateWindowPos(bool updateEffectWindow = false, bool useRequestedHeight = false)
     {
+        UpdateAutoScale();
         if (ViewModel.IsEditMode)
         {
             NewWindowPosUpdateImpl();

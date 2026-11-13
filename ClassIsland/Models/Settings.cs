@@ -90,6 +90,7 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     private string _wallpaperClassName = "";
     private double _targetLightValue = 0.6;
     private double _scale = 1.0;
+    private bool _isAutoScaleEnabled = false;
     private bool _isMainWindowDebugEnabled = false;
     private ObservableDictionary<string, bool> _notificationProvidersEnableStates = new();
     private ObservableCollection<string> _notificationProvidersPriority = new();
@@ -1238,6 +1239,18 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
         {
             if (value.Equals(_scale)) return;
             _scale = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [SettingsInfo("自动缩放", "\uF4D1", order: 1)]
+    public bool IsAutoScaleEnabled
+    {
+        get => _isAutoScaleEnabled;
+        set
+        {
+            if (value == _isAutoScaleEnabled) return;
+            _isAutoScaleEnabled = value;
             OnPropertyChanged();
         }
     }
