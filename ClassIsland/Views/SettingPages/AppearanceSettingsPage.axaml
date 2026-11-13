@@ -31,6 +31,13 @@
                             TickPlacement="None"
                             IsSnapToTickEnabled="True"/>
                 </controls2:FASettingsExpander.Footer>
+                <controls2:FASettingsExpanderItem Content="自动缩放"
+                                                  Description="当主界面宽度超过屏幕宽度时，自动缩小以适应屏幕。">
+                    <controls2:FASettingsExpanderItem.Footer>
+                        <ToggleSwitch VerticalAlignment="Center"
+                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsAutoScaleEnabled}" />
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
             </controls2:FASettingsExpander>
             
             <!--背景颜色-->
