@@ -36,6 +36,9 @@ public partial class DevPortalWindow : ViewBase
     private void FontProbe_OnLoaded(object? sender, RoutedEventArgs e) =>
         ViewModel.RefreshFontProbeCommand.Execute(null);
 
+    private void ButtonTextBenchmark_OnClick(object? sender, RoutedEventArgs e) =>
+        new TextRenderingBenchmarkView().Show();
+
     private void ButtonSendNotification_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.NotificationHostService.ShowNotification(new NotificationRequest()

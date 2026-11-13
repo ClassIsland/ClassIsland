@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassIsland.Core.Models.Notification;
 
 namespace ClassIsland.Controls.NotificationEffects;
 
@@ -55,7 +56,12 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
     
     private PixelPoint CenterPoint { get; }
 
-    public RippleEffect(PixelPoint center, IBrush? brush = null)
+    internal static RippleEffect Create(NotificationEffectContext context)
+    {
+        return new RippleEffect(context.Center, context.Content.Color);
+    }
+
+    private RippleEffect(PixelPoint center, IBrush? brush = null)
     {
         CenterPoint = center;
         Fill = brush ?? (Application.Current!.TryFindResource("AccentFillColorDefaultBrush", out var v) ? (IBrush)v : null);

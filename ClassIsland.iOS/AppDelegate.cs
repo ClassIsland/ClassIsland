@@ -11,9 +11,11 @@ using ClassIsland.Controls.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.UI;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Extensions;
 using ClassIsland.Helpers;
+using ClassIsland.iOS.Helpers;
 using ClassIsland.iOS.Controls;
 using ClassIsland.iOS.Services.LiveActivities;
 using ClassIsland.iOS.Services.Notifications;
@@ -27,6 +29,7 @@ using ClassIsland.Shared;
 using ClassIsland.Views;
 using FluentAvalonia.UI.Controls;
 using Foundation;
+using Microsoft.Extensions.DependencyInjection;
 using ObjCRuntime;
 using UIKit;
 using UserNotifications;
@@ -46,6 +49,7 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
     private IosSystemEventsService? _systemEventsService;
     private readonly LessonPreparationNotificationTimeline _lessonPreparationTimeline = new();
     private IActivatableLifetime? _activatableLifetime;
+    private MobileViewHost? _mainViewHost;
     private readonly IosNotificationAuthorizationService _notificationAuthorizationService = new();
     private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
     private IosLocationService? _locationService;
@@ -65,6 +69,7 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
     {
         IosStartupDiagnostics.Write(
             _isHudProcess ? "Creating Avalonia app builder (HUD)" : "Creating Avalonia app builder");
+        NavigationRepeaterAutomationFix.Initialize();
         if (!IosSoundFlowNativeBootstrap.TryInitialize(out var soundFlowException))
         {
             Console.Error.WriteLine(
@@ -121,6 +126,8 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
             {
                 IosStartupDiagnostics.Write("Constructing shared App");
                 var app = buildApp();
+                app.ConfigurePlatformServices = services =>
+                    services.AddSingleton<IAccentPickerService, IosAccentPickerService>();
                 app.OperatingSystem = "ios";
                 IosStartupDiagnostics.Write("Shared App constructed");
                 return app;
@@ -165,6 +172,7 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
             }
 
             var viewHost = new MobileViewHost();
+            _mainViewHost = viewHost;
             _systemNavigationService = new IosSystemNavigationService(viewHost);
             IViewHostProvider.Instance = new IosViewHostProvider(viewHost);
             lifetime.MainView = viewHost;
@@ -172,6 +180,7 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
             if (_activatableLifetime != null)
             {
                 _activatableLifetime.Activated += OnActivated;
+                _activatableLifetime.Deactivated += OnDeactivated;
             }
 
             var splash = new SplashView();
@@ -315,6 +324,15 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
         }
 
         RequestNavigation(uri!);
+    }
+
+    private void OnDeactivated(object? sender, ActivatedEventArgs args)
+    {
+        // 进入后台时系统可能不再投递抬起事件，提前结束过度滚动手势以免回弹状态残留。
+        if (_mainViewHost != null)
+        {
+            ScrollViewerAssist.CancelTouch(_mainViewHost);
+        }
     }
 
     private void OnAppStarted(object? sender, EventArgs e)
@@ -528,6 +546,7 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
             if (_activatableLifetime != null)
             {
                 _activatableLifetime.Activated -= OnActivated;
+                _activatableLifetime.Deactivated -= OnDeactivated;
                 _activatableLifetime = null;
             }
 

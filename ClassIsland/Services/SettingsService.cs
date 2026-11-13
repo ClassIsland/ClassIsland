@@ -29,6 +29,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     : INotifyPropertyChanged
 {
     private Settings _settings = new();
+    private bool _publishingExtractedAccent;
 
     private bool SkipMigration { get; set; } = false;
 
@@ -186,6 +187,19 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Settings);
     }
 
+    internal void SaveExtractedAccent(Avalonia.Media.Color color)
+    {
+        _publishingExtractedAccent = true;
+        try
+        {
+            Settings.SetExtractedAccent(color, () => SaveSettings(nameof(Settings.WallpaperColorPlatte)));
+        }
+        finally
+        {
+            _publishingExtractedAccent = false;
+        }
+    }
+
 
     public const BindingFlags SettingsPropertiesFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
@@ -268,6 +282,9 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
     void SettingsChanged(string propertyName)
     {
+        if (_publishingExtractedAccent && propertyName is nameof(Settings.WallpaperColorPlatte) or nameof(Settings.SelectedPlatteIndex))
+            return;
+
         if (propertyName != nameof(Settings.SettingsOverlays))
         {
             Settings.SettingsOverlays.Remove(propertyName);

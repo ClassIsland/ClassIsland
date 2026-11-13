@@ -13,6 +13,7 @@ using ClassIsland.Android.Services.Platform;
 using ClassIsland.Android.Services.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.UI;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Enums;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
@@ -246,6 +247,10 @@ public class MainActivity : AvaloniaMainActivity
     protected override void OnPause()
     {
         IsForeground = false;
+        if (ViewHost != null)
+        {
+            ScrollViewerAssist.CancelTouch(ViewHost);
+        }
 #if DEBUG
         _debugOverlay?.Pause();
 #endif

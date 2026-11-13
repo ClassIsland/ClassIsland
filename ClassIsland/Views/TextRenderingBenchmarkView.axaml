@@ -1,0 +1,75 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:vm="clr-namespace:ClassIsland.ViewModels"
+             xmlns:models="clr-namespace:ClassIsland.Models"
+             x:Class="ClassIsland.Views.TextRenderingBenchmarkView"
+             x:DataType="vm:TextRenderingBenchmarkViewModel"
+             x:CompileBindings="True"
+             Header="文本性能测试"
+             HostWidth="1160" HostHeight="850"
+             HostStartupLocation="CenterScreen">
+    <Grid Margin="16" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="16" IsEnabled="{Binding !IsBusy}">
+            <ci:Field Label="文本长度">
+                <ComboBox Width="120" ItemsSource="{Binding LengthOptions}" SelectedIndex="{Binding LengthIndex}" />
+            </ci:Field>
+            <ci:Field Label="重复数量">
+                <ComboBox Width="110" ItemsSource="{Binding CountOptions}" SelectedItem="{Binding SelectedCount}" />
+            </ci:Field>
+            <ci:Field Label="渲染实现">
+                <ComboBox Width="140" ItemsSource="{Binding RendererOptions}" SelectedIndex="{Binding RendererIndex}" />
+            </ci:Field>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+            <Button Content="重新测试" IsEnabled="{Binding !IsBusy}" Click="RunCurrent_OnClick" />
+            <Button Content="自动滚动" IsEnabled="{Binding CanScroll}" Click="Scroll_OnClick" />
+            <Button Content="运行全部 20 组" IsEnabled="{Binding !IsBusy}" Click="RunMatrix_OnClick" />
+            <Button Content="取消" IsEnabled="{Binding IsBusy}" Click="Cancel_OnClick" />
+            <Button Content="导出报告" IsEnabled="{Binding CanExport}" Click="Export_OnClick" />
+        </StackPanel>
+        <StackPanel Grid.Row="2" Spacing="4">
+            <TextBlock Text="{Binding Phase}" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding Progress}" />
+            <TextBlock Text="{Binding LatestMetrics}" TextWrapping="Wrap" MinHeight="40" />
+        </StackPanel>
+        <Border Grid.Row="3" HorizontalAlignment="Left" BorderThickness="1"
+                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+            <ScrollViewer x:Name="BenchmarkScroller" Width="720" Height="360"
+                          HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible"
+                          IsHitTestVisible="{Binding !IsBusy}"
+                          ci:ScrollViewerAssist.IsOverScrollAnimationEnabled="False">
+                <StackPanel x:Name="BenchmarkPanel" Orientation="Vertical" Spacing="8"
+                            TextElement.FontSize="16" />
+            </ScrollViewer>
+        </Border>
+        <TextBlock Grid.Row="4" TextWrapping="Wrap" FontSize="12"
+                   Text="固定 720 × 360 DIP，全部创建，无虚拟化。每次渲染前清空并在计时外强制 GC；内存为进程级增量。自动滚动 10 秒、600 DIP/s；UI 回调频率不等于实际呈现帧率。" />
+        <ScrollViewer Grid.Row="5" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="6">
+                <Grid ColumnDefinitions="240,190,130,280,280,100" ColumnSpacing="8">
+                    <TextBlock Text="本轮组合" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Text="首帧中位数（范围）" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="2" Text="创建与挂载中位数" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="3" Text="内存增量中位数" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="4" Text="自动滚动（UI 回调）" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="5" Text="状态" FontWeight="SemiBold" />
+                </Grid>
+                <ItemsControl ItemsSource="{Binding Results}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:TextBenchmarkResult">
+                            <Grid ColumnDefinitions="240,190,130,280,280,100" ColumnSpacing="8" Margin="0 4">
+                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Grid.Column="1" Text="{Binding RenderSummary}" />
+                                <TextBlock Grid.Column="2" Text="{Binding CreationSummary}" />
+                                <TextBlock Grid.Column="3" Text="{Binding MemorySummary}" />
+                                <TextBlock Grid.Column="4" Text="{Binding ScrollSummary}" />
+                                <TextBlock Grid.Column="5" Text="{Binding Status}" ToolTip.Tip="{Binding Error}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</ci:ViewBase>

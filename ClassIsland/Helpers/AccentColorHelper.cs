@@ -1,100 +1,70 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System;
+using System.IO;
+using System.Threading;
 using Avalonia.Media;
+using ClassIsland.Core.Abstractions.Services;
 using ColorHelper;
+using SkiaSharp;
 using ColorConverter = ColorHelper.ColorConverter;
 
 namespace ClassIsland.Helpers;
 
-// https://raw.githubusercontent.com/Scighost/Starward/refs/heads/main/src/Starward/Helpers/AccentColorHelper.cs
-
 internal static class AccentColorHelper
 {
+    private const int MaxImageSize = 640;
 
-    public static unsafe Color? GetAccentColor(byte[] bgra, int width, int height)
+    internal static AccentPickResult Extract(Stream image, CancellationToken cancellationToken)
     {
-        if (bgra.Length % 4 == 0)
+        cancellationToken.ThrowIfCancellationRequested();
+        using var codec = SKCodec.Create(image);
+        if (codec == null)
+            return new AccentPickResult(AccentPickStatus.Failed);
+
+        var sourceInfo = codec.Info;
+        var scale = Math.Min(1f, (float)MaxImageSize / Math.Max(sourceInfo.Width, sourceInfo.Height));
+        var dimensions = codec.GetScaledDimensions(scale);
+        using var colorSpace = SKColorSpace.CreateSrgb();
+        var decodeInfo = new SKImageInfo(dimensions.Width, dimensions.Height, SKColorType.Rgba8888,
+            sourceInfo.AlphaType, colorSpace);
+        using var decoded = SKBitmap.Decode(codec, decodeInfo);
+        if (decoded == null)
+            return new AccentPickResult(AccentPickStatus.Failed);
+
+        var requiresResize = Math.Max(decoded.Width, decoded.Height) > MaxImageSize;
+        using var resized = requiresResize
+            ? decoded.Resize(new SKImageInfo(
+                    Math.Max(1, (int)Math.Round(sourceInfo.Width * scale)),
+                    Math.Max(1, (int)Math.Round(sourceInfo.Height * scale)),
+                    decoded.ColorType, decoded.AlphaType, colorSpace),
+                new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear))
+            : null;
+        if (requiresResize && resized == null)
+            return new AccentPickResult(AccentPickStatus.Failed);
+        var bitmap = resized ?? decoded;
+        var color = GetAccentColor(bitmap, cancellationToken);
+        using var preview = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+        return new AccentPickResult(AccentPickStatus.Success, color, preview?.ToArray() ?? []);
+    }
+
+    internal static Color GetAccentColor(SKBitmap bitmap, CancellationToken cancellationToken)
+    {
+        long red = 0, green = 0, blue = 0, count = 0;
+        for (var y = 0; y < bitmap.Height; y += 2)
         {
-            fixed (byte* ptr = bgra)
+            cancellationToken.ThrowIfCancellationRequested();
+            for (var x = 0; x < bitmap.Width; x += 2)
             {
-                return GetAccentColorInternal(ptr, width, height);
+                var pixel = bitmap.GetPixel(x, y);
+                red += pixel.Red;
+                green += pixel.Green;
+                blue += pixel.Blue;
+                count++;
             }
         }
 
-        return null;
+        // The 1.x experimental picker used the mean RGB hue and value at a fixed saturation.
+        var hsv = ColorConverter.RgbToHsv(new RGB((byte)(red / count), (byte)(green / count), (byte)(blue / count)));
+        var result = ColorConverter.HsvToRgb(new HSV(hsv.H, 60, hsv.V));
+        return Color.FromRgb(result.R, result.G, result.B);
     }
-    private static unsafe Color? GetAccentColorInternal(void* bgra, int width, int height)
-    {
-        try
-        {
-            uint* p = (uint*)bgra;
-            long b = 0, g = 0, r = 0;
-            int[] hueCircle = new int[360];
-            for (int y = 0; y < height; y += 2)
-            {
-                for (int x = 0; x < width; x += 2)
-                {
-                    Bgra32 pixel = Unsafe.AsRef<Bgra32>(p);
-                    b += pixel.B;
-                    g += pixel.G;
-                    r += pixel.R;
-                    p += 2;
-                }
-                p += width - width % 2;
-            }
-
-            int c = (width / 2) * (height / 2);
-            Unsafe.SkipInit(out Color color);
-            color = new Color(255, (byte)(b / c), (byte)(g / c), (byte)(r / c));
-            HSV hsv = ColorConverter.RgbToHsv(new RGB(color.R, color.G, color.B));
-
-            var result = ColorConverter.HsvToRgb(new HSV(hsv.H, 60, hsv.V));
-            return Color.FromRgb(result.R, result.G, result.B);
-        }
-        catch { }
-        return null;
-    }
-
-
-    [StructLayout(LayoutKind.Explicit, Size = 4)]
-    private readonly struct Bgra32
-    {
-        [FieldOffset(0)] public readonly byte B;
-        [FieldOffset(1)] public readonly byte G;
-        [FieldOffset(2)] public readonly byte R;
-        [FieldOffset(3)] public readonly byte A;
-    }
-
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int Bgra32ToHue(in Bgra32 bgra)
-    {
-        byte max = Math.Max(Math.Max(bgra.R, bgra.G), bgra.B);
-        byte min = Math.Min(Math.Min(bgra.R, bgra.G), bgra.B);
-        float chroma = max - min;
-        float h;
-
-        if (chroma <= 8)
-        {
-            // ignore white black gray
-            h = -1;
-        }
-        else if (max == bgra.R)
-        {
-            h = (((bgra.G - bgra.B) / chroma) + 6) % 6;
-        }
-        else if (max == bgra.G)
-        {
-            h = 2 + ((bgra.B - bgra.R) / chroma);
-        }
-        else
-        {
-            h = 4 + ((bgra.R - bgra.G) / chroma);
-        }
-        return (int)(h * 60);
-    }
-
-
 }

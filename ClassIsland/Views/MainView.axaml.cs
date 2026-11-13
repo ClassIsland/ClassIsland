@@ -1,29 +1,23 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.VisualTree;
-using ClassIsland.Core;
-using ClassIsland.Controls;
+using Avalonia.Controls.Templates;
 using ClassIsland.Core.Abstractions.Controls;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Helpers;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
-using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
-using ClassIsland.Controls.ScheduleWeekEdit;
-using ClassIsland.Shared.Enums;
 using ClassIsland.Shared;
-using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
+using ClassIsland.Views.MainViewPages;
 using ClassIsland.Views.MainViewParts;
 using FluentAvalonia.UI.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views;
 
@@ -31,27 +25,57 @@ public partial class MainView : ViewBase
 {
     public MainViewViewModel ViewModel { get; } = IAppHost.GetService<MainViewViewModel>();
     public ClassChangingWindow? ClassChangingWindow { get; set; }
+
+    private readonly Dictionary<string, MainViewPageBase> _pages = [];
+    private FANavigationViewItem? _currentNavigationItem;
+    private FANavigationViewItem? _pendingNavigationItem;
+    private bool _isNavigating;
+    private bool _isSynchronizingSelection;
     private Window? _scheduleWeekHost;
-    
 
     public MainView()
     {
         InitializeComponent();
-        MainViewTabs.SelectionChanged += MainViewTabs_OnSelectionChanged;
+        var pages = IAppHost.GetService<IEnumerable<MainViewPageInfo>>().OrderBy(info => info.Category);
+        foreach (var info in pages)
+        {
+            var icon = info.IconSource;
+            if (icon is FluentIconSource fluentIcon)
+            {
+                fluentIcon.FontSize = 22;
+            }
+
+            MainNavigation.MenuItems.Add(new FANavigationViewItem
+            {
+                Content = info.Name,
+                IconSource = icon,
+                Tag = info
+            });
+        }
+
         MainNavigation.SelectionChanged += MainNavigation_OnSelectionChanged;
-        MainNavigation.SelectedItem = HomeNavigationItem;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        ViewModel.ProfileService.Profile.PropertyChanged -= Profile_OnPropertyChanged;
         ViewModel.ProfileService.Profile.PropertyChanged += Profile_OnPropertyChanged;
         _scheduleWeekHost = TopLevel.GetTopLevel(this) as Window;
         if (_scheduleWeekHost != null)
+        {
             _scheduleWeekHost.Activated += ScheduleWeekHost_OnActivated;
-        RefreshScheduleWeekIfVisible();
-        UpdateHomeCalendarActivation();
+        }
+
+        if (MainPageHost.CurrentPage == null)
+        {
+            _pendingNavigationItem ??= MainNavigation.MenuItems.OfType<FANavigationViewItem>().FirstOrDefault();
+        }
+        else
+        {
+            UpdateSchedulePageActivity();
+        }
+
+        _ = NavigatePendingPagesAsync();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -59,118 +83,183 @@ public partial class MainView : ViewBase
         ViewModel.ProfileService.Profile.PropertyChanged -= Profile_OnPropertyChanged;
         ViewModel.DeactivateCalendar();
         if (_scheduleWeekHost != null)
+        {
             _scheduleWeekHost.Activated -= ScheduleWeekHost_OnActivated;
-        _scheduleWeekHost = null;
+            _scheduleWeekHost = null;
+        }
+
         base.OnDetachedFromVisualTree(e);
     }
 
-    private void MainViewTabs_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void MainNavigation_OnSelectionChanged(object? sender, FANavigationViewSelectionChangedEventArgs e)
     {
-        var item = MainViewTabs.SelectedIndex switch
+        if (_isSynchronizingSelection || e.SelectedItem is not FANavigationViewItem item)
         {
-            0 => HomeNavigationItem,
-            1 => WeekNavigationItem,
-            2 => MoreNavigationItem
-        };
-        if (MainNavigation.SelectedItem != item)
-            MainNavigation.SelectedItem = item;
-        RefreshScheduleWeekIfVisible();
-        UpdateHomeCalendarActivation();
+            return;
+        }
+
+        _pendingNavigationItem = item;
+        await NavigatePendingPagesAsync();
     }
 
-    private void MainNavigation_OnSelectionChanged(object? sender, FANavigationViewSelectionChangedEventArgs e)
+    private async Task NavigatePendingPagesAsync()
     {
-        if (e.SelectedItem == HomeNavigationItem)
+        if (_isNavigating)
         {
-            if (MainViewTabs.SelectedIndex != 0)
-                MainViewTabs.SelectedIndex = 0;
+            return;
         }
-        else if (e.SelectedItem == WeekNavigationItem)
+
+        _isNavigating = true;
+        try
         {
-            if (MainViewTabs.SelectedIndex != 1)
-                MainViewTabs.SelectedIndex = 1;
+            while (VisualRoot != null && _pendingNavigationItem is { Tag: MainViewPageInfo info } item)
+            {
+                _pendingNavigationItem = null;
+                if (ReferenceEquals(item, _currentNavigationItem))
+                {
+                    SynchronizeSelection();
+                    continue;
+                }
+
+                var previousPage = MainPageHost.CurrentPage;
+                MainViewPageBase? page = null;
+                try
+                {
+                    page = GetPage(info);
+                    if (previousPage == null)
+                    {
+                        await MainPageHost.PushAsync(page, null);
+                    }
+                    else
+                    {
+                        await MainPageHost.ReplaceAsync(page);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    var logger = IAppHost.GetService<ILogger<MainView>>();
+                    logger.LogError(exception, "无法打开主视图页面 {PageId}。", info.Id);
+                    // Navigation callbacks can throw after Avalonia has already changed the current page.
+                    if (page != null && ReferenceEquals(MainPageHost.CurrentPage, page))
+                    {
+                        try
+                        {
+                            if (previousPage == null)
+                            {
+                                MainPageHost.RemovePage(page);
+                            }
+                            else
+                            {
+                                await MainPageHost.ReplaceAsync(previousPage, null);
+                            }
+                        }
+                        catch (Exception restoreException)
+                        {
+                            logger.LogError(restoreException, "无法还原主视图的上一个页面。");
+                        }
+
+                        if (!ReferenceEquals(MainPageHost.CurrentPage, page))
+                        {
+                            _pages.Remove(info.Id);
+                        }
+                    }
+
+                    if (VisualRoot != null)
+                    {
+                        ToastsHelper.ShowErrorToast(this, "无法打开此页面，请重新选择页面后重试。");
+                    }
+                }
+
+                if (page != null && ReferenceEquals(MainPageHost.CurrentPage, page))
+                {
+                    _currentNavigationItem = item;
+                    MainNavigation.Header = info.HidePageTitle ? null : info.Name;
+                    MainNavigation.Classes.Set("full-width-title", info.UseFullWidth);
+                    if (VisualRoot != null)
+                    {
+                        UpdateSchedulePageActivity();
+                    }
+                }
+
+                if (_pendingNavigationItem == null)
+                {
+                    SynchronizeSelection();
+                }
+            }
         }
-        else if (e.SelectedItem == MoreNavigationItem)
+        finally
         {
-            if (MainViewTabs.SelectedIndex != 2)
-                MainViewTabs.SelectedIndex = 2;
+            _isNavigating = false;
+        }
+    }
+
+    private MainViewPageBase GetPage(MainViewPageInfo info)
+    {
+        if (_pages.TryGetValue(info.Id, out var page))
+        {
+            return page;
+        }
+
+        page = IAppHost.Host!.Services.GetRequiredKeyedService<MainViewPageBase>(info.Id);
+        if (page is TodayMainViewPage or WeekMainViewPage)
+        {
+            page.DataContext = ViewModel;
+        }
+        page.Template = (IControlTemplate)Resources["MainViewPageTemplate"]!;
+        NavigationPage.SetHasNavigationBar(page, false);
+        _pages.Add(info.Id, page);
+        return page;
+    }
+
+    private void SynchronizeSelection()
+    {
+        _isSynchronizingSelection = true;
+        try
+        {
+            MainNavigation.SelectedItem = _currentNavigationItem;
+        }
+        finally
+        {
+            _isSynchronizingSelection = false;
+        }
+    }
+
+    private void UpdateSchedulePageActivity()
+    {
+        if (MainPageHost.CurrentPage is TodayMainViewPage)
+        {
+            ViewModel.ActivateCalendar();
+        }
+        else
+        {
+            ViewModel.DeactivateCalendar();
+        }
+
+        if (MainPageHost.CurrentPage is WeekMainViewPage)
+        {
+            ViewModel.RefreshScheduleWeek();
         }
     }
 
     private void ScheduleWeekHost_OnActivated(object? sender, EventArgs e)
     {
-        RefreshScheduleWeekIfVisible();
+        if (MainPageHost.CurrentPage is WeekMainViewPage)
+        {
+            ViewModel.RefreshScheduleWeek();
+        }
+
         ViewModel.RefreshCalendar();
     }
 
-    private void UpdateHomeCalendarActivation()
-    {
-        if (MainViewTabs.SelectedIndex == 0 && VisualRoot != null)
-            ViewModel.ActivateCalendar();
-        else
-            ViewModel.DeactivateCalendar();
-    }
-
-    private void RefreshScheduleWeekIfVisible()
-    {
-        if (MainViewTabs.SelectedIndex != 1) return;
-
-        ViewModel.RefreshScheduleWeek();
-    }
-
-    private void ScheduleWeekPrevious_OnClick(object? sender, RoutedEventArgs e) => ViewModel.MoveScheduleWeek(-1);
-    private void ScheduleWeekNext_OnClick(object? sender, RoutedEventArgs e) => ViewModel.MoveScheduleWeek(1);
-    private void ScheduleWeekToday_OnClick(object? sender, RoutedEventArgs e) => ViewModel.GoToCurrentScheduleWeek();
-
     private void Profile_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (string.IsNullOrEmpty(e.PropertyName) ||
-            e.PropertyName == nameof(Profile.ScheduleType))
+        if (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(Profile.ScheduleType))
         {
             ViewModel.RefreshScheduleModeState();
         }
     }
 
-    private void EditScheduleButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (!ViewModel.CanEditMobileSchedule)
-        {
-            return;
-        }
-        ViewModel.IsScheduleEditing = true;
-    }
-
-    private void FinishEditingButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ViewModel.IsScheduleEditing = false;
-    }
-
-    private async void AddScheduleButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (!await AuthorizeCourseEditAsync())
-        {
-            return;
-        }
-
-        var today = App.GetService<IExactTimeService>().GetCurrentLocalDateTime();
-        var date = MainViewTabs.SelectedIndex == 1
-            ? ScheduleWeekTest.SelectedDate ?? ScheduleWeekTest.WeekStart.AddDays(((int)today.DayOfWeek + 6) % 7)
-            : DateOnly.FromDateTime(ViewModel.SelectedDate);
-        var time = MainViewTabs.SelectedIndex == 1
-            ? ScheduleWeekTest.SelectedTime
-            : null;
-        try
-        {
-            var created = ViewModel.CreateScheduleItem(date, time);
-            await ShowCourseEditorAsync(created.Id, date);
-        }
-        catch (Exception exception)
-        {
-            ToastsHelper.ShowErrorToast(this, "无法新建课程", exception);
-        }
-    }
-
-    private async Task<bool> AuthorizeCourseEditAsync()
+    internal async Task<bool> AuthorizeCourseEditAsync()
     {
         if (!ViewModel.CanEditMobileSchedule)
         {
@@ -192,7 +281,7 @@ public partial class MainView : ViewBase
             ViewModel.ManagementService.CredentialConfig.EditProfileAuthorizeLevel);
     }
 
-    private async Task ShowCourseInfoAsync(Guid scheduleItemId, DateOnly date)
+    internal async Task ShowCourseInfoAsync(Guid scheduleItemId, DateOnly date)
     {
         if (AssociatedViewHost == null)
         {
@@ -202,7 +291,7 @@ public partial class MainView : ViewBase
         await AssociatedViewHost.ShowDrawer(new CourseInfoView(scheduleItemId, date));
     }
 
-    private async Task ShowClassicCourseInfoAsync(ClassInfo classInfo, DateOnly date)
+    internal async Task ShowClassicCourseInfoAsync(ClassInfo classInfo, DateOnly date)
     {
         if (AssociatedViewHost == null)
         {
@@ -212,7 +301,7 @@ public partial class MainView : ViewBase
         await AssociatedViewHost.ShowDrawer(new CourseInfoView(classInfo, date));
     }
 
-    private async Task ShowCourseEditorAsync(Guid scheduleItemId, DateOnly date)
+    internal async Task ShowCourseEditorAsync(Guid scheduleItemId, DateOnly date)
     {
         if (AssociatedViewHost == null)
         {
@@ -222,11 +311,11 @@ public partial class MainView : ViewBase
         await AssociatedViewHost.ShowDrawer(new CourseEditView(scheduleItemId, date));
     }
 
-    private async void MainMoreButton_OnClick(object? sender, RoutedEventArgs e)
+    internal MenuFlyout? ShowMainMoreMenu(Control anchor)
     {
-        if (sender is not Control anchor || AssociatedViewHost == null)
+        if (AssociatedViewHost == null)
         {
-            return;
+            return null;
         }
 
         var menu = new MenuFlyout();
@@ -283,6 +372,7 @@ public partial class MainView : ViewBase
         menu.Items.Add(transfer);
         menu.Items.Add(subjects);
         menu.ShowAt(anchor);
+        return menu;
     }
 
     private async Task ShowManagementDrawerAsync(ViewBase view)
@@ -308,274 +398,7 @@ public partial class MainView : ViewBase
         }
     }
 
-    private async void HomeLessonsList_OnTapped(object? sender, TappedEventArgs e)
-    {
-        var point = e.GetPosition(HomeLessonsList);
-        var item = HomeLessonsList.GetVisualDescendants()
-            .OfType<ListBoxItem>()
-            .FirstOrDefault(container =>
-            {
-                var topLeft = container.TranslatePoint(default, HomeLessonsList);
-                return topLeft is { } position &&
-                       new Rect(position, container.Bounds.Size).Contains(point);
-            });
-        if (item?.DataContext is not TimeLayoutItem timeItem)
-        {
-            return;
-        }
-
-        var date = DateOnly.FromDateTime(ViewModel.SelectedDate);
-        if (ViewModel.IsScheduleMode)
-        {
-            var id = ViewModel.FindScheduleItemIdByLesson(ViewModel.SelectedDate, timeItem);
-            if (id is not { } scheduleItemId)
-            {
-                return;
-            }
-            if (ViewModel.IsScheduleEditing)
-            {
-                if (await AuthorizeCourseEditAsync())
-                {
-                    await ShowCourseEditorAsync(scheduleItemId, date);
-                }
-            }
-            else
-            {
-                await ShowCourseInfoAsync(scheduleItemId, date);
-            }
-            return;
-        }
-
-        var classInfo = ViewModel.FindClassInfoByLesson(ViewModel.SelectedDate, timeItem);
-        if (classInfo != null)
-        {
-            await ShowClassicCourseInfoAsync(classInfo, date);
-        }
-    }
-
-    private async void ScheduleWeekEditor_OnCourseTapped(object? sender, ScheduleWeekEditEventArgs e)
-    {
-        if (e.ScheduleItemId is not { } id)
-        {
-            return;
-        }
-
-        if (ViewModel.IsScheduleEditing)
-        {
-            if (await AuthorizeCourseEditAsync())
-            {
-                await ShowCourseEditorAsync(id, e.Date);
-            }
-            return;
-        }
-
-        await ShowCourseInfoAsync(id, e.Date);
-    }
-
-    private async void ScheduleWeekEditor_OnCreateRequested(object? sender, ScheduleWeekEditEventArgs e)
-    {
-        if (!await AuthorizeCourseEditAsync())
-        {
-            return;
-        }
-        try
-        {
-            var created = ViewModel.CreateScheduleItem(e.Date, e.StartTime);
-            await ShowCourseEditorAsync(created.Id, e.Date);
-        }
-        catch (Exception exception)
-        {
-            ToastsHelper.ShowErrorToast(this, "无法新建课程", exception);
-        }
-    }
-
-    private async void ScheduleWeekEditor_OnEditRequested(object? sender, ScheduleWeekEditEventArgs e)
-    {
-        if (!await AuthorizeCourseEditAsync())
-        {
-            return;
-        }
-        try
-        {
-            if (!ViewModel.ApplyScheduleWeekEdit(e))
-            {
-                ToastsHelper.ShowWarningToast(this, "无法移动到该日期或时间，请检查课程的时间和启用范围。");
-            }
-        }
-        catch (Exception exception)
-        {
-            ToastsHelper.ShowErrorToast(this, "无法保存课程移动", exception);
-        }
-    }
-
-    private async void ScheduleWeekEditor_OnDeleteRequested(object? sender, ScheduleWeekEditEventArgs e)
-    {
-        if (e.ScheduleItemId is not { } id || !await AuthorizeCourseEditAsync() ||
-            !ViewModel.ProfileService.Profile.ScheduleItems.TryGetValue(id, out var item))
-        {
-            return;
-        }
-        var result = await new FAContentDialog
-        {
-            Title = "删除课程",
-            Content = "删除后，这门课程的所有重复安排都会被移除。",
-            PrimaryButtonText = "删除",
-            SecondaryButtonText = "取消",
-            DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsyncAuto();
-        if (result != FAContentDialogResult.Primary)
-        {
-            return;
-        }
-        ViewModel.ProfileService.Profile.ScheduleItems.Remove(id);
-        try
-        {
-            ViewModel.ProfileService.SaveProfile();
-        }
-        catch (Exception exception)
-        {
-            ViewModel.ProfileService.Profile.ScheduleItems.Add(id, item);
-            ToastsHelper.ShowErrorToast(this, "无法删除课程", exception);
-        }
-    }
-
-    private async void ScheduleWeekEditor_OnDuplicateRequested(object? sender, ScheduleWeekEditEventArgs e)
-    {
-        if (e.ScheduleItemId is not { } id || !await AuthorizeCourseEditAsync() ||
-            !ViewModel.ProfileService.Profile.ScheduleItems.TryGetValue(id, out var item))
-        {
-            return;
-        }
-        var copy = ConfigureFileHelper.CopyObject(item);
-        var copyId = Guid.NewGuid();
-        ViewModel.ProfileService.Profile.ScheduleItems.Add(copyId, copy);
-        try
-        {
-            ViewModel.ProfileService.SaveProfile();
-        }
-        catch (Exception exception)
-        {
-            ViewModel.ProfileService.Profile.ScheduleItems.Remove(copyId);
-            ToastsHelper.ShowErrorToast(this, "无法复制课程", exception);
-        }
-    }
-
-    private async void ScheduleWeekEditor_OnForkAndReplaceRequested(object? sender, ScheduleWeekEditEventArgs e)
-    {
-        if (e.ScheduleItemId is not { } id || !await AuthorizeCourseEditAsync())
-        {
-            return;
-        }
-        var newId = ViewModel.ProfileService.ForkAndReplaceScheduleItem(
-            id, e.Date.ToDateTime(TimeOnly.MinValue));
-        if (newId == null)
-        {
-            ToastsHelper.ShowWarningToast(this, "无法创建临时覆盖课程，请重新选择课程后重试。");
-            return;
-        }
-        try
-        {
-            ViewModel.ProfileService.SaveProfile();
-            ToastsHelper.ShowToast(this, "已创建临时覆盖课程。");
-        }
-        catch (Exception exception)
-        {
-            ViewModel.ProfileService.Profile.ScheduleItems.Remove(newId.Value);
-            ToastsHelper.ShowErrorToast(this, "无法创建课程覆盖", exception);
-        }
-    }
-
-    private void ScheduleWeekEditor_OnDayHeaderClicked(object? sender, ScheduleDayHeaderEventArgs e)
-    {
-        ScheduleAdjustmentMenu.Show(this, e.Anchor, e.Date, AuthorizeCourseEditAsync);
-        e.Handled = true;
-    }
-    
-    
-    private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
-    {
-        IAppHost.GetService<ProfileSettingsWindow>().Open();
-    }
-
-    private void ButtonAdjustSchedule_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (!ViewModel.CanAdjustSchedule || sender is not Control anchor) return;
-        ScheduleAdjustmentMenu.Show(this, anchor, DateOnly.FromDateTime(ViewModel.SelectedDate),
-            () => ViewModel.ManagementService.AuthorizeByLevel(
-                ViewModel.ManagementService.CredentialConfig.ChangeLessonsAuthorizeLevel));
-        e.Handled = true;
-    }
-
-    private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)
-    {
-        App.GetService<SettingsWindowNew>().Open();
-    }
-
-    private void MenuItemLiveActivitySettings_OnClick(object sender, RoutedEventArgs e)
-    {
-        App.GetService<SettingsWindowNew>().Open("live-activity");
-    }
-
-
-    private async void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
-        {
-            return;
-        }
-
-        if (PlatformHelper.IsAppleMobile)
-        {
-            ((App)AppBase.Current).PrepareForAppleMobileManualTermination();
-            return;
-        }
-        
-        Close();
-        AppBase.Current.Stop();
-    }
-    private void MenuItemRestartApp_OnClick(object sender, RoutedEventArgs e)
-    {
-        AppBase.Current.Restart();
-    }
-    
-    private void MenuItemTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
-    {
-        var window = App.GetService<ProfileSettingsWindow>();
-        window.OpenDrawer("TemporaryClassPlan");
-        window.Open();
-    }
-    
-    private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
-    {
-        App.GetService<SettingsWindowNew>().Open("about");
-    }
-
-    private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/"));
-    }
-
-    private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
-    {
-        // App.GetService<SettingsWindowNew>().Open("update");
-    }
-    
-    private void MenuItemClearAllNotifications_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.NotificationHostService.CancelAllNotifications();
-    }
-
-    private void MenuItemNotificationSettings_OnClick(object sender, RoutedEventArgs e)
-    {
-        // App.GetService<SettingsWindowNew>().Open("notification");
-    }
-
-    private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
-    {
-        OpenClassSwapWindow();
-    }
-    
-    private async void OpenClassSwapWindow()
+    internal async void OpenClassSwapWindow()
     {
         if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig.ChangeLessonsAuthorizeLevel))
         {
@@ -593,7 +416,7 @@ public partial class MainView : ViewBase
         {
             return;
         }
-        
+
         // ViewModel.IsBusy = true;
         ClassChangingWindow = new ClassChangingWindow()
         {
@@ -605,49 +428,4 @@ public partial class MainView : ViewBase
         // ViewModel.IsBusy = false;
     }
 
-
-    private void NativeMenuItemDebugDevTools_OnClick(object? sender, RoutedEventArgs e)
-    {
-        RaiseEvent(new KeyEventArgs()
-        {
-            Key = Key.F12,
-            RoutedEvent = KeyDownEvent
-        });
-    }
-
-    private void NativeMenuItemDebugCrashTest_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var window = new CrashWindow();
-        window.Show();
-    }
-
-    private void NativeMenuItemDebugDevPortal_OnClick(object? sender, RoutedEventArgs e)
-    {
-        IAppHost.GetService<DevPortalWindow>().Show();
-    }
-    
-    private void NativeMenuItemDebugOpenWelcomeWindow_OnClick(object? sender, RoutedEventArgs e)
-    {
-        IAppHost.GetService<WelcomeWindow>().Show();
-    }
-    
-    private void NativeMenuItemOpenTutorialEditor_OnClick(object? sender, RoutedEventArgs e)
-    {
-        IAppHost.GetService<TutorialEditorWindow>().Show();
-    }
-
-    private void NativeMenuItemDebugOpenScreenshotWindow_OnClick(object? sender, RoutedEventArgs e)
-    {
-        IAppHost.GetService<ScreenshotHelperWindow>().Show();
-    }
-    
-    private void NativeMenuItemTutorials_OnClick(object? sender, RoutedEventArgs e)
-    {
-        IAppHost.GetService<TutorialCenterWindow>().Open();
-    }
-
-    private void FASettingsExpanderDevPortal_OnClick(object? sender, RoutedEventArgs e)
-    {
-        new DevPortalWindow().Show();
-    }
 }

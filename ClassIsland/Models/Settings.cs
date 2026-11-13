@@ -1079,6 +1079,12 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
 
     #region Appearence
 
+    [ObservableProperty] private bool _isMainWindowThemeOverrideEnabled;
+    [ObservableProperty] private int _mainWindowTheme;
+    [ObservableProperty] private bool _isMainWindowColorSourceOverrideEnabled;
+    [ObservableProperty] private int _mainWindowColorSource = 1;
+    [ObservableProperty] private Color _mainWindowPrimaryColor = Colors.DeepSkyBlue;
+
     [SettingsInfo("应用主题", "\uE5CB", enums:["跟随系统", "明亮", "黑暗"], order: 1)]
     public int Theme
     {
@@ -1133,13 +1139,40 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
             if (Equals(value, _wallpaperColorPlatte)) return;
             _wallpaperColorPlatte = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedPlatte));
         }
     }
 
     [JsonIgnore]
-    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1
+    public Color SelectedPlatte => SelectedPlatteIndex < 0 || SelectedPlatteIndex >= WallpaperColorPlatte.Count
         ? Colors.DodgerBlue
         : WallpaperColorPlatte[SelectedPlatteIndex];
+
+    internal void SetExtractedAccent(Color color, Action save)
+    {
+        var palette = _wallpaperColorPlatte;
+        var index = _selectedPlatteIndex;
+        if (index == 0 && palette.Count == 1 && palette[0] == color)
+            return;
+
+        _wallpaperColorPlatte = [color];
+        _selectedPlatteIndex = 0;
+        try
+        {
+            save();
+        }
+        catch
+        {
+            _wallpaperColorPlatte = palette;
+            _selectedPlatteIndex = index;
+            throw;
+        }
+
+        OnPropertyChanged(nameof(WallpaperColorPlatte));
+        if (index != 0)
+            OnPropertyChanged(nameof(SelectedPlatteIndex));
+        OnPropertyChanged(nameof(SelectedPlatte));
+    }
 
     public int SelectedPlatteIndex
     {
@@ -1149,6 +1182,7 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
             if (value == _selectedPlatteIndex) return;
             _selectedPlatteIndex = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedPlatte));
         }
     }
 
@@ -1639,6 +1673,17 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
             OnPropertyChanged();
         }
     }
+
+    public string NotificationEffectId
+    {
+        get;
+        set
+        {
+            if (value == field) return;
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "classisland.ripple";
 
     public double NotificationEffectRenderingScale
     {

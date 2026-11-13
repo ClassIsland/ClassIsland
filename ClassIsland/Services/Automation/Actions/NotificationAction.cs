@@ -121,6 +121,8 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
             {
                 IsSettingsEnabled = settings.IsAdvancedSettingsEnabled,
                 IsNotificationEffectEnabled = settings.IsEffectEnabled,
+                OverridesNotificationEffectId = settings.OverridesNotificationEffectId,
+                NotificationEffectId = settings.NotificationEffectId,
                 IsNotificationSoundEnabled = settings.IsSoundEffectEnabled,
                 IsNotificationTopmostEnabled = settings.IsTopmostEnabled,
                 NotificationSoundPath = settings.CustomSoundEffectPath,

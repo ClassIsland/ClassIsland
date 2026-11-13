@@ -23,9 +23,13 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
                 ? "../Resources/Assets/AppLogo_Monochrome.png"
                 : "Assets/AppLogo.png");
 
-            var icons = TrayIcon.GetIcons(AppBase.Current) ?? new TrayIcons();
-            icons.Add(MainTaskBarIcon);
-            TrayIcon.SetIcons(AppBase.Current, icons);
+            // Avalonia 12.1.4 会在注册时绑定菜单，macOS 需等 PostInit 设置最终菜单再注册。
+            if (!OperatingSystem.IsMacOS())
+            {
+                var icons = TrayIcon.GetIcons(AppBase.Current) ?? new TrayIcons();
+                icons.Add(MainTaskBarIcon);
+                TrayIcon.SetIcons(AppBase.Current, icons);
+            }
         }
         AppBase.Current.AppStopping += CurrentOnAppStopping;
     }

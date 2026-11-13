@@ -7,10 +7,12 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Input.GestureRecognizers;
+using Avalonia.Input.Raw;
 using Avalonia.Interactivity;
 using Avalonia.Rendering.Composition;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Platforms.Abstraction;
 
 namespace ClassIsland.Core.Assists;
@@ -50,6 +52,12 @@ public class ScrollViewerAssist
         IsOverScrollAnimationEnabledProperty.Changed.AddClassHandler<ScrollViewer>((viewer, _) => UpdateState(viewer));
     }
 
+    internal static void CancelTouch(Control host)
+    {
+        if (TopLevel.GetTopLevel(host) is { } root && Coordinators.TryGetValue(root, out var coordinator))
+            coordinator.EndTouch();
+    }
+
     private static void UpdateState(ScrollViewer viewer)
     {
         if (viewer.IsLoaded && GetIsOverScrollAnimationEnabled(viewer) && TopLevel.GetTopLevel(viewer) is { } root)
@@ -86,6 +94,7 @@ public class ScrollViewerAssist
     {
         private readonly HashSet<OverScrollState> _states = [];
         private readonly ConditionalWeakTable<ScrollGestureEventArgs, GestureFrame> _frames = new();
+        private IDisposable? _rawInputSubscription;
         private IPointer? _pointer;
         private Visual? _touchSource;
         private int? _gestureId;
@@ -103,6 +112,12 @@ public class ScrollViewerAssist
                 Root.AddHandler(InputElement.ScrollGestureEvent, OnScroll, RoutingStrategies.Bubble, true);
                 Root.AddHandler(InputElement.ScrollGestureInertiaStartingEvent, OnInertia, RoutingStrategies.Bubble, true);
                 Root.AddHandler(InputElement.ScrollGestureEndedEvent, OnEnded, RoutingStrategies.Bubble, true);
+                var inputManager = AvaloniaUnsafeAccessorHelpers.GetAvaloniaLocatorService<IInputManager>();
+                if (inputManager != null)
+                {
+                    _rawInputSubscription = AvaloniaUnsafeAccessorHelpers.GetRawInputPreProcess(inputManager)
+                        .Subscribe(OnRawInput);
+                }
             }
             _states.Add(state);
         }
@@ -116,9 +131,9 @@ public class ScrollViewerAssist
             Root.RemoveHandler(InputElement.ScrollGestureEvent, OnScroll);
             Root.RemoveHandler(InputElement.ScrollGestureInertiaStartingEvent, OnInertia);
             Root.RemoveHandler(InputElement.ScrollGestureEndedEvent, OnEnded);
-            _touchSource = null;
-            _pointer = null;
-            _gestureId = null;
+            _rawInputSubscription?.Dispose();
+            _rawInputSubscription = null;
+            EndTouch();
         }
 
         private void OnPressed(object? sender, PointerPressedEventArgs e)
@@ -141,6 +156,19 @@ public class ScrollViewerAssist
         private void OnReleased(object? sender, PointerReleasedEventArgs e)
         {
             if (e.Pointer == _pointer && _gestureId == null) EndTouch();
+        }
+
+        private void OnRawInput(RawInputEventArgs e)
+        {
+            if (_pointer == null || e is not RawPointerEventArgs raw) return;
+            var type = AvaloniaUnsafeAccessorHelpers.GetRawPointerEventType(raw);
+            // Gesture capture can bypass routed release, and cancellation may never start a scroll gesture.
+            if ((type == RawPointerEventType.TouchCancel || type == RawPointerEventType.TouchEnd && _gestureId == null) &&
+                AvaloniaUnsafeAccessorHelpers.GetRawInputDevice(raw) is IPointerDevice device &&
+                AvaloniaUnsafeAccessorHelpers.GetRawInputPointer(device, raw) == _pointer)
+            {
+                EndTouch();
+            }
         }
 
         public GestureFrame? GetFrame(OverScrollState state, ScrollGestureEventArgs e)
@@ -206,11 +234,12 @@ public class ScrollViewerAssist
             if (_gestureId == e.Id) EndTouch();
         }
 
-        private void EndTouch()
+        public void EndTouch()
         {
             _pointer = null;
             _touchSource = null;
             _gestureId = null;
+            _inertia = false;
             foreach (var state in _states)
             {
                 state.IsTouchOwner = false;

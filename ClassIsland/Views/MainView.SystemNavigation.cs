@@ -2,6 +2,8 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassIsland.Core.Attributes;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Views;
 
@@ -9,7 +11,12 @@ public partial class MainView
 {
     internal async Task ShowSystemScheduleAsync(DateTime date, string? lessonId)
     {
-        MainViewTabs.SelectedIndex = 0;
+        if (MainNavigation.MenuItems.OfType<FANavigationViewItem>()
+                .FirstOrDefault(x => x.Tag is MainViewPageInfo { Id: "classisland.today" }) is { } todayItem)
+        {
+            _pendingNavigationItem = todayItem;
+            await NavigatePendingPagesAsync();
+        }
         ViewModel.SelectedDate = date.Date;
         ViewModel.RefreshCalendar();
         if (Guid.TryParse(lessonId, out var scheduleId))

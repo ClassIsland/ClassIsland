@@ -9,6 +9,9 @@ namespace ClassIsland.Platforms.Linux;
 public partial class X
 {
     private const string X11 = "libX11.so.6";
+
+    internal const int ZPixmap = 2;
+    internal const int XA_PIXMAP = 20;
     
     public const ulong CWOverrideRedirect = (1L<<9);
     const int InputOutput = 1;
@@ -22,6 +25,26 @@ public partial class X
 
     [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr XDefaultRootWindow(IntPtr display);
+
+    [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int XDefaultScreen(nint display);
+
+    [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern nint XDefaultVisual(nint display, int screen);
+
+    [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int XGetGeometry(nint display, nint drawable, out nint root, out int x, out int y,
+        out uint width, out uint height, out uint borderWidth, out uint depth);
+
+    [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern nint XGetImage(nint display, nint drawable, int x, int y, uint width, uint height,
+        nuint planeMask, int format);
+
+    [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern nuint XGetPixel(nint image, int x, int y);
+
+    [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int XDestroyImage(nint image);
 
     [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr XCreateSimpleWindow(IntPtr display, IntPtr parent, int x, int y, int width, int height, uint borderWidth, uint border, uint background);
@@ -122,6 +145,24 @@ public partial class X
     [DllImport(X11)]
     public static extern int XSendEvent(IntPtr display, IntPtr window, bool propagate, IntPtr event_mask,
 	    ref XEvent send_event);
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct XImageLayout
+    {
+        public int Width, Height, XOffset, Format;
+        public nint Data;
+        public int ByteOrder, BitmapUnit, BitmapBitOrder, BitmapPad, Depth, BytesPerLine, BitsPerPixel;
+        public nuint RedMask, GreenMask, BlueMask;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct XVisualLayout
+    {
+        public nint ExtensionData;
+        public nuint VisualId;
+        public int Class;
+        public nuint RedMask, GreenMask, BlueMask;
+    }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct XClassHint

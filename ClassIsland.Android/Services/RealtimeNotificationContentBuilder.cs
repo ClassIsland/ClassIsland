@@ -114,22 +114,23 @@ internal sealed class RealtimeNotificationContentBuilder
             ? string.Empty
             : rotatingContent[(int)(Math.Max(0, monotonicMilliseconds - _rotationStartedAt) / 10_000 % rotatingContent.Count)];
         var fixedText = showSubject ? subjectName : string.Empty;
+        if (!isBreaking && fixedText.Length > 0)
+        {
+            fixedText = $"{(isUpcoming ? "▷" : "▶")}{fixedText}";
+        }
         var summary = string.Join(" ", new[] { fixedText, rotatingText }.Where(x => x.Length > 0));
         var criticalText = rotatingText.Length > 0 ? rotatingText : fixedText;
-        if (!isBreaking && criticalText.Length > 0)
-        {
-            criticalText = $"{(isUpcoming ? "▷" : "▶")}{criticalText}";
-        }
         var location = string.IsNullOrWhiteSpace(effectiveLocation) ? "未设置" : effectiveLocation.Trim();
         var teacher = string.IsNullOrWhiteSpace(subject.TeacherName) ? "未设置" : subject.TeacherName.Trim();
 
         return new RealtimeNotificationContent(
             summary,
             criticalText,
-            $"{(isUpcoming ? "下一节" : isBreaking ? "课间" : "上课")} · {subjectName}",
+            $"{(isUpcoming ? "▷" : isBreaking ? "课间" : "▶")} · {subjectName}",
             isBreaking
                 ? $"{remainingText} {timeRange}"
-                : $"{remainingText} {timeRange} @{location} {teacher}");
+                : $"{remainingText} {timeRange} {teacher} @{location}",
+            !isBreaking && fixedText.Length > 0);
     }
 }
 
@@ -137,4 +138,5 @@ internal sealed record RealtimeNotificationContent(
     string Summary,
     string CriticalText,
     string ExpandedTitle,
-    string ExpandedContent);
+    string ExpandedContent,
+    bool SummaryShowsSubject);

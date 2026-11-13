@@ -375,7 +375,8 @@ public class LessonsForegroundService : Service
             subject?.Icon ?? Subject.Fallback.Icon,
             subject?.ColorHex ?? Subject.Fallback.ColorHex,
             nextSubject?.Icon,
-            nextSubject?.ColorHex);
+            nextSubject?.ColorHex,
+            SummaryShowsSubject: content.SummaryShowsSubject);
     }
 
     public override void OnDestroy()
@@ -464,7 +465,7 @@ public class LessonsForegroundService : Service
             }
         }
         builder.SetContentTitle(snapshot.HasProgress ? snapshot.Summary : snapshot.Title);
-        builder.SetContentText(snapshot.HasProgress
+        builder.SetContentText(snapshot.HasProgress && !snapshot.SummaryShowsSubject
             ? $"{snapshot.Title} {snapshot.Content}"
             : snapshot.Content);
         builder.SetOngoing(true);
@@ -650,7 +651,8 @@ public class LessonsForegroundService : Service
         string? SubjectIcon = null,
         string? SubjectColorHex = null,
         string? ProgressEndIcon = null,
-        string? ProgressEndColorHex = null)
+        string? ProgressEndColorHex = null,
+        bool SummaryShowsSubject = false)
     {
         public bool HasProgress => ProgressMax > 0;
 

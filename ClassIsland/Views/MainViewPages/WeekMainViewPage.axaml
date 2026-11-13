@@ -1,0 +1,41 @@
+<ci:MainViewPageBase xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:scheduleWeek="using:ClassIsland.Controls.ScheduleWeekEdit"
+                     x:Class="ClassIsland.Views.MainViewPages.WeekMainViewPage"
+                     Header="{Binding MainViewHeader}">
+    <Grid RowDefinitions="Auto,*">
+        <WrapPanel Orientation="Horizontal" Margin="0,0,0,6">
+            <Button Click="ScheduleWeekPrevious_OnClick" ToolTip.Tip="上一周" Margin="0,0,4,0"
+                    AutomationProperties.Name="上一周" Theme="{StaticResource TransparentButton}">
+                <ci:FluentIcon Glyph="{ci:FI ChevronLeftRegular}"/>
+            </Button>
+            <Button Click="ScheduleWeekToday_OnClick" Content="本周" Margin="0,0,4,0"
+                    ToolTip.Tip="返回本周" Theme="{StaticResource TransparentButton}"/>
+            <Button Click="ScheduleWeekNext_OnClick" ToolTip.Tip="下一周" Margin="0,0,4,0"
+                    AutomationProperties.Name="下一周" Theme="{StaticResource TransparentButton}">
+                <ci:FluentIcon Glyph="{ci:FI ChevronRightRegular}"/>
+            </Button>
+            <TextBlock Text="{Binding ScheduleWeekCaption}"
+                       VerticalAlignment="Center" FontSize="12"/>
+        </WrapPanel>
+        <scheduleWeek:ScheduleWeekEditControl Grid.Row="1"
+                                             WeekStart="{Binding ScheduleWeekStart}"
+                                             SelectedDate="{Binding ScheduleWeekSelectedDate, Mode=TwoWay}"
+                                             SelectedTime="{Binding ScheduleWeekSelectedTime, Mode=TwoWay}"
+                                             IsReadonly="{Binding IsScheduleWeekReadonly}"
+                                             CourseTapped="ScheduleWeekEditor_OnCourseTapped"
+                                             CreateRequested="ScheduleWeekEditor_OnCreateRequested"
+                                             EditRequested="ScheduleWeekEditor_OnEditRequested"
+                                             DeleteRequested="ScheduleWeekEditor_OnDeleteRequested"
+                                             DuplicateRequested="ScheduleWeekEditor_OnDuplicateRequested"
+                                             ForkAndReplaceRequested="ScheduleWeekEditor_OnForkAndReplaceRequested"
+                                             DayHeaderClicked="ScheduleWeekEditor_OnDayHeaderClicked"/>
+        <TextBlock Grid.Row="1"
+                   Text="点击课程开始编辑，长按后拖动课程"
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                   Margin="0,0,16,16" Padding="8,4"
+                   Classes="l-instructive"
+                   IsVisible="{Binding IsScheduleEditing}"/>
+    </Grid>
+</ci:MainViewPageBase>

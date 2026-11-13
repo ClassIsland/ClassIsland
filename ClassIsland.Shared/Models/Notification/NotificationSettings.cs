@@ -15,6 +15,8 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
     private string _notificationSoundPath = "";
     private bool _isSettingsEnabled = false;
     private bool _isNotificationTopmostEnabled = false;
+    private string _notificationEffectId = "classisland.ripple";
+    private bool _overridesNotificationEffectId = false;
 
     /// <summary>
     /// 是否启用提醒
@@ -100,6 +102,18 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         }
     }
 
+    /// <inheritdoc />
+    public string NotificationEffectId
+    {
+        get => _notificationEffectId;
+        set
+        {
+            if (value == _notificationEffectId) return;
+            _notificationEffectId = value;
+            OnPropertyChanged();
+        }
+    }
+
     /// <summary>
     /// 是否启用此提醒设置。如果为false，那么这里设置的提醒设置将不起作用。
     /// </summary>
@@ -110,6 +124,20 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         {
             if (value == _isSettingsEnabled) return;
             _isSettingsEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否覆盖父级设置的提醒效果 ID
+    /// </summary>
+    public bool OverridesNotificationEffectId
+    {
+        get => _overridesNotificationEffectId;
+        set
+        {
+            if (value == _overridesNotificationEffectId) return;
+            _overridesNotificationEffectId = value;
             OnPropertyChanged();
         }
     }

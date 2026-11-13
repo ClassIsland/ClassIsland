@@ -11,7 +11,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
 using Avalonia.Data.Converters;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
@@ -39,9 +38,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     public IReadOnlyCollection<ViewBase> ActivatedViews => ActivatedViewSet;
 
-    private HashSet<ViewBase> DrawerActivatedViewSet { get; } = [];
-
-    public IReadOnlyCollection<ViewBase> DrawerActivatedViews => DrawerActivatedViewSet;
+    public IReadOnlyCollection<ViewBase> DrawerActivatedViews => DrawerHost.ActivatedViews;
 
     private bool _isShowed = false;
 
@@ -51,13 +48,9 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private bool _hasLoadedInitialContent = false;
 
-    private bool _isDrawerNavigationBusy;
-
     public bool IsDrawerOpen => DrawerHost.IsOpen;
 
     public ViewBase? CurrentDrawerView => DrawerHost.CurrentView;
-
-    private IInputElement? _previousFocus;
 
     private bool _isClosed = false;
 
@@ -74,6 +67,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private ViewBase? _currentView;
 
     public ViewBase? CurrentView => _currentView;
+    bool IViewHost.CanGoBack => !NavigationPage.IsNavigating;
 
     private IDisposable? _currentViewHostPositionObserver;
 
@@ -114,10 +108,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
         Closed += OnClosed;
         Loaded += WindowViewHost_OnLoaded;
         PositionChanged += OnPositionChanged;
-        DrawerHost.ClosingRequested += DrawerHostOnClosingRequested;
-        DrawerHost.Closed += DrawerHostOnClosed;
-        DrawerHost.Popped += DrawerHostOnPopped;
-        DrawerHost.BackRequested += DrawerHostOnBackRequested;
+        DrawerHost.Owner = this;
     }
 
     private void WindowViewHost_OnLoaded(object? sender, RoutedEventArgs e)
@@ -174,12 +165,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
         _isHostContentPreparedForDetach = true;
         SetCurrentView(null);
-        DrawerHost.Clear();
-        foreach (var drawerView in DrawerActivatedViewSet)
-        {
-            drawerView.ViewDeactivated();
-        }
-        DrawerActivatedViewSet.Clear();
+        DrawerHost.Release();
         NavigationPage.Popped -= NavigationPage_OnPopped;
 
         foreach (var icon in NavigationPage.GetVisualDescendants()
@@ -204,21 +190,12 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        var drawerViews = DrawerHost.NavigationPage.NavigationStack.OfType<ViewBase>().ToArray();
         var view = _currentView ?? ActivatedViewSet.LastOrDefault();
-        if (view == null && drawerViews.Length == 0)
-        {
-            return;
-        }
-
         var isCancelable = e.CloseReason is not (WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown);
-        for (var i = drawerViews.Length - 1; i >= 0; i--)
+        if (!DrawerHost.CanCloseViews(e.CloseReason, e.IsProgrammatic, isCancelable))
         {
-            if (!drawerViews[i].ViewDeactivating(e.CloseReason, e.IsProgrammatic, isCancelable) && isCancelable)
-            {
-                e.Cancel = true;
-                return;
-            }
+            e.Cancel = true;
+            return;
         }
 
         if (view != null && !view.ViewDeactivating(e.CloseReason, e.IsProgrammatic, isCancelable) && isCancelable)
@@ -239,11 +216,6 @@ public partial class WindowViewHost : MyWindow, IViewHost
             }
         }
 
-        foreach (var drawerView in DrawerActivatedViewSet.ToArray())
-        {
-            drawerView.ViewDeactivated();
-        }
-        DrawerActivatedViewSet.Clear();
         ActivatedViewSet.Clear();
     }
 
@@ -709,6 +681,11 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private void Show(IViewHost? owner, bool modal)
     {
+        if (owner is DrawerNavigationHost drawerHost)
+        {
+            owner = drawerHost.Owner;
+        }
+
         if (owner is WindowViewHost host)
         {
             PreShow();
@@ -884,23 +861,9 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     public async Task<bool> HideView(ViewBase view)
     {
-        if (DrawerActivatedViewSet.Contains(view))
+        if (DrawerActivatedViews.Contains(view))
         {
-            if (!Equals(CurrentDrawerView, view))
-            {
-                return false;
-            }
-
-            if (DrawerHost.CanGoBack)
-            {
-                await DrawerHost.PopAsync();
-            }
-            else
-            {
-                await HideDrawer();
-            }
-
-            return !DrawerActivatedViewSet.Contains(view);
+            return await DrawerHost.HideView(view);
         }
 
         if (!ActivatedViewSet.Contains(view))
@@ -946,10 +909,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
             Show();
         }
 
-        ActivateDrawerView(view);
-        _previousFocus = FocusManager?.GetFocusedElement();
-        await DrawerHost.OpenAsync(view, options);
-        DrawerHost.NavigationPage.Focus();
+        await DrawerHost.ShowDrawer(view, options);
     }
 
     public async Task PushDrawerView(ViewBase view)
@@ -963,107 +923,12 @@ public partial class WindowViewHost : MyWindow, IViewHost
             throw new InvalidOperationException("视图已被激活，不能再次推入抽屉。");
         }
 
-        ActivateDrawerView(view);
-        await DrawerHost.PushAsync(view);
+        await DrawerHost.PushDrawerView(view);
     }
 
-    public async Task<bool> NavigateDrawerBack()
-    {
-        if (!IsDrawerOpen)
-        {
-            return false;
-        }
-        if (DrawerHost.CanGoBack)
-        {
-            return await DrawerHost.PopAsync();
-        }
+    public Task<bool> NavigateDrawerBack() => DrawerHost.NavigateDrawerBack();
 
-        return await HideDrawer();
-    }
-
-    public Task<bool> HideDrawer()
-    {
-        if (!IsDrawerOpen)
-        {
-            return Task.FromResult(false);
-        }
-
-        DrawerHost.RequestClose();
-        return Task.FromResult(!DrawerHost.IsOpen);
-    }
-
-    private bool ActivateDrawerView(ViewBase view)
-    {
-        if (DrawerActivatedViewSet.Contains(view))
-        {
-            return false;
-        }
-        if (!view.ViewActivating(this))
-        {
-            return false;
-        }
-
-        DrawerActivatedViewSet.Add(view);
-        view.ViewActivated(this);
-        return true;
-    }
-
-    private async void DrawerHostOnBackRequested(object? sender, EventArgs e)
-    {
-        if (_isDrawerNavigationBusy)
-        {
-            return;
-        }
-
-        _isDrawerNavigationBusy = true;
-        try
-        {
-            await NavigateDrawerBack();
-        }
-        finally
-        {
-            _isDrawerNavigationBusy = false;
-        }
-    }
-
-    private void DrawerHostOnClosingRequested(object? sender, System.ComponentModel.CancelEventArgs e)
-    {
-        foreach (var view in DrawerHost.NavigationPage.NavigationStack.OfType<ViewBase>().Reverse())
-        {
-            if (!view.ViewDeactivating(WindowCloseReason.Undefined, true, true))
-            {
-                e.Cancel = true;
-                return;
-            }
-        }
-    }
-
-    private void DrawerHostOnPopped(object? sender, NavigationEventArgs e)
-    {
-        if (e.Page is not ViewBase view)
-        {
-            return;
-        }
-        if (DrawerActivatedViewSet.Remove(view))
-        {
-            view.ViewDeactivated();
-        }
-    }
-
-    private void DrawerHostOnClosed(object? sender, EventArgs e)
-    {
-        DrawerHost.Clear();
-        foreach (var view in DrawerActivatedViewSet.ToArray())
-        {
-            view.ViewDeactivated();
-        }
-        DrawerActivatedViewSet.Clear();
-        if (_previousFocus is Control control && control.IsAttachedToVisualTree())
-        {
-            control.Focus();
-        }
-        _previousFocus = null;
-    }
+    public Task<bool> HideDrawer() => DrawerHost.HideDrawer();
 
     private void NavigationPage_OnPopped(object? sender, NavigationEventArgs e)
     {

@@ -1,0 +1,58 @@
+<ci:MainViewPageBase xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:controls="using:FluentAvalonia.UI.Controls"
+                     xmlns:views="using:ClassIsland.Views"
+                     x:Class="ClassIsland.Views.MainViewPages.MoreMainViewPage">
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro">
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI DocumentBulletListRegular}}"
+                                     Header="编辑档案…"
+                                     IsClickEnabled="True"
+                                     Click="ButtonSettings_OnClick"/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI DocumentBulletListMultipleRegular}}"
+                                     Header="加载临时课表…"
+                                     IsClickEnabled="True"
+                                     Click="MenuItemTemporaryClassPlan_OnClick"/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI ArrowSwapRegular}}"
+                                     Header="换课…"
+                                     IsClickEnabled="True"
+                                     Click="MenuItemClassSwap_OnClick"/>
+            <Separator/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI EditRegular}}"
+                                     Header="编辑主界面…"
+                                     IsClickEnabled="True"/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                     Header="设置灵动岛…"
+                                     IsVisible="{OnPlatform Default=False, iOS=True}"
+                                     IsClickEnabled="True"
+                                     Click="MenuItemLiveActivitySettings_OnClick"/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                     Header="显示悬浮主界面…"
+                                     Description="在其他应用上方常驻显示课表主界面。仅 TrollStore 发行版可用。"
+                                     IsVisible="{Binding $parent[views:MainView].ViewModel.MainWindowOverlayService.IsSupported, FallbackValue=False}">
+                <controls:FASettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding $parent[views:MainView].ViewModel.MainWindowOverlayService.IsEnabled, Mode=TwoWay}"/>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI SettingsRegular}}"
+                                     Header="应用设置…"
+                                     IsClickEnabled="True"
+                                     Click="MenuItemSettings_OnClick"/>
+            <Separator/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI ArrowCounterclockwiseRegular}}"
+                                     Header="重启"
+                                     IsClickEnabled="True"
+                                     Click="MenuItemRestartApp_OnClick"/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI ArrowExitRegular}}"
+                                     Header="退出"
+                                     IsClickEnabled="True"
+                                     Click="MenuItemExitApp_OnClick"/>
+            <Separator/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI BugRegular}}"
+                                     Header="Dev Portal"
+                                     IsClickEnabled="True"
+                                     Click="FASettingsExpanderDevPortal_OnClick"/>
+        </StackPanel>
+    </ScrollViewer>
+</ci:MainViewPageBase>

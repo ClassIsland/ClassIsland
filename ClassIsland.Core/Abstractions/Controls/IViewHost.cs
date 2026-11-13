@@ -20,6 +20,11 @@ public interface IViewHost
     ViewBase? CurrentView { get; }
 
     /// <summary>
+    /// 主视图可以返回上一视图或退出宿主时为 true。
+    /// </summary>
+    bool CanGoBack => true;
+
+    /// <summary>
     /// 已激活到此宿主的视图。
     /// </summary>
     IReadOnlyCollection<ViewBase> ActivatedViews { get; }
@@ -106,6 +111,14 @@ public interface IViewHost
     /// <param name="view">抽屉根页面。</param>
     /// <param name="options">抽屉显示选项。</param>
     Task ShowDrawer(ViewBase view, DrawerOptions? options = null);
+
+    /// <summary>
+    /// 显示抽屉视图并等待该视图取消激活。
+    /// </summary>
+    /// <param name="view">要显示的视图。</param>
+    /// <param name="options">打开抽屉时使用的显示选项。</param>
+    Task ShowDrawerModal(ViewBase view, DrawerOptions? options = null) =>
+        view.ShowAndWaitForDeactivationAsync(() => ShowDrawer(view, options));
 
     /// <summary>
     /// 在当前抽屉中推入页面。

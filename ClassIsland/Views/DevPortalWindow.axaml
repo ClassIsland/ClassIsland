@@ -271,6 +271,14 @@
                     </mdxaml:MarkdownScrollViewer>
                 </Grid>
             </TabItem>
+            <TabItem Header="文本性能测试">
+                <StackPanel Margin="16" Spacing="12">
+                    <TextBlock Text="文本渲染与自动滚动 Benchmark" FontSize="20" />
+                    <TextBlock Text="比较 TextBlock 与 Markdown 在不同文本长度、重复数量下的渲染与滚动性能，并导出报告。"
+                               TextWrapping="Wrap" />
+                    <Button Content="打开文本性能测试" Click="ButtonTextBenchmark_OnClick" HorizontalAlignment="Left" />
+                </StackPanel>
+            </TabItem>
             <TabItem Header="调课日历">
                 <controls:ScheduleCalendarControl/>
             </TabItem>

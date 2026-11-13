@@ -60,6 +60,7 @@ public partial class IosMainWindowIslandView : UserControl, INotificationRenderS
             root.TransparencyBackgroundFallback = Brushes.Transparent;
             root.TemplateApplied += RootOnTemplateApplied;
             ClearTransparencyFallback(root);
+            IAppHost.GetService<ThemeService>().SetMainWindowThemeHost(root);
         }
         XamlThemeService.SetResourceHost(ResourceLoaderBorder);
         XamlThemeService.LoadAllThemes();
@@ -85,14 +86,6 @@ public partial class IosMainWindowIslandView : UserControl, INotificationRenderS
         ResourceLoaderBorder.Resources[nameof(settings.MainWindowLargeFontSize)] = settings.MainWindowLargeFontSize;
         ControlColorHelper.SetControlForegroundColor(ResourceLoaderBorder, settings.CustomForegroundColor,
             settings.IsCustomForegroundColorEnabled);
-        Color? primary = settings.ColorSource switch
-        {
-            0 => settings.PrimaryColor,
-            1 or 3 => settings.SelectedPlatte,
-            2 => null,
-            _ => Colors.DodgerBlue
-        };
-        IAppHost.GetService<IThemeService>().SetTheme(settings.Theme, primary);
     }
 
     internal void ReleaseHost()
@@ -104,6 +97,7 @@ public partial class IosMainWindowIslandView : UserControl, INotificationRenderS
         _isInitialized = false;
         if (_hostRoot != null)
         {
+            IAppHost.GetService<ThemeService>().SetMainWindowThemeHost(null);
             _hostRoot.TemplateApplied -= RootOnTemplateApplied;
             _hostRoot = null;
         }
