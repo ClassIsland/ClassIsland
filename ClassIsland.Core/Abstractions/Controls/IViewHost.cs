@@ -113,6 +113,14 @@ public interface IViewHost
     Task ShowDrawer(ViewBase view, DrawerOptions? options = null);
 
     /// <summary>
+    /// 显示抽屉视图并等待该视图取消激活。
+    /// </summary>
+    /// <param name="view">要显示的视图。</param>
+    /// <param name="options">打开抽屉时使用的显示选项。</param>
+    Task ShowDrawerModal(ViewBase view, DrawerOptions? options = null) =>
+        view.ShowAndWaitForDeactivationAsync(() => ShowDrawer(view, options));
+
+    /// <summary>
     /// 在当前抽屉中推入页面。
     /// </summary>
     /// <param name="view">要推入的页面。</param>

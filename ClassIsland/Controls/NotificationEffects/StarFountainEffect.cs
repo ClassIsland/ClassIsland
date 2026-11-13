@@ -45,7 +45,7 @@ internal sealed class StarFountainEffect : Control, INotificationEffectControl
             return;
         }
 
-        var accent = Application.Current?.TryFindResource("SystemAccentColor", out var resource) == true &&
+        var accent = ResourceNodeExtensions.TryFindResource(this, "SystemAccentColor", out var resource) &&
                      resource is Color color
             ? color
             : Colors.DodgerBlue;
