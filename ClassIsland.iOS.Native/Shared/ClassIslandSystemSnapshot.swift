@@ -192,3 +192,57 @@ enum ClassIslandSystemSnapshotStore {
         return snapshot
     }
 }
+
+/// 小组件中正在查看的日期。只保存日期本身，日期过去后自动回到今天，范围限制在快照覆盖的 7 天内。
+enum ClassIslandWidgetDayStore {
+    static let fileName = "system-widget-day.txt"
+    static let maxOffset = 6
+
+    static func formatter(calendar: Calendar) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.timeZone = calendar.timeZone
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }
+
+    /// 返回所查看日期的零点；未保存、无法解析或超出范围时返回今天。
+    static func resolve(stored: String?, today: Date, calendar: Calendar = .current) -> Date {
+        let start = calendar.startOfDay(for: today)
+        guard let stored, let date = formatter(calendar: calendar).date(from: stored),
+              let last = calendar.date(byAdding: .day, value: maxOffset, to: start),
+              date >= start, date <= last else {
+            return start
+        }
+        return calendar.startOfDay(for: date)
+    }
+
+    /// 偏移为 0 时回到今天。返回 nil 表示应清除保存的日期。
+    static func shifted(stored: String?, by days: Int, today: Date, calendar: Calendar = .current) -> String? {
+        let start = calendar.startOfDay(for: today)
+        guard days != 0,
+              let target = calendar.date(byAdding: .day, value: days,
+                                         to: resolve(stored: stored, today: today, calendar: calendar)) else {
+            return nil
+        }
+        let offset = calendar.dateComponents([.day], from: start, to: target).day ?? 0
+        let clamped = min(max(offset, 0), maxOffset)
+        guard clamped != 0, let date = calendar.date(byAdding: .day, value: clamped, to: start) else { return nil }
+        return formatter(calendar: calendar).string(from: date)
+    }
+
+    static func load() -> String? {
+        guard let url = try? ClassIslandSystemSnapshotStore.fileURL(named: fileName) else { return nil }
+        return try? String(contentsOf: url, encoding: .utf8)
+    }
+
+    static func shift(by days: Int, now: Date = .now) {
+        guard let url = try? ClassIslandSystemSnapshotStore.fileURL(named: fileName) else { return }
+        if let value = shifted(stored: load(), by: days, today: now) {
+            try? Data(value.utf8).write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        } else {
+            try? FileManager.default.removeItem(at: url)
+        }
+    }
+}

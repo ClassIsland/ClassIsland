@@ -37,10 +37,7 @@ internal sealed class IosSystemNavigationService(MobileViewHost viewHost)
                         "next-day" => selected.AddDays(1),
                         _ => request.Date?.ToDateTime(TimeOnly.MinValue) ?? today
                     };
-                    var view = viewHost.CurrentView as MainView ?? IAppHost.GetService<MainView>();
-                    if (!ReferenceEquals(viewHost.CurrentView, view)) view.Open();
-                    // 首次打开页面时先让宿主完成挂载，再选择日期和课程抽屉。
-                    await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Loaded);
+                    var view = await ShowMainViewAsync();
                     await view.ShowSystemScheduleAsync(date, request.LessonId);
                     break;
                 }
@@ -78,6 +75,36 @@ internal sealed class IosSystemNavigationService(MobileViewHost viewHost)
         {
             _navigationGate.Release();
         }
+    }
+
+    /// <summary>
+    /// 执行菜单栏中针对主界面的命令。命令不经过 URL，外部链接无法触发。
+    /// </summary>
+    public async Task RunMainViewCommandAsync(Func<MainView, Task> command)
+    {
+        await _navigationGate.WaitAsync();
+        try
+        {
+            await command(await ShowMainViewAsync());
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"无法执行菜单命令：{exception}");
+            await CommonTaskDialogs.ShowDialog("操作未完成", "请返回 ClassIsland 重试，或从应用内打开相应功能。");
+        }
+        finally
+        {
+            _navigationGate.Release();
+        }
+    }
+
+    private async Task<MainView> ShowMainViewAsync()
+    {
+        var view = viewHost.CurrentView as MainView ?? IAppHost.GetService<MainView>();
+        if (!ReferenceEquals(viewHost.CurrentView, view)) view.Open();
+        // 首次打开页面时先让宿主完成挂载，再切换页面、日期或打开抽屉。
+        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Loaded);
+        return view;
     }
 
     private static async Task SetNotificationsAsync(bool enabled)

@@ -9,14 +9,21 @@ namespace ClassIsland.Views;
 
 public partial class MainView
 {
-    internal async Task ShowSystemScheduleAsync(DateTime date, string? lessonId)
+    internal async Task ShowPageAsync(string pageId)
     {
         if (MainNavigation.MenuItems.OfType<FANavigationViewItem>()
-                .FirstOrDefault(x => x.Tag is MainViewPageInfo { Id: "classisland.today" }) is { } todayItem)
+                .FirstOrDefault(x => x.Tag is MainViewPageInfo info && info.Id == pageId) is { } item)
         {
-            _pendingNavigationItem = todayItem;
+            _pendingNavigationItem = item;
             await NavigatePendingPagesAsync();
         }
+    }
+
+    internal void ToggleNavigationPane() => MainNavigation.IsPaneVisible = !MainNavigation.IsPaneVisible;
+
+    internal async Task ShowSystemScheduleAsync(DateTime date, string? lessonId)
+    {
+        await ShowPageAsync("classisland.today");
         ViewModel.SelectedDate = date.Date;
         ViewModel.RefreshCalendar();
         if (Guid.TryParse(lessonId, out var scheduleId))

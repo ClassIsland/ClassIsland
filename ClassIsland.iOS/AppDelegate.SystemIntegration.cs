@@ -1,4 +1,6 @@
 using Avalonia.Threading;
+using ClassIsland.Shared;
+using ClassIsland.Views;
 using ClassIsland.iOS.Services.SystemIntegration;
 using ClassIsland.Platforms.Abstraction.Services;
 using Foundation;
@@ -101,10 +103,22 @@ public sealed partial class AppDelegate
             CreateScheduleCommand("今日课表", "t", UIKeyModifierFlags.Command, "ciToday:"),
             CreateScheduleCommand("前一天", "[", UIKeyModifierFlags.Command, "ciPreviousDay:"),
             CreateScheduleCommand("后一天", "]", UIKeyModifierFlags.Command, "ciNextDay:"),
+            CreateScheduleCommand("换课…", "k", UIKeyModifierFlags.Command | UIKeyModifierFlags.Shift, "ciClassSwap:"),
+            CreateScheduleCommand("加载临时课表…", "t", UIKeyModifierFlags.Command | UIKeyModifierFlags.Shift,
+                "ciTemporaryClassPlan:"),
             CreateScheduleCommand("编辑档案…", "e", UIKeyModifierFlags.Command | UIKeyModifierFlags.Shift, "ciProfile:"),
             CreateScheduleCommand("设置…", ",", UIKeyModifierFlags.Command, "ciSettings:")
         ]);
         builder.InsertChildMenuAtEnd(menu, UIMenuIdentifier.Root.GetConstant()!);
+        builder.InsertChildMenuAtStart(UIMenu.Create("", null, new NSString("cn.classisland.view"),
+            UIMenuOptions.DisplayInline,
+            [
+                CreateScheduleCommand("今天", "1", UIKeyModifierFlags.Command, "ciShowTodayPage:"),
+                CreateScheduleCommand("本周", "2", UIKeyModifierFlags.Command, "ciShowWeekPage:"),
+                CreateScheduleCommand("更多", "3", UIKeyModifierFlags.Command, "ciShowMorePage:"),
+                CreateScheduleCommand("显示或隐藏侧栏", "s", UIKeyModifierFlags.Command | UIKeyModifierFlags.Control,
+                    "ciToggleSidebar:")
+            ]), UIMenuIdentifier.View.GetConstant()!);
     }
 
     private static UIKeyCommand CreateScheduleCommand(
@@ -125,4 +139,43 @@ public sealed partial class AppDelegate
 
     [Export("ciSettings:")]
     public void ShowSettings(NSObject sender) => RequestNavigation(new Uri("classisland://app/system/settings"));
+
+    [Export("ciShowTodayPage:")]
+    public void ShowTodayPage(NSObject sender) => RunMainViewCommand(view => view.ShowPageAsync("classisland.today"));
+
+    [Export("ciShowWeekPage:")]
+    public void ShowWeekPage(NSObject sender) => RunMainViewCommand(view => view.ShowPageAsync("classisland.week"));
+
+    [Export("ciShowMorePage:")]
+    public void ShowMorePage(NSObject sender) => RunMainViewCommand(view => view.ShowPageAsync("classisland.more"));
+
+    [Export("ciToggleSidebar:")]
+    public void ToggleSidebar(NSObject sender) => RunMainViewCommand(view =>
+    {
+        view.ToggleNavigationPane();
+        return Task.CompletedTask;
+    });
+
+    [Export("ciClassSwap:")]
+    public void ShowClassSwap(NSObject sender) => RunMainViewCommand(view =>
+    {
+        view.OpenClassSwapWindow();
+        return Task.CompletedTask;
+    });
+
+    [Export("ciTemporaryClassPlan:")]
+    public void ShowTemporaryClassPlan(NSObject sender) => RunMainViewCommand(_ =>
+    {
+        // 与“更多”页的“加载临时课表…”保持一致。
+        var window = IAppHost.GetService<ProfileSettingsWindow>();
+        window.OpenDrawer("TemporaryClassPlan");
+        window.Open();
+        return Task.CompletedTask;
+    });
+
+    private void RunMainViewCommand(Func<MainView, Task> command)
+    {
+        if (_isHudProcess || !_isAppNavigationReady || _systemNavigationService is not { } service) return;
+        Dispatcher.UIThread.Post(async () => await service.RunMainViewCommandAsync(command));
+    }
 }

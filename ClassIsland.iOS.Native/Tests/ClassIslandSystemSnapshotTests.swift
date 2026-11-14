@@ -40,7 +40,19 @@ struct ClassIslandSystemSnapshotTests {
         let encoded = try JSONEncoder().encode(snapshot)
         let decoded = try JSONDecoder().decode(ClassIslandSystemSnapshot.self, from: encoded)
         try expect(decoded.lessons == snapshot.lessons, "Snapshot JSON must preserve lesson identifiers and timestamps.")
-        print("ClassIsland system snapshot: 17 checks passed.")
+
+        let today = calendar.startOfDay(for: now)
+        let day = { (offset: Int) in calendar.date(byAdding: .day, value: offset, to: today)! }
+        let store = ClassIslandWidgetDayStore.self
+        let tomorrowText = store.shifted(stored: nil, by: 1, today: now, calendar: calendar)
+        try expect(store.resolve(stored: tomorrowText, today: now, calendar: calendar) == day(1), "Widget can move to the next day.")
+        try expect(store.shifted(stored: nil, by: -1, today: now, calendar: calendar) == nil, "Widget cannot move before today.")
+        try expect(store.shifted(stored: tomorrowText, by: 0, today: now, calendar: calendar) == nil, "Offset 0 returns to today.")
+        let lastText = store.shifted(stored: nil, by: 20, today: now, calendar: calendar)
+        try expect(store.resolve(stored: lastText, today: now, calendar: calendar) == day(6), "Widget stays within the 7-day snapshot.")
+        try expect(store.resolve(stored: tomorrowText, today: day(2), calendar: calendar) == day(2), "Past selections fall back to today.")
+        try expect(store.resolve(stored: "invalid", today: now, calendar: calendar) == today, "Invalid selections fall back to today.")
+        print("ClassIsland system snapshot: 23 checks passed.")
     }
 
     private static func makeLesson(id: String, start: Date, end: Date) -> ClassIslandSystemLesson {

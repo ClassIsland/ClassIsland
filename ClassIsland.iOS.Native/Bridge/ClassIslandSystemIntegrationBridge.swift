@@ -94,6 +94,7 @@ public func ci_system_integration_install_main_menu() -> Int32 {
         MainActor.assumeIsolated {
             UIMainMenuSystem.shared.setBuildConfiguration(UIMainMenuSystem.Configuration()) { builder in
                 builder.insertSibling(classIslandScheduleMenu(), afterMenu: .view)
+                builder.insertChild(classIslandViewMenu(), atStartOfMenu: .view)
             }
         }
         return 1
@@ -102,15 +103,29 @@ public func ci_system_integration_install_main_menu() -> Int32 {
     return 0
 }
 
+private func menuCommand(
+    _ title: String, _ input: String, _ modifiers: UIKeyModifierFlags, _ selector: String) -> UIKeyCommand {
+    UIKeyCommand(title: title, action: Selector(selector), input: input, modifierFlags: modifiers)
+}
+
+// 以下标题、快捷键和选择器需与 AppDelegate.BuildMenu 保持一致。
+private func classIslandViewMenu() -> UIMenu {
+    UIMenu(title: "", identifier: UIMenu.Identifier("cn.classisland.view"), options: .displayInline, children: [
+        menuCommand("今天", "1", .command, "ciShowTodayPage:"),
+        menuCommand("本周", "2", .command, "ciShowWeekPage:"),
+        menuCommand("更多", "3", .command, "ciShowMorePage:"),
+        menuCommand("显示或隐藏侧栏", "s", [.command, .control], "ciToggleSidebar:")
+    ])
+}
+
 private func classIslandScheduleMenu() -> UIMenu {
-    func command(_ title: String, _ input: String, _ modifiers: UIKeyModifierFlags, _ selector: String) -> UIKeyCommand {
-        UIKeyCommand(title: title, action: Selector(selector), input: input, modifierFlags: modifiers)
-    }
-    // 标题、快捷键和选择器需与 AppDelegate.BuildMenu 保持一致。
+    let command = menuCommand
     return UIMenu(title: "课表", identifier: UIMenu.Identifier("cn.classisland.schedule"), children: [
         command("今日课表", "t", .command, "ciToday:"),
         command("前一天", "[", .command, "ciPreviousDay:"),
         command("后一天", "]", .command, "ciNextDay:"),
+        command("换课…", "k", [.command, .shift], "ciClassSwap:"),
+        command("加载临时课表…", "t", [.command, .shift], "ciTemporaryClassPlan:"),
         command("编辑档案…", "e", [.command, .shift], "ciProfile:"),
         command("设置…", ",", .command, "ciSettings:")
     ])
