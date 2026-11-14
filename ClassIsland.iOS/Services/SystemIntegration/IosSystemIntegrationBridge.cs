@@ -1,0 +1,82 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using ClassIsland.Platforms.Abstraction.Services;
+
+namespace ClassIsland.iOS.Services.SystemIntegration;
+
+internal static partial class IosSystemIntegrationBridge
+{
+    private const string NativeLibrary =
+        "@rpath/ClassIslandLiveActivityBridge.framework/ClassIslandLiveActivityBridge";
+
+    public static event Action<Uri>? NavigationRequested;
+
+    public static unsafe void RegisterNavigation() => RegisterNavigationNative(&OnNavigationRequested);
+
+    public static unsafe void UnregisterNavigation() => RegisterNavigationNative(null);
+
+    public static void ConsumePendingNavigation()
+    {
+        var value = Marshal.PtrToStringUTF8(ConsumePendingNative());
+        if (AppNavigationUriParser.TryParseClassIslandUri(value, out var uri))
+        {
+            NavigationRequested?.Invoke(uri!);
+        }
+    }
+
+    public static void Publish(string json)
+    {
+        if (PublishNative(json) == 0)
+        {
+            throw new InvalidOperationException(
+                Marshal.PtrToStringUTF8(GetLastErrorNative()) ?? "Unable to publish the system schedule.");
+        }
+    }
+
+    public static void ReloadWidgets() => ReloadWidgetsNative();
+
+    /// <summary>
+    /// 在 iPadOS 26 及以上通过系统菜单栏接口注册“课表”菜单。
+    /// </summary>
+    /// <returns>已注册时为 true；此时不应再通过 BuildMenu 插入同一菜单。</returns>
+    public static bool InstallMainMenu() => InstallMainMenuNative() != 0;
+
+    public static string GetMainMenuStatus() => Marshal.PtrToStringUTF8(GetMainMenuStatusNative()) ?? "unknown";
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static void OnNavigationRequested(nint pointer)
+    {
+        try
+        {
+            if (AppNavigationUriParser.TryParseClassIslandUri(Marshal.PtrToStringUTF8(pointer), out var uri))
+            {
+                NavigationRequested?.Invoke(uri!);
+            }
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"处理系统操作入口时发生异常：{exception}");
+        }
+    }
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_register_navigation")]
+    private static unsafe partial void RegisterNavigationNative(delegate* unmanaged[Cdecl]<nint, void> callback);
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_consume_pending")]
+    private static partial nint ConsumePendingNative();
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_publish", StringMarshalling = StringMarshalling.Utf8)]
+    private static partial int PublishNative(string json);
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_reload_widgets")]
+    private static partial void ReloadWidgetsNative();
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_install_main_menu")]
+    private static partial int InstallMainMenuNative();
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_main_menu_status")]
+    private static partial nint GetMainMenuStatusNative();
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_last_error")]
+    private static partial nint GetLastErrorNative();
+}

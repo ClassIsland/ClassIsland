@@ -2,6 +2,7 @@
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:ci="http://classisland.tech/schemas/xaml/core"
                      xmlns:controls="using:FluentAvalonia.UI.Controls"
+                     xmlns:views="using:ClassIsland.Views"
                      x:Class="ClassIsland.Views.MainViewPages.MoreMainViewPage">
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
@@ -21,6 +22,19 @@
             <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI EditRegular}}"
                                      Header="编辑主界面…"
                                      IsClickEnabled="True"/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                     Header="设置灵动岛…"
+                                     IsVisible="{OnPlatform Default=False, iOS=True}"
+                                     IsClickEnabled="True"
+                                     Click="MenuItemLiveActivitySettings_OnClick"/>
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
+                                     Header="显示悬浮主界面…"
+                                     Description="在其他应用上方常驻显示课表主界面。仅 TrollStore 发行版可用。"
+                                     IsVisible="{Binding ViewModel.MainWindowOverlayService.IsSupported, RelativeSource={RelativeSource FindAncestor, AncestorType=views:MainView}, FallbackValue=False}">
+                <controls:FASettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.MainWindowOverlayService.IsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=views:MainView}, Mode=TwoWay}"/>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
             <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI SettingsRegular}}"
                                      Header="应用设置…"
                                      IsClickEnabled="True"

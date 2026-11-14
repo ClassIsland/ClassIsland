@@ -128,6 +128,7 @@ public partial class App
         services.AddTransient<AboutSettingsViewModel>();
         services.AddTransient<AppearanceSettingsViewModel>();
         services.AddTransient<ComponentsSettingsViewModel>();
+        services.AddTransient<LiveActivitySettingsViewModel>();
         services.AddTransient<NotificationSettingsViewModel>();
         services.AddTransient<WindowSettingsViewModel>();
         services.AddTransient<WeatherSettingsViewModel>();
@@ -153,7 +154,10 @@ public partial class App
         services.AddTransientView<SettingsWindowNew>();
         services.AddTransientView<ProfileSettingsWindow>();
         services.AddTransient<ClassPlanDetailsWindow>();
-        services.AddTransient<WindowRuleDebugWindow>();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            services.AddTransient<WindowRuleDebugWindow>();
+        }
         // services.AddTransient<ConfigErrorsWindow>();
         services.AddTransient<TimeAdjustmentWindow>();
         // services.AddTransient<ExcelExportWindow>();
@@ -181,12 +185,16 @@ public partial class App
         services.AddSettingsPage<PrivacySettingsPage>();
         services.AddSettingsPage<RefreshingSettingsPage>();
         services.AddSettingsPage<AdvancedSettingsPage>();
-        if (System.OperatingSystem.IsAndroid() || IsDevelopmentBuild)
+        if (System.OperatingSystem.IsAndroid() || IsDevelopmentBuild && !PlatformHelper.IsAppleMobile)
         {
             services.AddSettingsPage<RealtimeNotificationSettingsPage>();
             services.AddTransient<RealtimeNotificationSettingsViewModel>();
         }
         services.AddSettingsPage<ComponentsSettingsPage>();
+        if (PlatformHelper.IsAppleMobile)
+        {
+            services.AddSettingsPage<LiveActivitySettingsPage>();
+        }
         services.AddSettingsPage<AppearanceSettingsPage>();
         services.AddSettingsPage<NotificationSettingsPage>();
         services.AddSettingsPage<WindowSettingsPage>();
@@ -196,7 +204,10 @@ public partial class App
         {
             services.AddSettingsPage<UpdateSettingsPage>();
         }
-        services.AddSettingsPage<PluginsSettingsPage>();
+        if (PluginSupport.IsEnabled)
+        {
+            services.AddSettingsPage<PluginsSettingsPage>();
+        }
         services.AddSettingsPage<ThemesSettingsPage>();
         services.AddSettingsPage<TestSettingsPage>();
         services.AddSettingsPage<DebugPage>();
@@ -234,7 +245,10 @@ public partial class App
             LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(latitude=)(\d*\.?\d*)"), 2));
             LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(longitude=)(\d*\.?\d*)"), 2));
 
-            builder.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Error);
+            if (System.OperatingSystem.IsWindows())
+            {
+                builder.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Error);
+            }
             builder.AddConsoleFormatter<ClassIslandConsoleFormatter, ConsoleFormatterOptions>();
             builder.AddConsole(console => { console.FormatterName = "classisland"; });
             builder.AddSentry(o =>
@@ -259,7 +273,7 @@ public partial class App
         // AttachedSettings
         services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
         services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
-        if (System.OperatingSystem.IsAndroid())
+        if (System.OperatingSystem.IsAndroid() || PlatformHelper.IsAppleMobile)
         {
             services.AddAttachedSettingsControl<RealtimeNotificationAttachedSettingsControl>();
         }
@@ -304,8 +318,11 @@ public partial class App
         services.AddAction<SleepAction, SleepActionSettingsControl>();
         services.AddAction<ModifyAppSettingsAction, ModifyAppSettingsActionSettingsControl>();
         services.AddAction<WeatherNotificationAction, WeatherNotificationActionSettingControl>();
-        services.AddAction<AppQuitAction>();
-        services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            services.AddAction<AppQuitAction>();
+            services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();
+        }
 
         // 认证提供方
         services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
@@ -368,7 +385,10 @@ public partial class App
         services.AddNotificationEffect("classisland.confetti", "下彩带", ConfettiEffect.Create);
         services.AddNotificationEffect("classisland.starFountain", "星星喷泉", StarFountainEffect.Create);
         // Plugins
-        if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
+        if (PluginSupport.IsEnabled &&
+            !ApplicationCommand.Safe &&
+            string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) &&
+            string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {
             PluginService.InitializePlugins(context, services);
         }

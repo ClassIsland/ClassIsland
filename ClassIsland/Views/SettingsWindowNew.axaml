@@ -46,8 +46,14 @@
                         <MenuItem Icon="{controls:FluentIcon &#xE508;}" Header="实验性功能…"
                                   Click="MenuItemExperimentalSettings_OnClick" />
                         <MenuItem Icon="{controls:FluentIcon &#xF485;}"
-                                  Header="调试窗口规则…"
-                                  Click="MenuItemDebugWindowRule_OnClick" />
+                                   Header="调试窗口规则…"
+                                   Click="MenuItemDebugWindowRule_OnClick">
+                            <MenuItem.IsVisible>
+                                <OnPlatform Default="True">
+                                    <On Options="iOS" Content="False" />
+                                </OnPlatform>
+                            </MenuItem.IsVisible>
+                        </MenuItem>
                         <MenuItem Icon="{controls:FluentIcon &#xE0B1;}"
                                   Header="创建快捷方式....">
                             <MenuItem.IsVisible>
@@ -119,7 +125,7 @@
                 <Grid VerticalAlignment="Center" ColumnDefinitions="Auto,Auto,*,Auto">
                     <StackPanel Orientation="Horizontal" Grid.Column="1"
                                 VerticalAlignment="Center"
-                                Classes.mobile="{Binding IsMobileMode, RelativeSource={RelativeSource FindAncestor, AncestorType=ui:WindowViewHost}, FallbackValue={OnPlatform Default={x:False}, Android={x:True}}}">
+                                Classes.mobile="{Binding IsMobileMode, RelativeSource={RelativeSource FindAncestor, AncestorType=ui:WindowViewHost}, FallbackValue={OnPlatform Default={x:False}, Android={x:True}, iOS={x:True}}}">
                         <StackPanel.Styles>
                             <Style Selector="StackPanel.mobile > Image#WindowIcon">
                                 <Setter Property="IsVisible" Value="False"/>

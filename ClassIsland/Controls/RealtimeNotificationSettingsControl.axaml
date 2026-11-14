@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:models="using:ClassIsland.Models"
+             xmlns:fa="using:FluentAvalonia.UI.Controls"
+             x:Class="ClassIsland.Controls.RealtimeNotificationSettingsControl"
+             x:DataType="models:IRealtimeNotificationSettings"
+             x:CompileBindings="True">
+    <UserControl.Styles>
+        <Style Selector="WrapPanel > CheckBox">
+            <Setter Property="Margin" Value="0 0 12 4" />
+        </Style>
+    </UserControl.Styles>
+    <StackPanel Spacing="8">
+        <fa:FASettingsExpander Header="即将上课提醒"
+                               Description="在上课前指定时间内显示课程提醒。"
+                               IconSource="{ci:FluentIconSource {ci:FI AlertRegular}}"
+                               IsExpanded="True">
+            <fa:FASettingsExpander.Footer>
+                <ToggleSwitch IsChecked="{Binding IsUpcomingClassRealtimeNotificationEnabled, Mode=TwoWay}"
+                              AutomationProperties.Name="启用即将上课提醒" />
+            </fa:FASettingsExpander.Footer>
+            <fa:FASettingsExpanderItem Content="提前提醒时长" Description="设为 0 分钟时，不提前显示课程提醒。">
+                <fa:FASettingsExpanderItem.Footer>
+                    <ci:Field Suffix="分钟">
+                        <fa:FANumberBox Minimum="0" Maximum="1440" SmallChange="1" LargeChange="10"
+                                        SpinButtonPlacementMode="Compact"
+                                        AutomationProperties.Name="提前提醒时长（分钟）"
+                                        Value="{Binding UpcomingClassRealtimeNotificationLeadMinutes, Mode=TwoWay, Converter={x:Static ci:NotNaNConverter.Instance}}" />
+                    </ci:Field>
+                </fa:FASettingsExpanderItem.Footer>
+            </fa:FASettingsExpanderItem>
+            <fa:FASettingsExpanderItem Content="显示的内容">
+                <fa:FASettingsExpanderItem.Footer>
+                    <WrapPanel>
+                        <CheckBox Content="课程名" IsChecked="{Binding UpcomingClassRealtimeNotificationShowSubjectName, Mode=TwoWay}" />
+                        <CheckBox Content="剩余时间" IsChecked="{Binding UpcomingClassRealtimeNotificationShowRemainingTime, Mode=TwoWay}" />
+                        <CheckBox Content="持续时间" IsChecked="{Binding UpcomingClassRealtimeNotificationShowTimeRange, Mode=TwoWay}" />
+                        <CheckBox Content="上课地点" IsChecked="{Binding UpcomingClassRealtimeNotificationShowLocation, Mode=TwoWay}" />
+                        <CheckBox Content="上课教师" IsChecked="{Binding UpcomingClassRealtimeNotificationShowTeacherName, Mode=TwoWay}" />
+                    </WrapPanel>
+                </fa:FASettingsExpanderItem.Footer>
+            </fa:FASettingsExpanderItem>
+        </fa:FASettingsExpander>
+        <fa:FASettingsExpander Header="课程持续信息"
+                               Description="上课期间持续显示当前课程信息。"
+                               IconSource="{ci:FluentIconSource {ci:FI ClockRegular}}"
+                               IsExpanded="True">
+            <fa:FASettingsExpander.Footer>
+                <ToggleSwitch IsChecked="{Binding IsCurrentClassRealtimeNotificationEnabled, Mode=TwoWay}"
+                              AutomationProperties.Name="启用课程持续信息" />
+            </fa:FASettingsExpander.Footer>
+            <fa:FASettingsExpanderItem Content="显示的内容">
+                <fa:FASettingsExpanderItem.Footer>
+                    <WrapPanel>
+                        <CheckBox Content="课程名" IsChecked="{Binding CurrentClassRealtimeNotificationShowSubjectName, Mode=TwoWay}" />
+                        <CheckBox Content="剩余时间" IsChecked="{Binding CurrentClassRealtimeNotificationShowRemainingTime, Mode=TwoWay}" />
+                        <CheckBox Content="持续时间" IsChecked="{Binding CurrentClassRealtimeNotificationShowTimeRange, Mode=TwoWay}" />
+                        <CheckBox Content="上课地点" IsChecked="{Binding CurrentClassRealtimeNotificationShowLocation, Mode=TwoWay}" />
+                        <CheckBox Content="上课教师" IsChecked="{Binding CurrentClassRealtimeNotificationShowTeacherName, Mode=TwoWay}" />
+                    </WrapPanel>
+                </fa:FASettingsExpanderItem.Footer>
+            </fa:FASettingsExpanderItem>
+        </fa:FASettingsExpander>
+    </StackPanel>
+</UserControl>

@@ -31,7 +31,7 @@ public class FluentIcon : FAFontIcon
     }
     
     public object ProvideValue() => this;
-    
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);

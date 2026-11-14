@@ -11,4 +11,5 @@ using System.Windows;
 [assembly: InternalsVisibleTo("ClassIsland.Desktop")]
 [assembly: InternalsVisibleTo("ClassIsland.Android")]
 [assembly: InternalsVisibleTo("ClassIsland.iOS")]
+[assembly: InternalsVisibleTo("ClassIsland.Lessons.Tests")]
 [assembly: InternalsVisibleTo("ClassIsland.Hmos")]

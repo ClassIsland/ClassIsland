@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Models.Actions;
 using ClassIsland.Platforms.Abstraction;
 using static ClassIsland.Models.Actions.RunActionSettings.RunActionRunType;
@@ -19,6 +20,12 @@ public class RunAction(IUriNavigationService uriNavigationService) : ActionBase<
     protected override async Task OnInvoke()
     {
         await base.OnInvoke();
+        if (PlatformHelper.IsAppleMobile && Settings.RunType is Application or Command)
+        {
+            throw new PlatformNotSupportedException(
+                "此行动不能在 iOS 上运行。请改用“App 链接”打开其他 App，或删除此行动。");
+        }
+
         switch (Settings.RunType)
         {
             case Application:
@@ -32,6 +39,10 @@ public class RunAction(IUriNavigationService uriNavigationService) : ActionBase<
                 break;
             }
             case File:
+            {
+                await PlatformServices.LauncherService.LaunchFile(Settings.Value);
+                break;
+            }
             case Folder:
             {
                 await PlatformServices.LauncherService.LaunchPath(Settings.Value);
@@ -43,7 +54,11 @@ public class RunAction(IUriNavigationService uriNavigationService) : ActionBase<
                 if (!string.IsNullOrWhiteSpace(path) && !path.Contains(':') && !path.StartsWith('\\'))
                     path = "https://" + path;
 
-                if (OperatingSystem.IsWindows())
+                if (PlatformHelper.IsAppleMobile)
+                {
+                    await PlatformServices.LauncherService.LaunchUrl(path);
+                }
+                else if (OperatingSystem.IsWindows())
                 {
                     Process.Start(new ProcessStartInfo(path)
                     {
@@ -69,6 +84,11 @@ public class RunAction(IUriNavigationService uriNavigationService) : ActionBase<
                     UriNavigationService.NavigateWrapped(new Uri(path));
                 }
 
+                break;
+            }
+            case AppLink:
+            {
+                await PlatformServices.LauncherService.LaunchAppLink(Settings.Value);
                 break;
             }
             case Command:

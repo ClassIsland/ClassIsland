@@ -6,27 +6,33 @@
                               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                               xmlns:ci="http://classisland.tech/schemas/xaml/core"
                               xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+                              xmlns:icons="clr-namespace:ClassIsland.Core.Icons;assembly=ClassIsland.Core"
                               xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions">
     <Panel>
         <Grid ColumnDefinitions="Auto * Auto"
-              RowDefinitions="Auto Auto">
+              RowDefinitions="Auto Auto Auto">
             <ComboBox Margin="0 0 3 0"
                       SelectedIndex="{Binding Settings.RunType}">
-                <ci:IconText Glyph="&#xF4B1;"
-                             Text="应用程序" />
-                <ci:IconText Glyph="&#xE508;">
-                    <ci:IconText.Text>
-                        <OnPlatform Default="终端命令">
-                            <On Options="Windows" Content="cmd 命令" />
-                        </OnPlatform>
-                    </ci:IconText.Text>
-                </ci:IconText>
-                <ci:IconText Glyph="&#xE687;"
+                <ComboBoxItem IsEnabled="{Binding !$parent[local:RunActionSettingsControl].IsAppleMobile}">
+                    <ci:IconText Glyph="{x:Static icons:FluentIcons.AppGenericRegular}" Text="应用程序" />
+                </ComboBoxItem>
+                <ComboBoxItem IsEnabled="{Binding !$parent[local:RunActionSettingsControl].IsAppleMobile}">
+                    <ci:IconText Glyph="{x:Static icons:FluentIcons.CodeRegular}">
+                        <ci:IconText.Text>
+                            <OnPlatform Default="终端命令">
+                                <On Options="Windows" Content="cmd 命令" />
+                            </OnPlatform>
+                        </ci:IconText.Text>
+                    </ci:IconText>
+                </ComboBoxItem>
+                <ci:IconText Glyph="{x:Static icons:FluentIcons.DocumentRegular}"
                              Text="文件" />
-                <ci:IconText Glyph="&#xE875;"
+                <ci:IconText Glyph="{x:Static icons:FluentIcons.FolderOpenRegular}"
                              Text="文件夹" />
-                <ci:IconText Glyph="&#xE905;"
+                <ci:IconText Glyph="{x:Static icons:FluentIcons.GlobeRegular}"
                              Text="Url 链接" />
+                <ci:IconText Glyph="{x:Static icons:FluentIcons.LinkRegular}"
+                             Text="App 链接" />
             </ComboBox>
             <TextBox Grid.Row="0"
                      Grid.Column="1"
@@ -49,7 +55,7 @@
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Stretch"
                                    VerticalContentAlignment="Center"
-                                   Glyph="&#xE88D;"
+                                   Glyph="{x:Static icons:FluentIcons.FolderOpenRegular}"
                                    Text="选择…"
                                    IsVisible="{Binding $parent[local:RunActionSettingsControl].IsFileSelector}"
                                    Theme="{StaticResource TransparentButton}"
@@ -61,6 +67,12 @@
                      IsVisible="{Binding $parent[local:RunActionSettingsControl].IsApplication}"
                      Watermark="（可选）应用程序启动参数"
                      ToolTip.Tip="（可选）应用程序启动参数" />
+            <TextBlock Grid.Row="2"
+                       Grid.ColumnSpan="3"
+                       Margin="0 6 0 0"
+                       TextWrapping="Wrap"
+                       Text="{Binding $parent[local:RunActionSettingsControl].Hint}"
+                       IsVisible="{Binding $parent[local:RunActionSettingsControl].Hint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         </Grid>
     </Panel>
 </ci:ActionSettingsControlBase>

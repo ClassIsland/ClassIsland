@@ -1,4 +1,10 @@
 <Project>
+	<PropertyGroup Condition="'$(ClassIslandIosDistribution)' == 'AppStore'">
+		<DefineConstants>$(DefineConstants);CLASSISLAND_APP_STORE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIslandIosDistribution)' == 'TrollStore'">
+		<DefineConstants>$(DefineConstants);CLASSISLAND_TROLLSTORE</DefineConstants>
+	</PropertyGroup>
 	<PropertyGroup>
 		<!-- we'll do our own versioning -->
 		<GitVersion>false</GitVersion>

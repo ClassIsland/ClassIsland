@@ -31,6 +31,7 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Models.Tutorial;
@@ -180,7 +181,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         "avares://ClassIsland/Assets/Fonts/#HarmonyOS Sans SC, avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable";
     
     public static string PlatformDefaultFontFamilyKey =>
-        OperatingSystem.IsAndroid() ? FontFamily.Default.Name : DefaultFontFamilyKey;
+        PlatformHelper.IsMobile ? FontFamily.Default.Name : DefaultFontFamilyKey;
 
     public static FontFamily DefaultFontFamily { get; } =
         FontFamily.Parse(PlatformDefaultFontFamilyKey);
@@ -350,7 +351,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             }
         }
 #if DEBUG
-        if (!System.OperatingSystem.IsAndroid())
+        if (!PlatformHelper.IsMobile)
             MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
         TutorialService.BeginNotCompletedTutorials("classisland.getStarted.welcome/init");

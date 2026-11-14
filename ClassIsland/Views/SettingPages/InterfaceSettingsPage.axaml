@@ -12,7 +12,7 @@
 
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
-            <StackPanel IsVisible="{OnPlatform Default=False, Android=True}"
+            <StackPanel IsVisible="{OnPlatform Default=False, Android=True, iOS=True}"
                         IsEnabled="{Binding !ViewModel.IsSelectingBackgroundImage}">
                 <controls2:FASettingsExpander Header="背景图片"
                                             Description="在应用内页面显示背景图片。"

@@ -43,4 +43,3 @@ or a `storage_block:` error. Do not stop at "upload failed" or "noted in the PR"
   nothing, retry that command. Supplementing evidence does not change recorded
   verdicts; read back coverage and do not claim the delivery is complete while
   required evidence is missing.
-

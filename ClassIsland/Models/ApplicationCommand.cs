@@ -62,4 +62,9 @@ public class ApplicationCommand
 
     public bool Autostartup { get; set; } = false;
     public bool Mobile { get; set; } = false;
+
+    /// <summary>
+    /// 以 TrollStore 悬浮主界面宿主进程模式运行。仅由主进程内部拉起，不面向用户。
+    /// </summary>
+    public bool Hud { get; set; } = false;
 }

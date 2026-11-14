@@ -164,12 +164,12 @@
                             </ItemsPanelTemplate>
                         </TabStrip.ItemsPanel>
                         <TabStripItem>
-                            <ci:AnimatedIconButton Glyph="{ci:FI DocumentDataRegular}" Text="经典" 
+                            <ci:AnimatedIconButton Glyph="{ci:FI DocumentDataRegular}" Text="经典"
                                                    Classes="display-role"
                                                    IsKeepingExpanded="True"/>
                         </TabStripItem>
                         <TabStripItem>
-                            <ci:AnimatedIconButton Glyph="&#xF35B;" Text="日程（实验性）" 
+                            <ci:AnimatedIconButton Glyph="&#xF35B;" Text="日程（实验性）"
                                                    Classes="display-role"
                                                    IsKeepingExpanded="True"/>
                         </TabStripItem>

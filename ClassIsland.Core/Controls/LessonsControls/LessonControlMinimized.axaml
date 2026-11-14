@@ -56,14 +56,14 @@
                                 <ScaleTransform.ScaleX>
                                     <Binding Path="$parent[local:LessonsListBox].SubjectIconScale">
                                         <Binding.FallbackValue>
-                                            <x:Double>1.0</x:Double>        
+                                            <x:Double>1.0</x:Double>
                                         </Binding.FallbackValue>
                                     </Binding>
                                 </ScaleTransform.ScaleX>
                                 <ScaleTransform.ScaleY>
                                     <Binding Path="$parent[local:LessonsListBox].SubjectIconScale">
                                         <Binding.FallbackValue>
-                                            <x:Double>1.0</x:Double>        
+                                            <x:Double>1.0</x:Double>
                                         </Binding.FallbackValue>
                                     </Binding>
                                 </ScaleTransform.ScaleY>

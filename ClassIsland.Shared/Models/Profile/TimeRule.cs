@@ -46,7 +46,7 @@ public partial class TimeRule : ObservableRecipient
 #else
     [ObservableProperty] private string _rangeEnd = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
 #endif
-    
+
     /// <summary>
     /// 排除的日期
     /// </summary>
@@ -55,7 +55,7 @@ public partial class TimeRule : ObservableRecipient
 #else
     [ObservableProperty] private ObservableCollection<string> _excludedDates = [];
 #endif
-    
+
     /// <summary>
     /// 在以上基础上附加的日期
     /// </summary>
