@@ -12,6 +12,7 @@ public sealed partial class AppDelegate
     private IosSystemNavigationService? _systemNavigationService;
     private IosSystemIntegrationCoordinator? _systemIntegrationCoordinator;
     private bool _systemNavigationRegistered;
+    private bool _isMainMenuInstalledBySystem;
 
     private void TryRegisterSystemNavigation()
     {
@@ -23,6 +24,15 @@ public sealed partial class AppDelegate
         catch (Exception exception)
         {
             Console.Error.WriteLine($"无法注册系统课表入口：{exception}");
+        }
+
+        try
+        {
+            _isMainMenuInstalledBySystem = IosSystemIntegrationBridge.InstallMainMenu();
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"无法注册菜单栏课表菜单：{exception}");
         }
     }
 
@@ -84,7 +94,8 @@ public sealed partial class AppDelegate
     public override void BuildMenu(IUIMenuBuilder builder)
     {
         base.BuildMenu(builder);
-        if (_isHudProcess || builder.System != UIMenuSystem.MainSystem) return;
+        // iPadOS 26 起菜单由 UIMainMenuSystem 构建，再次插入同一标识符的菜单会冲突。
+        if (_isHudProcess || _isMainMenuInstalledBySystem || builder.System != UIMenuSystem.MainSystem) return;
         var menu = UIMenu.Create("课表", null, new NSString("cn.classisland.schedule"), (UIMenuOptions)0,
         [
             CreateScheduleCommand("今日课表", "t", UIKeyModifierFlags.Command, "ciToday:"),

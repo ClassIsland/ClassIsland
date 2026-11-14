@@ -1,6 +1,7 @@
 import AppIntents
 import CoreSpotlight
 import Foundation
+import UIKit
 import UniformTypeIdentifiers
 import WidgetKit
 
@@ -81,6 +82,38 @@ public func ci_system_integration_publish(_ json: UnsafePointer<CChar>?) -> Int3
 @_cdecl("ci_system_integration_reload_widgets")
 public func ci_system_integration_reload_widgets() {
     WidgetCenter.shared.reloadTimelines(ofKind: "ClassIslandSchedule")
+}
+
+/// iPadOS 26 起，使用场景生命周期的应用不再调用 App Delegate 的 buildMenu(with:)，
+/// 菜单栏中的“课表”菜单必须通过 UIMainMenuSystem 注册。命令的选择器由宿主 AppDelegate 实现。
+/// 返回 1 表示已注册；旧系统或旧 SDK 返回 0，由宿主继续使用 buildMenu(with:)。
+@_cdecl("ci_system_integration_install_main_menu")
+public func ci_system_integration_install_main_menu() -> Int32 {
+#if compiler(>=6.2)
+    if #available(iOS 26.0, *), Thread.isMainThread {
+        MainActor.assumeIsolated {
+            UIMainMenuSystem.shared.setBuildConfiguration(UIMainMenuSystem.Configuration()) { builder in
+                builder.insertSibling(classIslandScheduleMenu(), afterMenu: .view)
+            }
+        }
+        return 1
+    }
+#endif
+    return 0
+}
+
+private func classIslandScheduleMenu() -> UIMenu {
+    func command(_ title: String, _ input: String, _ modifiers: UIKeyModifierFlags, _ selector: String) -> UIKeyCommand {
+        UIKeyCommand(title: title, action: Selector(selector), input: input, modifierFlags: modifiers)
+    }
+    // 标题、快捷键和选择器需与 AppDelegate.BuildMenu 保持一致。
+    return UIMenu(title: "课表", identifier: UIMenu.Identifier("cn.classisland.schedule"), children: [
+        command("今日课表", "t", .command, "ciToday:"),
+        command("前一天", "[", .command, "ciPreviousDay:"),
+        command("后一天", "]", .command, "ciNextDay:"),
+        command("编辑档案…", "e", [.command, .shift], "ciProfile:"),
+        command("设置…", ",", .command, "ciSettings:")
+    ])
 }
 
 @_cdecl("ci_system_integration_register_navigation")

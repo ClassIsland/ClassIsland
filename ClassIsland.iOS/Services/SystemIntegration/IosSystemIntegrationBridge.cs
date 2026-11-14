@@ -35,6 +35,12 @@ internal static partial class IosSystemIntegrationBridge
 
     public static void ReloadWidgets() => ReloadWidgetsNative();
 
+    /// <summary>
+    /// 在 iPadOS 26 及以上通过系统菜单栏接口注册“课表”菜单。
+    /// </summary>
+    /// <returns>已注册时为 true；此时不应再通过 BuildMenu 插入同一菜单。</returns>
+    public static bool InstallMainMenu() => InstallMainMenuNative() != 0;
+
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void OnNavigationRequested(nint pointer)
     {
@@ -62,6 +68,9 @@ internal static partial class IosSystemIntegrationBridge
 
     [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_reload_widgets")]
     private static partial void ReloadWidgetsNative();
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_install_main_menu")]
+    private static partial int InstallMainMenuNative();
 
     [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_last_error")]
     private static partial nint GetLastErrorNative();
