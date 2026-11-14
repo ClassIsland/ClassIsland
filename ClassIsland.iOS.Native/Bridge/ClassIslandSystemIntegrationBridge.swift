@@ -106,14 +106,26 @@ public func ci_system_integration_install_main_menu() -> Int32 {
     MainActor.assumeIsolated {
         UIMainMenuSystem.shared.setBuildConfiguration(UIMainMenuSystem.Configuration()) { builder in
             mainMenuBuildCount += 1
-            builder.insertSibling(classIslandScheduleMenu(), afterMenu: .view)
-            builder.insertChild(classIslandViewMenu(), atStartOfMenu: .view)
-            let hasMenu = builder.menu(for: UIMenu.Identifier("cn.classisland.schedule")) != nil
+            // UIMenuBuilder 会静默丢弃快捷键与已有命令重复的菜单；失败时改用不带快捷键的版本，保证菜单可见。
+            let scheduleId = UIMenu.Identifier("cn.classisland.schedule")
+            builder.insertSibling(classIslandScheduleMenu(withShortcuts: true), afterMenu: .view)
+            var scheduleResult = builder.menu(for: scheduleId) != nil ? "ok" : "fallback"
+            if scheduleResult == "fallback" {
+                builder.insertSibling(classIslandScheduleMenu(withShortcuts: false), afterMenu: .view)
+                if builder.menu(for: scheduleId) == nil { scheduleResult = "failed" }
+            }
+            let viewId = UIMenu.Identifier("cn.classisland.view")
+            builder.insertChild(classIslandViewMenu(withShortcuts: true), atStartOfMenu: .view)
+            var viewResult = builder.menu(for: viewId) != nil ? "ok" : "fallback"
+            if viewResult == "fallback" {
+                builder.insertChild(classIslandViewMenu(withShortcuts: false), atStartOfMenu: .view)
+                if builder.menu(for: viewId) == nil { viewResult = "failed" }
+            }
             let rootMenus = builder.menu(for: .root)?.children
                 .compactMap { ($0 as? UIMenu).map { "\($0.title)[\($0.identifier.rawValue)]" } }
                 .joined(separator: ", ") ?? "none"
             let target = UIApplication.shared.target(forAction: Selector(("ciToday:")), withSender: nil)
-            mainMenuStatus = "built #\(mainMenuBuildCount) (schedule menu present: \(hasMenu), command target: "
+            mainMenuStatus = "built #\(mainMenuBuildCount) (schedule menu: \(scheduleResult), view items: \(viewResult), command target: "
                 + "\(target.map { String(describing: type(of: $0)) } ?? "none"), root menus: \(rootMenus))"
         }
         // 菜单可能已按默认配置构建过一次，显式请求重建以应用自定义配置。
@@ -134,23 +146,30 @@ public func ci_system_integration_main_menu_status() -> UnsafePointer<CChar>? {
     return mainMenuStatusPointer.map { UnsafePointer($0) }
 }
 
-private func menuCommand(
-    _ title: String, _ input: String, _ modifiers: UIKeyModifierFlags, _ selector: String) -> UIKeyCommand {
-    UIKeyCommand(title: title, action: Selector(selector), input: input, modifierFlags: modifiers)
+/// input 为 nil 时不分配快捷键。系统菜单已占用 ⌘,（设置）和 ⌃⌘S（边栏），不要再分配。
+private func menuCommand(_ title: String, _ input: String?, _ modifiers: UIKeyModifierFlags, _ selector: String,
+                         withShortcuts: Bool) -> UICommand {
+    guard withShortcuts, let input else { return UICommand(title: title, action: Selector(selector)) }
+    return UIKeyCommand(title: title, action: Selector(selector), input: input, modifierFlags: modifiers)
 }
 
 // 以下标题、快捷键和选择器需与 AppDelegate.BuildMenu 保持一致。
-private func classIslandViewMenu() -> UIMenu {
-    UIMenu(title: "", identifier: UIMenu.Identifier("cn.classisland.view"), options: .displayInline, children: [
-        menuCommand("今天", "1", .command, "ciShowTodayPage:"),
-        menuCommand("本周", "2", .command, "ciShowWeekPage:"),
-        menuCommand("更多", "3", .command, "ciShowMorePage:"),
-        menuCommand("显示或隐藏侧栏", "s", [.command, .control], "ciToggleSidebar:")
+private func classIslandViewMenu(withShortcuts: Bool) -> UIMenu {
+    let command = { (title: String, input: String?, modifiers: UIKeyModifierFlags, selector: String) in
+        menuCommand(title, input, modifiers, selector, withShortcuts: withShortcuts)
+    }
+    return UIMenu(title: "", identifier: UIMenu.Identifier("cn.classisland.view"), options: .displayInline, children: [
+        command("今天", "1", .command, "ciShowTodayPage:"),
+        command("本周", "2", .command, "ciShowWeekPage:"),
+        command("更多", "3", .command, "ciShowMorePage:"),
+        command("显示或隐藏侧栏", nil, [], "ciToggleSidebar:")
     ])
 }
 
-private func classIslandScheduleMenu() -> UIMenu {
-    let command = menuCommand
+private func classIslandScheduleMenu(withShortcuts: Bool) -> UIMenu {
+    let command = { (title: String, input: String?, modifiers: UIKeyModifierFlags, selector: String) in
+        menuCommand(title, input, modifiers, selector, withShortcuts: withShortcuts)
+    }
     return UIMenu(title: "课表", identifier: UIMenu.Identifier("cn.classisland.schedule"), children: [
         command("今日课表", "t", .command, "ciToday:"),
         command("前一天", "[", .command, "ciPreviousDay:"),
@@ -158,7 +177,7 @@ private func classIslandScheduleMenu() -> UIMenu {
         command("换课…", "k", [.command, .shift], "ciClassSwap:"),
         command("加载临时课表…", "t", [.command, .shift], "ciTemporaryClassPlan:"),
         command("编辑档案…", "e", [.command, .shift], "ciProfile:"),
-        command("设置…", ",", .command, "ciSettings:")
+        command("设置…", nil, [], "ciSettings:")
     ])
 }
 

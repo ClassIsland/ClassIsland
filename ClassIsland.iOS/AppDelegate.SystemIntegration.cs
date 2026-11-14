@@ -126,7 +126,7 @@ public sealed partial class AppDelegate
             CreateScheduleCommand("加载临时课表…", "t", UIKeyModifierFlags.Command | UIKeyModifierFlags.Shift,
                 "ciTemporaryClassPlan:"),
             CreateScheduleCommand("编辑档案…", "e", UIKeyModifierFlags.Command | UIKeyModifierFlags.Shift, "ciProfile:"),
-            CreateScheduleCommand("设置…", ",", UIKeyModifierFlags.Command, "ciSettings:")
+            UICommand.Create("设置…", null, new Selector("ciSettings:"), null)
         ]);
         builder.InsertChildMenuAtEnd(menu, UIMenuIdentifier.Root.GetConstant()!);
         builder.InsertChildMenuAtStart(UIMenu.Create("", null, new NSString("cn.classisland.view"),
@@ -135,8 +135,8 @@ public sealed partial class AppDelegate
                 CreateScheduleCommand("今天", "1", UIKeyModifierFlags.Command, "ciShowTodayPage:"),
                 CreateScheduleCommand("本周", "2", UIKeyModifierFlags.Command, "ciShowWeekPage:"),
                 CreateScheduleCommand("更多", "3", UIKeyModifierFlags.Command, "ciShowMorePage:"),
-                CreateScheduleCommand("显示或隐藏侧栏", "s", UIKeyModifierFlags.Command | UIKeyModifierFlags.Control,
-                    "ciToggleSidebar:")
+                // ⌘, 和 ⌃⌘S 已被系统“设置”和“边栏”占用，重复的快捷键会使整个菜单被丢弃。
+                UICommand.Create("显示或隐藏侧栏", null, new Selector("ciToggleSidebar:"), null)
             ]), UIMenuIdentifier.View.GetConstant()!);
     }
 
