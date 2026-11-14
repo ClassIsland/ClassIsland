@@ -30,9 +30,9 @@
             <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
                                      Header="显示悬浮主界面…"
                                      Description="在其他应用上方常驻显示课表主界面。仅 TrollStore 发行版可用。"
-                                     IsVisible="{Binding $parent[views:MainView].ViewModel.MainWindowOverlayService.IsSupported, FallbackValue=False}">
+                                     IsVisible="{Binding ViewModel.MainWindowOverlayService.IsSupported, RelativeSource={RelativeSource FindAncestor, AncestorType=views:MainView}, FallbackValue=False}">
                 <controls:FASettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding $parent[views:MainView].ViewModel.MainWindowOverlayService.IsEnabled, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.MainWindowOverlayService.IsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=views:MainView}, Mode=TwoWay}"/>
                 </controls:FASettingsExpander.Footer>
             </controls:FASettingsExpander>
             <controls:FASettingsExpander IconSource="{ci:FluentIconSource {ci:FI SettingsRegular}}"
