@@ -328,6 +328,8 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
 
     private void OnDeactivated(object? sender, ActivatedEventArgs args)
     {
+        // 菜单栏在用户查看后才可能构建，切到后台时再记录一次。
+        LogMainMenuStatus("on deactivate");
         // 进入后台时系统可能不再投递抬起事件，提前结束过度滚动手势以免回弹状态残留。
         if (_mainViewHost != null)
         {

@@ -43,11 +43,11 @@ public sealed partial class AppDelegate
     /// <summary>
     /// 菜单栏在首次显示时才构建，启动完成后再记录一次实际构建结果。
     /// </summary>
-    private void LogMainMenuStatus()
+    private void LogMainMenuStatus(string stage = "after startup")
     {
         try
         {
-            IosStartupDiagnostics.Write($"Main menu after startup: {IosSystemIntegrationBridge.GetMainMenuStatus()}");
+            IosStartupDiagnostics.Write($"Main menu {stage}: {IosSystemIntegrationBridge.GetMainMenuStatus()}");
         }
         catch (Exception exception)
         {
@@ -113,6 +113,8 @@ public sealed partial class AppDelegate
     public override void BuildMenu(IUIMenuBuilder builder)
     {
         base.BuildMenu(builder);
+        IosStartupDiagnostics.Write(
+            $"BuildMenu called (main={builder.System == UIMenuSystem.MainSystem}, skipped={_isMainMenuInstalledBySystem})");
         // iPadOS 26 起菜单由 UIMainMenuSystem 构建，再次插入同一标识符的菜单会冲突。
         if (_isHudProcess || _isMainMenuInstalledBySystem || builder.System != UIMenuSystem.MainSystem) return;
         var menu = UIMenu.Create("课表", null, new NSString("cn.classisland.schedule"), (UIMenuOptions)0,

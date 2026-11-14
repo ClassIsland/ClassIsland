@@ -17,6 +17,7 @@ private var systemIndexSnapshot: ClassIslandSystemSnapshot?
 private var systemIndexNeedsRetry = true
 private var systemShortcutClassPlans: [ClassIslandSystemClassPlan]?
 private var mainMenuStatus = "not-installed"
+private var mainMenuBuildCount = 0
 private var mainMenuStatusPointer: UnsafeMutablePointer<CChar>?
 
 private func setSystemIntegrationError(_ message: String?) {
@@ -100,19 +101,24 @@ public func ci_system_integration_install_main_menu() -> Int32 {
         mainMenuStatus = "skipped: not on main thread"
         return 0
     }
+    // 构建处理程序可能在 setBuildConfiguration 内同步执行，必须先写入等待状态，避免覆盖构建结果。
+    mainMenuStatus = "installed, waiting for build"
     MainActor.assumeIsolated {
         UIMainMenuSystem.shared.setBuildConfiguration(UIMainMenuSystem.Configuration()) { builder in
+            mainMenuBuildCount += 1
             builder.insertSibling(classIslandScheduleMenu(), afterMenu: .view)
             builder.insertChild(classIslandViewMenu(), atStartOfMenu: .view)
             let hasMenu = builder.menu(for: UIMenu.Identifier("cn.classisland.schedule")) != nil
+            let rootMenus = builder.menu(for: .root)?.children
+                .compactMap { ($0 as? UIMenu).map { "\($0.title)[\($0.identifier.rawValue)]" } }
+                .joined(separator: ", ") ?? "none"
             let target = UIApplication.shared.target(forAction: Selector(("ciToday:")), withSender: nil)
-            mainMenuStatus = "built (schedule menu present: \(hasMenu), command target: "
-                + "\(target.map { String(describing: type(of: $0)) } ?? "none"))"
+            mainMenuStatus = "built #\(mainMenuBuildCount) (schedule menu present: \(hasMenu), command target: "
+                + "\(target.map { String(describing: type(of: $0)) } ?? "none"), root menus: \(rootMenus))"
         }
         // 菜单可能已按默认配置构建过一次，显式请求重建以应用自定义配置。
         UIMainMenuSystem.shared.setNeedsRebuild()
     }
-    mainMenuStatus = "installed, waiting for build"
     return 1
 #else
     mainMenuStatus = "skipped: built with Swift older than 6.2"
