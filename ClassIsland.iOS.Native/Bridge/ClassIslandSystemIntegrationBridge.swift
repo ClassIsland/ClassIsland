@@ -16,6 +16,8 @@ private let systemIndexGate = DispatchSemaphore(value: 1)
 private var systemIndexSnapshot: ClassIslandSystemSnapshot?
 private var systemIndexNeedsRetry = true
 private var systemShortcutClassPlans: [ClassIslandSystemClassPlan]?
+private var mainMenuStatus = "not-installed"
+private var mainMenuStatusPointer: UnsafeMutablePointer<CChar>?
 
 private func setSystemIntegrationError(_ message: String?) {
     systemIntegrationLock.lock()
@@ -90,17 +92,40 @@ public func ci_system_integration_reload_widgets() {
 @_cdecl("ci_system_integration_install_main_menu")
 public func ci_system_integration_install_main_menu() -> Int32 {
 #if compiler(>=6.2)
-    if #available(iOS 26.0, *), Thread.isMainThread {
-        MainActor.assumeIsolated {
-            UIMainMenuSystem.shared.setBuildConfiguration(UIMainMenuSystem.Configuration()) { builder in
-                builder.insertSibling(classIslandScheduleMenu(), afterMenu: .view)
-                builder.insertChild(classIslandViewMenu(), atStartOfMenu: .view)
-            }
-        }
-        return 1
+    guard #available(iOS 26.0, *) else {
+        mainMenuStatus = "skipped: system older than iOS 26"
+        return 0
     }
-#endif
+    guard Thread.isMainThread else {
+        mainMenuStatus = "skipped: not on main thread"
+        return 0
+    }
+    MainActor.assumeIsolated {
+        UIMainMenuSystem.shared.setBuildConfiguration(UIMainMenuSystem.Configuration()) { builder in
+            builder.insertSibling(classIslandScheduleMenu(), afterMenu: .view)
+            builder.insertChild(classIslandViewMenu(), atStartOfMenu: .view)
+            let hasMenu = builder.menu(for: UIMenu.Identifier("cn.classisland.schedule")) != nil
+            let target = UIApplication.shared.target(forAction: Selector(("ciToday:")), withSender: nil)
+            mainMenuStatus = "built (schedule menu present: \(hasMenu), command target: "
+                + "\(target.map { String(describing: type(of: $0)) } ?? "none"))"
+        }
+        // 菜单可能已按默认配置构建过一次，显式请求重建以应用自定义配置。
+        UIMainMenuSystem.shared.setNeedsRebuild()
+    }
+    mainMenuStatus = "installed, waiting for build"
+    return 1
+#else
+    mainMenuStatus = "skipped: built with Swift older than 6.2"
     return 0
+#endif
+}
+
+/// 返回菜单栏注册与构建状态，仅用于启动诊断日志。指针在下次调用前有效。
+@_cdecl("ci_system_integration_main_menu_status")
+public func ci_system_integration_main_menu_status() -> UnsafePointer<CChar>? {
+    free(mainMenuStatusPointer)
+    mainMenuStatusPointer = strdup(mainMenuStatus)
+    return mainMenuStatusPointer.map { UnsafePointer($0) }
 }
 
 private func menuCommand(

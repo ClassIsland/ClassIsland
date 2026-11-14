@@ -1,6 +1,7 @@
 using Avalonia.Threading;
 using ClassIsland.Shared;
 using ClassIsland.Views;
+using ClassIsland.iOS.Services.Platform;
 using ClassIsland.iOS.Services.SystemIntegration;
 using ClassIsland.Platforms.Abstraction.Services;
 using Foundation;
@@ -31,10 +32,26 @@ public sealed partial class AppDelegate
         try
         {
             _isMainMenuInstalledBySystem = IosSystemIntegrationBridge.InstallMainMenu();
+            IosStartupDiagnostics.Write($"Main menu: {IosSystemIntegrationBridge.GetMainMenuStatus()}");
         }
         catch (Exception exception)
         {
-            Console.Error.WriteLine($"无法注册菜单栏课表菜单：{exception}");
+            IosStartupDiagnostics.Write("Main menu registration failed", exception);
+        }
+    }
+
+    /// <summary>
+    /// 菜单栏在首次显示时才构建，启动完成后再记录一次实际构建结果。
+    /// </summary>
+    private void LogMainMenuStatus()
+    {
+        try
+        {
+            IosStartupDiagnostics.Write($"Main menu after startup: {IosSystemIntegrationBridge.GetMainMenuStatus()}");
+        }
+        catch (Exception exception)
+        {
+            IosStartupDiagnostics.Write("Unable to read main menu status", exception);
         }
     }
 

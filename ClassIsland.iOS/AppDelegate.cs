@@ -357,6 +357,7 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
         _systemIntegrationCoordinator = new IosSystemIntegrationCoordinator();
         _systemIntegrationCoordinator.Start();
         _isAppNavigationReady = true;
+        LogMainMenuStatus();
         ConsumePendingSystemNavigation();
         while (_pendingNavigationUris.TryDequeue(out var uri)) QueueNavigation(uri);
     }

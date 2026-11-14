@@ -41,6 +41,8 @@ internal static partial class IosSystemIntegrationBridge
     /// <returns>已注册时为 true；此时不应再通过 BuildMenu 插入同一菜单。</returns>
     public static bool InstallMainMenu() => InstallMainMenuNative() != 0;
 
+    public static string GetMainMenuStatus() => Marshal.PtrToStringUTF8(GetMainMenuStatusNative()) ?? "unknown";
+
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void OnNavigationRequested(nint pointer)
     {
@@ -71,6 +73,9 @@ internal static partial class IosSystemIntegrationBridge
 
     [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_install_main_menu")]
     private static partial int InstallMainMenuNative();
+
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_main_menu_status")]
+    private static partial nint GetMainMenuStatusNative();
 
     [LibraryImport(NativeLibrary, EntryPoint = "ci_system_integration_last_error")]
     private static partial nint GetLastErrorNative();
