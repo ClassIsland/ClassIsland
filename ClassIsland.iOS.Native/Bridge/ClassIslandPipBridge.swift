@@ -23,6 +23,9 @@ private enum PipConstants {
     static let errorBufferSize = 1024
     /// miniaudio 等组件可能改写音频会话类别；定期确认仍为 .playback，避免画中画在后台被系统收起。
     static let audioSessionCheckInterval: TimeInterval = 5
+    static let startTimeout: TimeInterval = 5
+    /// 有限的播放时间范围；无限范围会让 AVKit 的内部计时器持续空转。
+    static let playbackRangeSeconds: Int64 = 24 * 3600
 }
 
 // MARK: - 错误信息
@@ -56,6 +59,7 @@ private final class ClassIslandPipController: NSObject,
     private var formatDescription: CMVideoFormatDescription?
     private var isAudioSessionActive = false
     private var lastAudioSessionCheck = Date.distantPast
+    private var possibleObservation: NSKeyValueObservation?
     private(set) var isActive = false
 
     var isPossible: Bool { controller?.isPictureInPicturePossible == true }
@@ -113,12 +117,40 @@ private final class ClassIslandPipController: NSObject,
             return .notPrepared
         }
 
-        guard controller.isPictureInPicturePossible else {
-            pipSetLastError("系统当前不允许开启画中画。")
-            return .notPossible
+        possibleObservation = nil
+        // 系统只接受由用户操作触发的开启请求；在同一次操作的下一个主线程循环中调用，
+        // 同步调用会被系统静默忽略。
+        if controller.isPictureInPicturePossible {
+            DispatchQueue.main.async {
+                controller.startPictureInPicture()
+            }
+            return .ok
         }
 
-        controller.startPictureInPicture()
+        // 刚创建的控制器需要收到几帧内容后才会变为可开启，等它就绪后再开启。
+        pipSetLastError("等待系统允许开启画中画。")
+        possibleObservation = controller.observe(
+            \.isPictureInPicturePossible,
+            options: [.new]) { [weak self] observed, change in
+            guard change.newValue == true else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard let self, self.possibleObservation != nil else {
+                    return
+                }
+                self.possibleObservation = nil
+                observed.startPictureInPicture()
+            }
+        }
+        // 超时后放弃，避免用户已经离开开关很久之后才突然弹出画中画。
+        DispatchQueue.main.asyncAfter(deadline: .now() + PipConstants.startTimeout) { [weak self] in
+            guard let self, self.possibleObservation != nil else {
+                return
+            }
+            self.possibleObservation = nil
+            pipSetLastError("系统在 \(Int(PipConstants.startTimeout)) 秒内未允许开启画中画。")
+        }
         return .ok
     }
 
@@ -127,6 +159,7 @@ private final class ClassIslandPipController: NSObject,
     }
 
     func teardown() {
+        possibleObservation = nil
         controller?.stopPictureInPicture()
         controller?.delegate = nil
         controller = nil
@@ -241,11 +274,9 @@ private final class ClassIslandPipController: NSObject,
 
     private func activateAudioSession() -> Error? {
         do {
-            // mixWithOthers：不打断用户正在播放的音乐。
-            try AVAudioSession.sharedInstance().setCategory(
-                .playback,
-                mode: .moviePlayback,
-                options: [.mixWithOthers])
+            // 不能使用 mixWithOthers：可混音的会话无法成为系统的“正在播放”应用，
+            // 离开应用时系统不会自动进入画中画。
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
             try AVAudioSession.sharedInstance().setActive(true)
             isAudioSessionActive = true
             lastAudioSessionCheck = Date()
@@ -262,7 +293,7 @@ private final class ClassIslandPipController: NSObject,
         }
         lastAudioSessionCheck = Date()
         let session = AVAudioSession.sharedInstance()
-        if session.category != .playback || !session.categoryOptions.contains(.mixWithOthers) {
+        if session.category != .playback || session.mode != .moviePlayback {
             _ = activateAudioSession()
         }
     }
@@ -285,12 +316,19 @@ private final class ClassIslandPipController: NSObject,
 
     // MARK: AVPictureInPictureControllerDelegate
 
+    // 生命周期事件也写入 last_error，C# 侧据此记录日志，便于在真机上判断系统走到了哪一步。
+    func pictureInPictureControllerWillStartPictureInPicture(_ controller: AVPictureInPictureController) {
+        pipSetLastError("系统即将开启画中画。")
+    }
+
     func pictureInPictureControllerDidStartPictureInPicture(_ controller: AVPictureInPictureController) {
         isActive = true
+        pipSetLastError("画中画已开启。")
     }
 
     func pictureInPictureControllerDidStopPictureInPicture(_ controller: AVPictureInPictureController) {
         isActive = false
+        pipSetLastError("画中画已关闭。")
     }
 
     func pictureInPictureController(
@@ -312,8 +350,7 @@ private final class ClassIslandPipController: NSObject,
     }
 
     func pictureInPictureControllerTimeRangeForPlayback(_ controller: AVPictureInPictureController) -> CMTimeRange {
-        // 无限时间范围让系统把内容当作直播，不显示进度条。
-        CMTimeRange(start: .negativeInfinity, duration: .positiveInfinity)
+        CMTimeRange(start: .zero, duration: CMTime(value: PipConstants.playbackRangeSeconds, timescale: 1))
     }
 
     func pictureInPictureControllerIsPlaybackPaused(_ controller: AVPictureInPictureController) -> Bool {

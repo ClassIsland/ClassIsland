@@ -34,8 +34,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 {
     private static readonly TimeSpan IdleFrameInterval = TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan NotificationFrameInterval = TimeSpan.FromMilliseconds(66);
-    // 用户刚打开开关时等待画中画变为可用的最长时间；系统需要先收到几帧内容才会允许开启。
-    private static readonly TimeSpan ManualStartTimeout = TimeSpan.FromSeconds(3);
+    private static readonly TimeSpan UserStartFastFrameDuration = TimeSpan.FromSeconds(3);
     private const double ContentPadding = 8;
     // 主界面通常很宽，画中画窗口会按内容比例缩放；限制宽高比，避免窗口缩成一条细线。
     private const double MaximumAspectRatio = 3;
@@ -59,7 +58,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private byte[]? _pixels;
     private Size _canvasSize = EmptyCanvasSize;
     private bool _isPrepared;
-    private DateTime? _manualStartDeadline;
+    private DateTime _fastFramesUntil;
     private string? _lastLoggedError;
 
     /// <inheritdoc />
@@ -121,9 +120,12 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
             }
 
             _isEnabled = true;
-            // 只有用户亲手打开开关时才立即弹出画中画，作为开关生效的反馈。
-            _manualStartDeadline = persist ? DateTime.UtcNow + ManualStartTimeout : null;
             Logger?.LogInformation("画中画悬浮主界面已启用（{Source}）", persist ? "用户打开开关" : "启动时恢复");
+            // 只有用户亲手打开开关时才立即弹出画中画，作为开关生效的反馈。
+            if (persist)
+            {
+                StartFromUserAction();
+            }
         }
         else
         {
@@ -167,7 +169,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     {
         _frameTimer?.Stop();
         _frameTimer = null;
-        _manualStartDeadline = null;
+        _fastFramesUntil = default;
         if (_isPrepared)
         {
             IosPipNativeBridge.Teardown();
@@ -273,7 +275,6 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 
         UpdateCanvasLayout();
         EnqueueFrame();
-        TryManualStart();
         LogStateChanges();
         UpdateFrameInterval();
     }
@@ -339,28 +340,21 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         }
     }
 
-    private void TryManualStart()
+    /// <summary>
+    /// 系统只接受由用户操作触发的开启请求，帧计时器里的调用会被静默忽略，
+    /// 因此在开关的点击处理中同步准备、送出首帧并发出请求。
+    /// </summary>
+    private void StartFromUserAction()
     {
-        if (_manualStartDeadline is not { } deadline)
+        _fastFramesUntil = DateTime.UtcNow + UserStartFastFrameDuration;
+        FrameTimerOnTick(null, EventArgs.Empty);
+        if (!_isPrepared)
         {
             return;
         }
 
-        if (DateTime.UtcNow > deadline)
-        {
-            _manualStartDeadline = null;
-            LogOnce($"系统未允许立即开启画中画，将在离开应用时自动开启：{IosPipNativeBridge.GetLastError()}");
-            return;
-        }
-
-        if (IosPipNativeBridge.IsActive() == 1 || IosPipNativeBridge.IsPossible() != 1)
-        {
-            return;
-        }
-
-        _manualStartDeadline = null;
         var result = IosPipNativeBridge.Start();
-        Logger?.LogInformation("已请求开启画中画：结果={Result}，{Error}", result, IosPipNativeBridge.GetLastError());
+        Logger?.LogInformation("已请求开启画中画：结果={Result}，{Message}", result, IosPipNativeBridge.GetLastError());
     }
 
     private void UpdateFrameInterval()
@@ -368,7 +362,8 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         var isNotificationShowing = _island!.GetVisualDescendants()
             .OfType<MainWindowLine>()
             .Any(x => x.IsOverlayOpen);
-        var interval = isNotificationShowing || _manualStartDeadline != null
+        // 刚请求开启时多送几帧，系统需要收到内容后才允许开启画中画。
+        var interval = isNotificationShowing || DateTime.UtcNow < _fastFramesUntil
             ? NotificationFrameInterval
             : IdleFrameInterval;
         if (_frameTimer != null && _frameTimer.Interval != interval)
@@ -456,7 +451,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         _lastIsPossible = isPossible;
         _lastIsActive = isActive;
         _lastStateError = error;
-        Logger?.LogInformation("画中画状态：可开启={IsPossible}，正在显示={IsActive}，最近错误={Error}",
+        Logger?.LogInformation("画中画状态：可开启={IsPossible}，正在显示={IsActive}，最近消息={Message}",
             isPossible, isActive, error);
     }
 }
