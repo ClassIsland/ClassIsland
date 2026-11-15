@@ -10,6 +10,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using AVFoundation;
 using ClassIsland.Controls;
 using ClassIsland.iOS.Controls;
 using ClassIsland.Models;
@@ -17,6 +18,7 @@ using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using CoreGraphics;
+using Foundation;
 using Microsoft.Extensions.Logging;
 using UIKit;
 
@@ -41,9 +43,11 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private const int MaximumPixelWidth = 2048;
     private static readonly Size EmptyCanvasSize = new(240, 80);
 
-    private readonly ILogger<IosPipOverlayService>? _logger =
-        IAppHost.TryGetService<ILogger<IosPipOverlayService>>();
+    private ILogger<IosPipOverlayService>? _logger;
     private bool? _isSupported;
+    private bool? _lastIsPossible;
+    private bool? _lastIsActive;
+    private string? _lastStateError;
     private bool _isEnabled;
     private SettingsService? _settingsService;
     private DispatcherTimer? _frameTimer;
@@ -119,6 +123,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
             _isEnabled = true;
             // 只有用户亲手打开开关时才立即弹出画中画，作为开关生效的反馈。
             _manualStartDeadline = persist ? DateTime.UtcNow + ManualStartTimeout : null;
+            Logger?.LogInformation("画中画悬浮主界面已启用（{Source}）", persist ? "用户打开开关" : "启动时恢复");
         }
         else
         {
@@ -152,7 +157,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         }
         catch (Exception exception)
         {
-            _logger?.LogError(exception, "无法启动画中画悬浮主界面");
+            Logger?.LogError(exception, "无法启动画中画悬浮主界面");
             StopRendering();
             return false;
         }
@@ -251,22 +256,25 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
             var prepareResult = IosPipNativeBridge.Prepare();
             if (prepareResult != IosPipNativeBridge.Ok)
             {
-                // 窗口尚未就绪时会返回 NotPrepared，下一帧重试即可。
-                if (prepareResult != IosPipNativeBridge.ErrorNotPrepared)
-                {
-                    LogOnce($"无法准备画中画：{IosPipNativeBridge.GetLastError()}");
-                }
-
+                // 窗口尚未就绪时会返回 NotPrepared，下一帧重试即可；仍记录一次，便于排查一直准备不了的情况。
+                LogOnce($"无法准备画中画（{prepareResult}）：{IosPipNativeBridge.GetLastError()}");
                 return;
             }
 
             _isPrepared = true;
             IosPipNativeBridge.SetAutoStart(1);
+            var session = AVAudioSession.SharedInstance();
+            Logger?.LogInformation(
+                "画中画已准备：后台模式={BackgroundModes}，音频类别={Category}，选项={Options}",
+                NSBundle.MainBundle.ObjectForInfoDictionary("UIBackgroundModes")?.Description ?? "（未声明）",
+                session.Category,
+                session.CategoryOptions);
         }
 
         UpdateCanvasLayout();
         EnqueueFrame();
         TryManualStart();
+        LogStateChanges();
         UpdateFrameInterval();
     }
 
@@ -351,10 +359,8 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         }
 
         _manualStartDeadline = null;
-        if (IosPipNativeBridge.Start() != IosPipNativeBridge.Ok)
-        {
-            LogOnce($"无法开启画中画：{IosPipNativeBridge.GetLastError()}");
-        }
+        var result = IosPipNativeBridge.Start();
+        Logger?.LogInformation("已请求开启画中画：结果={Result}，{Error}", result, IosPipNativeBridge.GetLastError());
     }
 
     private void UpdateFrameInterval()
@@ -430,6 +436,27 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         }
 
         _lastLoggedError = message;
-        _logger?.LogWarning(exception, "{Message}", message);
+        Logger?.LogWarning(exception, "{Message}", message);
+    }
+
+    // 服务在应用宿主创建前就已构造，只能在使用时再解析日志记录器。
+    private ILogger<IosPipOverlayService>? Logger =>
+        _logger ??= IAppHost.TryGetService<ILogger<IosPipOverlayService>>();
+
+    private void LogStateChanges()
+    {
+        var isPossible = IosPipNativeBridge.IsPossible() == 1;
+        var isActive = IosPipNativeBridge.IsActive() == 1;
+        var error = IosPipNativeBridge.GetLastError();
+        if (isPossible == _lastIsPossible && isActive == _lastIsActive && error == _lastStateError)
+        {
+            return;
+        }
+
+        _lastIsPossible = isPossible;
+        _lastIsActive = isActive;
+        _lastStateError = error;
+        Logger?.LogInformation("画中画状态：可开启={IsPossible}，正在显示={IsActive}，最近错误={Error}",
+            isPossible, isActive, error);
     }
 }
