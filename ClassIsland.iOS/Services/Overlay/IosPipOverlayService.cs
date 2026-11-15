@@ -66,6 +66,8 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private bool _isPrepared;
     private DateTime _fastFramesUntil;
     private DateTime _lastSlowFrameLog;
+    private bool _isFirstTapStartPending;
+    private UITapGestureRecognizer? _firstTapRecognizer;
     private string? _lastLoggedError;
 
     /// <inheritdoc />
@@ -128,10 +130,15 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 
             _isEnabled = true;
             Logger?.LogInformation("画中画悬浮主界面已启用（{Source}）", persist ? "用户打开开关" : "启动时恢复");
-            // 只有用户亲手打开开关时才立即弹出画中画，作为开关生效的反馈。
+            // 用户亲手打开开关时立即弹出画中画，作为开关生效的反馈。
+            // 启动时恢复不属于用户操作，系统不允许直接开启，改为在用户第一次点击应用时开启。
             if (persist)
             {
                 StartFromUserAction();
+            }
+            else
+            {
+                _isFirstTapStartPending = true;
             }
         }
         else
@@ -177,6 +184,8 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         _frameTimer?.Stop();
         _frameTimer = null;
         _fastFramesUntil = default;
+        _isFirstTapStartPending = false;
+        DisarmFirstTapStart();
         if (_isPrepared)
         {
             IosPipNativeBridge.Teardown();
@@ -212,7 +221,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         root.Children.Add(_frame);
         _hostView = new AvaloniaView
         {
-            Frame = new CGRect(0, 0, 1, 1),
+            Frame = FindWindow()?.Bounds ?? new CGRect(0, 0, FallbackScreenWidth, FallbackScreenWidth),
             Alpha = 0,
             UserInteractionEnabled = false,
             Content = root
@@ -262,9 +271,24 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
             return;
         }
 
-        if (_hostView.Superview == null)
+        if (FindWindow() is { } window)
         {
-            FindWindow()?.InsertSubview(_hostView, 0);
+            if (_hostView.Superview == null)
+            {
+                window.InsertSubview(_hostView, 0);
+            }
+
+            // 主题会按顶层宽度限制提醒宽度（Rectangles 主题取 80%），宿主视图必须与屏幕同宽，并跟随旋转。
+            if (_hostView.Frame != window.Bounds)
+            {
+                _hostView.Frame = window.Bounds;
+            }
+
+            if (_isFirstTapStartPending)
+            {
+                _isFirstTapStartPending = false;
+                ArmFirstTapStart(window);
+            }
         }
 
         if (!_isPrepared)
@@ -397,6 +421,48 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 
         var result = IosPipNativeBridge.Start();
         Logger?.LogInformation("已请求开启画中画：结果={Result}，{Message}", result, IosPipNativeBridge.GetLastError());
+    }
+
+    private void ArmFirstTapStart(UIWindow window)
+    {
+        if (_firstTapRecognizer != null)
+        {
+            return;
+        }
+
+        // 只旁听点击，不拦截、不延迟应用自己的触摸处理。
+        _firstTapRecognizer = new UITapGestureRecognizer(OnFirstTap)
+        {
+            CancelsTouchesInView = false,
+            DelaysTouchesBegan = false,
+            DelaysTouchesEnded = false,
+            ShouldRecognizeSimultaneously = (_, _) => true
+        };
+        window.AddGestureRecognizer(_firstTapRecognizer);
+    }
+
+    private void DisarmFirstTapStart()
+    {
+        if (_firstTapRecognizer == null)
+        {
+            return;
+        }
+
+        _firstTapRecognizer.View?.RemoveGestureRecognizer(_firstTapRecognizer);
+        _firstTapRecognizer.Dispose();
+        _firstTapRecognizer = null;
+    }
+
+    private void OnFirstTap()
+    {
+        DisarmFirstTapStart();
+        if (!_isEnabled || IosPipNativeBridge.IsActive() == 1)
+        {
+            return;
+        }
+
+        Logger?.LogInformation("用户首次点击应用，正在开启画中画");
+        StartFromUserAction();
     }
 
     private void UpdateFrameInterval()
