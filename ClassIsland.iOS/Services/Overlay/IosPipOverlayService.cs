@@ -35,11 +35,12 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private static readonly TimeSpan IdleFrameInterval = TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan NotificationFrameInterval = TimeSpan.FromMilliseconds(66);
     private static readonly TimeSpan UserStartFastFrameDuration = TimeSpan.FromSeconds(3);
-    private const double ContentPadding = 6;
-    // 只防止极端的细条；系统可能还会对画中画窗口的宽高比做自己的限制。
-    private const double MaximumAspectRatio = 8;
+    private const double ContentPadding = 4;
+    // 主界面岛本身就是细长条（常见约 18:1），只防止更极端的比例；系统可能还会对画中画窗口的宽高比做自己的限制。
+    private const double MaximumAspectRatio = 24;
     private const double FallbackScreenWidth = 390;
-    private const double MaximumRenderScale = 2;
+    // 画中画窗口放大后会比主界面岛的自然宽度更宽，按 3 倍渲染以免文字发虚。
+    private const double MaximumRenderScale = 3;
     private const int MaximumPixelWidth = 2048;
     private static readonly Size EmptyCanvasSize = new(240, 80);
 
@@ -283,8 +284,8 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     }
 
     /// <summary>
-    /// 画面宽度跟随屏幕宽度，主界面岛比屏幕宽时等比缩小，高度只留少量边距；
-    /// 画中画窗口按画面宽高比显示，这样放大到最大时能横跨屏幕，而不是一个带大片黑边的方块。
+    /// 画面紧贴主界面岛，只留少量边距，比屏幕宽时等比缩小。画中画窗口按画面宽高比开窗并把画面缩放到窗口大小，
+    /// 画面越贴合，主界面岛在窗口里就越大；画面比主界面岛宽时，多出来的部分只会变成黑边。
     /// </summary>
     private void UpdateCanvasLayout()
     {
@@ -294,7 +295,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         var scale = 1.0;
         if (content.Width >= 1 && content.Height >= 1)
         {
-            var width = GetScreenWidth();
+            var width = Math.Min(content.Width + ContentPadding * 2, GetScreenWidth());
             scale = Math.Min(1, (width - ContentPadding * 2) / content.Width);
             var height = content.Height * scale + ContentPadding * 2;
             canvas = new Size(width, Math.Max(height, width / MaximumAspectRatio));
