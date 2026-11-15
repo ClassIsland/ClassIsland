@@ -1,8 +1,10 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Embedding;
 using Avalonia.Controls.Primitives;
 using Avalonia.iOS;
 using Avalonia.Media;
@@ -34,6 +36,9 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 {
     private static readonly TimeSpan IdleFrameInterval = TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan NotificationFrameInterval = TimeSpan.FromMilliseconds(66);
+    // 画中画开启后要等下一帧才会切换到更高的刷新率，间隔不宜过长。
+    private static readonly TimeSpan HiddenFrameInterval = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan SlowFrameThreshold = TimeSpan.FromMilliseconds(16);
     private static readonly TimeSpan UserStartFastFrameDuration = TimeSpan.FromSeconds(3);
     private const double ContentPadding = 4;
     // 主界面岛本身就是细长条（常见约 18:1），只防止更极端的比例；系统可能还会对画中画窗口的宽高比做自己的限制。
@@ -62,6 +67,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private double _islandScale = 1;
     private bool _isPrepared;
     private DateTime _fastFramesUntil;
+    private DateTime _lastSlowFrameLog;
     private string? _lastLoggedError;
 
     /// <inheritdoc />
@@ -213,6 +219,12 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
             UserInteractionEnabled = false,
             Content = root
         };
+        // 画面由 RenderTargetBitmap 在 UI 线程渲染，布局也由帧循环手动执行，这个不可见视图不需要自己的合成渲染。
+        // 让它继续渲染会和应用主界面争用同一个渲染线程，并向一个看不见的 Metal 图层提交画面。
+        if (TopLevel.GetTopLevel(root) is EmbeddableControlRoot hostRoot)
+        {
+            hostRoot.StopRendering();
+        }
         FindWindow()?.InsertSubview(_hostView, 0);
     }
 
@@ -277,10 +289,26 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
                 session.CategoryOptions);
         }
 
+        var stopwatch = Stopwatch.StartNew();
         UpdateCanvasLayout();
         EnqueueFrame();
+        stopwatch.Stop();
+        ReportSlowFrame(stopwatch.Elapsed);
         LogStateChanges();
         UpdateFrameInterval();
+    }
+
+    private void ReportSlowFrame(TimeSpan elapsed)
+    {
+        // 渲染在 UI 线程上执行，耗时过长会让应用界面卡顿；每分钟最多记录一次。
+        if (elapsed < SlowFrameThreshold || DateTime.UtcNow - _lastSlowFrameLog < TimeSpan.FromMinutes(1))
+        {
+            return;
+        }
+
+        _lastSlowFrameLog = DateTime.UtcNow;
+        Logger?.LogWarning("画中画单帧渲染耗时 {Elapsed} ms（{Width}x{Height} px）",
+            (int)elapsed.TotalMilliseconds, _bitmap?.PixelSize.Width, _bitmap?.PixelSize.Height);
     }
 
     /// <summary>
@@ -379,9 +407,12 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
             .OfType<MainWindowLine>()
             .Any(x => x.IsOverlayOpen);
         // 刚请求开启时多送几帧，系统需要收到内容后才允许开启画中画。
-        var interval = isNotificationShowing || DateTime.UtcNow < _fastFramesUntil
+        // 画中画未显示时没人看得到画面，只需保持显示层里有一帧较新的内容，供离开应用时自动开启使用。
+        var interval = DateTime.UtcNow < _fastFramesUntil || isNotificationShowing && _lastIsActive == true
             ? NotificationFrameInterval
-            : IdleFrameInterval;
+            : _lastIsActive == true
+                ? IdleFrameInterval
+                : HiddenFrameInterval;
         if (_frameTimer != null && _frameTimer.Interval != interval)
         {
             _frameTimer.Interval = interval;

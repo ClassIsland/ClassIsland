@@ -80,18 +80,18 @@ private final class ClassIslandPipController: NSObject,
         }
 
         if containerView == nil {
-            // 自动进入画中画要求内容层位于可见的视图层级中；放在根视图下方，用户看不到它。
-            let view = UIView(frame: CGRect(x: 0, y: 0, width: 2, height: 2))
+            let view = UIView(frame: window.bounds)
             view.isUserInteractionEnabled = false
-            displayLayer.frame = view.bounds
             displayLayer.videoGravity = .resizeAspect
             view.layer.addSublayer(displayLayer)
             containerView = view
         }
         if containerView?.window !== window {
             containerView?.removeFromSuperview()
+            // 放在根视图下方，被应用界面完全遮住，用户看不到它。
             window.insertSubview(containerView!, at: 0)
         }
+        syncContainerFrame()
 
         if controller == nil {
             let source = AVPictureInPictureController.ContentSource(
@@ -181,6 +181,7 @@ private final class ClassIslandPipController: NSObject,
         }
 
         reassertAudioSessionIfNeeded()
+        syncContainerFrame()
 
         guard let pixelBuffer = makePixelBuffer(width: width, height: height) else {
             return .internalFailure
@@ -241,6 +242,23 @@ private final class ClassIslandPipController: NSObject,
         }
         displayLayer.enqueue(sampleBuffer)
         return .ok
+    }
+
+    /// 离开应用时自动进入画中画要求源视图足够大：至少与安全区同宽，且不能是一个很小的视图，
+    /// 否则系统会判定为不合格而不自动开启。因此容器始终铺满窗口，并跟随旋转更新尺寸。
+    private func syncContainerFrame() {
+        guard let containerView, let window = containerView.window else {
+            return
+        }
+        if containerView.frame != window.bounds {
+            containerView.frame = window.bounds
+        }
+        if displayLayer.frame != containerView.bounds {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            displayLayer.frame = containerView.bounds
+            CATransaction.commit()
+        }
     }
 
     private func makePixelBuffer(width: Int, height: Int) -> CVPixelBuffer? {
