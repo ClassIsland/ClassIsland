@@ -54,6 +54,7 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
     private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
     private IosLocationService? _locationService;
     private IosHudOverlayService? _hudOverlayService;
+    private IosPipOverlayService? _pipOverlayService;
     private IosHudHost? _hudHost;
     private IosHudPreviewNotificationPoller? _hudPreviewNotificationPoller;
     private UIWindow? _hudWindow;
@@ -102,6 +103,10 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
 #if CLASSISLAND_TROLLSTORE
             _hudOverlayService = new IosHudOverlayService();
             PlatformServices.MainWindowOverlayService = _hudOverlayService;
+#elif !CLASSISLAND_APP_STORE
+            // 侧载版没有 root HUD，改用画中画窗口；App Store 版用画中画显示非视频内容存在审核风险，暂不提供。
+            _pipOverlayService = new IosPipOverlayService();
+            PlatformServices.MainWindowOverlayService = _pipOverlayService;
 #endif
         }
 
@@ -359,6 +364,7 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
 
         _locationService?.SetApplicationReady();
         _hudOverlayService?.ResumeIfEnabled();
+        _pipOverlayService?.ResumeIfEnabled();
         _systemIntegrationCoordinator = new IosSystemIntegrationCoordinator();
         _systemIntegrationCoordinator.Start();
         _isAppNavigationReady = true;
@@ -571,6 +577,8 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
 
             _hudOverlayService?.Shutdown();
             _hudOverlayService = null;
+            _pipOverlayService?.Shutdown();
+            _pipOverlayService = null;
             _hudPreviewNotificationPoller?.Dispose();
             _hudPreviewNotificationPoller = null;
             _lessonsNotificationCoordinator?.Dispose();

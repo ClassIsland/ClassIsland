@@ -151,7 +151,7 @@
 
             <controls1:FASettingsExpander Header="显示悬浮主界面"
                                           IconSource="{ci:FluentIconSource {ci:FI WindowRegular}}"
-                                          Description="在系统级悬浮窗中常驻显示主界面，触摸会穿透到背后的内容。仅 TrollStore 发行版可用；修改位置/缩放在约 1 秒后自动生效。"
+                                          Description="在其他应用上方常驻显示主界面。TrollStore 版以悬浮窗显示，触摸会穿透到背后的内容，修改位置/缩放在约 1 秒后生效；其他版本在离开应用后以画中画窗口显示，可拖动或关闭。"
                                           IsVisible="{Binding ViewModel.MainWindowOverlayService.IsSupported}">
                 <controls1:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.MainWindowOverlayService.IsEnabled, Mode=TwoWay}"/>

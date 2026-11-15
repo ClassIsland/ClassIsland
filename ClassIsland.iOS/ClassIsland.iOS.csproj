@@ -69,6 +69,7 @@
   <ItemGroup>
     <BundleResource Include="PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
     <PartialAppManifest Include="PluginInfo.plist" Condition="'$(ClassIslandIosSideloadMode)' == 'true'" />
+    <PartialAppManifest Include="Info.Pip.plist" Condition="'$(ClassIslandIosDistribution)' == 'Sideload'" />
     <AvaloniaResource Include="Assets\HoYoStickers\米沙_欢迎光临.png"
                       Condition="'$(DeveloperPreview)' == 'true'" />
   </ItemGroup>

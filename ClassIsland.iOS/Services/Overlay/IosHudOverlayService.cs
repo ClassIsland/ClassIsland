@@ -39,6 +39,9 @@ internal sealed class IosHudOverlayService : IMainWindowOverlayService
     }
 
     /// <inheritdoc />
+    public bool IsRenderedOutOfProcess => true;
+
+    /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <summary>

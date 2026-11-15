@@ -42,7 +42,7 @@ public static class HudPreviewNotificationForwarder
     public static bool TryForward(NotificationActionSettings settings)
     {
         var overlayService = PlatformServices.MainWindowOverlayService;
-        if (!overlayService.IsSupported || !overlayService.IsEnabled)
+        if (!overlayService.IsSupported || !overlayService.IsEnabled || !overlayService.IsRenderedOutOfProcess)
         {
             return false;
         }

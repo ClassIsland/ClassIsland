@@ -26,6 +26,7 @@
 		A10000000000000000000013 /* ClassIslandSystemSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* ClassIslandSystemSnapshot.swift */; };
 		A10000000000000000000014 /* ClassIslandQueryIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000013 /* ClassIslandQueryIntents.swift */; };
 		A10000000000000000000015 /* ClassIslandScheduleWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* ClassIslandScheduleWidget.swift */; };
+		A10000000000000000000016 /* ClassIslandPipBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000015 /* ClassIslandPipBridge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		A20000000000000000000012 /* ClassIslandActionIntents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandActionIntents.swift; sourceTree = "<group>"; };
 		A20000000000000000000013 /* ClassIslandQueryIntents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandQueryIntents.swift; sourceTree = "<group>"; };
 		A20000000000000000000014 /* ClassIslandScheduleWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandScheduleWidget.swift; sourceTree = "<group>"; };
+		A20000000000000000000015 /* ClassIslandPipBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandPipBridge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +102,7 @@
 				A20000000000000000000003 /* ClassIslandLiveActivityBridge.h */,
 				A2000000000000000000000E /* ClassIslandHudBridge.swift */,
 				A2000000000000000000000F /* ClassIslandHudBridge.h */,
+				A20000000000000000000015 /* ClassIslandPipBridge.swift */,
 				A20000000000000000000011 /* ClassIslandSystemIntegrationBridge.swift */,
 				A20000000000000000000012 /* ClassIslandActionIntents.swift */,
 			);
@@ -253,6 +256,7 @@
 				A10000000000000000000001 /* ClassIslandActivityAttributes.swift in Sources */,
 				A10000000000000000000002 /* ClassIslandLiveActivityBridge.swift in Sources */,
 				A1000000000000000000000C /* ClassIslandHudBridge.swift in Sources */,
+				A10000000000000000000016 /* ClassIslandPipBridge.swift in Sources */,
 				A10000000000000000000010 /* ClassIslandSystemSnapshot.swift in Sources */,
 				A10000000000000000000011 /* ClassIslandSystemIntegrationBridge.swift in Sources */,
 				A10000000000000000000012 /* ClassIslandActionIntents.swift in Sources */,

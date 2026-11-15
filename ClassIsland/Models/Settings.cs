@@ -73,6 +73,7 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     private bool _isMainWindowVisible = true;
     private bool _isAndroidOverlayEnabled;
     private bool _isIosHudOverlayEnabled;
+    private bool _isIosPipOverlayEnabled;
     private string _androidBackgroundImageSource = "";
     private double _androidBackgroundImageOpacity = 0.1;
     private bool _isWelcomeWindowShowed = false;
@@ -270,6 +271,15 @@ public partial class Settings : ObservableRecipient, ILessonControlSettings, INo
     {
         get => _isIosHudOverlayEnabled;
         set => SetProperty(ref _isIosHudOverlayEnabled, value);
+    }
+
+    /// <summary>
+    /// 是否在 iOS 侧载发行版中以画中画窗口显示悬浮主界面。
+    /// </summary>
+    public bool IsIosPipOverlayEnabled
+    {
+        get => _isIosPipOverlayEnabled;
+        set => SetProperty(ref _isIosPipOverlayEnabled, value);
     }
 
     public string AndroidBackgroundImageSource
