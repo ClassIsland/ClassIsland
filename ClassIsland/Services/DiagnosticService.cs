@@ -18,7 +18,6 @@ using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
-
 using Microsoft.Extensions.Logging;
 using Sentry;
 using Sentry.Protocol;
@@ -29,7 +28,9 @@ namespace ClassIsland.Services;
 /// <summary>
 /// 应用诊断服务
 /// </summary>
-public class DiagnosticService(SettingsService settingsService, FileFolderService fileFolderService,
+public class DiagnosticService(
+    SettingsService settingsService,
+    FileFolderService fileFolderService,
     ILogger<DiagnosticService> logger,
     AppLogService appLogService)
 {
@@ -53,25 +54,31 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         List<string> loadedPlugin = new();
         foreach (var plugin in PluginService.PluginLoadedStatus)
         {
-            if (plugin.LoadStatus is PluginLoadStatus.Loaded) loadedPlugin.Add(plugin.Manifest.Name + $"({plugin.Manifest.Id},{plugin.Manifest.Version})");
+            if (plugin.LoadStatus is PluginLoadStatus.Loaded)
+                loadedPlugin.Add(plugin.Manifest.Name + $"({plugin.Manifest.Id},{plugin.Manifest.Version})");
         }
+
         var list = new Dictionary<string, string>
         {
-            {"SystemOsVersion",  RuntimeInformation.OSDescription},
-            {"SystemOsArch",  RuntimeInformation.OSArchitecture.ToString()},
-            {"SystemDeviceName", name},
-            {"SystemDeviceVendor", vendor},
-            {"UserTraceId", SentrySdk.GetTraceHeader()?.TraceId.ToString() ?? "none"},
-            {"AppPackageRoot", CommonDirectories.AppPackageRoot},
-            {"AppRoot", CommonDirectories.AppRootFolderPath},
-            {"AppCurrentDirectory", Environment.CurrentDirectory},
-            {"AppExecutingEntrance", AppBase.ExecutingEntrance},
-            {"AppCurrentMemoryUsage", Helpers.StorageSizeHelper.FormatSize((ulong)MemoryWatchDogService.GetMemoryUsage())+$"({MemoryWatchDogService.GetMemoryUsage()} Bytes)"},
-            {"AppStartupDurationMs", StartupDurationMs.ToString()},
-            {"AppVersion", App.AppVersionLong},
-            {"AppSubChannel", AppBase.Current.AppSubChannel},
-            {"AppLoadedPlugin",loadedPlugin.Count<=0 ? "None" : string.Join(", ",loadedPlugin)},
-            {"AppIsAssetsTrimmed", AppBase.Current.IsAssetsTrimmed().ToString()},
+            { "SystemOsVersion", RuntimeInformation.OSDescription },
+            { "SystemOsArch", RuntimeInformation.OSArchitecture.ToString() },
+            { "SystemDeviceName", name },
+            { "SystemDeviceVendor", vendor },
+            { "UserTraceId", SentrySdk.GetTraceHeader()?.TraceId.ToString() ?? "none" },
+            { "AppPackageRoot", CommonDirectories.AppPackageRoot },
+            { "AppRoot", CommonDirectories.AppRootFolderPath },
+            { "AppCurrentDirectory", Environment.CurrentDirectory },
+            { "AppExecutingEntrance", AppBase.ExecutingEntrance },
+            {
+                "AppCurrentMemoryUsage",
+                Helpers.StorageSizeHelper.FormatSize((ulong)MemoryWatchDogService.GetMemoryUsage()) +
+                $"({MemoryWatchDogService.GetMemoryUsage()} Bytes)"
+            },
+            { "AppStartupDurationMs", StartupDurationMs.ToString() },
+            { "AppVersion", App.AppVersionLong },
+            { "AppSubChannel", AppBase.Current.AppSubChannel },
+            { "AppLoadedPlugin", loadedPlugin.Count <= 0 ? "None" : string.Join(", ", loadedPlugin) },
+            { "AppIsAssetsTrimmed", AppBase.Current.IsAssetsTrimmed().ToString() },
             {
                 nameof(settings.DiagnosticFirstLaunchTime),
                 settings.DiagnosticFirstLaunchTime.ToString(CultureInfo.CurrentCulture)
@@ -80,9 +87,12 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             //{nameof(settings.DiagnosticCrashCount), settings.DiagnosticCrashCount.ToString()},
             //{nameof(settings.DiagnosticLastCrashTime), settings.DiagnosticLastCrashTime.ToString(CultureInfo.CurrentCulture)},
             //{nameof(settings.DiagnosticCrashFreqDay), settings.DiagnosticCrashFreqDay.ToString("F3")},
-            {nameof(settings.DiagnosticMemoryKillCount), settings.DiagnosticMemoryKillCount.ToString()},
-            {nameof(settings.DiagnosticLastMemoryKillTime), settings.DiagnosticLastMemoryKillTime.ToString(CultureInfo.CurrentCulture)},
-            {nameof(settings.DiagnosticMemoryKillFreqDay), settings.DiagnosticMemoryKillFreqDay.ToString("F3")}
+            { nameof(settings.DiagnosticMemoryKillCount), settings.DiagnosticMemoryKillCount.ToString() },
+            {
+                nameof(settings.DiagnosticLastMemoryKillTime),
+                settings.DiagnosticLastMemoryKillTime.ToString(CultureInfo.CurrentCulture)
+            },
+            { nameof(settings.DiagnosticMemoryKillFreqDay), settings.DiagnosticMemoryKillFreqDay.ToString("F3") }
         };
 
         return string.Join(Environment.NewLine, from i in list select $"{i.Key}: {i.Value}");
@@ -118,7 +128,9 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 await ExportDiagnosticData(outputStream);
             }
-            if (showExportedFile && (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid()))
+
+            if (showExportedFile &&
+                (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid()))
             {
                 Process.Start(new ProcessStartInfo()
                 {
@@ -145,7 +157,8 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             var logs = string.Join(Environment.NewLine, AppLogService.Logs);
             //await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
             await File.WriteAllTextAsync(Path.Combine(temp, "DiagnosticInfo.txt"), GetDiagnosticInfo());
-            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
+            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"),
+                Path.Combine(temp, "Settings.json"));
             var profile = App.GetService<IProfileService>().CurrentProfilePath;
             Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
             Directory.CreateDirectory(Path.Combine(temp, "Management/"));
@@ -155,14 +168,13 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 File.Copy(file, Path.Combine(temp, "Management/", Path.GetFileName(file)));
             }
-            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/", profile));
+
+            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles", profile),
+                Path.Combine(temp, "Profiles/", profile));
             FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
             FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppLogFolderPath), Path.Combine(temp, "Logs/"));
 
-            await Task.Run(() =>
-            {
-                ZipFile.CreateFromDirectory(temp, outputStream);
-            });
+            await Task.Run(() => { ZipFile.CreateFromDirectory(temp, outputStream); });
             Directory.Delete(temp, true);
         }
         catch (Exception e)
@@ -188,7 +200,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     public static void ProcessDomainUnhandledException(object sender, UnhandledExceptionEventArgs eventArgs)
     {
         App.IsCrashed = true;
-        if (App._isCriticalSafeModeEnabled)  // 教学安全模式
+        if (App._isCriticalSafeModeEnabled) // 教学安全模式
         {
             return;
         }
@@ -210,6 +222,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 return;
             }
+
             ProcessCriticalException(eventArgs.ExceptionObject as Exception);
         }
     }
@@ -220,7 +233,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     /// <param name="ex">异常信息</param>
     public static void ProcessCriticalException(Exception? ex)
     {
-        if (App._isCriticalSafeModeEnabled)  // 教学安全模式
+        if (App._isCriticalSafeModeEnabled) // 教学安全模式
         {
             return;
         }
@@ -283,6 +296,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 continue;
             }
+
             var context = AssemblyLoadContext.GetLoadContext(declaringTypeAssembly);
             if (context is not PluginLoadContext pluginLoadContext)
             {
