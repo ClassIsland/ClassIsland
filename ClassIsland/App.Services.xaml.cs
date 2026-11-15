@@ -295,7 +295,7 @@ public partial class App
         // 规则
         services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
         services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
-        if (!System.OperatingSystem.IsAndroid())
+        if (!PlatformHelper.IsMobile)
         {
             services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.className", "前台窗口类名", "\uF4A2");
             services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.text", "前台窗口标题", "\uF26B");

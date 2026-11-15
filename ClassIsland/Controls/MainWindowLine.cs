@@ -589,7 +589,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         var mouseIn = OperatingSystem.IsMacOS() ? PointerOver : IsMouseIn;
         IsLineFaded =
-            !OperatingSystem.IsAndroid() &&
+            !Core.Helpers.PlatformHelper.IsMobile &&
             SettingsService.Settings.IsMouseInFadingEnabled &&
             (mouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
     }
