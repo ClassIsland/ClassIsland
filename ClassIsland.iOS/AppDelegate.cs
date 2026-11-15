@@ -86,6 +86,9 @@ public sealed partial class AppDelegate : AvaloniaAppDelegate<App>
         if (!_isHudProcess)
         {
             PlatformServices.HapticFeedbackService = new IosHapticFeedbackService();
+            var toastService = new IosDesktopToastService();
+            PlatformServices.DesktopToastService = toastService;
+            _notificationCenterDelegate.ToastService = toastService;
             UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
             _notificationCenterDelegate.RegisterCategories();
             _notificationCenterDelegate.NavigationRequested += RequestNavigation;

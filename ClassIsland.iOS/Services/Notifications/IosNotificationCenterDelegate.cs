@@ -11,6 +11,8 @@ internal sealed class IosNotificationCenterDelegate : UNUserNotificationCenterDe
 
     internal IosNotificationMutationGate NotificationMutationGate { get; } = new();
 
+    internal IosDesktopToastService? ToastService { get; set; }
+
     public void RegisterCategories() => IosNotificationActions.RegisterCategories();
 
     public override void WillPresentNotification(
@@ -37,6 +39,11 @@ internal sealed class IosNotificationCenterDelegate : UNUserNotificationCenterDe
     {
         try
         {
+            if (ToastService?.HandleResponse(response) == true)
+            {
+                return;
+            }
+
             var uri = await IosNotificationActions.HandleResponseAsync(
                 center,
                 response,
