@@ -11,9 +11,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using AVFoundation;
-using ClassIsland.Controls;
 using ClassIsland.iOS.Controls;
 using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction.Services;
@@ -34,8 +32,8 @@ namespace ClassIsland.iOS.Services.Overlay;
 [SupportedOSPlatform("ios15.0")]
 internal sealed class IosPipOverlayService : IMainWindowOverlayService
 {
-    private static readonly TimeSpan IdleFrameInterval = TimeSpan.FromMilliseconds(500);
-    private static readonly TimeSpan NotificationFrameInterval = TimeSpan.FromMilliseconds(66);
+    private static readonly TimeSpan BackgroundFrameInterval = TimeSpan.FromMilliseconds(33);
+    private static readonly TimeSpan ForegroundFrameInterval = TimeSpan.FromMilliseconds(66);
     // 画中画开启后要等下一帧才会切换到更高的刷新率，间隔不宜过长。
     private static readonly TimeSpan HiddenFrameInterval = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan SlowFrameThreshold = TimeSpan.FromMilliseconds(16);
@@ -161,7 +159,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
             }
 
             CreateHost();
-            _frameTimer = new DispatcherTimer { Interval = IdleFrameInterval };
+            _frameTimer = new DispatcherTimer { Interval = HiddenFrameInterval };
             _frameTimer.Tick += FrameTimerOnTick;
             _frameTimer.Start();
             return true;
@@ -403,15 +401,16 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 
     private void UpdateFrameInterval()
     {
-        var isNotificationShowing = _island!.GetVisualDescendants()
-            .OfType<MainWindowLine>()
-            .Any(x => x.IsOverlayOpen);
+        // 画中画显示时按动画需要的帧率刷新：应用在后台时 UI 线程空闲，用 30 fps；
+        // 应用在前台时渲染会占用应用自己的 UI 线程，降到 15 fps。
+        // 画中画未显示时没人看得到画面，只需保持显示层里有一帧较新的内容，供离开应用时自动开启使用；
         // 刚请求开启时多送几帧，系统需要收到内容后才允许开启画中画。
-        // 画中画未显示时没人看得到画面，只需保持显示层里有一帧较新的内容，供离开应用时自动开启使用。
-        var interval = DateTime.UtcNow < _fastFramesUntil || isNotificationShowing && _lastIsActive == true
-            ? NotificationFrameInterval
-            : _lastIsActive == true
-                ? IdleFrameInterval
+        var interval = _lastIsActive == true
+            ? UIApplication.SharedApplication.ApplicationState == UIApplicationState.Background
+                ? BackgroundFrameInterval
+                : ForegroundFrameInterval
+            : DateTime.UtcNow < _fastFramesUntil
+                ? ForegroundFrameInterval
                 : HiddenFrameInterval;
         if (_frameTimer != null && _frameTimer.Interval != interval)
         {
