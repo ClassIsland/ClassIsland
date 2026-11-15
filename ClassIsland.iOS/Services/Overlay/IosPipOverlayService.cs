@@ -35,9 +35,10 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private static readonly TimeSpan IdleFrameInterval = TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan NotificationFrameInterval = TimeSpan.FromMilliseconds(66);
     private static readonly TimeSpan UserStartFastFrameDuration = TimeSpan.FromSeconds(3);
-    private const double ContentPadding = 8;
-    // 主界面通常很宽，画中画窗口会按内容比例缩放；限制宽高比，避免窗口缩成一条细线。
-    private const double MaximumAspectRatio = 3;
+    private const double ContentPadding = 6;
+    // 只防止极端的细条；系统可能还会对画中画窗口的宽高比做自己的限制。
+    private const double MaximumAspectRatio = 8;
+    private const double FallbackScreenWidth = 390;
     private const double MaximumRenderScale = 2;
     private const int MaximumPixelWidth = 2048;
     private static readonly Size EmptyCanvasSize = new(240, 80);
@@ -57,6 +58,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private RenderTargetBitmap? _bitmap;
     private byte[]? _pixels;
     private Size _canvasSize = EmptyCanvasSize;
+    private double _islandScale = 1;
     private bool _isPrepared;
     private DateTime _fastFramesUntil;
     private string? _lastLoggedError;
@@ -224,6 +226,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         }
 
         _hostView = null;
+        _islandScale = 1;
         _frame = null;
         _stage = null;
         _island = null;
@@ -279,20 +282,32 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         UpdateFrameInterval();
     }
 
+    /// <summary>
+    /// 画面宽度跟随屏幕宽度，主界面岛比屏幕宽时等比缩小，高度只留少量边距；
+    /// 画中画窗口按画面宽高比显示，这样放大到最大时能横跨屏幕，而不是一个带大片黑边的方块。
+    /// </summary>
     private void UpdateCanvasLayout()
     {
         _frame!.UpdateLayout();
         var content = _island!.IsVisible ? _island.DesiredSize : default;
-        var canvas = content.Width < 1 || content.Height < 1
-            ? _canvasSize
-            : new Size(content.Width + ContentPadding * 2, content.Height + ContentPadding * 2);
-        if (canvas.Width / canvas.Height > MaximumAspectRatio)
+        var canvas = _canvasSize;
+        var scale = 1.0;
+        if (content.Width >= 1 && content.Height >= 1)
         {
-            canvas = canvas.WithHeight(canvas.Width / MaximumAspectRatio);
+            var width = GetScreenWidth();
+            scale = Math.Min(1, (width - ContentPadding * 2) / content.Width);
+            var height = content.Height * scale + ContentPadding * 2;
+            canvas = new Size(width, Math.Max(height, width / MaximumAspectRatio));
         }
 
-        Canvas.SetLeft(_island, (canvas.Width - content.Width) / 2);
-        Canvas.SetTop(_island, (canvas.Height - content.Height) / 2);
+        if (Math.Abs(scale - _islandScale) > 0.001)
+        {
+            _islandScale = scale;
+            _island.RenderTransformOrigin = RelativePoint.TopLeft;
+            _island.RenderTransform = scale < 1 ? new ScaleTransform(scale, scale) : null;
+        }
+        Canvas.SetLeft(_island, (canvas.Width - content.Width * scale) / 2);
+        Canvas.SetTop(_island, (canvas.Height - content.Height * scale) / 2);
         if (canvas != _canvasSize)
         {
             _canvasSize = canvas;
@@ -412,6 +427,12 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 
     private SettingsService? GetSettingsService() =>
         _settingsService ??= IAppHost.TryGetService<SettingsService>();
+
+    private static double GetScreenWidth()
+    {
+        var width = (double)(FindWindow()?.Bounds.Width ?? 0);
+        return width >= 1 ? width : FallbackScreenWidth;
+    }
 
     private static UIWindow? FindWindow()
     {
