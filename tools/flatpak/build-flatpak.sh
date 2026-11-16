@@ -6,7 +6,7 @@ set -Eeuo pipefail
 readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly REPO_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
 readonly APP_ID="org.classisland.ClassIsland"
-readonly RUNTIME_VERSION="24.08"
+readonly RUNTIME_VERSION="25.08"
 readonly MANIFEST="$SCRIPT_DIR/$APP_ID.json"
 readonly GENERATOR="$SCRIPT_DIR/flatpak-dotnet-generator.py"
 readonly GENERATOR_URL="https://github.com/flatpak/flatpak-builder-tools/raw/74697c75b630d7330e77250fc13cb5ea688d9479/dotnet/flatpak-dotnet-generator.py"
