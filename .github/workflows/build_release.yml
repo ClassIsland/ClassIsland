@@ -22,10 +22,10 @@ env:
 
 jobs:
   build_app:
-    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-15' || 'windows-2022' ) }}
+    runs-on: ${{ matrix.runner || (matrix.os == 'linux' && 'ubuntu-24.04' || (matrix.os == 'macos' && 'macos-15' || 'windows-2022')) }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
-      artifact_name: out_${{ matrix.package == 'folder' &&  'appBase' || 'app' }}_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      artifact_name: ${{ matrix.package == 'flatpak' && format('out_appBase_linux_{0}_flatpak_build', matrix.arch) || format('out_{0}_{1}_{2}_{3}_{4}', matrix.package == 'folder' && 'appBase' || 'app', matrix.os, matrix.arch, matrix.build_type, matrix.package) }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
@@ -50,7 +50,17 @@ jobs:
             package: pkg
             build_type: selfContained
             arch: x64
-    name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+          - os: linux
+            arch: x64
+            build_type: flatpak
+            package: flatpak
+            runner: ubuntu-24.04
+          - os: linux
+            arch: arm64
+            build_type: flatpak
+            package: flatpak
+            runner: ubuntu-24.04-arm
+    name: ${{ matrix.package == 'flatpak' && format('Build_AppBase_linux_{0}_flatpak', matrix.arch) || format('Build_AppBase_{0}_{1}_{2}_{3}', matrix.os, matrix.arch, matrix.build_type, matrix.package) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -62,23 +72,43 @@ jobs:
       - name: List files
         run: ls
       
+      - name: Free disk space
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          sudo rm -rf /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo apt-get clean
+
       - name: Install .NET Core
+        if: ${{ matrix.package != 'flatpak' }}
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      
+
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
         run: |
           dotnet workload install macos --version 9.0.300
+
+      - name: Install Flatpak build dependencies
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes flatpak flatpak-builder
+          sudo flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install --system --assumeyes flathub \
+            org.freedesktop.Platform//24.08 \
+            org.freedesktop.Sdk//24.08 \
+            org.freedesktop.Sdk.Extension.dotnet9//24.08
         
       - name: Add GitHub Package Registry
+        if: ${{ matrix.package != 'flatpak' }}
         run: dotnet nuget add source --username ClassIsland --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
         
       - uses: little-core-labs/get-git-tag@v3.0.1
         id: tagName
       
       - name: ☢️ Nuke
+        if: ${{ matrix.package != 'flatpak' }}
         env:
           buildType: ${{ matrix.build_type }}
           package: ${{ matrix.package }}
@@ -91,6 +121,25 @@ jobs:
           appVersion: ${{ steps.tagName.outputs.tag }} 
           buildName: ${{ matrix.package == 'folder' &&  'appBase' || 'app' }}  # 打包版本的构建将在这一步直接产生完整的包体，无需经过分装
         run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishApp' || './build.sh PublishApp' }}
+
+      - name: Configure root Git access
+        if: ${{ matrix.package == 'flatpak' }}
+        run: sudo git config --global --add safe.directory '*'
+
+      - name: Build Flatpak repository
+        if: ${{ matrix.package == 'flatpak' }}
+        # flatpak-builder 以普通用户运行时看不到系统安装的 runtime，故以 root 运行以使用系统安装。
+        run: sudo env "PATH=$PATH" ./tools/flatpak/build-flatpak.sh --build-only
+
+      - name: Reset Flatpak workspace ownership
+        if: ${{ matrix.package == 'flatpak' }}
+        run: sudo chown -R "$(id -u):$(id -g)" tools/flatpak
+
+      - name: Archive Flatpak repository
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          mkdir -p out
+          tar -czf out/flatpak-repo.tar.gz -C tools/flatpak repo
       
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
@@ -102,6 +151,8 @@ jobs:
             ./out/*.appx
             ./out/*.deb
             ./out/*.pkg
+            ./out/*.tar.gz
+          if-no-files-found: error
             
   build_launcher:
     runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-24.04' }}
@@ -163,117 +214,6 @@ jobs:
           path: |
             ./out/*.zip
             
-  build_flatpak:
-    runs-on: ${{ matrix.arch == 'x64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
-    env:
-      artifact_name: out_appBase_linux_${{ matrix.arch }}_flatpak_build
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: ['x64', 'arm64']
-    name: Build_AppBase_linux_${{ matrix.arch }}_flatpak
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-          sudo apt-get clean
-
-      - name: Install Flatpak build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes flatpak flatpak-builder
-          sudo flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          sudo flatpak install --system --assumeyes flathub \
-            org.freedesktop.Platform//24.08 \
-            org.freedesktop.Sdk//24.08 \
-            org.freedesktop.Sdk.Extension.dotnet9//24.08
-
-      - name: Configure root Git access
-        run: sudo git config --global --add safe.directory '*'
-
-      - name: Build Flatpak repository
-        # flatpak-builder 以普通用户运行时看不到系统安装的 runtime，故以 root 运行以使用系统安装。
-        run: sudo ./tools/flatpak/build-flatpak.sh --build-only
-
-      - name: Reset Flatpak workspace ownership
-        run: sudo chown -R "$(id -u):$(id -g)" tools/flatpak
-
-      - name: Archive Flatpak repository
-        run: |
-          mkdir -p out
-          tar -czf out/flatpak-repo.tar.gz -C tools/flatpak repo
-
-      - name: Upload Flatpak repository to artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.artifact_name }}
-          path: ./out/flatpak-repo.tar.gz
-          if-no-files-found: error
-
-  pack_flatpak:
-    runs-on: ${{ matrix.arch == 'x64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
-    needs: [ build_flatpak ]
-    env:
-      artifact_name: out_app_linux_${{ matrix.arch }}_flatpak
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: ['x64', 'arm64']
-    name: Pack_AppBase_linux_${{ matrix.arch }}_flatpak
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-
-      - name: Download Flatpak repository
-        uses: actions/download-artifact@v4
-        with:
-          name: out_appBase_linux_${{ matrix.arch }}_flatpak_build
-
-      - name: Install Flatpak
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes flatpak
-          sudo flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-      - name: Package Flatpak bundle
-        run: |
-          tar -xzf flatpak-repo.tar.gz -C tools/flatpak
-          ./tools/flatpak/build-flatpak.sh --bundle-only
-
-      - name: Verify Flatpak bundle
-        run: |
-          bundle="./tools/flatpak/ClassIsland.flatpak"
-          test -s "$bundle"
-          sudo flatpak install --system --assumeyes flathub org.freedesktop.Platform//24.08
-          sudo flatpak install --system --noninteractive --assumeyes "$bundle"
-          flatpak info org.classisland.ClassIsland
-          location="$(flatpak info --show-location org.classisland.ClassIsland)"
-          test -n "$(sudo find -L "$location" -name ClassIsland.Desktop.dll -print -quit)"
-          test -n "$(sudo find -L "$location" -path '*/lib/dotnet/dotnet' -print -quit)"
-
-      - name: Prepare Flatpak artifact
-        run: |
-          mkdir -p out
-          cp ./tools/flatpak/ClassIsland.flatpak "./out/${artifact_name}.flatpak"
-
-      - name: Upload Flatpak bundle to artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.artifact_name }}
-          path: ./out/*.flatpak
-          if-no-files-found: error
-
   sign_1:
     name: Sign_1
     runs-on: ubuntu-latest
@@ -330,12 +270,12 @@ jobs:
           path: ./out_signed/*
             
   pack_app:
-    runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-latest' }}
+    runs-on: ${{ matrix.runner || (matrix.os == 'windows' && 'windows-2022' || 'ubuntu-latest') }}
     needs: [ sign_1 ]
     if: ${{ always() && success('build_app') && success('build_launcher') }}
     env:
       build_id: app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
-      artifact_name: out_app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      artifact_name: ${{ matrix.package == 'flatpak' && format('out_app_linux_{0}_flatpak', matrix.arch) || format('out_app_{0}_{1}_{2}_{3}', matrix.os, matrix.arch, matrix.build_type, matrix.package) }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
@@ -353,7 +293,18 @@ jobs:
             package: installer
           - os: linux
             build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
-    name: Pack_App_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+        include:
+          - os: linux
+            arch: x64
+            build_type: flatpak
+            package: flatpak
+            runner: ubuntu-24.04
+          - os: linux
+            arch: arm64
+            build_type: flatpak
+            package: flatpak
+            runner: ubuntu-24.04-arm
+    name: ${{ matrix.package == 'flatpak' && format('Pack_AppBase_linux_{0}_flatpak', matrix.arch) || format('Pack_App_{0}_{1}_{2}_{3}', matrix.os, matrix.arch, matrix.build_type, matrix.package) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -368,9 +319,11 @@ jobs:
           path: ./out_artifacts
 
       - name: Combine Artifacts
+        if: ${{ matrix.package != 'flatpak' }}
         run: pwsh -ep bypass ./tools/release-gen/combine-artifacts.ps1
 
       - name: Generate Package
+        if: ${{ matrix.package != 'flatpak' }}
         env:
           package: ${{ matrix.package }}
           isRelease: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -378,6 +331,33 @@ jobs:
           osName: ${{ matrix.os }}
           buildType: ${{ matrix.build_type }}
         run: pwsh -ep bypass ./tools/release-gen/pack/entry.ps1
+
+      - name: Install Flatpak
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes flatpak
+          sudo flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Package Flatpak bundle
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          tar -xzf ./out_artifacts/out_appBase_linux_${{ matrix.arch }}_flatpak_build/flatpak-repo.tar.gz -C tools/flatpak
+          ./tools/flatpak/build-flatpak.sh --bundle-only
+          mkdir -p out_pack
+          cp tools/flatpak/ClassIsland.flatpak "out_pack/${artifact_name}.flatpak"
+
+      - name: Verify Flatpak bundle
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          bundle="out_pack/${artifact_name}.flatpak"
+          test -s "$bundle"
+          sudo flatpak install --system --assumeyes flathub org.freedesktop.Platform//24.08
+          sudo flatpak install --system --noninteractive --assumeyes "$bundle"
+          flatpak info org.classisland.ClassIsland
+          location="$(flatpak info --show-location org.classisland.ClassIsland)"
+          test -n "$(sudo find -L "$location" -name ClassIsland.Desktop.dll -print -quit)"
+          test -n "$(sudo find -L "$location" -path '*/lib/dotnet/dotnet' -print -quit)"
 
       - name: Compile .iss to .exe Installer
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
@@ -399,6 +379,8 @@ jobs:
           path: |
             ${{ github.workspace }}/out_pack/*.zip
             ${{ github.workspace }}/out_pack/*.exe
+            ${{ github.workspace }}/out_pack/*.flatpak
+          if-no-files-found: error
           
   build_nupkg:
     runs-on: windows-2022
@@ -454,8 +436,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == 'true' }}
-    if: ${{ always() && success('pack_app') && success('build_nupkg') && needs.pack_flatpak.result == 'success' && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
-    needs: [ pack_app, build_nupkg, pack_flatpak ]
+    if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
+    needs: [ pack_app, build_nupkg ]
     concurrency:
       group: "publish-public"
     environment:
