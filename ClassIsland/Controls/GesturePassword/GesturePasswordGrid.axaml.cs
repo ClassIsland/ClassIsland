@@ -25,6 +25,7 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
     private readonly List<int> _selectedNodes = [];
     private readonly Point[] _nodePositions = new Point[GridSize * GridSize];
     private bool _isPressed;
+    private IPointer? _activePointer;
     private Point _currentPointer;
     private int _lastNodeIndex = -1;
 
@@ -111,6 +112,13 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         {
             return;
         }
+        // 绘制过程中忽略其它指针（如第二根手指）的按下，避免打断当前手势。
+        // 标记为已处理，防止上层的按下事件处理把进行中的手势重置掉。
+        if (_isPressed)
+        {
+            e.Handled = true;
+            return;
+        }
         if (!EnsureNodePositions())
         {
             return;
@@ -120,6 +128,7 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         if (nodeIndex < 0) return;
 
         _isPressed = true;
+        _activePointer = e.Pointer;
         _selectedNodes.Clear();
         _selectedNodes.Add(nodeIndex);
         _lastNodeIndex = nodeIndex;
@@ -133,7 +142,7 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
-        if (!_isPressed) return;
+        if (!_isPressed || e.Pointer != _activePointer) return;
 
         e.Handled = true;
         ProcessHitTest(e.GetPosition(this));
@@ -143,8 +152,9 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-        if (!_isPressed) return;
+        if (!_isPressed || e.Pointer != _activePointer) return;
         _isPressed = false;
+        _activePointer = null;
         e.Pointer.Capture(null);
         e.Handled = true;
 
@@ -183,16 +193,15 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
-        if (_isPressed)
-        {
-            _isPressed = false;
-            Reset();
-        }
+        if (!_isPressed || e.Pointer != _activePointer) return;
+        _isPressed = false;
+        Reset();
     }
 
     public void Reset()
     {
         _isPressed = false;
+        _activePointer = null;
         _selectedNodes.Clear();
         _lastNodeIndex = -1;
         _currentPointer = default;

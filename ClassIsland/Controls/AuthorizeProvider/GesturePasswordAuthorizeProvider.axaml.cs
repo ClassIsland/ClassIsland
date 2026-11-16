@@ -110,7 +110,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-        // 搬家时不清 _firstGesture：草稿已在 OnSettingsChanged 中按旧设置存好，
+        // 搬家时不清 _firstGesture：草稿已在 SetFirstGesture 中按当前设置存好，
         // 这里只停掉进行中的 timers，避免回调打到已搬走的实例状态上。
         CancelConfirmResetTimer();
         CancelTooShortTimer();
@@ -140,15 +140,17 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
 
     private void GesturePasswordAuthorizeProvider_OnLoaded(object sender, RoutedEventArgs e)
     {
-        // 首挂载时 GetInstance 已做过 stash/restore，这里重复调一次是幂等的兜底。
+        // 重挂载时草稿已随每次改动同步到设置，这里恢复即可；首挂载时也是幂等的。
         RestoreForCurrentSettings();
     }
 
-    private void ClearPendingForCurrentSettings()
+    private void SetFirstGesture(int[]? gesture)
     {
+        _firstGesture = gesture;
+        // 每次改动都同步到当前设置的草稿，避免控件卸载重挂时用旧草稿覆盖用户已绘制的第一次手势。
         if (SettingsInternal is GesturePasswordAuthorizeSettings current)
         {
-            _pendingBySettings.Remove(current);
+            _pendingBySettings.GetOrCreateValue(current).FirstGesture = gesture;
         }
     }
 
@@ -204,7 +206,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     {
         if (_firstGesture == null)
         {
-            _firstGesture = path;
+            SetFirstGesture(path);
             InstructionText.Text = "请再次绘制手势以确认";
             GestureGrid.Reset();
         }
@@ -225,8 +227,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
                     _isBusy = false;
                     IsEnabled = true;
                 }
-                _firstGesture = null;
-                ClearPendingForCurrentSettings();
+                SetFirstGesture(null);
                 ProtectGesture = true;
                 ConfirmFailed = false;
                 NeedConfirmError = false;
@@ -235,8 +236,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
             else
             {
                 ConfirmFailed = true;
-                _firstGesture = null;
-                ClearPendingForCurrentSettings();
+                SetFirstGesture(null);
                 InstructionText.Text = "请绘制手势密码";
                 _confirmResetTimer = DispatcherTimer.RunOnce(() =>
                 {
@@ -335,8 +335,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
         CancelConfirmResetTimer();
         CancelTooShortTimer();
         ProtectGesture = false;
-        _firstGesture = null;
-        ClearPendingForCurrentSettings();
+        SetFirstGesture(null);
         ConfirmFailed = false;
         NeedConfirmError = false;
         TooShortError = false;
