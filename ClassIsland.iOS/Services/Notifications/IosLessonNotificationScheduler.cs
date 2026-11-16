@@ -296,7 +296,8 @@ internal sealed class IosLessonNotificationScheduler(
             .ThenBy(x => x.Identifier, StringComparer.Ordinal)
             .ToArray();
 
-        // 只有原生中心确认保留（或已经送达）后，才开放 Live Activity 门槛。
+        // 只有原生中心确认保留（或已经送达）后，才把准备提醒标记为已排程，避免后续同步重复补发。
+        // 实时活动的显示时间由 LessonLiveActivitySettingsPolicy 按提前分钟数计算，不使用这里的确认状态。
         foreach (var request in synchronizedRequests.Where(x =>
                      x.Identifier.EndsWith(".prepare", StringComparison.Ordinal)))
         {
