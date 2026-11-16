@@ -163,6 +163,62 @@ jobs:
           path: |
             ./out/*.zip
             
+  build_flatpak:
+    runs-on: ${{ matrix.arch == 'x64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
+    env:
+      artifact_name: out_app_linux_${{ matrix.arch }}_flatpak
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ['x64', 'arm64']
+    name: Build_Flatpak_linux_${{ matrix.arch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo apt-get clean
+
+      - name: Install Flatpak build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes flatpak flatpak-builder
+          sudo flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install --system --assumeyes flathub \
+            org.freedesktop.Sdk//24.08 \
+            org.freedesktop.Sdk.Extension.dotnet9//24.08
+
+      - name: Build Flatpak bundle
+        run: ./tools/flatpak/build-flatpak.sh
+
+      - name: Verify Flatpak bundle
+        run: |
+          bundle="./tools/flatpak/ClassIsland.flatpak"
+          test -s "$bundle"
+          sudo flatpak install --system --noninteractive --assumeyes "$bundle"
+          flatpak info org.classisland.ClassIsland
+          location="$(flatpak info --show-location org.classisland.ClassIsland)"
+          test -n "$(sudo find -L "$location" -name ClassIsland.Desktop.dll -print -quit)"
+          test -n "$(sudo find -L "$location" -path '*/lib/dotnet/dotnet' -print -quit)"
+
+      - name: Prepare Flatpak artifact
+        run: |
+          mkdir -p out
+          cp ./tools/flatpak/ClassIsland.flatpak "./out/${artifact_name}.flatpak"
+
+      - name: Upload Flatpak bundle to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.artifact_name }}
+          path: ./out/*.flatpak
+          if-no-files-found: error
+
   sign_1:
     name: Sign_1
     runs-on: ubuntu-latest
@@ -343,8 +399,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == 'true' }}
-    if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
-    needs: [ pack_app, build_nupkg ]
+    if: ${{ always() && success('pack_app') && success('build_nupkg') && needs.build_flatpak.result == 'success' && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
+    needs: [ pack_app, build_nupkg, build_flatpak ]
     concurrency:
       group: "publish-public"
     environment:
@@ -390,7 +446,7 @@ jobs:
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./out/*.zip,./out/*.appx,./out/*.deb,./out/*.pkg"
+          artifacts: "./out/*.zip,./out/*.appx,./out/*.deb,./out/*.pkg,./out/*.flatpak"
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
