@@ -12,6 +12,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using AVFoundation;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.iOS.Controls;
 using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction.Services;
@@ -34,6 +35,9 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 {
     private static readonly TimeSpan BackgroundFrameInterval = TimeSpan.FromMilliseconds(33);
     private static readonly TimeSpan ForegroundFrameInterval = TimeSpan.FromMilliseconds(66);
+    private static readonly TimeSpan NotificationFrameInterval = TimeSpan.FromSeconds(1.0 / 60);
+    // 提醒播放状态在退场动画开始前就会结束，多保持一段高帧率，让退场动画也流畅。
+    private static readonly TimeSpan NotificationExitFrameDuration = TimeSpan.FromSeconds(1);
     // 画中画开启后要等下一帧才会切换到更高的刷新率，间隔不宜过长。
     private static readonly TimeSpan HiddenFrameInterval = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan SlowFrameThreshold = TimeSpan.FromMilliseconds(16);
@@ -65,7 +69,9 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private double _islandScale = 1;
     private bool _isPrepared;
     private DateTime _fastFramesUntil;
+    private DateTime _notificationFramesUntil;
     private DateTime _lastSlowFrameLog;
+    private INotificationHostService? _notificationHostService;
     private bool _isFirstTapStartPending;
     private UITapGestureRecognizer? _firstTapRecognizer;
     private string? _lastLoggedError;
@@ -184,6 +190,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         _frameTimer?.Stop();
         _frameTimer = null;
         _fastFramesUntil = default;
+        _notificationFramesUntil = default;
         _isFirstTapStartPending = false;
         DisarmFirstTapStart();
         if (_isPrepared)
@@ -467,15 +474,23 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
 
     private void UpdateFrameInterval()
     {
-        // 画中画显示时按动画需要的帧率刷新：应用在后台时 UI 线程空闲，用 30 fps；
-        // 应用在前台时渲染会占用应用自己的 UI 线程，降到 15 fps。
+        // 画中画显示时按动画需要的帧率刷新：播放提醒时动画最多，用 60 fps；
+        // 其余时间应用在后台时 UI 线程空闲，用 30 fps；应用在前台时渲染会占用应用自己的 UI 线程，降到 15 fps。
         // 画中画未显示时没人看得到画面，只需保持显示层里有一帧较新的内容，供离开应用时自动开启使用；
         // 刚请求开启时多送几帧，系统需要收到内容后才允许开启画中画。
+        var now = DateTime.UtcNow;
+        if (NotificationHost?.IsNotificationsPlaying == true)
+        {
+            _notificationFramesUntil = now + NotificationExitFrameDuration;
+        }
+
         var interval = _lastIsActive == true
-            ? UIApplication.SharedApplication.ApplicationState == UIApplicationState.Background
-                ? BackgroundFrameInterval
-                : ForegroundFrameInterval
-            : DateTime.UtcNow < _fastFramesUntil
+            ? now < _notificationFramesUntil
+                ? NotificationFrameInterval
+                : UIApplication.SharedApplication.ApplicationState == UIApplicationState.Background
+                    ? BackgroundFrameInterval
+                    : ForegroundFrameInterval
+            : now < _fastFramesUntil
                 ? ForegroundFrameInterval
                 : HiddenFrameInterval;
         if (_frameTimer != null && _frameTimer.Interval != interval)
@@ -555,6 +570,9 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     // 服务在应用宿主创建前就已构造，只能在使用时再解析日志记录器。
     private ILogger<IosPipOverlayService>? Logger =>
         _logger ??= IAppHost.TryGetService<ILogger<IosPipOverlayService>>();
+
+    private INotificationHostService? NotificationHost =>
+        _notificationHostService ??= IAppHost.TryGetService<INotificationHostService>();
 
     private void LogStateChanges()
     {
