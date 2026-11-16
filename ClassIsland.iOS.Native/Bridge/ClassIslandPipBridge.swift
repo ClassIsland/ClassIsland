@@ -155,6 +155,8 @@ private final class ClassIslandPipController: NSObject,
     }
 
     func stop() {
+        // 取消 start() 中尚未完成的等待，否则画中画变为可开启后仍会被自动弹出。
+        possibleObservation = nil
         controller?.stopPictureInPicture()
     }
 
