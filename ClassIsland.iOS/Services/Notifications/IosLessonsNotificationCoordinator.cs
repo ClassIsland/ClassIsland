@@ -382,6 +382,13 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         {
             _refreshGate.Release();
             // 后台不启动允许全量 mutation 的普通刷新；前台事件会强制复核。
+            // 后台刷新占用闸门期间回到前台时，前台刷新拿不到闸门会直接返回，需要在这里补排一次。
+            if (Volatile.Read(ref _isInBackground) == 0 &&
+                Volatile.Read(ref _refreshPending) != 0 &&
+                !_cancellation.IsCancellationRequested)
+            {
+                QueueRefresh();
+            }
         }
     }
 
