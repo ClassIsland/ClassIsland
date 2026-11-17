@@ -78,9 +78,19 @@ public static class ShortcutHelpers
                 AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.desktop")))
             .ReadToEndAsync();
         var args = isAutostart ? "--autostartup" : "--uri %u";
-        var final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance, args);
+        string final;
+        if (AppBase.Current.PackagingType == "flatpak")
+        {
+            // 宿主机上的快捷方式不能直接指向沙箱内的 /app 路径，需要通过 flatpak run 启动。
+            final = string.Format(raw, AppBase.AppVersion, "flatpak run org.classisland.ClassIsland", args)
+                .Replace("Icon=classisland", "Icon=org.classisland.ClassIsland");
+        }
+        else
+        {
+            final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance, args);
+        }
         await File.WriteAllTextAsync(targetPath, final);
-        SetUnixExecutePermission(path);
+        SetUnixExecutePermission(targetPath);
     }
 
     public static async Task CopyFreeDesktopIconAsync()

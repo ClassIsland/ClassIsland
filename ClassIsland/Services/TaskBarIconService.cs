@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,7 +34,9 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
         get;
     } = new()
     {
-        Icon = new WindowIcon(OperatingSystem.IsMacOS() ? "../Resources/Assets/AppLogo_Monochrome.png" : "Assets/AppLogo.png"),
+        Icon = new WindowIcon(OperatingSystem.IsMacOS()
+            ? "../Resources/Assets/AppLogo_Monochrome.png"
+            : Path.Combine(AppContext.BaseDirectory, "Assets", "AppLogo.png")),
         ToolTipText = "ClassIsland"
     };
 

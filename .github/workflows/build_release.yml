@@ -5,15 +5,15 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: '发布标签'
+        description: "发布标签"
         required: true
         type: string
       primary_version:
-        description: '主发布版本'
+        description: "主发布版本"
         required: true
         type: string
       is_test_mode:
-        description: '是否处于测试发布模式'
+        description: "是否处于测试发布模式"
         required: false
         type: boolean
 
@@ -22,25 +22,25 @@ env:
 
 jobs:
   build_app:
-    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-15' || 'windows-2022' ) }}
+    runs-on: ${{ matrix.runner || (matrix.os == 'linux' && 'ubuntu-24.04' || (matrix.os == 'macos' && 'macos-15' || 'windows-2022')) }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
-      artifact_name: out_${{ matrix.package == 'folder' &&  'appBase' || 'app' }}_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      artifact_name: ${{ matrix.package == 'flatpak' && format('out_appBase_linux_{0}_flatpak_build', matrix.arch) || format('out_{0}_{1}_{2}_{3}_{4}', matrix.package == 'folder' && 'appBase' || 'app', matrix.os, matrix.arch, matrix.build_type, matrix.package) }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        build_type: ['full', 'selfContained']
-        package: ['folder', 'deb']
-        arch: ['x64', 'x86', 'arm64']
-        os: ['windows', 'linux']
-        exclude: 
+        build_type: ["full", "selfContained"]
+        package: ["folder", "deb"]
+        arch: ["x64", "x86", "arm64"]
+        os: ["windows", "linux"]
+        exclude:
           - os: linux
             arch: x86
           - os: windows
             package: deb
           - os: linux
-            build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
+            build_type: full # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
         include:
           - os: macos
             package: pkg
@@ -50,7 +50,17 @@ jobs:
             package: pkg
             build_type: selfContained
             arch: x64
-    name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+          - os: linux
+            arch: x64
+            build_type: flatpak
+            package: flatpak
+            runner: ubuntu-24.04
+          - os: linux
+            arch: arm64
+            build_type: flatpak
+            package: flatpak
+            runner: ubuntu-24.04-arm
+    name: ${{ matrix.package == 'flatpak' && format('Build_AppBase_linux_{0}_flatpak', matrix.arch) || format('Build_AppBase_{0}_{1}_{2}_{3}', matrix.os, matrix.arch, matrix.build_type, matrix.package) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -58,27 +68,41 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-      
+
       - name: List files
         run: ls
-      
+
       - name: Install .NET Core
+        if: ${{ matrix.package != 'flatpak' }}
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      
+
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
         run: |
           dotnet workload install macos --version 9.0.300
-        
+
+      - name: Install Flatpak build dependencies
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes flatpak flatpak-builder
+          sudo flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install --system --assumeyes flathub \
+            org.freedesktop.Platform//25.08 \
+            org.freedesktop.Sdk//25.08 \
+            org.freedesktop.Sdk.Extension.dotnet9//25.08
+
       - name: Add GitHub Package Registry
+        if: ${{ matrix.package != 'flatpak' }}
         run: dotnet nuget add source --username ClassIsland --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
-        
+
       - uses: little-core-labs/get-git-tag@v3.0.1
         id: tagName
-      
+
       - name: ☢️ Nuke
+        if: ${{ matrix.package != 'flatpak' }}
         env:
           buildType: ${{ matrix.build_type }}
           package: ${{ matrix.package }}
@@ -88,10 +112,29 @@ jobs:
           ApiSigningKeyPs: ${{ secrets.API_SIGNING_KEY_PS }}
           arch: ${{ matrix.arch }}
           osName: ${{ matrix.os }}
-          appVersion: ${{ steps.tagName.outputs.tag }} 
-          buildName: ${{ matrix.package == 'folder' &&  'appBase' || 'app' }}  # 打包版本的构建将在这一步直接产生完整的包体，无需经过分装
+          appVersion: ${{ steps.tagName.outputs.tag }}
+          buildName: ${{ matrix.package == 'folder' &&  'appBase' || 'app' }} # 打包版本的构建将在这一步直接产生完整的包体，无需经过分装
         run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishApp' || './build.sh PublishApp' }}
-      
+
+      - name: Configure root Git access
+        if: ${{ matrix.package == 'flatpak' }}
+        run: sudo git config --global --add safe.directory '*'
+
+      - name: Build Flatpak repository
+        if: ${{ matrix.package == 'flatpak' }}
+        # flatpak-builder 以普通用户运行时看不到系统安装的 runtime，故以 root 运行以使用系统安装。
+        run: sudo env "PATH=$PATH" ./tools/flatpak/build-flatpak.sh --build-only
+
+      - name: Reset Flatpak workspace ownership
+        if: ${{ matrix.package == 'flatpak' }}
+        run: sudo chown -R "$(id -u):$(id -g)" tools/flatpak
+
+      - name: Archive Flatpak repository
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          mkdir -p out
+          tar -czf out/flatpak-repo.tar.gz -C tools/flatpak repo
+
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
@@ -102,7 +145,9 @@ jobs:
             ./out/*.appx
             ./out/*.deb
             ./out/*.pkg
-            
+            ./out/*.tar.gz
+          if-no-files-found: error
+
   build_launcher:
     runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-24.04' }}
     env:
@@ -112,10 +157,10 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        build_type: ['aot']
-        package: ['singleFile']
-        arch: ['x64', 'x86', 'arm64']
-        os: ['windows', 'linux']
+        build_type: ["aot"]
+        package: ["singleFile"]
+        arch: ["x64", "x86", "arm64"]
+        os: ["windows", "linux"]
         exclude:
           - os: linux
             arch: x86
@@ -131,7 +176,7 @@ jobs:
 
       - name: List files
         run: ls
-      
+
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
@@ -153,8 +198,8 @@ jobs:
           arch: ${{ matrix.arch }}
           osName: ${{ matrix.os }}
           buildName: launcher
-        run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishLauncher' || './build.sh PublishLauncher' }} 
-          
+        run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishLauncher' || './build.sh PublishLauncher' }}
+
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
@@ -162,12 +207,12 @@ jobs:
           name: ${{ env.artifact_name }}
           path: |
             ./out/*.zip
-            
+
   sign_1:
     name: Sign_1
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' }}
-    needs: [ build_app, build_launcher ]
+    needs: [build_app, build_launcher]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -175,7 +220,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-          
+
       - name: Get commit hash
         uses: prompt/actions-commit-hash@v3
         id: commit
@@ -197,42 +242,42 @@ jobs:
         with:
           name: sign-bundle
           path: ./ci_tmp/sign_bundle/*
-        
+
       - name: Sign Application
         uses: signpath/github-action-submit-signing-request@v1
         with:
-          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
-          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
-          project-slug: 'ClassIsland'
-          artifact-configuration-slug: 'sign_bundle_v2'
+          api-token: "${{ secrets.SIGNPATH_TOKEN }}"
+          organization-id: "74962648-db7a-4a10-bfdd-0637542e39df"
+          project-slug: "ClassIsland"
+          artifact-configuration-slug: "sign_bundle_v2"
           signing-policy-slug: release-signing
-          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
+          github-artifact-id: "${{ steps.upload-sign-bundle.outputs.artifact-id }}"
           wait-for-completion: true
-          output-artifact-directory: './out_signed'
+          output-artifact-directory: "./out_signed"
           parameters: |
             version: ${{ toJSON(steps.commit.outputs.long) }}
-            
+
       - name: Upload Signed Files to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: signed_artifacts
           path: ./out_signed/*
-            
+
   pack_app:
-    runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-latest' }}
-    needs: [ sign_1 ]
+    runs-on: ${{ matrix.runner || (matrix.os == 'windows' && 'windows-2022' || 'ubuntu-latest') }}
+    needs: [sign_1]
     if: ${{ always() && success('build_app') && success('build_launcher') }}
     env:
       build_id: app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
-      artifact_name: out_app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      artifact_name: ${{ matrix.package == 'flatpak' && format('out_app_linux_{0}_flatpak', matrix.arch) || format('out_app_{0}_{1}_{2}_{3}', matrix.os, matrix.arch, matrix.build_type, matrix.package) }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        build_type: ['full', 'selfContained']
-        package: ['folder', 'installer']
-        arch: ['x64', 'x86', 'arm64']
-        os: ['windows', 'linux']
+        build_type: ["full", "selfContained"]
+        package: ["folder", "installer"]
+        arch: ["x64", "x86", "arm64"]
+        os: ["windows", "linux"]
         exclude:
           - os: linux
             arch: x86
@@ -241,8 +286,19 @@ jobs:
           - build_type: full
             package: installer
           - os: linux
-            build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
-    name: Pack_App_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+            build_type: full # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
+        include:
+          - os: linux
+            arch: x64
+            build_type: flatpak
+            package: flatpak
+            runner: ubuntu-24.04
+          - os: linux
+            arch: arm64
+            build_type: flatpak
+            package: flatpak
+            runner: ubuntu-24.04-arm
+    name: ${{ matrix.package == 'flatpak' && format('Pack_AppBase_linux_{0}_flatpak', matrix.arch) || format('Pack_App_{0}_{1}_{2}_{3}', matrix.os, matrix.arch, matrix.build_type, matrix.package) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -250,16 +306,18 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-          
+
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           path: ./out_artifacts
 
       - name: Combine Artifacts
+        if: ${{ matrix.package != 'flatpak' }}
         run: pwsh -ep bypass ./tools/release-gen/combine-artifacts.ps1
 
       - name: Generate Package
+        if: ${{ matrix.package != 'flatpak' }}
         env:
           package: ${{ matrix.package }}
           isRelease: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -267,6 +325,33 @@ jobs:
           osName: ${{ matrix.os }}
           buildType: ${{ matrix.build_type }}
         run: pwsh -ep bypass ./tools/release-gen/pack/entry.ps1
+
+      - name: Install Flatpak
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes flatpak
+          sudo flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Package Flatpak bundle
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          tar -xzf ./out_artifacts/out_appBase_linux_${{ matrix.arch }}_flatpak_build/flatpak-repo.tar.gz -C tools/flatpak
+          ./tools/flatpak/build-flatpak.sh --bundle-only
+          mkdir -p out_pack
+          cp tools/flatpak/ClassIsland.flatpak "out_pack/${artifact_name}.flatpak"
+
+      - name: Verify Flatpak bundle
+        if: ${{ matrix.package == 'flatpak' }}
+        run: |
+          bundle="out_pack/${artifact_name}.flatpak"
+          test -s "$bundle"
+          sudo flatpak install --system --assumeyes flathub org.freedesktop.Platform//25.08
+          sudo flatpak install --system --noninteractive --assumeyes "$bundle"
+          flatpak info org.classisland.ClassIsland
+          location="$(flatpak info --show-location org.classisland.ClassIsland)"
+          test -n "$(sudo find -L "$location" -name ClassIsland.Desktop.dll -print -quit)"
+          test -n "$(sudo find -L "$location" -path '*/lib/dotnet/dotnet' -print -quit)"
 
       - name: Compile .iss to .exe Installer
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
@@ -279,7 +364,6 @@ jobs:
             /O${{ github.workspace }}\out_pack
             /DSourceDir=${{ github.workspace }}\out_pack\pack
             /DArch=${{ matrix.arch }}
-      
 
       - name: Upload Packages and Installer to Artifacts
         uses: actions/upload-artifact@v4
@@ -288,7 +372,9 @@ jobs:
           path: |
             ${{ github.workspace }}/out_pack/*.zip
             ${{ github.workspace }}/out_pack/*.exe
-          
+            ${{ github.workspace }}/out_pack/*.flatpak
+          if-no-files-found: error
+
   build_nupkg:
     runs-on: windows-2022
     env:
@@ -302,7 +388,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
 
       - name: List files
         run: ls
@@ -314,16 +400,16 @@ jobs:
 
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
-        
+
       - name: Build Nuget packages
         env:
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls
           ./build.ps1 BuildNupkg --isRelease $env:is_release
-      
+
       - name: Upload Nuget packages to GitHub registry
-        if: ${{ github.event_name != 'pull_request' }} 
+        if: ${{ github.event_name != 'pull_request' }}
         env:
           GHPKG_KEY: ${{ secrets.GITHUB_TOKEN }}
           MYGET_ORG_KEY: ${{ secrets.MYGET_ORG_KEY }}
@@ -344,7 +430,7 @@ jobs:
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == 'true' }}
     if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
-    needs: [ pack_app, build_nupkg ]
+    needs: [pack_app, build_nupkg]
     concurrency:
       group: "publish-public"
     environment:
@@ -355,8 +441,8 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
-          
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -386,16 +472,16 @@ jobs:
           ./tools/release-gen/init-artifacts.ps1
           ./tools/release-gen/install-pdcc.ps1 linux
           ./pdcc/PhainonDistributionCenter.Client ./phainon.yml Publish ${{ github.event.inputs.primary_version }} ${{ github.event.inputs.release_tag }} ./out
-          
+
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./out/*.zip,./out/*.appx,./out/*.deb,./out/*.pkg"
+          artifacts: "./out/*.zip,./out/*.appx,./out/*.deb,./out/*.pkg,./out/*.flatpak"
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
-          
+          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+
       - name: Upload Nuget packages to NuGet Gallery
         if: ${{ github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' }}
         shell: pwsh

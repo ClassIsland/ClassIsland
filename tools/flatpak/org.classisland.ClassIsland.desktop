@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=ClassIsland
+Comment=功能强大、可定制、跨平台的大屏课表显示工具。
+Exec=run.sh --uri %u
+Icon=org.classisland.ClassIsland
+Terminal=false
+Type=Application
+Categories=Education;Office;
+StartupNotify=true
+StartupWMClass=ClassIsland
+MimeType=x-scheme-handler/classisland;
