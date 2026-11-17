@@ -14,8 +14,11 @@
     "--talk-name=org.freedesktop.Notifications",
     "--device=dri",
     "--filesystem=xdg-config:ro",
+    "--filesystem=xdg-config/autostart",
     "--filesystem=xdg-data:ro",
-    "--filesystem=xdg-cache:ro"
+    "--filesystem=xdg-data/applications",
+    "--filesystem=xdg-cache:ro",
+    "--filesystem=xdg-desktop"
   ],
   "build-options": {
     "append-path": "/usr/lib/sdk/dotnet9/bin",
