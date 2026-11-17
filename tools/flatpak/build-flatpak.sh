@@ -84,27 +84,22 @@ case "$(uname -m)" in
         ;;
 esac
 
-require_ref() {
-    local ref="$1"
-    if ! flatpak info "$ref" >/dev/null 2>&1; then
-        echo "Error: required Flatpak SDK is not installed: $ref" >&2
-        echo "Install it manually with: flatpak install flathub $ref" >&2
-        exit 1
-    fi
-}
-
 if [[ "$stage" != "bundle" ]]; then
-    if ! flatpak remotes --columns=name | grep -Fxq flathub; then
-        echo "Error: the Flathub remote is not configured." >&2
-        echo "Run: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo" >&2
-        exit 1
+    flathub_configured=false
+    if flatpak remotes --columns=name | grep -Fxq flathub; then
+        flathub_configured=true
+        echo "   ✓ Flathub remote is configured"
+    else
+        echo "   ! Flathub remote is not configured; flatpak-builder will not download missing runtimes automatically" >&2
     fi
-    echo "   ✓ Flathub remote is configured"
 
-    require_ref "org.freedesktop.Platform//$RUNTIME_VERSION"
-    require_ref "org.freedesktop.Sdk//$RUNTIME_VERSION"
-    require_ref "org.freedesktop.Sdk.Extension.dotnet9//$RUNTIME_VERSION"
-    echo "   ✓ Required Flatpak SDKs are installed"
+    for ref in "org.freedesktop.Platform//$RUNTIME_VERSION" \
+               "org.freedesktop.Sdk//$RUNTIME_VERSION" \
+               "org.freedesktop.Sdk.Extension.dotnet9//$RUNTIME_VERSION"; do
+        if ! flatpak info "$ref" >/dev/null 2>&1; then
+            echo "   ! $ref is not installed; flatpak-builder will install it if Flathub is configured"
+        fi
+    done
 
     cd "$SCRIPT_DIR"
     if [[ ! -f "$GENERATOR" ]]; then
@@ -142,12 +137,17 @@ PY
     mv -- "$temporary_sources" "$SOURCES"
     echo "   ✓ sources.json generated"
 
+    flatpak_builder_args=(
+        --disable-rofiles-fuse
+        --force-clean
+        --repo="$REPO"
+    )
+    if [[ "$flathub_configured" == true ]]; then
+        flatpak_builder_args+=(--install-deps-from=flathub)
+    fi
+
     echo "Building Flatpak package..."
-    flatpak-builder \
-        --disable-rofiles-fuse \
-        --force-clean \
-        --repo="$REPO" \
-        "$BUILD_DIR" "$MANIFEST"
+    flatpak-builder "${flatpak_builder_args[@]}" "$BUILD_DIR" "$MANIFEST"
     echo "   ✓ Flatpak build completed"
 fi
 

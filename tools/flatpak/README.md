@@ -4,21 +4,25 @@
 
 ## 构建前准备
 
-构建脚本只检查环境，不会自动添加远程仓库、安装 SDK 或安装应用。请先手动准备：
+构建脚本不会自动添加 Flatpak remote。配置了 `flathub` 时，`flatpak-builder` 会通过 `--install-deps-from=flathub` 自动拉取缺失的 runtime、SDK 和 dotnet9 扩展；未配置时需提前手动安装这些引用。请先准备：
 
 - Linux 系统，以及 `flatpak`、`flatpak-builder` 和 Python 3；
-- 已配置名为 `flathub` 的 Flatpak remote；
-- `org.freedesktop.Sdk//24.08`；
-- `org.freedesktop.Sdk.Extension.dotnet9//24.08`；构建时会从生成的 NuGet 源清单中提取应用需要的 .NET 8 runtime 文件；
+- 建议配置名为 `flathub` 的 Flatpak remote；
+- `org.freedesktop.Platform//25.08`、`org.freedesktop.Sdk//25.08` 和 `org.freedesktop.Sdk.Extension.dotnet9//25.08`（配置了 Flathub 后缺失项会在构建时自动安装）；构建时会从生成的 NuGet 源清单中提取应用需要的 .NET 8 runtime 文件；
 - 网络连接，用于恢复 NuGet 依赖和下载缺少的构建工具。
 
-例如，可以使用以下命令准备 Flathub 和 SDK（命令由用户主动执行）：
+配置 Flathub remote（命令由用户主动执行）：
 
 ```bash
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+```
+
+如需提前安装 SDK，也可以手动执行：
+
+```bash
 flatpak install flathub \
-  org.freedesktop.Sdk//24.08 \
-  org.freedesktop.Sdk.Extension.dotnet9//24.08
+  org.freedesktop.Sdk//25.08 \
+  org.freedesktop.Sdk.Extension.dotnet9//25.08
 ```
 
 ## 构建
