@@ -72,12 +72,6 @@ jobs:
       - name: List files
         run: ls
 
-      - name: Free disk space
-        if: ${{ matrix.package == 'flatpak' }}
-        run: |
-          sudo rm -rf /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-          sudo apt-get clean
-
       - name: Install .NET Core
         if: ${{ matrix.package != 'flatpak' }}
         uses: actions/setup-dotnet@v3

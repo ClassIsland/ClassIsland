@@ -118,9 +118,10 @@ if [[ "$stage" != "bundle" ]]; then
     echo "Generating NuGet sources for $runtime..."
     temporary_sources="$(mktemp "$SCRIPT_DIR/sources.json.XXXXXX")"
     trap 'rm -f "$temporary_sources"' EXIT
+    # generator 自带的 freedesktop 默认版本可能落后于 manifest，需显式对齐以避免找不到 SDK 扩展。
     python3 "$GENERATOR" "$temporary_sources" \
         "$REPO_DIR/ClassIsland.Desktop/ClassIsland.Desktop.csproj" \
-        --dotnet 9 --runtime "$runtime"
+        --dotnet 9 --freedesktop "$RUNTIME_VERSION" --runtime "$runtime"
     if ! python3 - "$temporary_sources" <<'PY'
 import json
 import sys
