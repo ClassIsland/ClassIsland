@@ -10,6 +10,7 @@
     "--share=network",
     "--socket=x11",
     "--socket=session-bus",
+    "--socket=pulseaudio",
     "--talk-name=org.freedesktop.Notifications",
     "--device=dri",
     "--filesystem=xdg-config:ro",
