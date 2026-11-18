@@ -5,21 +5,21 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "发布标签"
+        description: '发布标签'
         required: true
         type: string
       primary_version:
-        description: "主发布版本"
+        description: '主发布版本'
         required: true
         type: string
       is_test_mode:
-        description: "是否处于测试发布模式"
+        description: '是否处于测试发布模式'
         required: false
         type: boolean
 
 env:
   PDC_CLIENT_VERSION: 1.0.1.3
-  DOTNET_SDK_VERSION: 10.0.403
+  MACOS_DOTNET_SDK_VERSION: 10.0.403
 
 jobs:
   build_app:
@@ -31,17 +31,17 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        build_type: ["full", "selfContained"]
-        package: ["folder", "deb"]
-        arch: ["x64", "x86", "arm64"]
-        os: ["windows", "linux"]
-        exclude:
+        build_type: ['full', 'selfContained']
+        package: ['folder', 'deb']
+        arch: ['x64', 'x86', 'arm64']
+        os: ['windows', 'linux']
+        exclude: 
           - os: linux
             arch: x86
           - os: windows
             package: deb
           - os: linux
-            build_type: full # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
+            build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
         include:
           - os: macos
             package: pkg
@@ -59,10 +59,10 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-
+      
       - name: List files
         run: ls
-
+      
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
@@ -75,23 +75,23 @@ jobs:
           dotnet new globaljson --sdk-version "$DOTNET_SDK_VERSION" --roll-forward disable --force
           dotnet --info
           test "$(dotnet --version)" = "$DOTNET_SDK_VERSION"
-
+      
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
         run: |
-          test "$(dotnet --version)" = "$DOTNET_SDK_VERSION"
+          test "$(dotnet --version)" = "$MACOS_DOTNET_SDK_VERSION"
           xcode-select -p
           xcodebuild -version
           xcodebuild -showsdks
           dotnet workload install macos --version "$DOTNET_SDK_VERSION"
           test "$(dotnet workload --version)" = "$DOTNET_SDK_VERSION"
-
+        
       - name: Add GitHub Package Registry
         run: dotnet nuget add source --username ClassIsland --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
-
+        
       - uses: little-core-labs/get-git-tag@v3.0.1
         id: tagName
-
+      
       - name: ☢️ Nuke
         env:
           buildType: ${{ matrix.build_type }}
@@ -102,14 +102,14 @@ jobs:
           ApiSigningKeyPs: ${{ secrets.API_SIGNING_KEY_PS }}
           arch: ${{ matrix.arch }}
           osName: ${{ matrix.os }}
-          appVersion: ${{ steps.tagName.outputs.tag }}
-          buildName: ${{ matrix.package == 'folder' &&  'appBase' || 'app' }} # 打包版本的构建将在这一步直接产生完整的包体，无需经过分装
+          appVersion: ${{ steps.tagName.outputs.tag }} 
+          buildName: ${{ matrix.package == 'folder' &&  'appBase' || 'app' }}  # 打包版本的构建将在这一步直接产生完整的包体，无需经过分装
           # macOS 27 workload 按 major.minor 严格校验 Xcode（27.0/27.1），
           # xcode-27 镜像内的 27.x 补丁版本可能不同；这里只跳过版本校验，
           # 原生工具链仍使用镜像自带的 Xcode 27。
           ValidateXcodeVersion: "false"
         run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishApp' || './build.sh PublishApp' }}
-
+      
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
@@ -128,7 +128,7 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        arch: ["arm64", "x64"]
+        arch: ['arm64', 'x64']
     name: Build_Android_${{ matrix.arch }}
     steps:
       - name: Checkout
@@ -155,7 +155,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: '21'
 
       - name: Install Android workload
         run: dotnet workload install android
@@ -217,7 +217,7 @@ jobs:
           name: ${{ env.artifact_name }}
           path: ./out/*.apk
           if-no-files-found: error
-
+            
   build_launcher:
     runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-24.04' }}
     env:
@@ -227,10 +227,10 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        build_type: ["aot"]
-        package: ["singleFile"]
-        arch: ["x64", "x86", "arm64"]
-        os: ["windows", "linux"]
+        build_type: ['aot']
+        package: ['singleFile']
+        arch: ['x64', 'x86', 'arm64']
+        os: ['windows', 'linux']
         exclude:
           - os: linux
             arch: x86
@@ -246,7 +246,7 @@ jobs:
 
       - name: List files
         run: ls
-
+      
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
@@ -274,8 +274,8 @@ jobs:
           arch: ${{ matrix.arch }}
           osName: ${{ matrix.os }}
           buildName: launcher
-        run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishLauncher' || './build.sh PublishLauncher' }}
-
+        run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishLauncher' || './build.sh PublishLauncher' }} 
+          
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
@@ -283,12 +283,12 @@ jobs:
           name: ${{ env.artifact_name }}
           path: |
             ./out/*.zip
-
+            
   sign_1:
     name: Sign_1
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' }}
-    needs: [build_app, build_launcher]
+    needs: [ build_app, build_launcher ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -296,7 +296,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-
+          
       - name: Get commit hash
         uses: prompt/actions-commit-hash@v3
         id: commit
@@ -318,30 +318,30 @@ jobs:
         with:
           name: sign-bundle
           path: ./ci_tmp/sign_bundle/*
-
+        
       - name: Sign Application
         uses: signpath/github-action-submit-signing-request@v1
         with:
-          api-token: "${{ secrets.SIGNPATH_TOKEN }}"
-          organization-id: "74962648-db7a-4a10-bfdd-0637542e39df"
-          project-slug: "ClassIsland"
-          artifact-configuration-slug: "sign_bundle_v2"
+          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
+          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
+          project-slug: 'ClassIsland'
+          artifact-configuration-slug: 'sign_bundle_v2'
           signing-policy-slug: release-signing
-          github-artifact-id: "${{ steps.upload-sign-bundle.outputs.artifact-id }}"
+          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
           wait-for-completion: true
-          output-artifact-directory: "./out_signed"
+          output-artifact-directory: './out_signed'
           parameters: |
             version: ${{ toJSON(steps.commit.outputs.long) }}
-
+            
       - name: Upload Signed Files to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: signed_artifacts
           path: ./out_signed/*
-
+            
   pack_app:
     runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-latest' }}
-    needs: [sign_1]
+    needs: [ sign_1 ]
     if: ${{ always() && success('build_app') && success('build_launcher') }}
     env:
       build_id: app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -350,10 +350,10 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        build_type: ["full", "selfContained"]
-        package: ["folder", "installer"]
-        arch: ["x64", "x86", "arm64"]
-        os: ["windows", "linux"]
+        build_type: ['full', 'selfContained']
+        package: ['folder', 'installer']
+        arch: ['x64', 'x86', 'arm64']
+        os: ['windows', 'linux']
         exclude:
           - os: linux
             arch: x86
@@ -362,7 +362,7 @@ jobs:
           - build_type: full
             package: installer
           - os: linux
-            build_type: full # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
+            build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
     name: Pack_App_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
       - name: Checkout
@@ -371,7 +371,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-
+          
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -400,6 +400,7 @@ jobs:
             /O${{ github.workspace }}\out_pack
             /DSourceDir=${{ github.workspace }}\out_pack\pack
             /DArch=${{ matrix.arch }}
+      
 
       - name: Upload Packages and Installer to Artifacts
         uses: actions/upload-artifact@v4
@@ -408,7 +409,7 @@ jobs:
           path: |
             ${{ github.workspace }}/out_pack/*.zip
             ${{ github.workspace }}/out_pack/*.exe
-
+          
   build_nupkg:
     runs-on: windows-2022
     env:
@@ -422,7 +423,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
 
       - name: List files
         run: ls
@@ -442,16 +443,16 @@ jobs:
 
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
-
+        
       - name: Build Nuget packages
         env:
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls
           ./build.ps1 BuildNupkg --isRelease $env:is_release
-
+      
       - name: Upload Nuget packages to GitHub registry
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' }} 
         env:
           GHPKG_KEY: ${{ secrets.GITHUB_TOKEN }}
           MYGET_ORG_KEY: ${{ secrets.MYGET_ORG_KEY }}
@@ -472,7 +473,7 @@ jobs:
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == 'true' }}
     if: ${{ always() && success('pack_app') && success('build_nupkg') && success('build_android') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
-    needs: [pack_app, build_nupkg, build_android]
+    needs: [ pack_app, build_nupkg, build_android ]
     concurrency:
       group: "publish-public"
     environment:
@@ -483,8 +484,8 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
+          
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -516,7 +517,7 @@ jobs:
           ./tools/release-gen/init-artifacts.ps1
           ./tools/release-gen/install-pdcc.ps1 linux
           ./pdcc/PhainonDistributionCenter.Client ./phainon.yml Publish ${{ github.event.inputs.primary_version }} ${{ github.event.inputs.release_tag }} ./out
-
+          
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
@@ -524,8 +525,8 @@ jobs:
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-
+          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
+          
       - name: Upload Nuget packages to NuGet Gallery
         if: ${{ github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' }}
         shell: pwsh
