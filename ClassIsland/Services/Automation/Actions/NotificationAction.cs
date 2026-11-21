@@ -13,6 +13,7 @@ using ClassIsland.Services.Overlay;
 using ClassIsland.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 namespace ClassIsland.Services.Automation.Actions;
 
 [ActionInfo("classisland.showNotification", "显示提醒", "\ue02b", addDefaultToMenu:false)]
@@ -24,6 +25,10 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
     protected override async Task OnInvoke()
     {
         await base.OnInvoke();
+        // TODO: 临时诊断日志，定位 iOS 画中画提醒不显示后删除。
+        IAppHost.TryGetService<ILogger<NotificationAction>>()?.LogInformation(
+            "[提醒诊断] 显示提醒行动开始执行：IsPreview={IsPreview}，遮罩时长={Mask}s，正文时长={Content}s",
+            ActionItem.IsPreview, Settings.MaskDurationSeconds, Settings.ContentDurationSeconds);
 
         // 手动预览且悬浮主界面可用时，把提醒交给 HUD 宿主进程在悬浮岛上显示。
         // 自动触发不会进入此分支，因此不会和 HUD 自己产生的提醒重复。
