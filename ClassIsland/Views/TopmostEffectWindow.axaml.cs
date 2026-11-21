@@ -129,6 +129,8 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
     {
         var topmost = ShouldPlayTopmost;
         Topmost = topmost;
+        // X11 的 SkipManagement 会让窗口脱离窗口管理器层级，必须跟随置顶状态一起清除。
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, topmost);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, topmost);
     }
 
@@ -139,7 +141,7 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
         Topmost = ShouldPlayTopmost;
         base.Show();
         PlatformServices.WindowPlatformService.SetWindowFeature(this, 
-            WindowFeatures.Transparent | WindowFeatures.ToolWindow | WindowFeatures.SkipManagement, true);
+            WindowFeatures.Transparent | WindowFeatures.ToolWindow, true);
         ApplyTopmostState();
     }
 
