@@ -207,6 +207,7 @@
                                 Theme="{StaticResource TransparentButton}"
                                 Content="{ci:FluentIcon &#xE88D;}"
                                 CurrentPath="{Binding ViewModel.SettingsService.Settings.SplashCustomLogoSource, Mode=TwoWay}"
+                                PersistSelection="True"
                                 VerticalAlignment="Center"
                                 FileTypes="{x:Static local:GeneralSettingsPage.ImageFileTypes}"/>
                         </StackPanel>
@@ -258,10 +259,10 @@
                                 <CheckBox Content="上课时"
                                           IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnClass}"/>
                                 <CheckBox Content="前台是最大化窗口时"
-                                          IsEnabled="{OnPlatform Default=True, Android=False}"
+                                          IsEnabled="{OnPlatform Default=True, Android=False, iOS=False}"
                                           IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnMaxWindow}" />
                                 <CheckBox Content="前台是全屏窗口时"
-                                          IsEnabled="{OnPlatform Default=True, Android=False}"
+                                          IsEnabled="{OnPlatform Default=True, Android=False, iOS=False}"
                                           IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnFullscreen}" />
                             </StackPanel>
                         </TabItem>

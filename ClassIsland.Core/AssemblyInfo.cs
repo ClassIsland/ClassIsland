@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Avalonia.Metadata;
 
 [assembly: InternalsVisibleTo("ClassIsland")]
+[assembly: InternalsVisibleTo("ClassIsland.Lessons.Tests")]
 [assembly: InternalsVisibleTo("ClassIsland.Desktop")]
 [assembly: InternalsVisibleTo("ClassIsland.Android")]
 [assembly: InternalsVisibleTo("ClassIsland.iOS")]

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -13,9 +14,31 @@ public partial class ActionSetRunningControl : UserControl
     public ActionSetRunningControl() => InitializeComponent();
 
     [RelayCommand]
-    void InvokeAction()
+    void InvokeAction() => _ = InvokeActionWithPreviewMarkerAsync();
+
+    /// <summary>
+    /// 手动触发行动组时给每个行动项打上预览标记，让提醒类行动把内容转发给悬浮主界面
+    /// 宿主进程显示，而不是像自动触发那样在主 App 内显示。
+    /// </summary>
+    async Task InvokeActionWithPreviewMarkerAsync()
     {
-        ActionService.InvokeActionSetAsync(ActionSet);
+        var actionSet = ActionSet;
+        foreach (var item in actionSet.ActionItems)
+        {
+            item.IsPreview = true;
+        }
+
+        try
+        {
+            await ActionService.InvokeActionSetAsync(actionSet);
+        }
+        finally
+        {
+            foreach (var item in actionSet.ActionItems)
+            {
+                item.IsPreview = false;
+            }
+        }
     }
 
     [RelayCommand]

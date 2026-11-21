@@ -14,10 +14,9 @@ partial class Build
 {
     string RuntimeIdentifier = "";
     AbsolutePath AppPublishArtifactPath;
+    AbsolutePath IosPublishArtifactPath;
     bool IsSecretFilled = false;
     
-    
-
     Target GenerateSecrets => t => t
         .Executes(() =>
         {

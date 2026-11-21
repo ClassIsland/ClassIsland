@@ -6,6 +6,7 @@ using System.Diagnostics;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Models.Rules;
 using Avalonia.Threading;
 using ClassIsland.Platforms.Abstraction;
@@ -28,7 +29,7 @@ public class WindowRuleService : IWindowRuleService
         Logger = logger;
         RulesetService = rulesetService;
 
-        if (OperatingSystem.IsAndroid())
+        if (PlatformHelper.IsMobile)
         {
             return;
         }
@@ -108,7 +109,7 @@ public class WindowRuleService : IWindowRuleService
 
     public unsafe bool IsForegroundWindowClassIsland()
     {
-        if (OperatingSystem.IsAndroid())
+        if (PlatformHelper.IsMobile)
         {
             return false;
         }

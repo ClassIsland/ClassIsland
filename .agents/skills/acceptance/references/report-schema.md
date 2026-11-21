@@ -168,4 +168,3 @@ Dataset field `type` is one of `boolean`, `category`, `number`, `string`, or
 `temporal`; field keys and dataset/view ids must be unique. Rows may contain only
 declared keys with string, number, boolean, or null values. The combined inline
 row limit is 10,000.
-

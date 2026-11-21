@@ -4,6 +4,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.MainView;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Icons;
 using ClassIsland.Shared;
 
@@ -29,6 +30,11 @@ public partial class MoreMainViewPage : MainViewPageBase
         App.GetService<SettingsWindowNew>().Open();
     }
 
+    private void MenuItemLiveActivitySettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<SettingsWindowNew>().Open("live-activity");
+    }
+
 
     private async void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
     {
@@ -36,6 +42,12 @@ public partial class MoreMainViewPage : MainViewPageBase
         var management = owner.ViewModel.ManagementService;
         if (!await management.AuthorizeByLevel(management.CredentialConfig.ExitApplicationAuthorizeLevel))
         {
+            return;
+        }
+
+        if (PlatformHelper.IsAppleMobile)
+        {
+            ((App)AppBase.Current).PrepareForAppleMobileManualTermination();
             return;
         }
 

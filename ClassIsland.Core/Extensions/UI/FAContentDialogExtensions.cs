@@ -39,7 +39,6 @@ public static class FAContentDialogExtensions
                 case IActivityApplicationLifetime:
                 {
                     var viewHost = IViewHostProvider.Instance.GetViewHost(ViewActivationPreference.Default);
-                    Console.WriteLine($"[ELYSIADBG] VH={viewHost}");
                     if (viewHost is Visual v)
                     {
                         tl = TopLevel.GetTopLevel(v);
@@ -56,7 +55,6 @@ public static class FAContentDialogExtensions
             }
         }
         
-        Console.WriteLine($"[ELYSIADBG] TopLevel={tl}");
         return await dialog.ShowAsync(tl);
     }
 }

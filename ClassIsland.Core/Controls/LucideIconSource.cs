@@ -17,13 +17,13 @@ public class LucideIconSource : FAFontIconSource
         get => GetValue(IconProperty);
         set => SetValue(IconProperty, value);
     }
-    
+
     /// <inheritdoc />
     public LucideIconSource()
     {
         FontFamily = AppBase.LucideIconsFontFamily;
     }
-    
+
     /// <inheritdoc />
     public LucideIconSource(string glyph) : this()
     {

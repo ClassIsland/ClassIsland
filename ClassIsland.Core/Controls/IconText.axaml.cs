@@ -24,7 +24,7 @@ public partial class IconText : UserControl
         get => GetValue(GlyphProperty);
         set => SetValue(GlyphProperty, value);
     }
-    
+
     public static readonly StyledProperty<FluentIconKind?> IconProperty =
         AvaloniaProperty.Register<IconText, FluentIconKind?>(nameof(Icon));
 

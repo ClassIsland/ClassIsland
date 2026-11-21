@@ -1,0 +1,8 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ClassIsland.iOS.Controls.IosHudHost"
+             Background="Transparent" ClipToBounds="False"
+             IsHitTestVisible="False"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid x:Name="Root" Background="Transparent" ClipToBounds="False"/>
+</UserControl>

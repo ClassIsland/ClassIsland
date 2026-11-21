@@ -17,13 +17,13 @@ public class FluentIconSource : FAFontIconSource
         get => GetValue(IconProperty);
         set => SetValue(IconProperty, value);
     }
-    
+
     /// <inheritdoc />
     public FluentIconSource()
     {
         FontFamily = AppBase.FluentIconsFontFamily;
     }
-    
+
     /// <inheritdoc />
     public FluentIconSource(string glyph) : this()
     {
@@ -31,7 +31,7 @@ public class FluentIconSource : FAFontIconSource
     }
 
     public FluentIconSource ProvideValue() => this;
-    
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);

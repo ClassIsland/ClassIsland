@@ -589,7 +589,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         var mouseIn = OperatingSystem.IsMacOS() ? PointerOver : IsMouseIn;
         IsLineFaded =
-            !OperatingSystem.IsAndroid() &&
+            !Core.Helpers.PlatformHelper.IsMobile &&
             SettingsService.Settings.IsMouseInFadingEnabled &&
             (mouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
     }
@@ -833,6 +833,10 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private async void ProcessNotification()
     {
+        // TODO: 临时诊断日志，定位 iOS 画中画提醒不显示后删除。
+        Logger.LogInformation("[提醒诊断] 主界面行 #{Hash} 收到提醒：顶层={TopLevel}，卸载中={Unloading}，正在显示={Open}，排队={Queued}",
+            GetHashCode(), TopLevel.GetTopLevel(this)?.GetType().Name ?? "（无）", _isUnloading, _isOverlayOpen,
+            _notificationQueue.Count);
         if (_isUnloading)
         {
             return;

@@ -156,6 +156,9 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications, bool isPlayed)
     {
+        // TODO: 临时诊断日志，定位 iOS 画中画提醒不显示后删除。
+        Logger.LogInformation("[提醒诊断] 收到提醒请求：来源={Provider}，全局提醒开关={Enabled}，推送={Push}，已播放={Played}",
+            providerGuid, Settings.IsNotificationEnabled, pushNotifications, isPlayed);
         if (!Settings.IsNotificationEnabled)
         {
             request.CompletedTokenSource.Cancel();
@@ -344,11 +347,14 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         if (!CanDispatchRequests)
         {
             Logger.LogTrace("存在未完成移交的提醒，暂缓推送");
+            // TODO: 临时诊断日志，定位 iOS 画中画提醒不显示后删除。
+            Logger.LogInformation("[提醒诊断] 存在未完成移交的提醒（{Count}），暂缓推送", _pendingRescheduleCount);
             return false;
         }
 
         var consumer = RegisteredConsumers
             .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests && x.Consumer.QueuedNotificationCount <= 0);
+        LogConsumerDiagnostics(consumer?.Consumer);
         if (consumer != null)
         {
             Logger.LogTrace("将推送的提醒消费者：{}(#{})", consumer.Consumer, consumer.Consumer.GetHashCode());
@@ -364,6 +370,27 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
         Logger.LogTrace("找不到接受提醒的提醒消费者");
         return false;
+    }
+
+    // TODO: 临时诊断日志，定位 iOS 画中画提醒不显示后删除。
+    private void LogConsumerDiagnostics(INotificationConsumer? selected)
+    {
+        Logger.LogInformation("[提醒诊断] 推送提醒：已注册消费者 {Count} 个，选中 {Selected}",
+            RegisteredConsumers.Count, selected == null ? "（无）" : $"#{selected.GetHashCode()}");
+        foreach (var info in RegisteredConsumers)
+        {
+            var details = info.Consumer.GetType().Name;
+            if (info.Consumer is global::ClassIsland.Controls.MainWindowLine line)
+            {
+                var topLevel = global::Avalonia.Controls.TopLevel.GetTopLevel(line)?.GetType().Name ?? "（无）";
+                details = $"顶层={topLevel}，IsNotificationEnabled={line.IsNotificationEnabled}，" +
+                          $"IsAllComponentsHid={line.IsAllComponentsHid}";
+            }
+            Logger.LogInformation(
+                "[提醒诊断]   消费者 #{Hash}：优先级={Priority}，可接收={Accepts}，排队={Queued}，{Details}",
+                info.Consumer.GetHashCode(), info.Priority, info.Consumer.AcceptsNotificationRequests,
+                info.Consumer.QueuedNotificationCount, details);
+        }
     }
 
     private List<NotificationPlayingTicket> PopRequests()

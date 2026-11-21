@@ -8,6 +8,8 @@ using ClassIsland.Core.Abstractions.Services;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Models.Automation;
+using ClassIsland.Core.Helpers;
+using ClassIsland.Core.Icons;
 using ClassIsland.Models.Actions;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Automation;
@@ -217,21 +219,37 @@ public class ActionService : IActionService
         ));
 
 
-        ActionMenuTree.Add(
-            new ActionMenuTreeGroup("运行", "\uec2e",
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uf4b1",
-                s => s.RunType = RunActionSettings.RunActionRunType.Application),
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run",
-                OperatingSystem.IsWindows() ? "cmd 命令" : "终端命令",
-                "\ue508",
-                s => s.RunType = RunActionSettings.RunActionRunType.Command),
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件", "\ue687",
-                s => s.RunType = RunActionSettings.RunActionRunType.File),
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件夹", "\ue875",
-                s => s.RunType = RunActionSettings.RunActionRunType.Folder),
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "Url 链接", "\ue905",
-                s => s.RunType = RunActionSettings.RunActionRunType.Url)
-        ));
+        if (PlatformHelper.IsAppleMobile)
+        {
+            ActionMenuTree.Add(
+                new ActionMenuTreeGroup("打开", FluentIcons.OpenRegular,
+                    new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "网页链接", FluentIcons.GlobeRegular,
+                        s => s.RunType = RunActionSettings.RunActionRunType.Url),
+                    new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件夹", FluentIcons.FolderOpenRegular,
+                        s => s.RunType = RunActionSettings.RunActionRunType.Folder),
+                    new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件预览", FluentIcons.DocumentRegular,
+                        s => s.RunType = RunActionSettings.RunActionRunType.File),
+                    new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "App 链接", FluentIcons.AppGenericRegular,
+                        s => s.RunType = RunActionSettings.RunActionRunType.AppLink)));
+        }
+        else
+        {
+            ActionMenuTree.Add(
+                new ActionMenuTreeGroup("运行", "\uec2e",
+                new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uf4b1",
+                    s => s.RunType = RunActionSettings.RunActionRunType.Application),
+                new ActionMenuTreeItem<RunActionSettings>("classisland.os.run",
+                    OperatingSystem.IsWindows() ? "cmd 命令" : "终端命令",
+                    "\ue508",
+                    s => s.RunType = RunActionSettings.RunActionRunType.Command),
+                new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件", "\ue687",
+                    s => s.RunType = RunActionSettings.RunActionRunType.File),
+                new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件夹", "\ue875",
+                    s => s.RunType = RunActionSettings.RunActionRunType.Folder),
+                new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "Url 链接", "\ue905",
+                    s => s.RunType = RunActionSettings.RunActionRunType.Url)
+            ));
+        }
 
         ActionMenuTree.Add(
             new ActionMenuTreeGroup("提醒", "\ue025",
@@ -247,11 +265,13 @@ public class ActionService : IActionService
                 s => s.NotificationKind = 2)
         ));
 
-        ActionMenuTree.Add(
-            new ActionMenuTreeGroup("ClassIsland", "\ue454",
-            new ActionMenuTreeItem("classisland.app.quit", "退出 ClassIsland", "\ue0df"),
-            new ActionMenuTreeItem("classisland.app.restart", "重启 ClassIsland", "\ue0bd")
-        ));
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            ActionMenuTree.Add(
+                new ActionMenuTreeGroup("ClassIsland", "\ue454",
+                    new ActionMenuTreeItem("classisland.app.quit", "退出 ClassIsland", "\ue0df"),
+                    new ActionMenuTreeItem("classisland.app.restart", "重启 ClassIsland", "\ue0bd")));
+        }
 
         return;
 

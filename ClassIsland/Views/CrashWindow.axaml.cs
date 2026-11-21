@@ -7,6 +7,7 @@ using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 
@@ -33,6 +34,11 @@ public partial class CrashWindow : ViewBase
     public CrashWindow()
     {
         InitializeComponent();
+        if (PlatformHelper.IsAppleMobile)
+        {
+            DebugButton.IsVisible = false;
+        }
+
         DataContext = this;
     }
 
@@ -45,10 +51,22 @@ public partial class CrashWindow : ViewBase
     {
         if (IsCritical)
         {
+            if (PlatformHelper.IsAppleMobile)
+            {
+                (AppBase.Current as App)?.PrepareForAppleMobileManualTermination();
+                return;
+            }
+
             Environment.Exit(1);
         }
         else
         {
+            if (PlatformHelper.IsAppleMobile)
+            {
+                (AppBase.Current as App)?.PrepareForAppleMobileManualTermination();
+                return;
+            }
+
             AppBase.Current.Stop();
         }
     }

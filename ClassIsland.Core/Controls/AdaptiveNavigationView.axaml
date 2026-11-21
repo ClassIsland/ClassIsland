@@ -123,7 +123,8 @@
                                 </Grid>
                                 <Rectangle Name="ContentLeftPadding" />
                             </Panel>
-                            <Border Name="NavigationRail" DockPanel.Dock="Bottom" Height="71">
+                            <Border Name="NavigationRail" DockPanel.Dock="Bottom" Height="71"
+                                    IsVisible="{TemplateBinding IsPaneVisible}">
                                 <Panel>
                                     <!-- Keep the native animation's coordinate reference in the visual tree. -->
                                     <Grid Name="PaneContentGrid" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*">

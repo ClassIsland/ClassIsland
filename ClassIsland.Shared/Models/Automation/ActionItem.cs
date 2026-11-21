@@ -94,6 +94,16 @@ public partial class ActionItem : ObservableRecipient
     /// </summary>
     [ObservableProperty] [property: JsonIgnore] double? _progress = null;
 
+    /// <summary>
+    /// 当前行动项是否正在被手动预览触发。仅运行期有效，不写入配置文件。
+    /// </summary>
+    /// <remarks>
+    /// 用于区分"用户手动点击触发"和"自动化触发器触发"：提醒类行动在手动预览时会把内容
+    /// 转发给悬浮主界面宿主进程显示，避免和自动触发时宿主进程自己产生的提醒重复。
+    /// </remarks>
+    [JsonIgnore]
+    public bool IsPreview { get; set; }
+
     /// （数据驱动用属性。）
     [JsonIgnore] internal bool IsNewAdded { get; set; } = false;
 }

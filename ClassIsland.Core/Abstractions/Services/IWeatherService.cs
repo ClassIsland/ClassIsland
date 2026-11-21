@@ -20,6 +20,15 @@ public interface IWeatherService : INotifyPropertyChanged
     /// 天气是否已经刷新
     /// </summary>
     bool IsWeatherRefreshed { get; set; }
+
+    /// <summary>
+    /// 最近一次获取到的天气信息；尚未成功获取时返回 <see langword="null" />。
+    /// </summary>
+    /// <remarks>
+    /// 使用默认实现保持第三方插件和测试替身的接口兼容性。
+    /// </remarks>
+    WeatherInfo? LastWeatherInfo => null;
+
     /// <summary>
     /// 立刻查询天气
     /// </summary>
