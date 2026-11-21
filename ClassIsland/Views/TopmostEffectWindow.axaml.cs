@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Avalonia.Rendering;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Platforms.Abstraction;
@@ -29,6 +30,9 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
     public TopmostEffectWindowViewModel ViewModel { get; } = new();
 
     public bool IsShowed { get; set; } = false;
+
+    // 特效层级跟随主界面：主界面置底且提醒未置顶主界面时，主窗口不是 Topmost，特效也不应置顶。
+    private bool ShouldPlayTopmost => (AppBase.Current?.MainWindow as ClassIsland.MainWindow)?.Topmost ?? true;
 
     private ILogger<TopmostEffectWindow> Logger { get; }
 
@@ -76,6 +80,10 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
             Logger.LogInformation("由于应用处于编辑模式，将丢弃当前顶层特效");
             return;
         }
+        if (IsShowed)
+        {
+            ApplyTopmostState();
+        }
         ViewModel.EffectControls.Add(element);
         if (!element.IsLoaded)
         {
@@ -117,14 +125,22 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
         e.Cancel = true;
     }
 
+    private void ApplyTopmostState()
+    {
+        var topmost = ShouldPlayTopmost;
+        Topmost = topmost;
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, topmost);
+    }
+
     public override void Show()
     {
         ShowActivated = false;
         ShowInTaskbar = false;
-        Topmost = true;
+        Topmost = ShouldPlayTopmost;
         base.Show();
         PlatformServices.WindowPlatformService.SetWindowFeature(this, 
-            WindowFeatures.Transparent | WindowFeatures.ToolWindow | WindowFeatures.Topmost | WindowFeatures.SkipManagement, true);
+            WindowFeatures.Transparent | WindowFeatures.ToolWindow | WindowFeatures.SkipManagement, true);
+        ApplyTopmostState();
     }
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
