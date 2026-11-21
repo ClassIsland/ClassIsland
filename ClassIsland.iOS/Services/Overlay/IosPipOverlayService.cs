@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Avalonia;
@@ -50,6 +51,7 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
     private const double MaximumRenderScale = 3;
     private const int MaximumPixelWidth = 2048;
     private static readonly Size EmptyCanvasSize = new(240, 80);
+    private static readonly Lazy<Action?> GlobalAnimationClockPulse = new(CreateGlobalAnimationClockPulse);
 
     private ILogger<IosPipOverlayService>? _logger;
     private bool? _isSupported;
@@ -319,12 +321,59 @@ internal sealed class IosPipOverlayService : IMainWindowOverlayService
         }
 
         var stopwatch = Stopwatch.StartNew();
+        if (UIApplication.SharedApplication.ApplicationState == UIApplicationState.Background)
+        {
+            AdvanceAnimationClockInBackground();
+        }
+
         UpdateCanvasLayout();
         EnqueueFrame();
         stopwatch.Stop();
         ReportSlowFrame(stopwatch.Elapsed);
         LogStateChanges();
         UpdateFrameInterval();
+    }
+
+    /// <summary>
+    /// 应用进入后台后，Avalonia 会随 CADisplayLink 暂停渲染循环，已提交的合成批次一直无法完成，
+    /// MediaContext 因此不再推进全局动画时钟。主题的提醒进出场动画会停在第一帧（Rectangles 主题的气泡停在不可见状态），
+    /// 退场动画也永远不会结束，MainWindowLine 会一直等待它而不再接收新提醒。
+    /// Avalonia 没有公开推进时钟的接口，只能通过反射在帧循环里替它推进；时间沿用 MediaContext 自己的计时器，
+    /// 回到前台后与 Avalonia 自身的推进保持连续。
+    /// </summary>
+    private void AdvanceAnimationClockInBackground()
+    {
+        if (GlobalAnimationClockPulse.Value is { } pulse)
+        {
+            pulse();
+        }
+        else
+        {
+            LogOnce("无法在后台推进 Avalonia 动画时钟，画中画中的提醒动画可能停止");
+        }
+    }
+
+    private static Action? CreateGlobalAnimationClockPulse()
+    {
+        const BindingFlags instanceMembers = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        var mediaContextType = typeof(AvaloniaObject).Assembly.GetType("Avalonia.Media.MediaContext");
+        var mediaContext = mediaContextType
+            ?.GetProperty("Instance", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+            ?.GetValue(null);
+        if (mediaContextType == null || mediaContext == null)
+        {
+            return null;
+        }
+
+        var clock = mediaContextType.GetProperty("Clock", instanceMembers)?.GetValue(mediaContext);
+        var time = mediaContextType.GetField("_time", instanceMembers)?.GetValue(mediaContext) as Stopwatch;
+        var pulse = clock?.GetType().GetMethod("Pulse", instanceMembers, [typeof(TimeSpan)]);
+        if (clock == null || time == null || pulse == null)
+        {
+            return null;
+        }
+
+        return () => pulse.Invoke(clock, [time.Elapsed]);
     }
 
     private void ReportSlowFrame(TimeSpan elapsed)
