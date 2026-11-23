@@ -21,6 +21,7 @@ namespace ClassIsland.Controls.AuthorizeProvider;
 public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControlBase<GesturePasswordAuthorizeSettings>
 {
     private int[]? _firstGesture;
+    private bool _isChangingGesture;
     private bool _isCooldownActive;
     private bool _isBusy;
     private IDisposable? _confirmResetTimer;
@@ -30,6 +31,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     private sealed class PendingGestureState
     {
         public int[]? FirstGesture;
+        public bool IsChangingGesture;
     }
 
     // 实例可能被复用于不同 CredentialItem 的设置，待确认草稿按设置对象隔离存放，行删则随设置回收。
@@ -117,8 +119,6 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
         _cooldownTimer?.Dispose();
         _cooldownTimer = null;
         _isCooldownActive = false;
-        _isBusy = false;
-        IsEnabled = true;
     }
 
     protected override void OnSettingsChanged(object? previousSettings)
@@ -128,12 +128,16 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
             && current != null
             && !ReferenceEquals(previous, current))
         {
-            _pendingBySettings.GetOrCreateValue(previous).FirstGesture = _firstGesture;
+            var state = _pendingBySettings.GetOrCreateValue(previous);
+            state.FirstGesture = _firstGesture;
+            state.IsChangingGesture = _isChangingGesture;
         }
         else if (current != null)
         {
             // 同设置重取或首次附加：活状态即归属当前设置，先存后取，结果不变。
-            _pendingBySettings.GetOrCreateValue(current).FirstGesture = _firstGesture;
+            var state = _pendingBySettings.GetOrCreateValue(current);
+            state.FirstGesture = _firstGesture;
+            state.IsChangingGesture = _isChangingGesture;
         }
         RestoreForCurrentSettings();
     }
@@ -154,25 +158,42 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
         }
     }
 
+    private void SetChangingGesture(bool isChanging)
+    {
+        _isChangingGesture = isChanging;
+        if (SettingsInternal is GesturePasswordAuthorizeSettings current)
+        {
+            _pendingBySettings.GetOrCreateValue(current).IsChangingGesture = isChanging;
+        }
+    }
+
     private void RestoreForCurrentSettings()
     {
         if (SettingsInternal is not GesturePasswordAuthorizeSettings current)
         {
             return;
         }
-        _firstGesture = _pendingBySettings.TryGetValue(current, out var state) ? state.FirstGesture : null;
+        if (_pendingBySettings.TryGetValue(current, out var state))
+        {
+            _firstGesture = state.FirstGesture;
+            _isChangingGesture = state.IsChangingGesture;
+        }
+        else
+        {
+            _firstGesture = null;
+            _isChangingGesture = false;
+        }
         CancelConfirmResetTimer();
         CancelTooShortTimer();
         _cooldownTimer?.Dispose();
         _cooldownTimer = null;
         _isCooldownActive = false;
-        _isBusy = false;
-        IsEnabled = true;
+        IsEnabled = !_isBusy;
         AuthorizeFailed = false;
         ConfirmFailed = false;
         TooShortError = false;
         NeedConfirmError = false;
-        ProtectGesture = !string.IsNullOrEmpty(current.GestureHash) && IsEditingMode;
+        ProtectGesture = !string.IsNullOrEmpty(current.GestureHash) && IsEditingMode && !_isChangingGesture;
         InstructionText.Text = _firstGesture != null ? "请再次绘制手势以确认" : "请绘制手势密码";
         GestureGrid.Reset();
     }
@@ -204,6 +225,11 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
 
     private async Task HandleEditingGestureAsync(int[] path)
     {
+        if (_isBusy)
+        {
+            return;
+        }
+
         if (_firstGesture == null)
         {
             SetFirstGesture(path);
@@ -217,21 +243,26 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
                 CancelConfirmResetTimer();
                 _isBusy = true;
                 IsEnabled = false;
+                var settings = Settings;
                 try
                 {
                     var first = _firstGesture;
-                    await Task.Run(() => SaveGesture(first));
+                    await Task.Run(() => SaveGesture(settings, first));
                 }
                 finally
                 {
                     _isBusy = false;
                     IsEnabled = true;
                 }
-                SetFirstGesture(null);
-                ProtectGesture = true;
-                ConfirmFailed = false;
-                NeedConfirmError = false;
-                InstructionText.Text = "请绘制手势密码";
+                if (ReferenceEquals(SettingsInternal, settings))
+                {
+                    SetFirstGesture(null);
+                    SetChangingGesture(false);
+                    ProtectGesture = true;
+                    ConfirmFailed = false;
+                    NeedConfirmError = false;
+                    InstructionText.Text = "请绘制手势密码";
+                }
             }
             else
             {
@@ -294,7 +325,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
 
     private const int HashIterations = 600_000;
 
-    private void SaveGesture(int[] path)
+    private static void SaveGesture(GesturePasswordAuthorizeSettings settings, int[] path)
     {
         var pathString = string.Join(",", path);
         var saltBytes = RandomNumberGenerator.GetBytes(16);
@@ -304,8 +335,8 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
             HashIterations,
             HashAlgorithmName.SHA256,
             32);
-        Settings.GestureSalt = saltBytes;
-        Settings.GestureHash = Convert.ToBase64String(hash);
+        settings.GestureSalt = saltBytes;
+        settings.GestureHash = Convert.ToBase64String(hash);
     }
 
     private bool VerifyGesture(int[] path)
@@ -334,6 +365,7 @@ public partial class GesturePasswordAuthorizeProvider : AuthorizeProviderControl
     {
         CancelConfirmResetTimer();
         CancelTooShortTimer();
+        SetChangingGesture(true);
         ProtectGesture = false;
         SetFirstGesture(null);
         ConfirmFailed = false;
