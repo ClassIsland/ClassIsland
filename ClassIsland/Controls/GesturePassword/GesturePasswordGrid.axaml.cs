@@ -127,6 +127,10 @@ public class GesturePasswordGrid : Control, IDragBlockingTarget
         var nodeIndex = HitTestNode(pos);
         if (nodeIndex < 0) return;
 
+        // 阻止祖先 ScrollViewer 的滚动手势识别器在竖向拖动时抢占指针捕获，
+        // 否则会触发 PointerCaptureLost 并静默清空当前手势。
+        e.PreventGestureRecognition();
+
         _isPressed = true;
         _activePointer = e.Pointer;
         _selectedNodes.Clear();
